@@ -5,6 +5,8 @@ struct EUOptionData<:OptionData
 	K::Float64
 end
 
+export EuropeanOption,EUOptionData;
+
 function payoff(S::Matrix{num},optionData::EUOptionData,Payoff::EuropeanOption,isCall::Bool=true) where{num<:Number}
 	iscall=isCall?1:-1
 	ST=S[1:end,end];

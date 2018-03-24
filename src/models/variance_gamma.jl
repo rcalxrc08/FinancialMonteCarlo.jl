@@ -1,6 +1,7 @@
 type VarianceGammaProcess<:AbstractMonteCarloProcess end
 
-include("subordinated_brownian_motion.jl")
+export VarianceGammaProcess;
+
 function simulate(mcProcess::VarianceGammaProcess,spotData::equitySpotData,mcBaseData::MonteCarloBaseData,T::Float64)
 	r=spotData.r;
 	S0=spotData.S0;

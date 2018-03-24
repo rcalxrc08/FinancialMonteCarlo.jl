@@ -1,5 +1,5 @@
 using BenchmarkTools, DualNumbers
-include("montecarlo.jl")
+using MonteCarlo
 @show "VarianceGammaProcess"
 S0=100.0;
 K=100.0;

@@ -1,7 +1,7 @@
-include("brownian_motion.jl")
 type KouProcess<:AbstractMonteCarloProcess end
 
-using Distributions;
+export KouProcess;
+
 function simulate(mcProcess::KouProcess,spotData::equitySpotData,mcBaseData::MonteCarloBaseData,T::Float64)
 	r=spotData.r;
 	S0=spotData.S0;

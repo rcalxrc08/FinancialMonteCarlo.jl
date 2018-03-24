@@ -6,6 +6,8 @@ struct BarrierOptionData<:OptionData
 	D::Float64
 end
 
+export BarrierOption,BarrierOptionData;
+
 function payoff(S::Matrix{num},optionData::BarrierOptionData,Payoff::BarrierOption,isCall::Bool=true) where{num<:Number}
 	iscall=isCall?1:-1
 	NsimTmp=length(S[1:end,end]);

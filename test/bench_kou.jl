@@ -1,5 +1,5 @@
 using BenchmarkTools
-include("montecarlo.jl")
+using MonteCarlo
 @show "KouModel"
 S0=100.0;
 K=100.0;

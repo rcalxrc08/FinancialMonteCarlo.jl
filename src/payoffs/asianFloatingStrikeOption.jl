@@ -4,6 +4,8 @@ struct AsianFloatingStrikeOptionData<:OptionData
 	T::Float64
 end
 
+export AsianFloatingStrikeOption,AsianFloatingStrikeOptionData;
+
 function payoff(S::Matrix{num},optionData::AsianFloatingStrikeOptionData,Payoff::AsianFloatingStrikeOption,isCall::Bool=true) where{num<:Number}
 	iscall=isCall?1:-1
 	NsimTmp=length(S[1:end,end]);

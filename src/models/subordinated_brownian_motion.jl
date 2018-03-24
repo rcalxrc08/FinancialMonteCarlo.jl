@@ -1,5 +1,7 @@
 type SubordinatedBrownianMotion<:AbstractMonteCarloProcess end
 
+export SubordinatedBrownianMotion;
+
 function simulate(mcProcess::SubordinatedBrownianMotion,spotData::equitySpotData,mcBaseData::MonteCarloBaseData,T::Float64,dt_s::Array{Float64,2})
 	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;

@@ -1,6 +1,7 @@
 type NormalInverseGaussianProcess<:AbstractMonteCarloProcess end
 
-include("subordinated_brownian_motion.jl")
+export NormalInverseGaussianProcess;
+
 function simulate(mcProcess::NormalInverseGaussianProcess,spotData::equitySpotData,mcBaseData::MonteCarloBaseData,T::Float64)
 	r=spotData.r;
 	S0=spotData.S0;

@@ -1,6 +1,6 @@
-include("geometric_brownian_motion.jl")
-
 type BlackScholesProcess<:AbstractMonteCarloProcess end
+
+export BlackScholesProcess;
 
 function simulate(mcProcess::BlackScholesProcess,spotData::equitySpotData,mcBaseData::MonteCarloBaseData,T::Float64)
 	r=spotData.r;

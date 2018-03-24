@@ -1,4 +1,4 @@
-include("montecarlo.jl")
+using MonteCarlo
 include("runner.jl")
 
 Nsim=10000;

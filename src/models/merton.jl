@@ -1,5 +1,7 @@
 type MertonProcess<:AbstractMonteCarloProcess end
 
+export MertonProcess;
+
 using Distributions;
 function simulate(mcProcess::MertonProcess,spotData::equitySpotData,mcBaseData::MonteCarloBaseData,T::Float64)
 	r=spotData.r;

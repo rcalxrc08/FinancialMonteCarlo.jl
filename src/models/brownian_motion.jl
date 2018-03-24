@@ -1,5 +1,7 @@
 type BrownianMotion<:AbstractMonteCarloProcess end
 
+export BrownianMotion;
+
 function simulate(mcProcess::BrownianMotion,spotData::equitySpotData,mcBaseData::MonteCarloBaseData,T::Float64)
 	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;

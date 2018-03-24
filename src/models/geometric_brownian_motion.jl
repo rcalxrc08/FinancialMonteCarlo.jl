@@ -1,4 +1,3 @@
-include("brownian_motion.jl")
 type GeometricBrownianMotion<:AbstractMonteCarloProcess end
 
 function simulate(mcProcess::GeometricBrownianMotion,spotData::equitySpotData,mcBaseData::MonteCarloBaseData,T::Float64)
