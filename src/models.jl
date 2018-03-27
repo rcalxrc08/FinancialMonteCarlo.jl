@@ -1,5 +1,7 @@
 abstract type AbstractMonteCarloProcess end
 
+export AbstractMonteCarloProcess
+
 using Distributions;
 
 function simulate(mcProcess::AbstractMonteCarloProcess,spotData::equitySpotData,mcBaseData::MonteCarloBaseData,T::Float64)
