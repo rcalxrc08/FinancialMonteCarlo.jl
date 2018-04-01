@@ -19,13 +19,13 @@ function simulate(mcProcess::VarianceGammaProcess,spotData::equitySpotData,mcBas
 	drift=r-d-real(psi1(-1im));
 	
 	gammaRandomVariable=Gamma(dt/k1);
-	dt_s=k1*quantile.(gammaRandomVariable,rand(Nsim,Nstep));
+	dt_s=k1.*quantile.(gammaRandomVariable,rand(Nsim,Nstep));
 	const dict1=Dict{String,Number}("sigma"=>sigma, "drift" => drift)
 	subParam=MonteCarloBaseData(dict1,Nsim,Nstep);
 	
 	X=simulate(SubordinatedBrownianMotion(),spotData,subParam,T,dt_s);
 
-	S=S0*exp.(X);
+	S=S0.*exp.(X);
 	
 	return S;
 	

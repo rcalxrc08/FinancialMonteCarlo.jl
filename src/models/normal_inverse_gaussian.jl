@@ -27,7 +27,7 @@ function simulate(mcProcess::NormalInverseGaussianProcess,spotData::equitySpotDa
 	
 	X=simulate(SubordinatedBrownianMotion(),spotData,subParam,T,dt_s);
 
-	S=S0*exp.(X);
+	S=S0.*exp.(X);
 	
 	return S;
 	
