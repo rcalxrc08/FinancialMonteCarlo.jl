@@ -56,7 +56,7 @@ function simulate(mcProcess::KouProcess,spotData::equitySpotData,mcBaseData::Mon
 		end
 	end
 	## Conclude
-	S=S0*exp.(X);
+	S=S0.*exp.(X);
 	return S;
 
 end

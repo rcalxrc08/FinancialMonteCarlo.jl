@@ -16,7 +16,7 @@ function simulate(mcProcess::BrownianMotion,spotData::equitySpotData,mcBaseData:
 	isDualZero=meanW*varW;
 	X=zeros(typeof(isDualZero),Nsim,Nstep+1);
 	for j in 1:Nstep
-		X[:,j+1]=X[:,j]+meanW+varW*randn(Nsim);
+		X[:,j+1]=X[:,j]+meanW.+varW.*randn(Nsim);
 	end
 
 	return X;

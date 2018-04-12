@@ -16,7 +16,7 @@ function simulate(mcProcess::BlackScholesProcess,spotData::equitySpotData,mcBase
 	const dictGBM=Dict{String,Number}("sigma"=>sigma_gbm, "drift" => mu_gbm)
 	GeomData=MonteCarloBaseData(dictGBM,mcBaseData.Nsim,mcBaseData.Nstep)
 	
-	S=S0*simulate(GeometricBrownianMotion(),spotData,GeomData,T)
+	S=S0.*simulate(GeometricBrownianMotion(),spotData,GeomData,T)
 	
 	return S;
 	
