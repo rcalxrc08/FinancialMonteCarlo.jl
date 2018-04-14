@@ -30,7 +30,7 @@ function simulate(mcProcess::KouProcess,spotData::equitySpotData,mcBaseData::Mon
 	PoissonRV=Poisson(lambda1*T);
 	PosExpRV=Exponential(1.0/lambdap);
 	NegExpRV=Exponential(1.0/lambdam);
-	NJumps=Int.(quantile.(PoissonRV,rand(Nsim))); #invariante
+	NJumps=quantile.(PoissonRV,rand(Nsim)); #invariante
 
 	for ii in 1:Nsim
 		Njumps_=NJumps[ii];
