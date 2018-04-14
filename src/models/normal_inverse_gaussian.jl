@@ -16,8 +16,9 @@ function simulate(mcProcess::NormalInverseGaussianProcess,spotData::equitySpotDa
 	k1=mcBaseData.param["k"];
 	dt=T/Nstep;
 	
-	psi1(v::Number)::Number=(1-sqrt(1.0+ ((sigma*v)^2-2.0*1im*theta1*v)*k1))/k1;
-	drift=r-d-real(psi1(-1im));
+	#psi1(v::Number)::Number=(1-sqrt(1.0+ ((sigma*v)^2-2.0*1im*theta1*v)*k1))/k1;
+	psi1=(1-sqrt(1.0-(sigma^2+2.0*theta1)*k1))/k1;
+	drift=r-d-psi1;
 	const dict1=Dict{String,Number}("sigma"=>sigma, "drift" => drift)
 	subParam=MonteCarloBaseData(dict1,Nsim,Nstep);
 	

@@ -10,9 +10,9 @@ function simulate(mcProcess::SubordinatedBrownianMotion,spotData::equitySpotData
 	end
 	drift=mcBaseData.param["drift"];
 	sigma=mcBaseData.param["sigma"];
-	
-	isDualZero=drift*sigma*dt_s[1,1];
-	X=zeros(typeof(isDualZero),Nsim,Nstep+1);
+	isDualZero=drift*sigma*dt_s[1,1]*0.0;
+	X=Matrix{typeof(isDualZero)}(Nsim,Nstep+1);
+	X[:,1]=isDualZero;
 	for i=1:Nstep
 		# SUBORDINATED BROWNIAN MOTION (dt_s=time change)
 		X[:,i+1]=X[:,i].+drift.*dt_s[:,i].+sigma.*sqrt.(dt_s[:,i]).*randn(Nsim);
