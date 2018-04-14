@@ -31,12 +31,6 @@ Model=MertonProcess();
 @show BarrierPrice=pricer(Model,spotData1,mc,BarrierData,BarrierOption());
 @show AsianPrice=pricer(Model,spotData1,mc,AsianData,AsianFloatingStrikeOption());
 
-@btime FwdPrice=pricer(Model,spotData1,mc,FwdData,Forward());						
-@btime EuPrice=pricer(Model,spotData1,mc,EUData,EuropeanOption());
-@btime BarrierPrice=pricer(Model,spotData1,mc,BarrierData,BarrierOption());
-@btime AsianPrice=pricer(Model,spotData1,mc,AsianData,AsianFloatingStrikeOption());
-
-
 @assert abs(FwdPrice-99.1188767166039)<toll
 @assert abs(EuPrice-9.084327245917533)<toll
 @assert abs(BarrierPrice-7.880881290426765)<toll

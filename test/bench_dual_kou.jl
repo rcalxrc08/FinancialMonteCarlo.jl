@@ -35,12 +35,6 @@ Model=KouProcess();
 @show AsianPrice1=pricer(Model,spotData1,mc,AsianData1,AsianFloatingStrikeOption());
 @show AsianPrice2=pricer(Model,spotData1,mc,AsianData2,AsianFixedStrikeOption());
 
-@btime FwdPrice=pricer(Model,spotData1,mc,FwdData,Forward());						
-@btime EuPrice=pricer(Model,spotData1,mc,EUData,EuropeanOption());
-@btime BarrierPrice=pricer(Model,spotData1,mc,BarrierData,BarrierOption());
-@btime AsianPrice1=pricer(Model,spotData1,mc,AsianData1,AsianFloatingStrikeOption());
-
-
 @assert abs(FwdPrice-99.41332633109904)<toll
 @assert abs(EuPrice-10.347332240535199)<toll
 @assert abs(BarrierPrice-8.860123655599818)<toll
