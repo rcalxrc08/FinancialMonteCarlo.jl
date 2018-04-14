@@ -1,7 +1,7 @@
-struct equitySpotData
-	S0::Number
-	r::Number
-	d::Number
+struct equitySpotData{T1,T2,T3<:Number}
+	S0::T1
+	r::T2
+	d::T3
 end
 
 export equitySpotData;
