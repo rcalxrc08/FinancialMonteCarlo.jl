@@ -6,7 +6,21 @@ end
 
 export AsianFloatingStrikeOption,AsianFloatingStrikeOptionData;
 
-function payoff(S::Matrix{num},optionData::AsianFloatingStrikeOptionData,Payoff::AsianFloatingStrikeOption,isCall::Bool=true) where{num<:Number}
+"""
+Payoff computation from MonteCarlo paths
+
+		Payoff=payoff(S,asianFloatingStrikeOptionData,AsianFloatingStrikeOption,isCall=true)
+	
+Where:\n
+		S           = Paths of the Underlying.
+		asianFloatingStrikeOptionData  = Datas of the Option.
+		AsianFloatingStrikeOption = Type of the Option
+		isCall = true for Call Options, false for Put Options.
+
+		Payoff      = payoff of the option.
+```
+"""
+function payoff(S::Matrix{num},asianFloatingStrikeOptionData::AsianFloatingStrikeOptionData,Payoff::AsianFloatingStrikeOption,isCall::Bool=true) where{num<:Number}
 	iscall=isCall?1:-1
 	NsimTmp=length(S[1:end,end]);
 	@inbounds f(S::Array{num})::num=(iscall*(S[end]-mean(S))>0.0)?(iscall*(S[end]-mean(S))):0.0;		
