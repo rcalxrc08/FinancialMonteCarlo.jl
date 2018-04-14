@@ -1,4 +1,4 @@
-using BenchmarkTools,MonteCarlo,ForwardDiff
+using BenchmarkTools, MonteCarlo,ForwardDiff;
 @show "Black Scholes Model"
 S0=100.0;
 K=100.0;
@@ -10,7 +10,7 @@ D=90.0;
 Nsim=10000;
 Nstep=30;
 sigma=ForwardDiff.Dual{Float64}(0.2,1.0)
-const dict=Dict{String,Number}("sigma"=>sigma)
+ParamDict=Dict{String,Number}("sigma"=>sigma)
 mc=MonteCarloBaseData(dict,Nsim,Nstep);
 toll=1e-3;
 

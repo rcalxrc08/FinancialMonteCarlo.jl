@@ -1,5 +1,4 @@
-using BenchmarkTools
-using MonteCarlo
+using BenchmarkTools, MonteCarlo;
 @show "MertonProcess"
 S0=100.0;
 K=100.0;
@@ -14,7 +13,7 @@ sigma=0.2;
 lam=5.0; 
 mu1=0.03; 
 sigma1=0.02;
-const dict=Dict{String,Number}("sigma"=>sigma, "lambda" => lam, "muJ" => mu1, "sigmaJ" => sigma1)
+ParamDict=Dict{String,Number}("sigma"=>sigma, "lambda" => lam, "muJ" => mu1, "sigmaJ" => sigma1)
 mc=MonteCarloBaseData(dict,Nsim,Nstep);
 toll=0.8;
 

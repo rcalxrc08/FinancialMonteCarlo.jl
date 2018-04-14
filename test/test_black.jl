@@ -1,5 +1,4 @@
-using BenchmarkTools
-using MonteCarlo
+using BenchmarkTools, MonteCarlo;
 @show "Black Scholes Model"
 S0=100.0;
 K=100.0;
@@ -11,7 +10,7 @@ D=90.0;
 Nsim=10000;
 Nstep=30;
 sigma=0.2;
-const dict=Dict{String,Number}("sigma"=>sigma)
+ParamDict=Dict{String,Number}("sigma"=>sigma)
 mc=MonteCarloBaseData(dict,Nsim,Nstep);
 toll=1e-3;
 

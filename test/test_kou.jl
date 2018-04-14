@@ -1,5 +1,4 @@
-using BenchmarkTools
-using MonteCarlo
+using BenchmarkTools, MonteCarlo;
 @show "KouModel"
 S0=100.0;
 K=100.0;
@@ -15,7 +14,7 @@ p=0.3;
 lam=5.0; 
 lamp=30.0; 
 lamm=20.0;
-const dict=Dict{String,Number}("sigma"=>sigma, "lambda" => lam, "p" => p, "lambdap" => lamp, "lambdam" => lamm)
+ParamDict=Dict{String,Number}("sigma"=>sigma, "lambda" => lam, "p" => p, "lambdap" => lamp, "lambdam" => lamm)
 mc=MonteCarloBaseData(dict,Nsim,Nstep);
 toll=0.8;
 

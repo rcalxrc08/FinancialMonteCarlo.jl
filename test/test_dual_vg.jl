@@ -1,5 +1,4 @@
-using BenchmarkTools, DualNumbers
-using MonteCarlo
+using BenchmarkTools, DualNumbers,MonteCarlo
 @show "VarianceGammaProcess"
 S0=100.0;
 K=100.0;
@@ -14,7 +13,7 @@ sigma=dual(0.2,1.0);
 theta1=0.01; 
 k1=0.03; 
 sigma1=0.02;
-const dict=Dict{String,Number}("sigma"=>sigma, "theta" => theta1, "k" => k1)
+ParamDict=Dict{String,Number}("sigma"=>sigma, "theta" => theta1, "k" => k1)
 mc=MonteCarloBaseData(dict,Nsim,Nstep);
 toll=0.8;
 
