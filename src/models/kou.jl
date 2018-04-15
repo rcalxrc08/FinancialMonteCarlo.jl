@@ -20,7 +20,7 @@ function simulate(mcProcess::KouProcess,spotData::equitySpotData,mcBaseData::Mon
 	####Simulation
 	## Simulate
 	# r-d-psi(-i)
-	drift_RN=r-d+(-sigma^2/2-lambda1*(p/(lambdap-1)-(1-p)/(lambdam+1)));
+	drift_RN=r-d-sigma^2/2-lambda1*(p/(lambdap-1)-(1-p)/(lambdam+1));
 	const dict1=Dict{String,Number}("sigma"=>sigma, "drift" => drift_RN)
 	brownianMcData=MonteCarloBaseData(dict1,Nsim,Nstep);
 	X=simulate(BrownianMotion(),spotData,brownianMcData,T)

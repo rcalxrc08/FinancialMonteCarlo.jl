@@ -22,7 +22,7 @@ function simulate(mcProcess::MertonProcess,spotData::equitySpotData,mcBaseData::
 	## Simulate
 	# -psi(-i)
 	#calcolo drift in RN, cambia a seconda dell' AF che scelgo
-	drift_RN=r-d+(-sigma^2/2-lambda1*(exp(mu1+sigma1*sigma1/2.0)-1.0)); 
+	drift_RN=r-d-sigma^2/2-lambda1*(exp(mu1+sigma1*sigma1/2.0)-1.0); 
 	const dict1=Dict{String,Number}("sigma"=>sigma, "drift" => drift_RN)
 	brownianMcData=MonteCarloBaseData(dict1,Nsim,Nstep);
 	X=simulate(BrownianMotion(),spotData,brownianMcData,T)
