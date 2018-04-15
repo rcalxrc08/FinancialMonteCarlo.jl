@@ -16,7 +16,7 @@ lam=5.0;
 lamp=30.0; 
 lamm=20.0;
 ParamDict=Dict{String,Number}("sigma"=>sigma, "lambda" => lam, "p" => p, "lambdap" => lamp, "lambdam" => lamm)
-mc=MonteCarloBaseData(dict,Nsim,Nstep);
+mc=MonteCarloBaseData(ParamDict,Nsim,Nstep);
 toll=0.8;
 
 spotData1=equitySpotData(S0,r,d);
