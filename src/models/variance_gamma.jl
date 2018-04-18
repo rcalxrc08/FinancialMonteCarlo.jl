@@ -15,7 +15,8 @@ function simulate(mcProcess::VarianceGammaProcess,spotData::equitySpotData,mcBas
 	theta1=mcBaseData.param["theta"];
 	k1=mcBaseData.param["k"];
 	dt=T/Nstep;
-	psi1=-1/k1*log(1+-sigma*sigma*k1/2.0-theta1*k1);
+	#-1/p[3]*log(1+u*u*p[1]*p[1]*p[3]/2.0-1im*p[2]*p[3]*u);
+	psi1=-1/k1*log(1-sigma*sigma*k1/2.0+theta1*k1);
 	drift=r-d-psi1;
 	
 	gammaRandomVariable=Gamma(dt/k1);
