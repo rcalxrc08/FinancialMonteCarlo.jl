@@ -11,8 +11,7 @@ Nsim=10000;
 Nstep=30;
 sigma=0.2; 
 theta1=0.01; 
-k1=0.03; 
-sigma1=0.02;
+k1=0.03;
 ParamDict=Dict{String,Number}("sigma"=>sigma, "theta" => theta1, "k" => k1)
 mc=MonteCarloBaseData(ParamDict,Nsim,Nstep);
 toll=0.8;
