@@ -1,4 +1,4 @@
-type BrownianMotion<:AbstractMonteCarloProcess end
+type BrownianMotion<:ItoProcess end
 
 export BrownianMotion;
 

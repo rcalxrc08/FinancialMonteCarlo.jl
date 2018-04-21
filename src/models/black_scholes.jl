@@ -1,4 +1,4 @@
-type BlackScholesProcess<:AbstractMonteCarloProcess end
+type BlackScholesProcess<:ItoProcess end
 
 export BlackScholesProcess;
 

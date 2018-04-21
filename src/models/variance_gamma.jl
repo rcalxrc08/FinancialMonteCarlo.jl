@@ -1,4 +1,4 @@
-type VarianceGammaProcess<:AbstractMonteCarloProcess end
+type VarianceGammaProcess<:InfiniteActivityProcess end
 
 export VarianceGammaProcess;
 

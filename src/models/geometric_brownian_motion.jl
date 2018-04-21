@@ -1,4 +1,4 @@
-type GeometricBrownianMotion<:AbstractMonteCarloProcess end
+type GeometricBrownianMotion<:ItoProcess end
 
 function simulate(mcProcess::GeometricBrownianMotion,spotData::equitySpotData,mcBaseData::MonteCarloBaseData,T::Float64)
 	d=spotData.d;

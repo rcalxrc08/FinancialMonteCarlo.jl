@@ -1,4 +1,4 @@
-type KouProcess<:AbstractMonteCarloProcess end
+type KouProcess<:FiniteActivityProcess end
 
 export KouProcess;
 

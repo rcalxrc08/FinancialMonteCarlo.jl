@@ -1,6 +1,15 @@
 abstract type AbstractMonteCarloProcess end
 
+abstract type ItoProcess<:AbstractMonteCarloProcess end
+
+abstract type FiniteActivityProcess<:AbstractMonteCarloProcess end
+
+abstract type InfiniteActivityProcess<:AbstractMonteCarloProcess end
+
 export AbstractMonteCarloProcess
+export ItoProcess
+export FiniteActivityProcess
+export InfiniteActivityProcess
 
 using Distributions;
 

@@ -1,4 +1,4 @@
-type HestonProcess<:AbstractMonteCarloProcess end
+type HestonProcess<:ItoProcess end
 
 export HestonProcess;
 

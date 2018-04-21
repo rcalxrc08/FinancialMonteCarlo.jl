@@ -1,4 +1,4 @@
-type MertonProcess<:AbstractMonteCarloProcess end
+type MertonProcess<:FiniteActivityProcess end
 
 export MertonProcess;
 

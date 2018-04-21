@@ -1,4 +1,4 @@
-type NormalInverseGaussianProcess<:AbstractMonteCarloProcess end
+type NormalInverseGaussianProcess<:InfiniteActivityProcess end
 
 export NormalInverseGaussianProcess;
 
