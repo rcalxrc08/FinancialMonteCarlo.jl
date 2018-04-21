@@ -1,6 +1,6 @@
-type Forward<:PayoffMC end
+type Forward<:EuropeanPayoff end
 
-struct ForwardData<:OptionData
+struct ForwardData<:AbstractEuropeanOptionData
 	T::Float64
 end
 
