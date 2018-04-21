@@ -27,16 +27,14 @@ function simulate(mcProcess::HestonProcess,spotData::equitySpotData,mcBaseData::
 	isDualZero=S0*T*r*sigma_zero*kappa*theta*lambda1*sigma*rho*0.0;
 	X=Matrix{typeof(isDualZero)}(Nsim,Nstep+1);
 	X[:,1]=isDualZero;
-	
 	for i=1:Nsim
-		#v_m=zeros(Nstep+1,1);
-		v_m=sigma_zero;
+		v_m=sigma_zero+isDualZero;
 		for j in 1:Nstep
 			e1=randn();
 			e2=randn();
 			e2=e1*rho+e2*sqrt(1-rho*rho);
-			X[i,j+1]=X[i,j]+((r-d-0.5*max(v_m,0))*dt+sqrt(max(v_m,0))*sqrt(dt)*e1);
-			v_m=v_m+kappa_s*(theta_s-max(v_m,0))*dt+sigma*sqrt(max(v_m,0))*sqrt(dt)*e2;
+			X[i,j+1]=X[i,j]+(r-d-0.5*max(v_m,0))*dt+sqrt(max(v_m,0))*sqrt(dt)*e1;
+			v_m+=kappa_s*(theta_s-max(v_m,0))*dt+sigma*sqrt(max(v_m,0))*sqrt(dt)*e2;
 		end
 	end
 	## Conclude

@@ -34,7 +34,7 @@ Model=HestonProcess();
 @show AsianPrice1=pricer(Model,spotData1,mc,AsianData1,AsianFloatingStrikeOption());
 @show AsianPrice2=pricer(Model,spotData1,mc,AsianData2,AsianFixedStrikeOption());
 
-@assert abs(FwdPrice-99.41332633109904)<toll
-@assert abs(EuPrice-10.347332240535199)<toll
-@assert abs(BarrierPrice-8.860123655599818)<toll
-@assert abs(AsianPrice1-5.81798437145069)<toll
+@assert abs(FwdPrice-98.72567723404445)<toll
+@assert abs(EuPrice-17.62536090688433)<toll
+@assert abs(BarrierPrice-11.38748933756886)<toll
+@assert abs(AsianPrice1-9.762160560168732)<toll
