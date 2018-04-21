@@ -30,7 +30,7 @@ Model=VarianceGammaProcess();
 @show BarrierPrice=pricer(Model,spotData1,mc,BarrierData,BarrierOption());
 @show AsianPrice=pricer(Model,spotData1,mc,AsianData,AsianFloatingStrikeOption());
 
-@assert abs(FwdPrice-99.93029865221176)<toll
+@assert abs(FwdPrice-97.94751460264095)<toll
 @assert abs(EuPrice-7.738298817933206)<toll
 @assert abs(BarrierPrice-6.886023820038332)<toll
 @assert abs(AsianPrice-4.414948846776423)<toll
