@@ -11,7 +11,7 @@ Nsim=10000;
 Nstep=30;
 sigma=0.2;
 ParamDict=Dict{String,Number}("sigma"=>sigma)
-mc=MonteCarloBaseData(dict,Nsim,Nstep);
+mc=MonteCarloBaseData(ParamDict,Nsim,Nstep);
 toll=1e-3;
 
 spotData1=equitySpotData(S0,r,d);
