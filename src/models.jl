@@ -2,12 +2,15 @@ abstract type AbstractMonteCarloProcess end
 
 abstract type ItoProcess<:AbstractMonteCarloProcess end
 
-abstract type FiniteActivityProcess<:AbstractMonteCarloProcess end
+abstract type LevyProcess<:AbstractMonteCarloProcess end
 
-abstract type InfiniteActivityProcess<:AbstractMonteCarloProcess end
+abstract type FiniteActivityProcess<:LevyProcess end
+
+abstract type InfiniteActivityProcess<:LevyProcess end
 
 export AbstractMonteCarloProcess
 export ItoProcess
+export LevyProcess
 export FiniteActivityProcess
 export InfiniteActivityProcess
 
