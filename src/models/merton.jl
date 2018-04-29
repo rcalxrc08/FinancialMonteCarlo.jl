@@ -2,7 +2,7 @@ type MertonProcess<:FiniteActivityProcess end
 
 export MertonProcess;
 
-function simulate(mcProcess::MertonProcess,spotData::equitySpotData,mcBaseData::MonteCarloBaseData,T::Float64)
+function simulate(mcProcess::MertonProcess,spotData::equitySpotData,mcBaseData::MonteCarloBaseData,T::Float64,mode1::MonteCarloMode=standard)
 	r=spotData.r;
 	S0=spotData.S0;
 	d=spotData.d;
@@ -25,7 +25,7 @@ function simulate(mcProcess::MertonProcess,spotData::equitySpotData,mcBaseData::
 	drift_RN=r-d-sigma^2/2-lambda1*(exp(mu1+sigma1*sigma1/2.0)-1.0); 
 	const dict1=Dict{String,Number}("sigma"=>sigma, "drift" => drift_RN)
 	brownianMcData=MonteCarloBaseData(dict1,Nsim,Nstep);
-	X=simulate(BrownianMotion(),spotData,brownianMcData,T)
+	X=simulate(BrownianMotion(),spotData,brownianMcData,T,mode1)
 	D1=Poisson(lambda1*T);
 	NJumps=Int.(quantile.(D1,rand(Nsim))); #invariante
 	#Z=randn(Nsim,Nstep);

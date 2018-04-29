@@ -2,7 +2,7 @@ include("payoff.jl")
 include("struct_utils.jl")
 include("models.jl")
 	
-function pricer(mcProcess::AbstractMonteCarloProcess,spotData::equitySpotData,mcBaseData::MonteCarloBaseData,optionData::OptionData,payoff1::PayoffMC,isCall::Bool=true)
+function pricer(mcProcess::AbstractMonteCarloProcess,spotData::equitySpotData,mcBaseData::MonteCarloBaseData,optionData::OptionData,payoff1::PayoffMC,isCall::Bool=true,mode1::MonteCarloMode=standard)
 	srand(0)
 	T=optionData.T;
 	r=spotData.r;

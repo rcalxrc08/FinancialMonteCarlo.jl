@@ -2,7 +2,7 @@ type VarianceGammaProcess<:InfiniteActivityProcess end
 
 export VarianceGammaProcess;
 
-function simulate(mcProcess::VarianceGammaProcess,spotData::equitySpotData,mcBaseData::MonteCarloBaseData,T::Float64)
+function simulate(mcProcess::VarianceGammaProcess,spotData::equitySpotData,mcBaseData::MonteCarloBaseData,T::Float64,mode1::MonteCarloMode=standard)
 	r=spotData.r;
 	S0=spotData.S0;
 	d=spotData.d;
@@ -24,7 +24,7 @@ function simulate(mcProcess::VarianceGammaProcess,spotData::equitySpotData,mcBas
 	const dict1=Dict{String,Number}("sigma"=>sigma, "drift" => drift)
 	subParam=MonteCarloBaseData(dict1,Nsim,Nstep);
 	
-	X=simulate(SubordinatedBrownianMotion(),spotData,subParam,T,dt_s);
+	X=simulate(SubordinatedBrownianMotion(),spotData,subParam,T,dt_s,mode1);
 
 	S=S0.*exp.(X);
 	

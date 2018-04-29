@@ -4,7 +4,9 @@ struct equitySpotData{T1,T2,T3<:Number}
 	d::T3
 end
 
-export equitySpotData;
+@enum MonteCarloMode standard=1 antithetic=2
+
+export equitySpotData,MonteCarloMode;
 
 struct MonteCarloBaseData
 	param::Dict{String,Number}

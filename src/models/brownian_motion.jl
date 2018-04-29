@@ -2,7 +2,7 @@ type BrownianMotion<:ItoProcess end
 
 export BrownianMotion;
 
-function simulate(mcProcess::BrownianMotion,spotData::equitySpotData,mcBaseData::MonteCarloBaseData,T::Float64)
+function simulate(mcProcess::BrownianMotion,spotData::equitySpotData,mcBaseData::MonteCarloBaseData,T::Float64,mode1::MonteCarloMode=standard)
 	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;
 	if(length(mcBaseData.param)!=2)
@@ -16,8 +16,17 @@ function simulate(mcProcess::BrownianMotion,spotData::equitySpotData,mcBaseData:
 	isDualZero=meanW*varW*0.0;
 	X=Matrix{typeof(isDualZero)}(Nsim,Nstep+1);
 	X[:,1]=isDualZero;
-	for j in 1:Nstep
-		X[:,j+1]=X[:,j]+meanW.+varW.*randn(Nsim);
+	if mode1==antithetic
+		for j in 1:Nstep
+			NsimAnti=Int(floor(Nsim/2))
+			Z=randn(NsimAnti);
+			Z=[Z;-Z];
+			X[:,j+1]=X[:,j]+meanW.+varW.*Z;
+		end
+	else
+		for j in 1:Nstep
+			X[:,j+1]=X[:,j]+meanW.+varW.*randn(Nsim);
+		end
 	end
 
 	return X;

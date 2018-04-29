@@ -2,7 +2,7 @@ type KouProcess<:FiniteActivityProcess end
 
 export KouProcess;
 
-function simulate(mcProcess::KouProcess,spotData::equitySpotData,mcBaseData::MonteCarloBaseData,T::Float64)
+function simulate(mcProcess::KouProcess,spotData::equitySpotData,mcBaseData::MonteCarloBaseData,T::Float64,mode1::MonteCarloMode=standard)
 	r=spotData.r;
 	S0=spotData.S0;
 	d=spotData.d;
@@ -23,7 +23,7 @@ function simulate(mcProcess::KouProcess,spotData::equitySpotData,mcBaseData::Mon
 	drift_RN=r-d-sigma^2/2-lambda1*(p/(lambdap-1)-(1-p)/(lambdam+1));
 	const dict1=Dict{String,Number}("sigma"=>sigma, "drift" => drift_RN)
 	brownianMcData=MonteCarloBaseData(dict1,Nsim,Nstep);
-	X=simulate(BrownianMotion(),spotData,brownianMcData,T)
+	X=simulate(BrownianMotion(),spotData,brownianMcData,T,mode1)
 
 	t=linspace(0.0,T,Nstep+1);
 
