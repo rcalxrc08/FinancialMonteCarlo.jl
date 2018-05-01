@@ -1,5 +1,5 @@
 include("payoff.jl")
-include("struct_utils.jl")
+include("utils.jl")
 include("models.jl")
 	
 function pricer(mcProcess::AbstractMonteCarloProcess,spotData::equitySpotData,mcBaseData::MonteCarloBaseData,optionData::OptionData,payoff1::PayoffMC,isCall::Bool=true,mode1::MonteCarloMode=standard)

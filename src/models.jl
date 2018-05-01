@@ -20,6 +20,7 @@ function simulate(mcProcess::AbstractMonteCarloProcess,spotData::equitySpotData,
 	error("This is a Virtual function")
 end
 
+include("models/utils.jl")
 include("models/brownian_motion.jl")
 include("models/geometric_brownian_motion.jl")
 include("models/black_scholes.jl")

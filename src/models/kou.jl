@@ -28,8 +28,6 @@ function simulate(mcProcess::KouProcess,spotData::equitySpotData,mcBaseData::Mon
 	t=linspace(0.0,T,Nstep+1);
 
 	PoissonRV=Poisson(lambda1*T);
-	PosExpRV=Exponential(1.0/lambdap);
-	NegExpRV=Exponential(1.0/lambdam);
 	NJumps=quantile.(PoissonRV,rand(Nsim)); #invariante
 
 	for ii in 1:Nsim
@@ -41,7 +39,7 @@ function simulate(mcProcess::KouProcess,spotData::equitySpotData,mcBaseData::Mon
 			
 			idx1=findfirst(x->x>=tjump,t);
 			u=rand(); #simulate Uniform([0,1])
-			jump_size=(u<p)?quantile(PosExpRV,rand()):-quantile(NegExpRV,rand())
+			jump_size=u<p?quantile_exp(lambdap,rand()):-quantile_exp(lambdam,rand())
 			X[ii,idx1:end]+=jump_size; #aggiungo componente di salto.
 			
 			#for i in 1:Nstep
