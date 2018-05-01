@@ -24,8 +24,10 @@ function simulate(mcProcess::BrownianMotion,spotData::equitySpotData,mcBaseData:
 			X[:,j+1]=X[:,j]+meanW.+varW.*Z;
 		end
 	else
+		Z=Array{Float64}(Nsim)
 		for j in 1:Nstep
-			X[:,j+1]=X[:,j]+meanW.+varW.*randn(Nsim);
+			randn!(Z)
+			X[:,j+1]=X[:,j]+meanW.+varW.*Z;
 		end
 	end
 
