@@ -7,27 +7,34 @@ function simulate(mcProcess::BrownianMotion,spotData::equitySpotData,mcBaseData:
 	Nstep=mcBaseData.Nstep;
 	if(length(mcBaseData.param)!=2)
 		error("Brownian Motion needs 2 parameters")
+	elseif sigma<=0.0
+		error("Brownian motion volatility must be positive");
+	elseif T<=0.0
+		error("Final time must be positive");
 	end
-	volatility=mcBaseData.param["sigma"];
+	sigma=mcBaseData.param["sigma"];
 	drift=mcBaseData.param["drift"];
 	dt=T/Nstep
-	meanW=drift*dt
-	varW=volatility*sqrt(dt)
-	isDualZero=meanW*varW*0.0;
+	mean_bm=drift*dt
+	stddev_bm=sigma*sqrt(dt)
+	isDualZero=mean_bm*stddev_bm*0.0;
 	X=Matrix{typeof(isDualZero)}(Nsim,Nstep+1);
 	X[:,1]=isDualZero;
 	if mode1==antithetic
+		Nsim_2=Int(floor(Nsim/2))
+		if Nsim_2*2!=Nsim
+			error("Antithetic support only odd number of simulations")
+		end
 		for j in 1:Nstep
-			NsimAnti=Int(floor(Nsim/2))
-			Z=randn(NsimAnti);
+			Z=randn(Nsim_2);
 			Z=[Z;-Z];
-			X[:,j+1]=X[:,j]+meanW.+varW.*Z;
+			X[:,j+1]=X[:,j]+mean_bm.+stddev_bm.*Z;
 		end
 	else
 		Z=Array{Float64}(Nsim)
 		for j in 1:Nstep
 			randn!(Z)
-			X[:,j+1]=X[:,j]+meanW.+varW.*Z;
+			X[:,j+1]=X[:,j]+mean_bm.+stddev_bm.*Z;
 		end
 	end
 
