@@ -31,14 +31,12 @@ function payoff(S::Matrix{num},amOptionData::AMOptionData,Payoff::AmericanOption
 	r=amOptionData.r;
 	dt=amOptionData.T/Nstep
 	# INIZIALIZZAZIONE ========================
-	Istanti_esercizio=Nstep*ones(Nsim,1);
-	price=max.(0.0,iscall*(S[:,end]-K)); #payoff
-	
-
+	Istanti_esercizio=Nstep.*ones(Nsim,1);
+	price=max.(0.0,iscall.*(S[:,end].-K)); #payoff
 	# PROCEDURA BACKWARD ======================
 	for j in Nstep-1:-1:1
-		Inmoney=find((S[:,j]-K)*iscall.>0.0);
-		if Inmoney!=[]
+		Inmoney=find((S[:,j].-K).*iscall.>0.0);
+		if !isempty(Inmoney)
 			S_I=S[Inmoney,j];
 			#-- Intrinsic Value
 			IV=(S_I-K)*iscall;
@@ -46,8 +44,8 @@ function payoff(S::Matrix{num},amOptionData::AMOptionData,Payoff::AmericanOption
 			#- Regressione Lineare
 			A=[ones(length(S_I),1) S_I S_I.^2];
 			b=price[Inmoney].*exp.(-r*dt*(Istanti_esercizio[Inmoney]-j));
-			MAT=A'*A;			
-			LuMat=lufact(MAT);
+			#MAT=A'*A;			
+			LuMat=lufact(A);
 			Btilde=A'*b;
 			alpha=LuMat\Btilde;
 			#alpha=A\b;
@@ -62,7 +60,7 @@ function payoff(S::Matrix{num},amOptionData::AMOptionData,Payoff::AmericanOption
 			Istanti_esercizio[Esercizio_Anticipato]=j;
 		end
 	end
-	prezzo=max.(iscall*(S0-K),mean(price.*exp.(-r*dt*Istanti_esercizio)))
+	prezzo=max.(iscall*(S0-K),mean(price.*exp.(-r*dt.*Istanti_esercizio)))
 
 
 	
