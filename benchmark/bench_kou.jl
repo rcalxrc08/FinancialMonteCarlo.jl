@@ -23,6 +23,7 @@ spotData1=equitySpotData(S0,r,d);
 
 FwdData=ForwardData(T)
 EUData=EUOptionData(T,K)
+AMData=AMOptionData(T,K,r)
 BarrierData=BarrierOptionData(T,K,D)
 AsianData1=AsianFloatingStrikeOptionData(T)
 AsianData2=AsianFixedStrikeOptionData(T,K)
@@ -30,5 +31,6 @@ Model=KouProcess();
 
 @btime FwdPrice=pricer(Model,spotData1,mc,FwdData,Forward());						
 @btime EuPrice=pricer(Model,spotData1,mc,EUData,EuropeanOption());
+@btime AmPrice=pricer(Model,spotData1,mc,AMData,AmericanOption());
 @btime BarrierPrice=pricer(Model,spotData1,mc,BarrierData,BarrierOption());
 @btime AsianPrice1=pricer(Model,spotData1,mc,AsianData1,AsianFloatingStrikeOption());
