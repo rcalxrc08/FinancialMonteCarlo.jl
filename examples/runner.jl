@@ -12,16 +12,19 @@ function runnerMonteCarlo(Model::AbstractMonteCarloProcess,mc::MonteCarloBaseDat
 
 	FwdData=ForwardData(T)
 	EUData=EUOptionData(T,K)
+	AMData=AMOptionData(T,K,r)
 	BarrierData=BarrierOptionData(T,K,D)
 	AsianData=AsianFloatingStrikeOptionData(T)
 
 	FwdPrice=pricer(Model,spotData1,mc,FwdData,Forward());
 	EuPrice=pricer(Model,spotData1,mc,EUData,EuropeanOption());
+	AMPrice=pricer(Model,spotData1,mc,AMData,AmericanOption());
 	BarrierPrice=pricer(Model,spotData1,mc,BarrierData,BarrierOption());
 	AsianPrice=pricer(Model,spotData1,mc,AsianData,AsianFloatingStrikeOption());
 
 	@show FwdPrice
 	@show EuPrice
+	@show AMPrice
 	@show BarrierPrice
 	@show AsianPrice
 
@@ -43,16 +46,19 @@ function runnerMonteCarloDual(Model::AbstractMonteCarloProcess,mc::MonteCarloBas
 
 	FwdData=ForwardData(T)
 	EUData=EUOptionData(T,K)
+	AMData=AMOptionData(T,K,r)
 	BarrierData=BarrierOptionData(T,K,D)
 	AsianData=AsianFloatingStrikeOptionData(T)
 
 	FwdPrice=pricer(Model,spotData1,mc,FwdData,Forward());
 	EuPrice=pricer(Model,spotData1,mc,EUData,EuropeanOption());
+	AMPrice=pricer(Model,spotData1,mc,AMData,AmericanOption());
 	BarrierPrice=pricer(Model,spotData1,mc,BarrierData,BarrierOption());
 	AsianPrice=pricer(Model,spotData1,mc,AsianData,AsianFloatingStrikeOption());
 
 	@show FwdPrice
 	@show EuPrice
+	@show AMPrice
 	@show BarrierPrice
 	@show AsianPrice
 
