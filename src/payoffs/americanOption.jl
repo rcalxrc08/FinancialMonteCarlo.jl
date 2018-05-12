@@ -30,39 +30,37 @@ function payoff(S::Matrix{num},amOptionData::AMOptionData,Payoff::AmericanOption
 	K=amOptionData.K;
 	r=amOptionData.r;
 	dt=amOptionData.T/Nstep
-	# INIZIALIZZAZIONE ========================
-	Istanti_esercizio=Nstep.*ones(Nsim,1);
-	price=max.(0.0,iscall.*(S[:,end].-K)); #payoff
-	# PROCEDURA BACKWARD ======================
+	# initialize 
+	exerciseTimes=Nstep.*ones(Nsim,1);
+	V=max.(0.0,iscall.*(S[:,end].-K)); #payoff
+	# Backward Procedure 
 	for j in Nstep-1:-1:1
-		Inmoney=find((S[:,j].-K).*iscall.>0.0);
-		if !isempty(Inmoney)
-			S_I=S[Inmoney,j];
+		inMoneyIndexes=find((S[:,j].-K).*iscall.>0.0);
+		if !isempty(inMoneyIndexes)
+			S_I=S[inMoneyIndexes,j];
 			#-- Intrinsic Value
 			IV=(S_I-K)*iscall;
 			#-- Continuation Value 
-			#- Regressione Lineare
+			#- Linear Regression on Quadratic Form
 			A=[ones(length(S_I),1) S_I S_I.^2];
-			b=price[Inmoney].*exp.(-r*dt*(Istanti_esercizio[Inmoney]-j));
+			b=V[inMoneyIndexes].*exp.(-r*dt*(exerciseTimes[inMoneyIndexes]-j));
 			#MAT=A'*A;			
 			LuMat=lufact(A);
 			Btilde=A'*b;
 			alpha=LuMat\Btilde;
 			#alpha=A\b;
-			#- Valore di continuazione
+			#Continuation Value
 			CV=A*alpha;
 			#----------
-			# istante j è di esercizio anticipato?
+			# Find premature exercise times
 			Index=find(IV.>CV);
-			Esercizio_Anticipato=Inmoney[Index];
+			exercisePositions=inMoneyIndexes[Index];
 			# Update
-			price[Esercizio_Anticipato]=IV[Index];
-			Istanti_esercizio[Esercizio_Anticipato]=j;
+			V[exercisePositions]=IV[Index];
+			exerciseTimes[exercisePositions]=j;
 		end
 	end
-	prezzo=max.(iscall*(S0-K),mean(price.*exp.(-r*dt.*Istanti_esercizio)))
-
-
+	price=max.(iscall*(S0-K),mean(V.*exp.(-r*dt.*exerciseTimes)))
 	
-	return prezzo;
+	return price;
 end
