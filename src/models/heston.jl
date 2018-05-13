@@ -2,7 +2,7 @@ type HestonProcess<:ItoProcess end
 
 export HestonProcess;
 
-function simulate(mcProcess::HestonProcess,spotData::equitySpotData,mcBaseData::MonteCarloBaseData,T::Float64,mode1::MonteCarloMode=standard)
+function simulate(mcProcess::HestonProcess,spotData::equitySpotData,mcBaseData::MonteCarloBaseData,T::Float64,monteCarloMode::MonteCarloMode=standard)
 	r=spotData.r;
 	S0=spotData.S0;
 	d=spotData.d;
@@ -27,7 +27,7 @@ function simulate(mcProcess::HestonProcess,spotData::equitySpotData,mcBaseData::
 	isDualZero=S0*T*r*sigma_zero*kappa*theta*lambda1*sigma*rho*0.0;
 	X=Matrix{typeof(isDualZero)}(Nsim,Nstep+1);
 	X[:,1]=isDualZero;
-	if mode1!=antithetic
+	if monteCarloMode!=antithetic
 		v_m=[sigma_zero+isDualZero for _ in 1:Nsim];
 		for j in 1:Nstep
 			e1=randn(Nsim);

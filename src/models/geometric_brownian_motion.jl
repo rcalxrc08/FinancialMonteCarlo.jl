@@ -1,6 +1,6 @@
 type GeometricBrownianMotion<:ItoProcess end
 
-function simulate(mcProcess::GeometricBrownianMotion,spotData::equitySpotData,mcBaseData::MonteCarloBaseData,T::Float64,mode1::MonteCarloMode=standard)
+function simulate(mcProcess::GeometricBrownianMotion,spotData::equitySpotData,mcBaseData::MonteCarloBaseData,T::Float64,monteCarloMode::MonteCarloMode=standard)
 	d=spotData.d;
 	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;
@@ -12,7 +12,7 @@ function simulate(mcProcess::GeometricBrownianMotion,spotData::equitySpotData,mc
 	drift_bm=mu_gbm-sigma_gbm^2/2;
 	const dictGBM=Dict{String,Number}("sigma"=>sigma_gbm, "drift" => drift_bm)
 	BrownianData=MonteCarloBaseData(dictGBM,mcBaseData.Nsim,mcBaseData.Nstep)
-	X=simulate(BrownianMotion(),spotData,BrownianData,T,mode1)
+	X=simulate(BrownianMotion(),spotData,BrownianData,T,monteCarloMode)
 	S=exp.(X);
 	return S;
 end

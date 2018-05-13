@@ -2,7 +2,7 @@ type NormalInverseGaussianProcess<:InfiniteActivityProcess end
 
 export NormalInverseGaussianProcess;
 
-function simulate(mcProcess::NormalInverseGaussianProcess,spotData::equitySpotData,mcBaseData::MonteCarloBaseData,T::Float64,mode1::MonteCarloMode=standard)
+function simulate(mcProcess::NormalInverseGaussianProcess,spotData::equitySpotData,mcBaseData::MonteCarloBaseData,T::Float64,monteCarloMode::MonteCarloMode=standard)
 	r=spotData.r;
 	S0=spotData.S0;
 	d=spotData.d;
@@ -26,7 +26,7 @@ function simulate(mcProcess::NormalInverseGaussianProcess,spotData::equitySpotDa
 	IGRandomVariable=InverseGaussian(dt,dt*dt/k1);
 	dt_s=quantile.(IGRandomVariable,rand(Nsim,Nstep));
 	
-	X=simulate(SubordinatedBrownianMotion(),spotData,subParam,T,dt_s,mode1);
+	X=simulate(SubordinatedBrownianMotion(),spotData,subParam,T,dt_s,monteCarloMode);
 
 	S=S0.*exp.(X);
 	

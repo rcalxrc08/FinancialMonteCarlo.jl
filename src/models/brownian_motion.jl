@@ -2,7 +2,7 @@ type BrownianMotion<:ItoProcess end
 
 export BrownianMotion;
 
-function simulate(mcProcess::BrownianMotion,spotData::equitySpotData,mcBaseData::MonteCarloBaseData,T::Float64,mode1::MonteCarloMode=standard)
+function simulate(mcProcess::BrownianMotion,spotData::equitySpotData,mcBaseData::MonteCarloBaseData,T::Float64,monteCarloMode::MonteCarloMode=standard)
 	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;
 	sigma=mcBaseData.param["sigma"];
@@ -20,7 +20,7 @@ function simulate(mcProcess::BrownianMotion,spotData::equitySpotData,mcBaseData:
 	isDualZero=mean_bm*stddev_bm*0.0;
 	X=Matrix{typeof(isDualZero)}(Nsim,Nstep+1);
 	X[:,1]=isDualZero;
-	if mode1==antithetic
+	if monteCarloMode==antithetic
 		Nsim_2=Int(floor(Nsim/2))
 		if Nsim_2*2!=Nsim
 			error("Antithetic support only odd number of simulations")
