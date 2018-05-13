@@ -29,9 +29,9 @@ function payoff(S::Matrix{num},amOptionData::AMOptionData,spotData::equitySpotDa
 	K=amOptionData.K;
 	r=spotData.r;
 	T=amOptionData.T;
-	dt=amOptionData.T/Nstep
+	dt=T/Nstep
 	# initialize 
-	exerciseTimes=Nstep.*ones(Nsim,1);
+	exerciseTimes=Nstep.*ones(Nsim);
 	V=max.(0.0,iscall.*(S[:,end].-K)); #payoff
 	# Backward Procedure 
 	for j in Nstep-1:-1:1
@@ -55,12 +55,12 @@ function payoff(S::Matrix{num},amOptionData::AMOptionData,spotData::equitySpotDa
 			# Find premature exercise times
 			Index=find(IV.>CV);
 			exercisePositions=inMoneyIndexes[Index];
-			# Update
+			# Update the outputs
 			V[exercisePositions]=IV[Index];
 			exerciseTimes[exercisePositions]=j;
 		end
 	end
-	price=max.(iscall*(S0-K),mean(V.*exp.(-r*dt.*exerciseTimes)))
+	price=max.(iscall*(S0-K),V.*exp.(-r*dt.*exerciseTimes))
 	
 	return price;
 end
