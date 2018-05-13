@@ -45,7 +45,7 @@ function payoff(S::Matrix{num},amOptionData::AMOptionData,Payoff::AmericanOption
 			A=[ones(length(S_I),1) S_I S_I.^2];
 			b=V[inMoneyIndexes].*exp.(-r*dt*(exerciseTimes[inMoneyIndexes]-j));
 			#MAT=A'*A;			
-			LuMat=lufact(A);
+			LuMat=lufact(A'*A);
 			Btilde=A'*b;
 			alpha=LuMat\Btilde;
 			#alpha=A\b;
