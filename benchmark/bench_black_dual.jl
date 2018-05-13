@@ -26,6 +26,6 @@ Model=BlackScholesProcess();@btime FwdPrice=pricer(Model,spotData1,mc,FwdData,Fo
 					
 @btime EuPrice=pricer(Model,spotData1,mc,EUData,EuropeanOption());
 @btime AmPrice=pricer(Model,spotData1,mc,AMData,AmericanOption());
-@btime BarrierPrice=pricer(Model,spotData1,mc,BarrierData,BarrierOption());
+@btime BarrierPrice=pricer(Model,spotData1,mc,BarrierData,BarrierOptionDownOut());
 @btime AsianPrice1=pricer(Model,spotData1,mc,AsianFloatingStrikeData,AsianFloatingStrikeOption());
 @btime AsianPrice2=pricer(Model,spotData1,mc,AsianFloatingStrikeData,AsianFloatingStrikeOption());
