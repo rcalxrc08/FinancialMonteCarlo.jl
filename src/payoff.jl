@@ -9,6 +9,7 @@ abstract type AbstractEuropeanOptionData<:OptionData end
 
 ### Payoffs definition
 include("payoffs/europeanOption.jl")
+include("payoffs/generalAmericanOption.jl")
 include("payoffs/americanOption.jl")
 include("payoffs/binaryEuropeanOption.jl")
 include("payoffs/asianFloatingStrikeOption.jl")
