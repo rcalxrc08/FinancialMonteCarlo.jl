@@ -21,7 +21,7 @@ spotData1=equitySpotData(S0,r,d);
 
 FwdData=ForwardData(T)
 EUData=EUOptionData(T,K)
-AMData=AMOptionData(T,K,r)
+AMData=AMOptionData(T,K)
 BarrierData=BarrierOptionData(T,K,D)
 AsianData=AsianFloatingStrikeOptionData(T)
 Model=MertonProcess();

@@ -1,5 +1,5 @@
-include("payoff.jl")
 include("utils.jl")
+include("payoff.jl")
 include("models.jl")
 	
 function pricer(mcProcess::AbstractMonteCarloProcess,spotData::equitySpotData,mcBaseData::MonteCarloBaseData,optionData::OptionData,payoff1::PayoffMC,isCall::Bool=true,mode1::MonteCarloMode=standard)
@@ -8,8 +8,8 @@ function pricer(mcProcess::AbstractMonteCarloProcess,spotData::equitySpotData,mc
 	r=spotData.r;
 	Nsim=mcBaseData.Nsim;
 	S=simulate(mcProcess,spotData,mcBaseData,T)
-	Payoff=payoff(S,optionData,payoff1,isCall);
-	Price=mean(Payoff)*exp(-r*T);
+	Payoff=payoff(S,optionData,spotData,payoff1,isCall);
+	Price=mean(Payoff);
 	return Price;
 end
 

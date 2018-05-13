@@ -22,13 +22,15 @@ Where:\n
 		Payoff      = payoff of the option.
 ```
 """
-function payoff(S::Matrix{num},barrierOptionData::BarrierOptionData,Payoff::BarrierOption,isCall::Bool=true) where{num<:Number}
+function payoff(S::Matrix{num},barrierOptionData::BarrierOptionData,spotData::equitySpotData,Payoff::BarrierOption,isCall::Bool=true) where{num<:Number}
 	iscall=isCall?1:-1
+	r=spotData.r;
+	T=barrierOptionData.T;
 	NsimTmp=length(S[1:end,end]);
 	K=barrierOptionData.K;
 	D=barrierOptionData.D;
 	@inbounds f(S::Array{num})::num=(iscall*(S[end]-K)>0.0)&&(minimum(S)>D)?iscall*(S[end]-K):0.0;		
 	@inbounds payoff2=[f(S[i,1:end]) for i in 1:NsimTmp];
 	
-	return payoff2;
+	return payoff2*exp(-r*T);
 end

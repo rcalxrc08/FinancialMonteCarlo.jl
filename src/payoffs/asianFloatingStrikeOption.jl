@@ -20,11 +20,13 @@ Where:\n
 		Payoff      = payoff of the option.
 ```
 """
-function payoff(S::Matrix{num},asianFloatingStrikeOptionData::AsianFloatingStrikeOptionData,Payoff::AsianFloatingStrikeOption,isCall::Bool=true) where{num<:Number}
+function payoff(S::Matrix{num},asianFloatingStrikeOptionData::AsianFloatingStrikeOptionData,spotData::equitySpotData,Payoff::AsianFloatingStrikeOption,isCall::Bool=true) where{num<:Number}
 	iscall=isCall?1:-1
+	r=spotData.r;
+	T=asianFloatingStrikeOptionData.T;
 	NsimTmp=length(S[1:end,end]);
 	@inbounds f(S::Array{num})::num=(iscall*(S[end]-mean(S))>0.0)?(iscall*(S[end]-mean(S))):0.0;		
 	@inbounds payoff2=[f(S[i,1:end]) for i in 1:NsimTmp];
 	
-	return payoff2;
+	return payoff2*exp(-r*T);
 end

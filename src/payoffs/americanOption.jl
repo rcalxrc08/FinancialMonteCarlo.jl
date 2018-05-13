@@ -3,7 +3,6 @@ type AmericanOption<:PayoffMC end
 struct AMOptionData<:AbstractEuropeanOptionData
 	T::Float64
 	K::Float64
-	r::Float64
 end
 
 export AmericanOption,AMOptionData;
@@ -22,13 +21,14 @@ Where:\n
 		Payoff      = payoff of the option.
 ```
 """
-function payoff(S::Matrix{num},amOptionData::AMOptionData,Payoff::AmericanOption,isCall::Bool=true) where{num<:Number}
+function payoff(S::Matrix{num},amOptionData::AMOptionData,spotData::equitySpotData,Payoff::AmericanOption,isCall::Bool=true) where{num<:Number}
 	iscall=isCall?1:-1
 	S0=S[1,1];
 	Nsim=length(S[1:end,1]);
 	Nstep=length(S[1,1:end])
 	K=amOptionData.K;
-	r=amOptionData.r;
+	r=spotData.r;
+	T=amOptionData.T;
 	dt=amOptionData.T/Nstep
 	# initialize 
 	exerciseTimes=Nstep.*ones(Nsim,1);
