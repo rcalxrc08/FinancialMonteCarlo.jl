@@ -5,7 +5,7 @@ function simulate(mcProcess::MonteCarloProblem,spotData::equitySpotData,mcBaseDa
 	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;
 	Dt=T/Nstep
-	X0=mcProcess.prob.u0;
+	X0=mcProcess.prob.u0[1];
 	sol = solve(mcProcess,num_monte=Nsim,parallel_type=:threads,dt=Dt,adaptive=false)
 	if isapprox(X0,0.0)
 		S=[S0*exp.(path.u[j]) for path in sol.u, j in 1:Nstep];
