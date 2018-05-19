@@ -25,8 +25,14 @@ function payoff(S::Matrix{num},euOptionData::BinaryEuropeanOption,spotData::equi
 	r=spotData.r;
 	T=euOptionData.T;
 	iscall=isCall?1:-1
-	ST=S[1:end,end];
 	K=euOptionData.K;
+	NStep=length(S[1,1:end])-1
+	Nsim=length(S[1:end,1])
+	dt=T1/NStep;
+	index1=round(Int,T/dt);
+	index1=index1>NStep?Nstep+1:index+1;
+	S1=view(S,1:Nsim,1:index1)
+	ST=S1[1:end,end];
 	f(ST::num)::num=iscall*(ST-K)>0.0;
 	payoff2=f.(ST);
 	
