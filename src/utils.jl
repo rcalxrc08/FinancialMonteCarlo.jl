@@ -1,3 +1,5 @@
+using DifferentialEquations
+
 struct equitySpotData{T1,T2,T3<:Number}
 	S0::T1
 	r::T2

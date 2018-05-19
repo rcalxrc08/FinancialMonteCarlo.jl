@@ -30,3 +30,5 @@ include("models/subordinated_brownian_motion.jl")
 include("models/variance_gamma.jl")
 include("models/normal_inverse_gaussian.jl")
 include("models/heston.jl")
+
+include("models/diff_eq_monteCarlo.jl")
