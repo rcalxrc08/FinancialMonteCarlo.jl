@@ -7,7 +7,7 @@ function pricer(mcProcess::AbstractMonteCarloProcess,spotData::equitySpotData,mc
 	T=optionData.T;
 	r=spotData.r;
 	Nsim=mcBaseData.Nsim;
-	S=simulate(mcProcess,spotData,mcBaseData,T)
+	S=simulate(mcProcess,spotData,mcBaseData,T,mode1)
 	Payoff=payoff(S,optionData,spotData,payoff1,isCall);
 	Price=mean(Payoff);
 	return Price;
@@ -18,21 +18,25 @@ function pricer(mcProcess::MonteCarloProblem,spotData::equitySpotData,mcBaseData
 	T=optionData.T;
 	r=spotData.r;
 	Nsim=mcBaseData.Nsim;
-	S=simulate(mcProcess,spotData,mcBaseData,T)
+	S=simulate(mcProcess,spotData,mcBaseData,T,mode1)
 	Payoff=payoff(S,optionData,spotData,payoff1,isCall);
 	Price=mean(Payoff);
 	return Price;
 end
 
 
-function pricer(mcProcess::MonteCarloProblem,spotData::equitySpotData,mcBaseData::MonteCarloBaseData,optionDatas::Array{OptionData},payoffs1::Array{PayoffMC},isCall::Array{Bool},mode1::MonteCarloMode=standard)
+function pricer(mcProcess::MonteCarloProblem,spotData::equitySpotData,mcBaseData::MonteCarloBaseData,optionDatas::Array{OptionData},payoffs1::Array{PayoffMC},isCalls::Array{Bool},mode1::MonteCarloMode=standard)
 	srand(0)
+	maxT=-1.0;
+	for optionData in optionDatas
+		maxT=maxT<T?T:maxT;
+	end
 	T=optionDatas.T;
 	r=spotData.r;
 	Nsim=mcBaseData.Nsim;
-	S=simulate(mcProcess,spotData,mcBaseData,T)
-	Payoff=payoff(S,optionDatas,spotData,payoffs1,isCall);
-	Price=mean(Payoff);
-	return Price;
+	S=simulate(mcProcess,spotData,mcBaseData,maxT,mode1)
+	Prices=[mean(payoff(S,optionData,spotData,payoff1,isCall,maxT)) for (payoff1,optionData,isCall) in zip(payoffs1,optionDatas,isCalls)  ]
+	
+	return Prices;
 end
 

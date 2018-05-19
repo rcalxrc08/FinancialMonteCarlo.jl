@@ -21,7 +21,7 @@ Where:\n
 		Payoff      = payoff of the option.
 ```
 """
-function payoff(S::Matrix{num},amOptionData::AMOptionData,spotData::equitySpotData,Payoff::AmericanOption,isCall::Bool=true) where{num<:Number}
+function payoff(S::Matrix{num},amOptionData::AMOptionData,spotData::equitySpotData,Payoff::AmericanOption,isCall::Bool=true,T1::Float64=amOptionData.T) where{num<:Number}
 	iscall=isCall?1:-1
 	Nsim=length(S[1:end,1]);
 	Nstep=length(S[1,1:end])
@@ -33,9 +33,9 @@ function payoff(S::Matrix{num},amOptionData::AMOptionData,spotData::equitySpotDa
 	Nsim=length(S[1:end,1])
 	dt=T1/NStep;
 	index1=round(Int,T/dt);
-	index1=index1>NStep?Nstep+1:index+1;
+	index1=index1>NStep?Nstep+1:index1+1;
 	S1=view(S,1:Nsim,1:index1)
-	payoff1=payoff(S1,spotData,GeneralAmericanOption(),phi,T);
+	payoff1=payoff(collect(S1),spotData,GeneralAmericanOption(),phi,T);
 	
 	return payoff1;
 end

@@ -23,7 +23,7 @@ Where:\n
 		Payoff      = payoff of the option.
 ```
 """
-function payoff(S::Matrix{num},doubleBarrierOptionData::DoubleBarrierOptionData,spotData::equitySpotData,Payoff::DoubleBarrierOption,isCall::Bool=true) where{num<:Number}
+function payoff(S::Matrix{num},doubleBarrierOptionData::DoubleBarrierOptionData,spotData::equitySpotData,Payoff::DoubleBarrierOption,isCall::Bool=true,T1::Float64=doubleBarrierOptionData.T) where{num<:Number}
 	r=spotData.r;
 	T=doubleBarrierOptionData.T;
 	iscall=isCall?1:-1
@@ -35,7 +35,7 @@ function payoff(S::Matrix{num},doubleBarrierOptionData::DoubleBarrierOptionData,
 	Nsim=length(S[1:end,1])
 	dt=T1/NStep;
 	index1=round(Int,T/dt);
-	index1=index1>NStep?Nstep+1:index+1;
+	index1=index1>NStep?Nstep+1:index1+1;
 	@inbounds f(S::Array{num})::num=(iscall*(S[end]-K)>0.0)&&(minimum(S)>D)&&(maximum(S)<U)?iscall*(S[end]-K):0.0;		
 	@inbounds payoff2=[f(S[i,1:index1]) for i in 1:NsimTmp];
 	
