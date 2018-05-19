@@ -12,11 +12,11 @@ r=0.02
 sigma=0.2
 T=1.0;
 d=0.01;
-u0=S0;
+u0=0.0;
 #Drift
-f(u,p,t) = (r-d)*u
+f(u,p,t) = (r-d-sigma*sigma/2.0)
 #Diffusion
-g(u,p,t) = sigma*u
+g(u,p,t) = sigma
 #Time Window
 tspan = (0.0,T)
 #Definition of the SDE
