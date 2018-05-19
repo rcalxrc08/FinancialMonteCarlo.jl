@@ -25,12 +25,17 @@ FwdData=ForwardData(T)
 EUData=EUOptionData(T,K)
 AMData=AMOptionData(T,K)
 BarrierData=BarrierOptionData(T,K,D)
-AsianData1=AsianFloatingStrikeOptionData(T)
-AsianData2=AsianFixedStrikeOptionData(T,K)
+AsianFloatingStrikeData=AsianFloatingStrikeOptionData(T)
+AsianFixedStrikeData=AsianFixedStrikeOptionData(T,K)
 Model=KouProcess();
 
 @btime FwdPrice=pricer(Model,spotData1,mc,FwdData,Forward());						
 @btime EuPrice=pricer(Model,spotData1,mc,EUData,EuropeanOption());
 @btime AmPrice=pricer(Model,spotData1,mc,AMData,AmericanOption());
 @btime BarrierPrice=pricer(Model,spotData1,mc,BarrierData,BarrierOptionDownOut());
-@btime AsianPrice1=pricer(Model,spotData1,mc,AsianData1,AsianFloatingStrikeOption());
+@btime AsianPrice1=pricer(Model,spotData1,mc,AsianFloatingStrikeData,AsianFloatingStrikeOption());
+@btime AsianPrice2=pricer(Model,spotData1,mc,AsianFixedStrikeData,AsianFixedStrikeOption());
+
+optionDatas=[FwdData,EUData,AMData,BarrierData,AsianFloatingStrikeData,AsianFixedStrikeData]
+options=[Forward(),EuropeanOption(),AmericanOption(),BarrierOptionDownOut(),AsianFloatingStrikeOption(),AsianFixedStrikeOption()]
+@btime (FwdPrice,EuPrice,AMPrice,BarrierPrice,AsianPrice1,AsianPrice2)=pricer(Model,spotData1,mc,optionDatas,options);
