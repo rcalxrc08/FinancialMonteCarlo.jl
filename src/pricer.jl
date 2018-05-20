@@ -25,11 +25,7 @@ end
 
 function pricer(mcProcess::AbstractMonteCarloProcess,spotData::equitySpotData,mcBaseData::MonteCarloBaseData,optionDatas::Array{OptionData},payoffs1::Array{PayoffMC},isCalls::BitArray{1}=trues(length(optionDatas)),mode1::MonteCarloMode=standard)
 	srand(0)
-	maxT=-1.0;
-	for optionData in optionDatas
-		T=optionData.T
-		maxT=maxT<T?T:maxT;
-	end
+	maxT=maximum([optionData.T for optionData in optionDatas])
 	r=spotData.r;
 	Nsim=mcBaseData.Nsim;
 	S=simulate(mcProcess,spotData,mcBaseData,maxT,mode1)
@@ -40,11 +36,7 @@ end
 
 function pricer(mcProcess::MonteCarloProblem,spotData::equitySpotData,mcBaseData::MonteCarloBaseData,optionDatas::Array{OptionData},payoffs1::Array{PayoffMC},isCalls::BitArray{1}=trues(length(optionDatas)),mode1::MonteCarloMode=standard)
 	srand(0)
-	maxT=-1.0;
-	for optionData in optionDatas
-		T=optionData.T
-		maxT=maxT<T?T:maxT;
-	end
+	maxT=maximum([optionData.T for optionData in optionDatas])
 	Nsim=mcBaseData.Nsim;
 	S=simulate(mcProcess,spotData,mcBaseData,maxT,mode1)
 	Prices=[mean(payoff(S,optionData,spotData,payoff1,isCall,maxT)) for (payoff1,optionData,isCall) in zip(payoffs1,optionDatas,isCalls)  ]

@@ -18,8 +18,8 @@ Where:\n
 """
 function payoff(S::Matrix{num},spotData::equitySpotData,Payoff::GeneralAmericanOption,phi::Function,T::Number) where{num<:Number}
 	S0=S[1,1];
-	Nsim=length(S[1:end,1]);
-	Nstep=length(S[1,1:end])
+	(Nsim,Nstep)=size(S)
+	Nstep-=1;
 	r=spotData.r;
 	dt=T/Nstep
 	# initialize 
@@ -35,7 +35,7 @@ function payoff(S::Matrix{num},spotData::equitySpotData,Payoff::GeneralAmericanO
 			IV=phi.(S_I);
 			#-- Continuation Value 
 			#- Linear Regression on Quadratic Form
-			A=[ones(length(S_I),1) S_I S_I.^2];
+			A=[ones(length(S_I)) S_I S_I.^2];
 			b=V[inMoneyIndexes].*exp.(-r*dt*(exerciseTimes[inMoneyIndexes]-j));
 			#MAT=A'*A;			
 			LuMat=lufact(A'*A);
