@@ -21,14 +21,22 @@ function simulate(mcProcess::AbstractMonteCarloProcess,spotData::equitySpotData,
 end
 
 include("models/utils.jl")
+
+### Ito Processes
 include("models/brownian_motion.jl")
 include("models/geometric_brownian_motion.jl")
 include("models/black_scholes.jl")
+include("models/heston.jl")
+
+### Finite Activity Levy Processes
 include("models/kou.jl")
 include("models/merton.jl")
+
+### Infinite Activity Levy Processes
 include("models/subordinated_brownian_motion.jl")
 include("models/variance_gamma.jl")
 include("models/normal_inverse_gaussian.jl")
-include("models/heston.jl")
 
+
+### Support for DiffentialEquations.jl
 include("models/diff_eq_monte_carlo.jl")
