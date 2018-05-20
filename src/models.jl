@@ -31,4 +31,4 @@ include("models/variance_gamma.jl")
 include("models/normal_inverse_gaussian.jl")
 include("models/heston.jl")
 
-include("models/diff_eq_monteCarlo.jl")
+include("models/diff_eq_monte_carlo.jl")
