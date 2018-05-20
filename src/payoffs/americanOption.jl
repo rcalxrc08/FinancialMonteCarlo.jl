@@ -29,7 +29,7 @@ function payoff(S::Matrix{num},amOptionData::AMOptionData,spotData::equitySpotDa
 	(Nsim,NStep)=size(S)
 	NStep-=1;
 	index1=round(Int,T/T1 * NStep)+1;#round(Int,T/T1 * NStep)
-	S1=view(S,1:Nsim,1:index1)
+	S1=view(S,:,1:index1)
 	payoff1=payoff(collect(S1),spotData,GeneralAmericanOption(),phi,T);
 	
 	return payoff1;

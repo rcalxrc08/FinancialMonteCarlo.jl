@@ -26,15 +26,12 @@ function payoff(S::Matrix{num},asianFixedStrikeOptionData::AsianFixedStrikeOptio
 	r=spotData.r;
 	T=asianFixedStrikeOptionData.T;
 	K=asianFixedStrikeOptionData.K;
-	NStep=length(S[1,1:end])-1
-	Nsim=length(S[1:end,1])
-	dt=T1/NStep;
-	index1=round(Int,T/dt);
-	index1=index1>NStep?Nstep+1:index1+1;
-	S1=view(S,1:Nsim,1:index1)
-	NsimTmp=length(S[1:end,end]);
+	(Nsim,NStep)=size(S)
+	NStep-=1;
+	index1=round(Int,T/T1 * NStep)+1;
+	S1=view(S,:,1:index1)
 	@inbounds f(S::Array{num})::num=(iscall*(mean(S)-K)>0.0)?(iscall*(mean(S)-K)):0.0;		
-	@inbounds payoff2=[f(S1[i,1:end]) for i in 1:NsimTmp];
+	@inbounds payoff2=[f(S1[i,1:end]) for i in 1:Nsim];
 	
 	return payoff2*exp(-r*T);
 end
