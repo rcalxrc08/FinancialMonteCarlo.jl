@@ -1,4 +1,4 @@
-type BarrierOptionDownOut<:PayoffMC end
+type BarrierOptionDownOut<:BarrierPayoff end
 
 struct BarrierOptionData<:OptionData
 	T::Float64

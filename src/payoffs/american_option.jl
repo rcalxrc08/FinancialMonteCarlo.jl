@@ -1,11 +1,6 @@
-type AmericanOption<:PayoffMC end
+type AmericanOption<:AmericanPayoff end
 
-struct AMOptionData<:AbstractEuropeanOptionData
-	T::Float64
-	K::Float64
-end
-
-export AmericanOption,AMOptionData;
+export AmericanOption;
 
 """
 Payoff computation from MonteCarlo paths

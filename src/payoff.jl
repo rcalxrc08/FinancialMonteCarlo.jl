@@ -4,6 +4,9 @@ abstract type PayoffMC end
 abstract type OptionData end
 
 abstract type EuropeanPayoff<:PayoffMC end
+abstract type AmericanPayoff<:PayoffMC end
+abstract type BarrierPayoff<:PayoffMC end
+abstract type AsianPayoff<:PayoffMC end
 
 abstract type AbstractEuropeanOptionData<:OptionData end
 

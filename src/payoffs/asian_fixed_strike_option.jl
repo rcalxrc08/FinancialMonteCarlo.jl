@@ -1,4 +1,4 @@
-type AsianFixedStrikeOption<:PayoffMC end
+type AsianFixedStrikeOption<:AsianPayoff end
 
 struct AsianFixedStrikeOptionData<:OptionData
 	T::Float64
