@@ -5,11 +5,15 @@ export SubordinatedBrownianMotion;
 function simulate(mcProcess::SubordinatedBrownianMotion,spotData::equitySpotData,mcBaseData::MonteCarloBaseData,T::Float64,dt_s::Array{Float64,2},monteCarloMode::MonteCarloMode=standard)
 	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;
-	if(length(mcBaseData.param)!=2)
-		error("Brownian Subordinator needs 2 parameters")
-	end
 	drift=mcBaseData.param["drift"];
 	sigma=mcBaseData.param["sigma"];
+	if(length(mcBaseData.param)!=2)
+		error("Brownian Subordinator needs 2 parameters")
+	elseif sigma<=0.0
+		error("Cannot support negative volatility")
+	elseif T<=0.0
+		error("Final time must be positive");
+	end
 	isDualZero=drift*sigma*dt_s[1,1]*0.0;
 	X=Matrix{typeof(isDualZero)}(Nsim,Nstep+1);
 	X[:,1]=isDualZero;
