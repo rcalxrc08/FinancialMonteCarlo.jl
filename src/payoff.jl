@@ -18,7 +18,10 @@ include("payoffs/european_option.jl")
 include("payoffs/binary_european_option.jl")
 
 ### Barrier Payoffs
-include("payoffs/barrier_option.jl")
+include("payoffs/barrier_do_option.jl")
+include("payoffs/barrier_di_option.jl")
+include("payoffs/barrier_uo_option.jl")
+include("payoffs/barrier_ui_option.jl")
 include("payoffs/double_barrier_option.jl")
 
 ### American Payoffs

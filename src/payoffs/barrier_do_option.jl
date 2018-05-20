@@ -3,7 +3,7 @@ type BarrierOptionDownOut<:BarrierPayoff end
 struct BarrierOptionData<:OptionData
 	T::Float64
 	K::Float64
-	D::Float64
+	barrier::Float64
 end
 
 export BarrierOptionDownOut,BarrierOptionData;
@@ -29,10 +29,10 @@ function payoff(S::Matrix{num},barrierOptionData::BarrierOptionData,spotData::eq
 	(Nsim,NStep)=size(S)
 	NStep-=1;
 	K=barrierOptionData.K;
-	D=barrierOptionData.D;
+	barrier=barrierOptionData.barrier;
 	index1=round(Int,T/T1 * NStep)+1;
 	S1=view(S,:,1:index1)
-	@inbounds f(S::Array{num})::num=(iscall*(S[end]-K)>0.0)&&(minimum(S)>D)?iscall*(S[end]-K):0.0;		
+	@inbounds f(S::Array{num})::num=(iscall*(S[end]-K)>0.0)&&(minimum(S)>barrier)?iscall*(S[end]-K):0.0;		
 	@inbounds payoff2=[f(S1[i,:]) for i in 1:Nsim];
 	
 	return payoff2*exp(-r*T);
