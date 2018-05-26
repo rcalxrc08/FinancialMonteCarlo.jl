@@ -5,13 +5,14 @@ function simulate(mcProcess::MonteCarloProblem,spotData::equitySpotData,mcBaseDa
 	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;
 	Dt=T/Nstep
-	X0=mcProcess.prob.u0[1];
+	
 	if(length(mcBaseData.param)!=0)
 		error("Heston Model needs 0 parameters")
 	elseif T<=0.0
 		error("Final time must be positive");
 	end
-	sol = solve(mcProcess,num_monte=Nsim,parallel_type=:threads,dt=Dt,adaptive=false)
+	sol = solve(mcProcess,SOSRI(),num_monte=Nsim,parallel_type=:threads,dt=Dt,adaptive=false)
+	X0=sol.u[1].u[1];
 	if isapprox(X0,0.0)
 		S=[S0*exp.(path.u[j]) for path in sol.u, j in 1:Nstep];
 		
