@@ -3,6 +3,7 @@ type AsianFixedStrikeOption<:AsianPayoff end
 struct AsianFixedStrikeOptionData<:OptionData
 	T::Float64
 	K::Float64
+	AsianFixedStrikeOptionData(T,K)=ifelse((T<=0.0),error("Cannot have negative Time to Maturity"),ifelse((K<0.0),error("Cannot have negative Strike Price"),new(T,K)))
 end
 
 export AsianFixedStrikeOption,AsianFixedStrikeOptionData;

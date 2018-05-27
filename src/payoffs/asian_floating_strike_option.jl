@@ -2,6 +2,7 @@ type AsianFloatingStrikeOption<:AsianPayoff end
 
 struct AsianFloatingStrikeOptionData<:OptionData
 	T::Float64
+	AsianFloatingStrikeOptionData(T)=ifelse((T<=0.0),error("Cannot have negative Time to Maturity"),new(T))
 end
 
 export AsianFloatingStrikeOption,AsianFloatingStrikeOptionData;
