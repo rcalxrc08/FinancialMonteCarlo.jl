@@ -7,7 +7,7 @@ function simulate(mcProcess::MonteCarloProblem,spotData::equitySpotData,mcBaseDa
 	Dt=T/Nstep
 	
 	if(length(mcBaseData.param)!=0)
-		error("Heston Model needs 0 parameters")
+		error("Junctor for DifferentialEquations needs 0 parameters")
 	elseif T<=0.0
 		error("Final time must be positive");
 	end
