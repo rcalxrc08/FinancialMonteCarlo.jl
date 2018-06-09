@@ -10,7 +10,7 @@ function simulate(mcProcess::SubordinatedBrownianMotion,spotData::equitySpotData
 	if(length(mcBaseData.param)!=2)
 		error("Brownian Subordinator needs 2 parameters")
 	elseif sigma<=0.0
-		error("Cannot support negative volatility")
+		error("Subordinator volatility must be positive")
 	elseif T<=0.0
 		error("Final time must be positive");
 	end
