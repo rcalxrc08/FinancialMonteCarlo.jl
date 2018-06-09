@@ -2,7 +2,6 @@ type Forward<:EuropeanPayoff end
 
 struct ForwardData<:AbstractEuropeanOptionData
 	T::Float64
-	ForwardData(T)=ifelse((T<=0.0),error("Cannot have negative Time to Maturity"),new(T))
 end
 
 export Forward,ForwardData;

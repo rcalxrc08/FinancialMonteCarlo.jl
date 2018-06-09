@@ -3,7 +3,6 @@ type BinaryEuropeanOption<:EuropeanPayoff end
 struct BinaryEuropeanOptionData<:AbstractEuropeanOptionData
 	T::Float64
 	K::Float64
-	BinaryEuropeanOptionData(T,K)=ifelse((T<=0.0),error("Cannot have negative Time to Maturity"),ifelse((K<=0.0),error("Cannot have negative Strike Price"),new(T,K)))
 end
 
 export BinaryEuropeanOption,BinaryEuropeanOptionData;

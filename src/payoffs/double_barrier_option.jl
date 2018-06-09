@@ -5,7 +5,6 @@ struct DoubleBarrierOptionData<:OptionData
 	K::Float64
 	D::Float64
 	U::Float64
-	DoubleBarrierOptionData(T,K,D,U)=ifelse((T<=0.0),error("Cannot have negative Time to Maturity"),ifelse((K<=0.0),error("Cannot have negative Strike Price"),ifelse((D<=0.0),error("Cannot have negative Low Barrier Price"),ifelse((U<=0.0),error("Cannot have negative High Barrier Price"),new(T,K,D,U)))))
 end
 
 export DoubleBarrierOption,DoubleBarrierOptionData;

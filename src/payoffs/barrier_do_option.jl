@@ -4,7 +4,6 @@ struct BarrierOptionData<:OptionData
 	T::Float64
 	K::Float64
 	barrier::Float64
-	BarrierOptionData(T,K,barrier)=ifelse((T<=0.0),error("Cannot have negative Time to Maturity"),ifelse((K<=0.0),error("Cannot have negative Strike Price"),ifelse((barrier<=0.0),error("Cannot have negative Barrier Price"),new(T,K,barrier))))
 end
 
 export BarrierOptionDownOut,BarrierOptionData;
