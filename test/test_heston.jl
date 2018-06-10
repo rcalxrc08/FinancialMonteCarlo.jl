@@ -1,4 +1,4 @@
-using BenchmarkTools, MonteCarlo;
+using Base.Test, MonteCarlo;
 @show "HestonModel"
 S0=100.0;
 K=100.0;
@@ -36,7 +36,7 @@ Model=HestonProcess();
 @show AsianPrice1=pricer(Model,spotData1,mc,AsianData1,AsianFloatingStrikeOption());
 @show AsianPrice2=pricer(Model,spotData1,mc,AsianData2,AsianFixedStrikeOption());
 
-@assert abs(FwdPrice-98.72567723404445)<toll
-@assert abs(EuPrice-17.62536090688433)<toll
-@assert abs(BarrierPrice-11.38748933756886)<toll
-@assert abs(AsianPrice1-9.762160560168732)<toll
+@test abs(FwdPrice-98.72567723404445)<toll
+@test abs(EuPrice-17.62536090688433)<toll
+@test abs(BarrierPrice-11.38748933756886)<toll
+@test abs(AsianPrice1-9.762160560168732)<toll

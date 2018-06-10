@@ -1,4 +1,4 @@
-using BenchmarkTools, MonteCarlo;
+using Base.Test, MonteCarlo;
 @show "Black Scholes Model"
 S0=100.0;
 K=100.0;
@@ -31,8 +31,8 @@ Model=BlackScholesProcess();
 @show AsianPrice1=pricer(Model,spotData1,mc,AsianFloatingStrikeData,AsianFloatingStrikeOption());
 @show AsianPrice2=pricer(Model,spotData1,mc,AsianFixedStrikeData,AsianFixedStrikeOption());
 
-@assert abs(FwdPrice-99.1078451563562)<toll
-@assert abs(EuPrice-8.43005524824866)<toll
-@assert abs(AmPrice-8.450489415187354)<toll
-@assert abs(BarrierPrice-7.5008664470880735)<toll
-@assert abs(AsianPrice1-4.774451704549382)<toll
+@test abs(FwdPrice-99.1078451563562)<toll
+@test abs(EuPrice-8.43005524824866)<toll
+@test abs(AmPrice-8.450489415187354)<toll
+@test abs(BarrierPrice-7.5008664470880735)<toll
+@test abs(AsianPrice1-4.774451704549382)<toll

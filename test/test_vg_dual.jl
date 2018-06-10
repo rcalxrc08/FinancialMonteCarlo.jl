@@ -1,4 +1,4 @@
-using BenchmarkTools, DualNumbers,MonteCarlo
+using Base.Test, DualNumbers,MonteCarlo
 @show "VarianceGammaProcess"
 S0=100.0;
 K=100.0;
@@ -32,7 +32,7 @@ Model=VarianceGammaProcess();
 @show BarrierPrice=pricer(Model,spotData1,mc,BarrierData,BarrierOptionDownOut());
 @show AsianPrice=pricer(Model,spotData1,mc,AsianData,AsianFloatingStrikeOption());
 
-@assert abs(FwdPrice-97.94751460264095)<toll
-@assert abs(EuPrice-7.738298817933206)<toll
-@assert abs(BarrierPrice-6.886023820038332)<toll
-@assert abs(AsianPrice-4.414948846776423)<toll
+@test abs(FwdPrice-97.94751460264095)<toll
+@test abs(EuPrice-7.738298817933206)<toll
+@test abs(BarrierPrice-6.886023820038332)<toll
+@test abs(AsianPrice-4.414948846776423)<toll

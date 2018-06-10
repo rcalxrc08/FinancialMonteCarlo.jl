@@ -1,4 +1,4 @@
-using BenchmarkTools, MonteCarlo;
+using Base.Test, MonteCarlo;
 @show "MertonProcess"
 S0=100.0;
 K=100.0;
@@ -32,7 +32,7 @@ Model=MertonProcess();
 @show BarrierPrice=pricer(Model,spotData1,mc,BarrierData,BarrierOptionDownOut());
 @show AsianPrice=pricer(Model,spotData1,mc,AsianData,AsianFloatingStrikeOption());
 
-@assert abs(FwdPrice-99.1188767166039)<toll
-@assert abs(EuPrice-9.084327245917533)<toll
-@assert abs(BarrierPrice-7.880881290426765)<toll
-@assert abs(AsianPrice-5.129020349580892)<toll
+@test abs(FwdPrice-99.1188767166039)<toll
+@test abs(EuPrice-9.084327245917533)<toll
+@test abs(BarrierPrice-7.880881290426765)<toll
+@test abs(AsianPrice-5.129020349580892)<toll

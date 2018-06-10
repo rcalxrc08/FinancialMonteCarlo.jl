@@ -1,4 +1,4 @@
-using BenchmarkTools, MonteCarlo;
+using Base.Test, MonteCarlo;
 @show "KouModel"
 S0=100.0;
 K=100.0;
@@ -35,7 +35,7 @@ Model=KouProcess();
 @show AsianPrice1=pricer(Model,spotData1,mc,AsianData1,AsianFloatingStrikeOption());
 @show AsianPrice2=pricer(Model,spotData1,mc,AsianData2,AsianFixedStrikeOption());
 
-@assert abs(FwdPrice-99.41332633109904)<toll
-@assert abs(EuPrice-10.347332240535199)<toll
-@assert abs(BarrierPrice-8.860123655599818)<toll
-@assert abs(AsianPrice1-5.81798437145069)<toll
+@test abs(FwdPrice-99.41332633109904)<toll
+@test abs(EuPrice-10.347332240535199)<toll
+@test abs(BarrierPrice-8.860123655599818)<toll
+@test abs(AsianPrice1-5.81798437145069)<toll

@@ -1,8 +1,19 @@
 type AsianFixedStrikeOption<:AsianPayoff end
 
-struct AsianFixedStrikeOptionData<:OptionData
-	T::Float64
-	K::Float64
+struct AsianFixedStrikeOptionData{T1,T2<:Number}<:OptionData
+	T::T1
+	K::T2
+	function AsianFixedStrikeOptionData(T::T1,K::T2) where {T1, T2 <: Number}
+        if T <= 0.0
+            error("Time to Maturity must be positive")
+        elseif K <= 0.0
+            error("Strike Price must be positive")
+        else
+		
+            return new{T1,T2}(T,K)
+        end
+    end
+
 end
 
 export AsianFixedStrikeOption,AsianFixedStrikeOptionData;

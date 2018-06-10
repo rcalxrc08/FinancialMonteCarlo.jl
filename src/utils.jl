@@ -1,10 +1,17 @@
 using DifferentialEquations
 
 struct equitySpotData{T1,T2,T3<:Number}
-	S0::T1
-	r::T2
-	d::T3
-end
+    S0::T1
+    r::T2
+    d::T3
+    function equitySpotData(S0::T1,r::T2,d::T3) where {T1, T2, T3 <: Number}
+        if S0 <= 0.0
+            error("Spot price cannot be negative")
+        else
+            return new{T1,T2,T3}(S0,r,d)
+        end
+    end
+end 
 
 @enum MonteCarloMode standard=1 antithetic=2
 
