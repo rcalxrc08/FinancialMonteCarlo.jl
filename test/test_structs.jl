@@ -1,5 +1,5 @@
 using MonteCarlo
-@show "VarianceGammaProcess"
+@show "Test Structs Building"
 S0=100.0;
 K=100.0;
 Kneg=-100.0;
