@@ -3,6 +3,15 @@ type EuropeanOption<:EuropeanPayoff end
 struct EUOptionData<:AbstractEuropeanOptionData
 	T::Float64
 	K::Float64
+	function EUOptionData(T::Float64,K::Float64)
+        if T <= 0.0
+            error("Time to Maturity must be positive")
+        elseif K <= 0.0
+            error("Strike Price must be positive")
+        else
+            return new(T,K)
+        end
+    end
 end
 
 export EuropeanOption,EUOptionData;

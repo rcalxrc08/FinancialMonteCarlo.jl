@@ -2,6 +2,13 @@ type Forward<:EuropeanPayoff end
 
 struct ForwardData<:AbstractEuropeanOptionData
 	T::Float64
+	function ForwardData(T::Float64)
+        if T <= 0.0
+            error("Time to Maturity must be positive")
+        else
+            return new(T)
+        end
+    end
 end
 
 export Forward,ForwardData;

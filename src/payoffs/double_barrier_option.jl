@@ -5,6 +5,19 @@ struct DoubleBarrierOptionData<:OptionData
 	K::Float64
 	D::Float64
 	U::Float64
+	function DoubleBarrierOptionData(T::Float64,K::Float64,D::Float64,U::Float64)
+        if T <= 0.0
+            error("Time to Maturity must be positive")
+        elseif K <= 0.0
+            error("Strike Price must be positive")
+        elseif D <= 0.0
+            error("Low Barrier must be positive")
+        elseif U <= 0.0
+            error("High Barrier must be positive")
+        else
+            return new(T,K,D,U)
+        end
+    end
 end
 
 export DoubleBarrierOption,DoubleBarrierOptionData;

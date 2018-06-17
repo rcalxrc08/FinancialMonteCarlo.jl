@@ -4,6 +4,17 @@ struct BarrierOptionData<:OptionData
 	T::Float64
 	K::Float64
 	barrier::Float64
+	function BarrierOptionData(T::Float64,K::Float64,D::Float64,U::Float64)
+        if T <= 0.0
+            error("Time to Maturity must be positive")
+        elseif K <= 0.0
+            error("Strike Price must be positive")
+        elseif barrier <= 0.0
+            error("Barrier must be positive")
+        else
+            return new(T,K,barrier)
+        end
+    end
 end
 
 export BarrierOptionDownOut,BarrierOptionData;

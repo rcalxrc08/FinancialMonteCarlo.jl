@@ -2,6 +2,13 @@ type AsianFloatingStrikeOption<:AsianPayoff end
 
 struct AsianFloatingStrikeOptionData<:OptionData
 	T::Float64
+	function AsianFloatingStrikeOptionData(T::Float64,K::Float64)
+        if T <= 0.0
+            error("Time to Maturity must be positive")
+        else
+            return new(T)
+        end
+    end
 end
 
 export AsianFloatingStrikeOption,AsianFloatingStrikeOptionData;
