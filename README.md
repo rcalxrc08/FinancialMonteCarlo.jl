@@ -1,12 +1,9 @@
 # MonteCarlo
-[![Build Status](https://travis-ci.org/rcalxrc08/MonteCarlo.jl.svg?branch=master)](https://travis-ci.org/rcalxrc08/MonteCarlo.jl)
-[![MonteCarlo](http://pkg.julialang.org/badges/MonteCarlo_0.5.svg)](http://pkg.julialang.org/detail/MonteCarlo)
-[![MonteCarlo](http://pkg.julialang.org/badges/MonteCarlo_0.6.svg)](http://pkg.julialang.org/detail/MonteCarlo)
-[![Appveyor Build Status](https://ci.appveyor.com/api/projects/status/147ulk4et2sim293?svg=true)](https://ci.appveyor.com/project/rcalxrc08/MonteCarlo-jl)
-[![codecov](https://codecov.io/gh/rcalxrc08/MonteCarlo.jl/branch/julia-0.5/graph/badge.svg)](https://codecov.io/gh/rcalxrc08/MonteCarlo.jl/branch/julia-0.5)
-##### This is a Julia package containing some useful Financial function for Pricing and Risk Management under the Black and Scholes Model.
-###### The syntax is the same of the Matlab Financial Toolbox.
-It currently contains the following functions:
+[![pipeline status](https://gitlab.com/rcalxrc08/MonteCarlo.jl/badges/master/pipeline.svg)](https://gitlab.com/rcalxrc08/Example.jl/commits/master)
+[![coverage report](https://gitlab.com/rcalxrc08/MonteCarlo.jl/badges/master/coverage.svg)](https://gitlab.com/rcalxrc08/Example.jl/commits/master)
+##### This is a Julia package containing some useful Financial function for Pricing and Risk Management for Equity products.
+
+It currently contains the following capabilities:
 
 - blsprice : Black & Scholes Price for European Options.
 - blkprice : Black Price for European Options.
@@ -21,23 +18,15 @@ It currently contains the following functions:
 - blsimpv  : Black & Scholes Implied Volatility for European Options (using [Brent Method](http://blog.mmast.net/brent-julia)).
 - blkimpv  : Black Implied Volatility for European Options (using [Brent Method](http://blog.mmast.net/brent-julia)).
 
-Currently supports classical numerical input, and other less common like:
+Currently supports [Dual Numbers](https://github.com/JuliaDiff/DualNumbers.jl) and [ForwardDiff](https://github.com/JuliaDiff/ForwardDiff.jl)
+for Automatic Differentiation.
 
-- Complex Numbers
-- [Dual Numbers](https://github.com/JuliaDiff/DualNumbers.jl)
-- [HyperDual Numbers](https://github.com/JuliaDiff/HyperDualNumbers.jl)
-
-It also contains some functions that could be useful for the Dates Management:
-
-- yearfrac : fraction of years between two Dates (currently only the first seven convention of Matlab are supported).
-- daysact  : number of days between two Dates.
-
-The module is standalone.
+The module depends on [DifferentiatialEquations.jl](https://github.com/JuliaDiff/DualNumbers.jl).
 
 ## How to Install
 To install the package simply type on the Julia REPL the following:
 ```Julia
-Pkg.add("MonteCarlo")
+Pkg.clone("https://gitlab.com/rcalxrc08/MonteCarlo.jl.git")
 ```
 ## How to Test
 After the installation, to test the package type on the Julia REPL the following:
