@@ -5,23 +5,23 @@
 
 It currently contains the following capabilities:
 
-- blsprice : Black & Scholes Price for European Options.
-- blkprice : Black Price for European Options.
-- blsdelta : Black & Scholes Delta sensitivity for European Options.
-- blsgamma : Black & Scholes Gamma sensitivity for European Options.
-- blstheta : Black & Scholes Theta sensitivity for European Options.
-- blsvega  : Black & Scholes Vega sensitivity for European Options.
-- blsrho   : Black & Scholes Rho sensitivity for European Options.
-- blslambda: Black & Scholes Lambda sensitivity for European Options.
-- blspsi   : Black & Scholes Psi sensitivity for European Options.
-- blsvanna : Black & Scholes Vanna sensitivity for European Options.
-- blsimpv  : Black & Scholes Implied Volatility for European Options (using [Brent Method](http://blog.mmast.net/brent-julia)).
-- blkimpv  : Black Implied Volatility for European Options (using [Brent Method](http://blog.mmast.net/brent-julia)).
+- Support for the following Models:
+    - Black Scholes
+    - Kou
+    - Merton
+    - Normal Inverse Gaussian
+    - Variance Gamma
+    - Heston
+- Support for the following Option families:
+    - European Options 
+    - American Options
+    - Barrier Options
+    - Asian Options
+
+It also supports the pricing directly from the definition of the Stochastic Differential Equation, using the package [DifferentiatialEquations.jl](https://github.com/JuliaDiff/DualNumbers.jl).
 
 Currently supports [Dual Numbers](https://github.com/JuliaDiff/DualNumbers.jl) and [ForwardDiff](https://github.com/JuliaDiff/ForwardDiff.jl)
-for Automatic Differentiation.
-
-The module depends on [DifferentiatialEquations.jl](https://github.com/JuliaDiff/DualNumbers.jl).
+for Automatic Differentiation (where it makes sense).
 
 ## How to Install
 To install the package simply type on the Julia REPL the following:
