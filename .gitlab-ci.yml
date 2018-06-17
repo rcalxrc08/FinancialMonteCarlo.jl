@@ -31,7 +31,7 @@ before_script:
     - /usr/local/julia/bin/julia -e 'Pkg.test("MonteCarlo",coverage = true)'
   artifacts:
     paths:
-      - root/.julia
+      - /root/.julia
       expire_in: 15 mins
 
 .test_template: &build_definition
@@ -46,7 +46,7 @@ before_script:
     - /usr/local/julia/bin/julia -e 'versioninfo(); Pkg.clone(pwd()); using MonteCarlo'
   artifacts:
     paths:
-      - root/.julia
+      - /root/.julia
       expire_in: 15 mins
 
     
