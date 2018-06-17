@@ -1,4 +1,8 @@
-using Base.Test, MonteCarlo,DualNumbers;
+try 
+	using Base.Test, MonteCarlo,DualNumbers;
+catch e
+	x=0
+end
 @show "HestonModel"
 S0=100.0;
 K=100.0;

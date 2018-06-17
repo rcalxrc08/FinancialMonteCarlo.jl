@@ -1,4 +1,8 @@
-using Base.Test, DualNumbers,MonteCarlo
+try 
+	using Base.Test, DualNumbers,MonteCarlo
+catch e
+	x=0
+end
 @show "VarianceGammaProcess"
 S0=100.0;
 K=100.0;
