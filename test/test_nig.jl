@@ -1,8 +1,4 @@
-try 
-	using Base.Test, MonteCarlo;
-catch e
-	x=0
-end
+using Base.Test, MonteCarlo;
 @show "NormalInverseGaussianProcess"
 S0=100.0;
 K=100.0;

@@ -1,8 +1,4 @@
-try 
-	using Base.Test, MonteCarlo,ForwardDiff;
-catch e
-	x=0
-end
+using Base.Test, MonteCarlo,ForwardDiff;
 @show "Black Scholes Model"
 S0=100.0;
 K=100.0;

@@ -1,8 +1,4 @@
-try 
-	using Base.Test, MonteCarlo;
-catch e
-	x=0
-end
+using Base.Test, MonteCarlo;
 @show "Black Scholes Model"
 S0=100.0;
 K=100.0;

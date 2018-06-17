@@ -1,8 +1,4 @@
-try 
-	using Base.Test, DualNumbers,MonteCarlo
-catch e
-	x=0
-end
+using Base.Test, DualNumbers,MonteCarlo
 @show "KouModel"
 S0=100.0;
 K=100.0;
