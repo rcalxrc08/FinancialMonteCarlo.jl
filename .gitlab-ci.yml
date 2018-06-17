@@ -46,8 +46,8 @@ before_script:
     - /usr/local/julia/bin/julia -e 'versioninfo(); Pkg.clone(pwd()); using MonteCarlo'
   artifacts:
     paths:
-        - /root/.julia
-        expire_in: 15 mins
+      - /root/.julia
+    expire_in: 15 mins
 
     
 .test_template: &cov_definition
