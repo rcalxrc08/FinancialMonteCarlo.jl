@@ -2,7 +2,7 @@ type AsianFloatingStrikeOption<:AsianPayoff end
 
 struct AsianFloatingStrikeOptionData<:OptionData
 	T::Float64
-	function AsianFloatingStrikeOptionData(T::Float64,K::Float64)
+	function AsianFloatingStrikeOptionData(T::Float64)
         if T <= 0.0
             error("Time to Maturity must be positive")
         else
@@ -17,7 +17,7 @@ export AsianFloatingStrikeOption,AsianFloatingStrikeOptionData;
 Payoff computation from MonteCarlo paths
 
 		Payoff=payoff(S,asianFloatingStrikeOptionData,AsianFloatingStrikeOption,isCall=true)
-	
+
 Where:\n
 		S           = Paths of the Underlying.
 		asianFloatingStrikeOptionData  = Datas of the Option.
@@ -35,8 +35,8 @@ function payoff(S::Matrix{num},asianFloatingStrikeOptionData::AsianFloatingStrik
 	NStep-=1;
 	index1=round(Int,T/T1 * NStep)+1;
 	S1=view(S,:,1:index1)
-	@inbounds f(S::Array{num})::num=(iscall*(S[end]-mean(S))>0.0)?(iscall*(S[end]-mean(S))):0.0;		
+	@inbounds f(S::Array{num})::num=(iscall*(S[end]-mean(S))>0.0)?(iscall*(S[end]-mean(S))):0.0;
 	@inbounds payoff2=[f(S1[i,:]) for i in 1:Nsim];
-	
+
 	return payoff2*exp(-r*T);
 end
