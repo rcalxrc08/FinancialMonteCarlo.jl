@@ -11,6 +11,8 @@ before_script:
     # Install build dependencies
     - apt-get update && apt-get -y install cmake
     - apt-get update && apt-get -y install gcc
+    - apt-get update && apt-get -y install g++
+    - apt-get update && apt-get -y install bzip2
 
 # Below is the template to run your tests in Julia
 .test_template: &test_definition
