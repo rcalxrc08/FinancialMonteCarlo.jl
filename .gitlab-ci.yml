@@ -24,15 +24,30 @@ before_script:
   script:
     # Let's run the tests. Substitute `coverage = false` below, if you do not
     # want coverage results.
-    - /usr/local/julia/bin/julia -e 'versioninfo(); Pkg.clone(pwd()); Pkg.test("MonteCarlo",
-      coverage = true)'
+    - /usr/local/julia/bin/julia -e 'Pkg.test("MonteCarlo",coverage = true)'
     # Comment out below if you do not want coverage results.
     - /usr/local/julia/bin/julia -e 'Pkg.add("Coverage"); cd(Pkg.dir("MonteCarlo"));
       using Coverage; cl, tl = get_summary(process_folder());
       println("(", cl/tl*100, "%) covered")'
+      
+.test_template: &build_definition
+  # Uncomment below if you would like to run the tests on specific references
+  # only, such as the branches `master`, `development`, etc.
+  # only:
+  #   - master
+  #   - development
+  script:
+    # Let's run the tests. Substitute `coverage = false` below, if you do not
+    # want coverage results.
+    - /usr/local/julia/bin/julia -e 'versioninfo(); using MonteCarlo'
 
 # Name a test and select an appropriate image.
+build:0.6.2:
+  stage: build
+  image: julia:0.6.2
+  <<: *build_definition
 test:0.6.2:
+  stage: test
   image: julia:0.6.2
   <<: *test_definition
 # Windows
@@ -41,11 +56,16 @@ test:0.6.2:
 #  <<: *test_definition
 
 ## Maybe you would like to test your package against the development branch:
+build:dev:
+  stage: build
+  image: julia:latest
+  <<: *build_definition
 test:dev:
   image: julia:latest
+  stage: test
+  allow_failure: true
   # ... allowing for failures, since we are testing against the development
   # branch:
-  allow_failure: true
   <<: *test_definition
   
 #test:dev-Windows:
