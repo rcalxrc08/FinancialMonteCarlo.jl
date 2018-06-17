@@ -7,7 +7,7 @@ i=1;
 for current_test in test_list
 	println("------------------------------------------------------------")
     println("  * $(current_test) *")
-    include(current_test)
+    include(joinpath(path1,current_test))
 	println("------------------------------------------------------------")
 	if (i<length(test_list))
 		println("")
