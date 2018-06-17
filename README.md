@@ -1,6 +1,6 @@
 # MonteCarlo
-[![pipeline status](https://gitlab.com/rcalxrc08/MonteCarlo.jl/badges/master/pipeline.svg)](https://gitlab.com/rcalxrc08/Example.jl/commits/master)
-[![coverage report](https://gitlab.com/rcalxrc08/MonteCarlo.jl/badges/master/coverage.svg)](https://gitlab.com/rcalxrc08/Example.jl/commits/master)
+[![pipeline status](https://gitlab.com/rcalxrc08/MonteCarlo.jl/badges/master/pipeline.svg)](https://gitlab.com/rcalxrc08/MonteCarlo.jl/commits/master)
+[![coverage report](https://gitlab.com/rcalxrc08/MonteCarlo.jl/badges/master/coverage.svg)](https://gitlab.com/rcalxrc08/MonteCarlo.jl/commits/master)
 ##### This is a Julia package containing some useful Financial function for Pricing and Risk Management for Equity products.
 
 It currently contains the following capabilities:
@@ -34,24 +34,44 @@ After the installation, to test the package type on the Julia REPL the following
 Pkg.test("MonteCarlo")
 ```
 ## Example of Usage
-The following example is the pricing of a European Call Option with underlying varying
+The following example is the pricing of a Different Kind of Options with underlying varying
 according to the Black Scholes Model, given the implied volatility.
-After that it is possible to check the result computing the inverse of the Black Scholes formula.
 ```Julia
 #Import the Package
-using MonteCarlo
+using MonteCarlo;
+#Define Spot Datas
+S0=100.0;
+K=100.0;
+r=0.02;
+T=1.0;
+d=0.01;
+D=90.0;
+#Define MonteCarlo Parameters
+Nsim=10000;
+Nstep=30;
+#Define Model Parameters
+sigma=0.2;
+ParamDict=Dict{String,Number}("sigma"=>sigma)
+#Build the Structs
+mc=MonteCarloBaseData(ParamDict,Nsim,Nstep);
+spotData1=equitySpotData(S0,r,d);
 
-#Define input data
-spot=10;K=10;r=0.02;T=2.0;σ=0.2;d=0.01;
+#Define The Options
+FwdData=ForwardData(T)
+EUData=EUOptionData(T,K)
+AMData=AMOptionData(T,K)
+BarrierData=BarrierOptionData(T,K,D)
+AsianFloatingStrikeData=AsianFloatingStrikeOptionData(T)
+AsianFixedStrikeData=AsianFixedStrikeOptionData(T,K)
 
-#Call the function
-Price=blsprice(spot,K,r,T,σ,d)
-#Price=1.1912013169995816
+#Define the Model
+Model=BlackScholesProcess();
 
-#Check the Result
-Volatility=blsimpv(spot,K,r,T,Price,d)
-#Volatility=0.20000000000000002
+#Price
+@show FwdPrice=pricer(Model,spotData1,mc,FwdData,Forward());						
+@show EuPrice=pricer(Model,spotData1,mc,EUData,EuropeanOption());
+@show AmPrice=pricer(Model,spotData1,mc,AMData,AmericanOption());
+@show BarrierPrice=pricer(Model,spotData1,mc,BarrierData,BarrierOptionDownOut());
+@show AsianPrice1=pricer(Model,spotData1,mc,AsianFloatingStrikeData,AsianFloatingStrikeOption());
+@show AsianPrice2=pricer(Model,spotData1,mc,AsianFixedStrikeData,AsianFixedStrikeOption());
 ```
-
-### Contributors
-Thanks to [Modesto Mas](https://github.com/mmas) for the implementation of the [Brent Method](http://blog.mmast.net/brent-julia). 
