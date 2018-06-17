@@ -1,4 +1,8 @@
-using MonteCarlo
+try 
+	using MonteCarlo
+catch e
+	x=0
+end
 @show "Test Structs Building"
 S0=100.0;
 K=100.0;

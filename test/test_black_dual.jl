@@ -1,4 +1,12 @@
-using Base.Test, MonteCarlo,DualNumbers;
+try 
+	try 
+	using Base.Test, MonteCarlo,DualNumbers;
+catch e
+	x=0
+end
+catch e
+	x=0
+end
 @show "Black Scholes Model"
 S0=100.0;
 K=100.0;
