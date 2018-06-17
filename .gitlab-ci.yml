@@ -29,10 +29,6 @@ before_script:
     # Let's run the tests. Substitute `coverage = false` below, if you do not
     # want coverage results.
     - /usr/local/julia/bin/julia -e 'Pkg.test("MonteCarlo",coverage = true)'
-  artifacts:
-        paths:
-        - /root/.julia/*
-        expire_in: 20 mins
 
 .test_template: &build_definition
   # Uncomment below if you would like to run the tests on specific references
@@ -44,10 +40,6 @@ before_script:
     # Let's run the tests. Substitute `coverage = false` below, if you do not
     # want coverage results.
     - /usr/local/julia/bin/julia -e 'versioninfo(); Pkg.clone(pwd()); using MonteCarlo'
-  artifacts:
-        paths:
-        - /root/.julia/*
-        expire_in: 20 mins
     
 .test_template: &cov_definition
   # Uncomment below if you would like to run the tests on specific references
@@ -68,10 +60,13 @@ build:0.6.2:
 test:0.6.2:
   stage: test
   image: julia:0.6.2
+  <<: *build_definition
   <<: *test_definition
 coverage:0.6.2:
   stage: coverage
   image: julia:0.6.2
+  <<: *build_definition
+  <<: *test_definition
   <<: *cov_definition
 # Windows
 #test:0.6.3-Windows:
@@ -89,6 +84,7 @@ test:dev:
   allow_failure: true
   # ... allowing for failures, since we are testing against the development
   # branch:
+  <<: *build_definition
   <<: *test_definition
   
 #test:dev-Windows:
