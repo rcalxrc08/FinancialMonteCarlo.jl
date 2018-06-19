@@ -25,18 +25,18 @@ for Automatic Differentiation (where it makes sense).
 
 ## How to Install
 To install the package simply type on the Julia REPL the following:
-```Julia
+```julia
 Pkg.clone("https://gitlab.com/rcalxrc08/MonteCarlo.jl.git")
 ```
 ## How to Test
 After the installation, to test the package type on the Julia REPL the following:
-```Julia
+```julia
 Pkg.test("MonteCarlo")
 ```
 ## Example of Usage
 The following example is the pricing of a Different Kind of Options with underlying varying
 according to the Black Scholes Model, given the implied volatility.
-```Julia
+```julia
 #Import the Package
 using MonteCarlo;
 #Define Spot Datas
