@@ -28,10 +28,8 @@ before_script:
   script:
     # Let's run the tests. Substitute `coverage = false` below, if you do not
     # want coverage results.
+    - /usr/local/julia/bin/julia -e 'versioninfo(); Pkg.clone(pwd()); using MonteCarlo'
     - /usr/local/julia/bin/julia -e 'Pkg.test("MonteCarlo",coverage = true)'
-  cache:
-    paths:
-      - .julia
 
 .test_template: &build_definition
   # Uncomment below if you would like to run the tests on specific references
@@ -43,10 +41,6 @@ before_script:
     # Let's run the tests. Substitute `coverage = false` below, if you do not
     # want coverage results.
     - /usr/local/julia/bin/julia -e 'versioninfo(); Pkg.clone(pwd()); using MonteCarlo'
-  cache:
-    paths:
-      - .julia
-
     
 .test_template: &cov_definition
   # Uncomment below if you would like to run the tests on specific references
@@ -55,6 +49,8 @@ before_script:
   #   - master
   #   - development
   script:
+    - /usr/local/julia/bin/julia -e 'versioninfo(); Pkg.clone(pwd()); using MonteCarlo'
+    - /usr/local/julia/bin/julia -e 'Pkg.test("MonteCarlo",coverage = true)'
     - /usr/local/julia/bin/julia -e 'Pkg.add("Coverage"); cd(Pkg.dir("MonteCarlo"));
       using Coverage; cl, tl = get_summary(process_folder());
       println("(", cl/tl*100, "%) covered")'
@@ -67,14 +63,10 @@ build:0.6.2:
 test:0.6.2:
   stage: test
   image: julia:0.6.2
-  dependencies:
-   - build:0.6.2
   <<: *test_definition
 coverage:0.6.2:
   stage: coverage
   image: julia:0.6.2
-  dependencies:
-   - test:0.6.2
   <<: *cov_definition
 # Windows
 #test:0.6.3-Windows:
@@ -90,8 +82,6 @@ test:dev:
   image: julia:latest
   stage: test
   allow_failure: true
-  dependencies:
-   - build:dev
   # ... allowing for failures, since we are testing against the development
   # branch:
   <<: *test_definition
