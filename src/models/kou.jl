@@ -24,7 +24,7 @@ function simulate(mcProcess::KouProcess,spotData::equitySpotData,mcBaseData::Mon
 		error("positive lambda must be positive");
 	elseif lambdam<=0.0
 		error("negative lambda must be positive");
-	elseif 0<=p<=1
+	elseif !(0<=p<=1)
 		error("p must be a probability")
 	end
 
