@@ -26,6 +26,7 @@ struct MonteCarloBaseData
             error("Number of Simulations must be positive")
         elseif Nsim <= 0
             error("Number of Steps must be positive")
+		else
             return new(param,Nsim,Nstep)
         end
     end
