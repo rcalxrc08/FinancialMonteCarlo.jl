@@ -9,14 +9,14 @@ function simulate(mcProcess::MertonProcess,spotData::equitySpotData,mcBaseData::
 	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;
 	
+	if(length(mcBaseData.param)!=4)
+		error("Merton Model needs 4 parameters")
+	end
 	sigma=mcBaseData.param["sigma"];
 	lambda1=mcBaseData.param["lambda"];
 	mu1=mcBaseData.param["muJ"];
 	sigma1=mcBaseData.param["sigmaJ"];
-	
-	if(length(mcBaseData.param)!=4)
-		error("Merton Model needs 4 parameters")
-	elseif T<=0.0
+	if T<=0.0
 		error("Final time must be positive");
 	elseif lambda1<=0.0
 		error("jump intensity must be positive");

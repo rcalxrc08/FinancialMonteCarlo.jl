@@ -21,6 +21,14 @@ struct MonteCarloBaseData
 	param::Dict{String,Number}
 	Nsim::Integer
 	Nstep::Integer
+	function MonteCarloBaseData(param::Dict{String,Number},Nsim::Integer,Nstep::Integer)
+        if Nsim <= 0
+            error("Number of Simulations must be positive")
+        elseif Nsim <= 0
+            error("Number of Steps must be positive")
+            return new(param,Nsim,Nstep)
+        end
+    end
 end
 
 export MonteCarloBaseData;

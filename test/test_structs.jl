@@ -20,7 +20,8 @@ mc=MonteCarloBaseData(ParamDict,Nsim,Nstep);
 toll=0.8;
 
 spotData1=equitySpotData(S0,r,d);
-
+@test_throws(ErrorException,MonteCarloBaseData(ParamDict,-Nsim,Nstep))
+@test_throws(ErrorException,MonteCarloBaseData(ParamDict,Nsim,-Nstep))
 @test_throws(ErrorException,equitySpotData(-S0,r,d));
 #####################################################################
 #Payoff Structs Test: Negative TTM

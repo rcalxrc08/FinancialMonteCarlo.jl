@@ -8,14 +8,15 @@ function simulate(mcProcess::KouProcess,spotData::equitySpotData,mcBaseData::Mon
 	d=spotData.d;
 	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;
+	if(length(mcBaseData.param)!=5)
+		error("Kou Model needs 5 parameters")
+	end
 	sigma=mcBaseData.param["sigma"];
 	lambda1=mcBaseData.param["lambda"];
 	p=mcBaseData.param["p"];
 	lambdap=mcBaseData.param["lambdap"];
 	lambdam=mcBaseData.param["lambdam"];
-	if(length(mcBaseData.param)!=5)
-		error("Kou Model needs 5 parameters")
-	elseif T<=0.0
+	if T<=0.0
 		error("Final time must be positive");
 	elseif lambda1<=0.0
 		error("jump intensity must be positive");

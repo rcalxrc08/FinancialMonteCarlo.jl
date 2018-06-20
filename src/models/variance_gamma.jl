@@ -8,12 +8,13 @@ function simulate(mcProcess::VarianceGammaProcess,spotData::equitySpotData,mcBas
 	d=spotData.d;
 	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;
+	if(length(mcBaseData.param)!=3)
+		error("Variance Gamma Model needs 3 parameters")
+	end
 	sigma=mcBaseData.param["sigma"];
 	theta1=mcBaseData.param["theta"];
 	k1=mcBaseData.param["k"];
-	if(length(mcBaseData.param)!=3)
-		error("Variance Gamma Model needs 3 parameters")
-	elseif 1-sigma*sigma*k1/2.0-theta1*k1<=0.0
+	if 1-sigma*sigma*k1/2.0-theta1*k1<=0.0
 		error("Parameters with unfeasible values")
 	elseif k1<=0.0
 		error("k must be positive");

@@ -8,13 +8,14 @@ function simulate(mcProcess::NormalInverseGaussianProcess,spotData::equitySpotDa
 	d=spotData.d;
 	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;
-	sigma=mcBaseData.param["sigma"];
-	theta1=mcBaseData.param["theta"];
-	k1=mcBaseData.param["k"];
 	
 	if(length(mcBaseData.param)!=3)
 		error("Variance Gamma Model needs 3 parameters")
-	elseif 1.0-(sigma^2+2.0*theta1)*k1<0.0
+	end
+	sigma=mcBaseData.param["sigma"];
+	theta1=mcBaseData.param["theta"];
+	k1=mcBaseData.param["k"];
+	if 1.0-(sigma^2+2.0*theta1)*k1<0.0
 		error("Parameters with unfeasible values")
 	elseif k1<=0.0
 		error("k must be positive");

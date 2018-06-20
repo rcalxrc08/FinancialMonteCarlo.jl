@@ -5,11 +5,12 @@ export BrownianMotion;
 function simulate(mcProcess::BrownianMotion,spotData::equitySpotData,mcBaseData::MonteCarloBaseData,T::Float64,monteCarloMode::MonteCarloMode=standard)
 	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;
-	sigma=mcBaseData.param["sigma"];
-	drift=mcBaseData.param["drift"];
 	if(length(mcBaseData.param)!=2)
 		error("Brownian Motion needs 2 parameters")
-	elseif sigma<=0.0
+	end
+	sigma=mcBaseData.param["sigma"];
+	drift=mcBaseData.param["drift"];
+	if sigma<=0.0
 		error("Brownian motion volatility must be positive");
 	elseif T<=0.0
 		error("Final time must be positive");

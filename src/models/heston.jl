@@ -8,16 +8,17 @@ function simulate(mcProcess::HestonProcess,spotData::equitySpotData,mcBaseData::
 	d=spotData.d;
 	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;
+	
+	if(length(mcBaseData.param)!=6)
+		error("Heston Model needs 6 parameters")
+	end
 	sigma=mcBaseData.param["sigma"];
 	sigma_zero=mcBaseData.param["sigma_zero"];
 	lambda1=mcBaseData.param["lambda"];
 	kappa=mcBaseData.param["kappa"];
 	rho=mcBaseData.param["rho"];
 	theta=mcBaseData.param["theta"];
-	
-	if(length(mcBaseData.param)!=6)
-		error("Heston Model needs 6 parameters")
-	elseif T<=0.0
+	if T<=0.0
 		error("Final time must be positive");
 	elseif sigma_zero<=0.0
 		error("initial volatility must be positive");
