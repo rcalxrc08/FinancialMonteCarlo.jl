@@ -6,7 +6,7 @@ struct equitySpotData{T1,T2,T3<:Number}
     d::T3
     function equitySpotData(S0::T1,r::T2,d::T3) where {T1, T2, T3 <: Number}
         if S0 <= 0.0
-            error("Spot price cannot be negative")
+            error("Spot price must be positive")
         else
             return new{T1,T2,T3}(S0,r,d)
         end
@@ -24,7 +24,7 @@ struct MonteCarloBaseData
 	function MonteCarloBaseData(param::Dict{String,Number},Nsim::Integer,Nstep::Integer)
         if Nsim <= 0
             error("Number of Simulations must be positive")
-        elseif Nsim <= 0
+        elseif Nstep <= 0
             error("Number of Steps must be positive")
 		else
             return new(param,Nsim,Nstep)
