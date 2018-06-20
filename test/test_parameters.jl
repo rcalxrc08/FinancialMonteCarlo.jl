@@ -59,6 +59,7 @@ McKou4=MonteCarloBaseData(ParamDictKou4,Nsim,Nstep);
 
 
 ##### Test Merton
+@show "Test Merton Parameters"
 mu1=0.03; 
 sigma1=0.02;
 ParamDictMerton=Dict{String,Number}("sigma"=>sigma, "lambda" => lam, "muJ" => mu1, "sigmaJ" => sigma1)
@@ -68,6 +69,18 @@ McMerton=MonteCarloBaseData(ParamDictMerton,Nsim,Nstep);
 McMerton1=MonteCarloBaseData(ParamDictMerton1,Nsim,Nstep);
 McMerton2=MonteCarloBaseData(ParamDictMerton2,Nsim,Nstep);
 
-@test_throws(ErrorException,simulate(KouProcess(),spotData1,McMerton,-T));
-@test_throws(ErrorException,simulate(KouProcess(),spotData1,McMerton1,T));
-@test_throws(ErrorException,simulate(KouProcess(),spotData1,McMerton2,T));
+@test_throws(ErrorException,simulate(MertonProcess(),spotData1,McMerton,-T));
+@test_throws(ErrorException,simulate(MertonProcess(),spotData1,McMerton1,T));
+@test_throws(ErrorException,simulate(MertonProcess(),spotData1,McMerton2,T));
+
+##### Test Variance Gamma
+@show "Test Variance Gamma Parameters"
+ParamDictVG=Dict{String,Number}("sigma"=>sigma, "theta" => theta1, "k" => k1)
+ParamDictVG1=Dict{String,Number}("sigma"=>sigma, "theta" => theta1, "k" => -k1)
+ParamDictVG2=Dict{String,Number}("sigma"=>sigma, "theta" => 1000.0, "k" => k1)
+McVG=MonteCarloBaseData(ParamDictVG,Nsim,Nstep);
+McVG1=MonteCarloBaseData(ParamDictVG1,Nsim,Nstep);
+McVG2=MonteCarloBaseData(ParamDictVG2,Nsim,Nstep);
+@test_throws(ErrorException,simulate(VarianceGammaProcess(),spotData1,McVG,-T));
+@test_throws(ErrorException,simulate(VarianceGammaProcess(),spotData1,McVG1,T));
+@test_throws(ErrorException,simulate(VarianceGammaProcess(),spotData1,McVG2,T));
