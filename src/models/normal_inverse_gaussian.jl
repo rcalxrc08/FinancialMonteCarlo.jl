@@ -10,7 +10,7 @@ function simulate(mcProcess::NormalInverseGaussianProcess,spotData::equitySpotDa
 	Nstep=mcBaseData.Nstep;
 	
 	if(length(mcBaseData.param)!=3)
-		error("Variance Gamma Model needs 3 parameters")
+		error("Normal Inverse Gaussian Model needs 3 parameters")
 	end
 	sigma=mcBaseData.param["sigma"];
 	theta1=mcBaseData.param["theta"];

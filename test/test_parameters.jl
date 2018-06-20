@@ -84,3 +84,15 @@ McVG2=MonteCarloBaseData(ParamDictVG2,Nsim,Nstep);
 @test_throws(ErrorException,simulate(VarianceGammaProcess(),spotData1,McVG,-T));
 @test_throws(ErrorException,simulate(VarianceGammaProcess(),spotData1,McVG1,T));
 @test_throws(ErrorException,simulate(VarianceGammaProcess(),spotData1,McVG2,T));
+
+##### Test NIG
+@show "Test NIG Parameters"
+ParamDictNIG=Dict{String,Number}("sigma"=>sigma, "theta" => theta1, "k" => k1)
+ParamDictNIG1=Dict{String,Number}("sigma"=>sigma, "theta" => theta1, "k" => -k1)
+ParamDictNIG2=Dict{String,Number}("sigma"=>sigma, "theta" => 1000.0, "k" => k1)
+McNIG=MonteCarloBaseData(ParamDictNIG,Nsim,Nstep);
+McNIG1=MonteCarloBaseData(ParamDictNIG1,Nsim,Nstep);
+McNIG2=MonteCarloBaseData(ParamDictNIG2,Nsim,Nstep);
+@test_throws(ErrorException,simulate(NormalInverseGaussianProcess(),spotData1,McNIG,-T));
+@test_throws(ErrorException,simulate(NormalInverseGaussianProcess(),spotData1,McNIG1,T));
+@test_throws(ErrorException,simulate(NormalInverseGaussianProcess(),spotData1,McNIG2,T));
