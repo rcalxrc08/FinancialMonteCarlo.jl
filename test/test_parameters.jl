@@ -17,14 +17,41 @@ k1=0.03;
 sigma1=0.02;
 ParamDictLongest=Dict{String,Number}("sigma"=>sigma, "theta" => theta1, "k" => k1,"theta1" => theta1, "k1" => k1,"theta11" => theta1, "k11" => k1,"theta12" => theta1, "k12" => k1, "k123" => k1, "k12k" => k1)
 ParamDictNeg=Dict{String,Number}("sigma"=>-sigma)
+ParamDictBlack=Dict{String,Number}("sigma"=>sigma)
 McNeg=MonteCarloBaseData(ParamDictNeg,Nsim,Nstep);
 Mc=MonteCarloBaseData(ParamDictLongest,Nsim,Nstep);
+McBlack=MonteCarloBaseData(ParamDictBlack,Nsim,Nstep);
 toll=0.8;
 
 spotData1=equitySpotData(S0,r,d);
 
-@test_throws(ErrorException,simulate(BlackScholesProcess(),spotData1,McNeg,T));
-@test_throws(ErrorException,simulate(BlackScholesProcess(),spotData1,Mc,-T));
+
+@show "Test Parameters General"
 for type1 in concrete_types(AbstractMonteCarloProcess)
 	@test_throws(ErrorException,simulate(type1(),spotData1,Mc,T));
 end
+
+@show "Test Black Scholes Parameters"
+@test_throws(ErrorException,simulate(BlackScholesProcess(),spotData1,McNeg,T));
+@test_throws(ErrorException,simulate(BlackScholesProcess(),spotData1,McBlack,-T));
+
+@show "Test Kou Parameters"
+p=0.3; 
+lam=5.0; 
+lamp=30.0; 
+lamm=20.0;
+ParamDictKou=Dict{String,Number}("sigma"=>sigma, "lambda" => lam, "p" => p, "lambdap" => lamp, "lambdam" => lamm)
+ParamDictKou1=Dict{String,Number}("sigma"=>sigma, "lambda" => -lam, "p" => p, "lambdap" => lamp, "lambdam" => lamm)
+ParamDictKou2=Dict{String,Number}("sigma"=>sigma, "lambda" => lam, "p" => -p, "lambdap" => lamp, "lambdam" => lamm)
+ParamDictKou3=Dict{String,Number}("sigma"=>sigma, "lambda" => lam, "p" => p, "lambdap" => -lamp, "lambdam" => lamm)
+ParamDictKou4=Dict{String,Number}("sigma"=>sigma, "lambda" => lam, "p" => p, "lambdap" => lamp, "lambdam" => -lamm)
+McKou=MonteCarloBaseData(ParamDictKou,Nsim,Nstep);
+McKou1=MonteCarloBaseData(ParamDictKou1,Nsim,Nstep);
+McKou2=MonteCarloBaseData(ParamDictKou2,Nsim,Nstep);
+McKou3=MonteCarloBaseData(ParamDictKou3,Nsim,Nstep);
+McKou4=MonteCarloBaseData(ParamDictKou4,Nsim,Nstep);
+@test_throws(ErrorException,simulate(KouProcess(),spotData1,McKou,-T));
+@test_throws(ErrorException,simulate(KouProcess(),spotData1,McKou1,T));
+@test_throws(ErrorException,simulate(KouProcess(),spotData1,McKou2,T));
+@test_throws(ErrorException,simulate(KouProcess(),spotData1,McKou3,T));
+@test_throws(ErrorException,simulate(KouProcess(),spotData1,McKou4,T));
