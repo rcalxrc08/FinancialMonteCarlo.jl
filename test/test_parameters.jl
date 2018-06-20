@@ -55,3 +55,19 @@ McKou4=MonteCarloBaseData(ParamDictKou4,Nsim,Nstep);
 @test_throws(ErrorException,simulate(KouProcess(),spotData1,McKou2,T));
 @test_throws(ErrorException,simulate(KouProcess(),spotData1,McKou3,T));
 @test_throws(ErrorException,simulate(KouProcess(),spotData1,McKou4,T));
+
+
+
+##### Test Merton
+mu1=0.03; 
+sigma1=0.02;
+ParamDictMerton=Dict{String,Number}("sigma"=>sigma, "lambda" => lam, "muJ" => mu1, "sigmaJ" => sigma1)
+ParamDictMerton1=Dict{String,Number}("sigma"=>sigma, "lambda" => lam, "muJ" => mu1, "sigmaJ" => -sigma1)
+ParamDictMerton2=Dict{String,Number}("sigma"=>sigma, "lambda" => -lam, "muJ" => mu1, "sigmaJ" => sigma1)
+McMerton=MonteCarloBaseData(ParamDictMerton,Nsim,Nstep);
+McMerton1=MonteCarloBaseData(ParamDictMerton1,Nsim,Nstep);
+McMerton2=MonteCarloBaseData(ParamDictMerton2,Nsim,Nstep);
+
+@test_throws(ErrorException,simulate(KouProcess(),spotData1,McMerton,-T));
+@test_throws(ErrorException,simulate(KouProcess(),spotData1,McMerton1,T));
+@test_throws(ErrorException,simulate(KouProcess(),spotData1,McMerton2,T));
