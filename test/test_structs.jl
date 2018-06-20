@@ -23,13 +23,23 @@ spotData1=equitySpotData(S0,r,d);
 
 @test_throws(ErrorException,equitySpotData(-S0,r,d));
 #####################################################################
-#Payoff Structs
+#Payoff Structs Test: Negative TTM
 @test_throws(ErrorException,ForwardData(Tneg));
 @test_throws(ErrorException,EUOptionData(Tneg,K));
 @test_throws(ErrorException,AMOptionData(Tneg,K));
+@test_throws(ErrorException,BinaryEuropeanOptionData(Tneg,K));
 @test_throws(ErrorException,BarrierOptionData(Tneg,K,D));
 @test_throws(ErrorException,AsianFloatingStrikeOptionData(Tneg));
+@test_throws(ErrorException,AsianFixedStrikeOptionData(Tneg,K));
+@test_throws(ErrorException,DoubleBarrierOptionData(Tneg,K,K*10,D));
 
+# Negative Strike and Barriers
 @test_throws(ErrorException,EUOptionData(T,Kneg));
 @test_throws(ErrorException,AMOptionData(T,Kneg));
+@test_throws(ErrorException,BinaryEuropeanOptionData(T,Kneg));
+@test_throws(ErrorException,AsianFixedStrikeOptionData(T,Kneg));
 @test_throws(ErrorException,BarrierOptionData(T,Kneg,D));
+@test_throws(ErrorException,BarrierOptionData(T,K,Kneg));
+@test_throws(ErrorException,DoubleBarrierOptionData(T,K,K,Kneg));
+@test_throws(ErrorException,DoubleBarrierOptionData(T,Kneg,K,K));
+@test_throws(ErrorException,DoubleBarrierOptionData(T,K,Kneg,K));
