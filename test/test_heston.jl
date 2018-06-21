@@ -40,3 +40,15 @@ Model=HestonProcess();
 @test abs(EuPrice-17.62536090688433)<toll
 @test abs(BarrierPrice-11.38748933756886)<toll
 @test abs(AsianPrice1-9.762160560168732)<toll
+
+@show FwdPrice=pricer(Model,spotData1,mc,FwdData,Forward(),true,MonteCarlo.antithetic);						
+@show EuPrice=pricer(Model,spotData1,mc,EUData,EuropeanOption(),true,MonteCarlo.antithetic);
+@show AmPrice=pricer(Model,spotData1,mc,AMData,AmericanOption(),true,MonteCarlo.antithetic);
+@show BarrierPrice=pricer(Model,spotData1,mc,BarrierData,BarrierOptionDownOut(),true,MonteCarlo.antithetic);
+@show AsianPrice1=pricer(Model,spotData1,mc,AsianData1,AsianFloatingStrikeOption(),true,MonteCarlo.antithetic);
+@show AsianPrice2=pricer(Model,spotData1,mc,AsianData2,AsianFixedStrikeOption(),true,MonteCarlo.antithetic);
+tollanti=0.6
+@test abs(FwdPrice-98.72567723404445)<tollanti
+@test abs(EuPrice-17.62536090688433)<tollanti
+@test abs(BarrierPrice-11.38748933756886)<tollanti
+@test abs(AsianPrice1-9.762160560168732)<tollanti
