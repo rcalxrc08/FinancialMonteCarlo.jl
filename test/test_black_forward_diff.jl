@@ -35,3 +35,18 @@ Model=BlackScholesProcess();
 @test abs(EuPrice-8.43005524824866)<toll
 @test abs(BarrierPrice-7.5008664470880735)<toll
 @test abs(AsianPrice1-4.774451704549382)<toll
+
+
+
+@show FwdPrice=pricer(Model,spotData1,mc,FwdData,Forward(),true,MonteCarlo.antithetic);						
+@show EuPrice=pricer(Model,spotData1,mc,EUData,EuropeanOption(),true,MonteCarlo.antithetic);
+@show AmPrice=pricer(Model,spotData1,mc,AMData,AmericanOption(),true,MonteCarlo.antithetic);
+@show BarrierPrice=pricer(Model,spotData1,mc,BarrierData,BarrierOptionDownOut(),true,MonteCarlo.antithetic);
+@show AsianPrice1=pricer(Model,spotData1,mc,AsianFloatingStrikeData,AsianFloatingStrikeOption(),true,MonteCarlo.antithetic);
+@show AsianPrice2=pricer(Model,spotData1,mc,AsianFixedStrikeData,AsianFixedStrikeOption(),true,MonteCarlo.antithetic);
+tollanti=0.6;
+@test abs(FwdPrice-99.1078451563562)<tollanti
+@test abs(EuPrice-8.43005524824866)<tollanti
+@test abs(AmPrice-8.450489415187354)<tollanti
+@test abs(BarrierPrice-7.5008664470880735)<tollanti
+@test abs(AsianPrice1-4.774451704549382)<tollanti
