@@ -36,3 +36,17 @@ Model=MertonProcess();
 @test abs(EuPrice-9.084327245917533)<toll
 @test abs(BarrierPrice-7.880881290426765)<toll
 @test abs(AsianPrice-5.129020349580892)<toll
+
+
+
+
+@show FwdPrice=pricer(Model,spotData1,mc,FwdData,Forward(),true,MonteCarlo.antithetic);						
+@show EuPrice=pricer(Model,spotData1,mc,EUData,EuropeanOption(),true,MonteCarlo.antithetic);
+@show AmPrice=pricer(Model,spotData1,mc,AMData,AmericanOption(),true,MonteCarlo.antithetic);
+@show BarrierPrice=pricer(Model,spotData1,mc,BarrierData,BarrierOptionDownOut(),true,MonteCarlo.antithetic);
+@show AsianPrice=pricer(Model,spotData1,mc,AsianData,AsianFloatingStrikeOption(),true,MonteCarlo.antithetic);
+tollanti=0.6;
+@test abs(FwdPrice-99.1188767166039)<tollanti
+@test abs(EuPrice-9.084327245917533)<tollanti
+@test abs(BarrierPrice-7.880881290426765)<tollanti
+@test abs(AsianPrice-5.129020349580892)<tollanti

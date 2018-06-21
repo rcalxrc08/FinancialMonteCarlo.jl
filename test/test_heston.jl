@@ -47,7 +47,7 @@ Model=HestonProcess();
 @show BarrierPrice=pricer(Model,spotData1,mc,BarrierData,BarrierOptionDownOut(),true,MonteCarlo.antithetic);
 @show AsianPrice1=pricer(Model,spotData1,mc,AsianData1,AsianFloatingStrikeOption(),true,MonteCarlo.antithetic);
 @show AsianPrice2=pricer(Model,spotData1,mc,AsianData2,AsianFixedStrikeOption(),true,MonteCarlo.antithetic);
-tollanti=0.6
+tollanti=0.8
 @test abs(FwdPrice-98.72567723404445)<tollanti
 @test abs(EuPrice-17.62536090688433)<tollanti
 @test abs(BarrierPrice-11.38748933756886)<tollanti
