@@ -26,6 +26,8 @@ function simulate(mcProcess::HestonProcess,spotData::equitySpotData,mcBaseData::
 		error("volatility of volatility must be positive");
 	elseif abs(kappa+lambda1)<=1e-14
 		error("unfeasible parameters");
+	elseif !(-1.0<=rho<=1.0)
+		error("rho must be a correlation");
 	end
 
 	####Simulation

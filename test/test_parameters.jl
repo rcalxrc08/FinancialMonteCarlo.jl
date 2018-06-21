@@ -96,3 +96,27 @@ McNIG2=MonteCarloBaseData(ParamDictNIG2,Nsim,Nstep);
 @test_throws(ErrorException,simulate(NormalInverseGaussianProcess(),spotData1,McNIG,-T));
 @test_throws(ErrorException,simulate(NormalInverseGaussianProcess(),spotData1,McNIG1,T));
 @test_throws(ErrorException,simulate(NormalInverseGaussianProcess(),spotData1,McNIG2,T));
+
+
+##### Test Heston
+@show "Test Heston Parameters"
+sigma_zero=0.2;
+kappa=0.01;
+theta=0.03;
+lambda=0.01;
+rho=0.0;
+ParamDictHeston=Dict{String,Number}("sigma"=>sigma,"theta"=>theta, "kappa"=>kappa, "sigma_zero" => sigma_zero, "lambda" => lambda, "rho" => rho)
+ParamDictHeston1=Dict{String,Number}("sigma"=>-sigma,"theta"=>theta, "kappa"=>kappa, "sigma_zero" => sigma_zero, "lambda" => lambda, "rho" => rho)
+ParamDictHeston2=Dict{String,Number}("sigma"=>sigma,"theta"=>theta, "kappa"=>kappa, "sigma_zero" => -sigma_zero, "lambda" => lambda, "rho" => rho)
+ParamDictHeston3=Dict{String,Number}("sigma"=>sigma,"theta"=>theta, "kappa"=>kappa, "sigma_zero" => sigma_zero, "lambda" => lambda, "rho" => -5.0)
+ParamDictHeston4=Dict{String,Number}("sigma"=>sigma,"theta"=>theta, "kappa"=>1e-16, "sigma_zero" => sigma_zero, "lambda" => 1e-16, "rho" => rho)
+McHeston=MonteCarloBaseData(ParamDictHeston,Nsim,Nstep);
+McHeston1=MonteCarloBaseData(ParamDictHeston1,Nsim,Nstep);
+McHeston2=MonteCarloBaseData(ParamDictHeston2,Nsim,Nstep);
+McHeston3=MonteCarloBaseData(ParamDictHeston3,Nsim,Nstep);
+McHeston4=MonteCarloBaseData(ParamDictHeston4,Nsim,Nstep);
+@test_throws(ErrorException,simulate(HestonProcess(),spotData1,McHeston,-T));
+@test_throws(ErrorException,simulate(HestonProcess(),spotData1,McHeston1,T));
+@test_throws(ErrorException,simulate(HestonProcess(),spotData1,McHeston2,T));
+@test_throws(ErrorException,simulate(HestonProcess(),spotData1,McHeston3,T));
+@test_throws(ErrorException,simulate(HestonProcess(),spotData1,McHeston4,T));
