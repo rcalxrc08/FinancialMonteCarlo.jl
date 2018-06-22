@@ -93,6 +93,7 @@ AMData=AMOptionData(T,K)
 BarrierData=BarrierOptionData(T,K,D)
 AsianFloatingStrikeData=AsianFloatingStrikeOptionData(T)
 AsianFixedStrikeData=AsianFixedStrikeOptionData(T,K)
+doubleBarrierOptionData=DoubleBarrierOptionData(T,K,K/10.0,1.2*K)
 Model=BlackScholesProcess();
 
 @show BarrierPrice=pricer(Model,spotData1,mc,BarrierData,BarrierOptionDownIn(),false,MonteCarlo.antithetic);
@@ -100,3 +101,4 @@ Model=BlackScholesProcess();
 @show BarrierPrice=pricer(Model,spotData1,mc,BarrierData,BarrierOptionUpOut(),false,MonteCarlo.antithetic);
 @show AmBinPrice=pricer(Model,spotData1,mc,AMData,BinaryAmericanOption(),false,MonteCarlo.antithetic);
 @show EuBinPrice=pricer(Model,spotData1,mc,EUDataBin,BinaryEuropeanOption(),false,MonteCarlo.antithetic);
+@show doubleBarrier=pricer(Model,spotData1,mc,doubleBarrierOptionData,DoubleBarrierOption(),false,MonteCarlo.antithetic);
