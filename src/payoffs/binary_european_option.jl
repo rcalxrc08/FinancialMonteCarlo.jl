@@ -30,7 +30,7 @@ Where:\n
 		Payoff      = payoff of the option.
 ```
 """
-function payoff(S::Matrix{num},euOptionData::BinaryEuropeanOption,spotData::equitySpotData,Payoff::BinaryEuropeanOption,isCall::Bool=true,T1::Float64=euOptionData.T) where{num<:Number}
+function payoff(S::Matrix{num},euOptionData::BinaryEuropeanOptionData,spotData::equitySpotData,Payoff::BinaryEuropeanOption,isCall::Bool=true,T1::Float64=euOptionData.T) where{num<:Number}
 	r=spotData.r;
 	T=euOptionData.T;
 	iscall=isCall?1:-1
