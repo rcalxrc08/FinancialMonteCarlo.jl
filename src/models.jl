@@ -1,4 +1,8 @@
-abstract type AbstractMonteCarloProcess end
+import DiffEqBase.AbstractMonteCarloProblem
+
+const BaseProcess=DiffEqBase.AbstractMonteCarloProblem
+
+abstract type AbstractMonteCarloProcess <: BaseProcess end
 
 abstract type ItoProcess<:AbstractMonteCarloProcess end
 

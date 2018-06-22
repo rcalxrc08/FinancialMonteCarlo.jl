@@ -3,7 +3,7 @@ using Base.Test, MonteCarlo,DifferentialEquations;
 Nsim=10000;
 Nstep=30;
 toll=0.8;
-const dict=Dict{String,Number}()
+dict=Dict{String,Number}()
 mc=MonteCarloBaseData(dict,Nsim,Nstep);
 S0=100.0
 K=100.0;
