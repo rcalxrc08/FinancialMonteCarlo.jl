@@ -17,7 +17,7 @@ function pricer(mcProcess::BaseProcess,spotData::equitySpotData,mcBaseData::Mont
 	maxT=maximum([optionData.T for optionData in optionDatas])
 	Nsim=mcBaseData.Nsim;
 	S=simulate(mcProcess,spotData,mcBaseData,maxT,mode1)
-	Prices=[mean(payoff(S,optionData,spotData,maxT)) for (optionData) in zip(optionDatas)  ]
+	Prices=[mean(payoff(S,optionData,spotData,maxT)) for optionData in optionDatas  ]
 	
 	return Prices;
 end

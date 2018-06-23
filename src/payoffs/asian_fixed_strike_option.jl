@@ -26,7 +26,6 @@ Payoff computation from MonteCarlo paths
 Where:\n
 		S           = Paths of the Underlying.
 		asianFixedStrikeOptionData  = Datas of the Option.
-		isCall = true for Call Options, false for Put Options.
 
 		Payoff      = payoff of the option.
 ```

@@ -79,20 +79,16 @@ mc2=MonteCarloBaseData(ParamDict,Nsim+1,Nstep);
 ############## Complete Options
 
 
-FwdData=ForwardData(T)
 EUDataBin=BinaryEuropeanOptionData(T,K)
-AMData=AmericanStdOption(T,K)
+BinAMData=BinaryAmericanOption(T,K)
 BarrierDataDI=BarrierOptionDownInData(T,K,D)
 BarrierDataUI=BarrierOptionUpInData(T,K,D)
 BarrierDataUO=BarrierOptionUpOutData(T,K,D)
-AsianFloatingStrikeData=AsianFloatingStrikeOptionData(T)
-AsianFixedStrikeData=AsianFixedStrikeOptionData(T,K)
 doubleBarrierOptionDownOutData=DoubleBarrierOptionData(T,K,K/10.0,1.2*K)
-Model=BlackScholesProcess();
 
 @show BarrierPrice=pricer(Model,spotData1,mc,BarrierDataDI);
 @show BarrierPrice=pricer(Model,spotData1,mc,BarrierDataUI);
 @show BarrierPrice=pricer(Model,spotData1,mc,BarrierDataUO);
-@show AmBinPrice=pricer(Model,spotData1,mc,AMData);
+@show AmBinPrice=pricer(Model,spotData1,mc,BinAMData);
 @show EuBinPrice=pricer(Model,spotData1,mc,EUDataBin);
 @show doubleBarrier=pricer(Model,spotData1,mc,doubleBarrierOptionDownOutData);

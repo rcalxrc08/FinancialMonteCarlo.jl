@@ -28,7 +28,6 @@ Where:\n
 		S           = Paths of the Underlying.
 		barrierOptionData  = Datas of the Option.
 		BarrierOptionDownIn = Type of the Option
-		isCall = true for Call Options, false for Put Options.
 
 		Payoff      = payoff of the option.
 ```
