@@ -1,39 +1,37 @@
-type EuropeanOption<:EuropeanPayoff end
 
 struct EUOptionData<:AbstractEuropeanOptionData
 	T::Float64
 	K::Float64
-	function EUOptionData(T::Float64,K::Float64)
+	isCall::Bool
+	function EUOptionData(T::Float64,K::Float64,isCall::Bool=true)
         if T <= 0.0
             error("Time to Maturity must be positive")
         elseif K <= 0.0
             error("Strike Price must be positive")
         else
-            return new(T,K)
+            return new(T,K,isCall)
         end
     end
 end
 
-export EuropeanOption,EUOptionData;
+export EUOptionData;
 
 """
 Payoff computation from MonteCarlo paths
 
-		Payoff=payoff(S,euOptionData,EuropeanOption,isCall=true)
+		Payoff=payoff(S,euOptionData)
 	
 Where:\n
 		S           = Paths of the Underlying.
 		euOptionData  = Datas of the Option.
-		EuropeanOption = Type of the Option
-		isCall = true for Call Options, false for Put Options.
 
 		Payoff      = payoff of the option.
 ```
 """
-function payoff(S::Matrix{num},euOptionData::EUOptionData,spotData::equitySpotData,Payoff::EuropeanOption,isCall::Bool=true,T1::Float64=euOptionData.T) where{num<:Number}
+function payoff(S::Matrix{num},euOptionData::EUOptionData,spotData::equitySpotData,T1::Float64=euOptionData.T) where{num<:Number}
 	r=spotData.r;
 	T=euOptionData.T;
-	iscall=isCall?1:-1
+	iscall=euOptionData.isCall?1:-1
 	(Nsim,NStep)=size(S)
 	NStep-=1;
 	index1=round(Int,T/T1 * NStep)+1;

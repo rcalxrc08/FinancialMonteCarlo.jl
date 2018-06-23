@@ -1,34 +1,32 @@
-type AsianFloatingStrikeOption<:AsianPayoff end
 
 struct AsianFloatingStrikeOptionData<:OptionData
 	T::Float64
-	function AsianFloatingStrikeOptionData(T::Float64)
+	isCall::Bool
+	function AsianFloatingStrikeOptionData(T::Float64,isCall::Bool=true)
         if T <= 0.0
             error("Time to Maturity must be positive")
         else
-            return new(T)
+            return new(T,isCall)
         end
     end
 end
 
-export AsianFloatingStrikeOption,AsianFloatingStrikeOptionData;
+export AsianFloatingStrikeOptionData;
 
 """
 Payoff computation from MonteCarlo paths
 
-		Payoff=payoff(S,asianFloatingStrikeOptionData,AsianFloatingStrikeOption,isCall=true)
+		Payoff=payoff(S,asianFloatingStrikeOptionData,)
 
 Where:\n
 		S           = Paths of the Underlying.
 		asianFloatingStrikeOptionData  = Datas of the Option.
-		AsianFloatingStrikeOption = Type of the Option
-		isCall = true for Call Options, false for Put Options.
 
 		Payoff      = payoff of the option.
 ```
 """
-function payoff(S::Matrix{num},asianFloatingStrikeOptionData::AsianFloatingStrikeOptionData,spotData::equitySpotData,Payoff::AsianFloatingStrikeOption,isCall::Bool=true,T1::Float64=asianFloatingStrikeOptionData.T) where{num<:Number}
-	iscall=isCall?1:-1
+function payoff(S::Matrix{num},asianFloatingStrikeOptionData::AsianFloatingStrikeOptionData,spotData::equitySpotData,T1::Float64=asianFloatingStrikeOptionData.T) where{num<:Number}
+	iscall=asianFloatingStrikeOptionData.isCall?1:-1
 	r=spotData.r;
 	T=asianFloatingStrikeOptionData.T;
 	(Nsim,NStep)=size(S)

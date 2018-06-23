@@ -18,23 +18,23 @@ spotData1=equitySpotData(S0,r,d);
 
 FwdData=ForwardData(T*2.0)
 EUData=EUOptionData(T*1.1,K)
-AMData=AMOptionData(T*4.0,K)
-BarrierData=BarrierOptionData(T*0.5,K,D)
+AMData=AmericanStdOption(T*4.0,K)
+BarrierData=BarrierOptionDownOutData(T*0.5,K,D)
 AsianFloatingStrikeData=AsianFloatingStrikeOptionData(T*3.3)
 AsianFixedStrikeData=AsianFixedStrikeOptionData(T*1.2,K)
 Model=BlackScholesProcess();
 
-@show FwdPrice=pricer(Model,spotData1,mc,FwdData,Forward());						
-@show EuPrice=pricer(Model,spotData1,mc,EUData,EuropeanOption());
-@show AmPrice=pricer(Model,spotData1,mc,AMData,AmericanOption());
-@show BarrierPrice=pricer(Model,spotData1,mc,BarrierData,BarrierOptionDownOut());
-@show AsianPrice1=pricer(Model,spotData1,mc,AsianFloatingStrikeData,AsianFloatingStrikeOption());
-@show AsianPrice2=pricer(Model,spotData1,mc,AsianFixedStrikeData,AsianFixedStrikeOption());
+@show FwdPrice=pricer(Model,spotData1,mc,FwdData);						
+@show EuPrice=pricer(Model,spotData1,mc,EUData);
+@show AmPrice=pricer(Model,spotData1,mc,AMData);
+@show BarrierPrice=pricer(Model,spotData1,mc,BarrierData);
+@show AsianPrice1=pricer(Model,spotData1,mc,AsianFloatingStrikeData);
+@show AsianPrice2=pricer(Model,spotData1,mc,AsianFixedStrikeData);
 
 optionDatas=[FwdData,EUData,AMData,BarrierData,AsianFloatingStrikeData,AsianFixedStrikeData]
-options=[Forward(),EuropeanOption(),AmericanOption(),BarrierOptionDownOut(),AsianFloatingStrikeOption(),AsianFixedStrikeOption()]
-(FwdPrice,EuPrice,AMPrice,BarrierPrice,AsianPrice1,AsianPrice2)=pricer(Model,spotData1,mc,optionDatas,options);
-@btime (FwdPrice,EuPrice,AMPrice,BarrierPrice,AsianPrice1,AsianPrice2)=pricer(Model,spotData1,mc,optionDatas,options);
+
+(FwdPrice,EuPrice,AMPrice,BarrierPrice,AsianPrice1,AsianPrice2)=pricer(Model,spotData1,mc,optionDatas)
+@btime (FwdPrice,EuPrice,AMPrice,BarrierPrice,AsianPrice1,AsianPrice2)=pricer(Model,spotData1,mc,optionDatas)
 @show FwdPrice
 @show EuPrice
 @show AmPrice

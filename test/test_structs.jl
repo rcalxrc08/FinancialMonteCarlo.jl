@@ -27,20 +27,31 @@ spotData1=equitySpotData(S0,r,d);
 #Payoff Structs Test: Negative TTM
 @test_throws(ErrorException,ForwardData(Tneg));
 @test_throws(ErrorException,EUOptionData(Tneg,K));
-@test_throws(ErrorException,AMOptionData(Tneg,K));
+@test_throws(ErrorException,AmericanStdOption(Tneg,K));
+@test_throws(ErrorException,BinaryAmericanOption(Tneg,K));
 @test_throws(ErrorException,BinaryEuropeanOptionData(Tneg,K));
-@test_throws(ErrorException,BarrierOptionData(Tneg,K,D));
+@test_throws(ErrorException,BarrierOptionDownOutData(Tneg,K,D));
+@test_throws(ErrorException,BarrierOptionUpOutData(Tneg,K,D));
+@test_throws(ErrorException,BarrierOptionUpInData(Tneg,K,D));
+@test_throws(ErrorException,BarrierOptionDownInData(Tneg,K,D));
 @test_throws(ErrorException,AsianFloatingStrikeOptionData(Tneg));
 @test_throws(ErrorException,AsianFixedStrikeOptionData(Tneg,K));
 @test_throws(ErrorException,DoubleBarrierOptionData(Tneg,K,K*10,D));
 
 # Negative Strike and Barriers
 @test_throws(ErrorException,EUOptionData(T,Kneg));
-@test_throws(ErrorException,AMOptionData(T,Kneg));
+@test_throws(ErrorException,AmericanStdOption(T,Kneg));
 @test_throws(ErrorException,BinaryEuropeanOptionData(T,Kneg));
+@test_throws(ErrorException,BinaryAmericanOption(T,Kneg));
 @test_throws(ErrorException,AsianFixedStrikeOptionData(T,Kneg));
-@test_throws(ErrorException,BarrierOptionData(T,Kneg,D));
-@test_throws(ErrorException,BarrierOptionData(T,K,Kneg));
+@test_throws(ErrorException,BarrierOptionDownOutData(T,Kneg,D));
+@test_throws(ErrorException,BarrierOptionDownOutData(T,K,Kneg));
+@test_throws(ErrorException,BarrierOptionDownInData(T,Kneg,D));
+@test_throws(ErrorException,BarrierOptionDownInData(T,K,Kneg));
+@test_throws(ErrorException,BarrierOptionUpInData(T,Kneg,D));
+@test_throws(ErrorException,BarrierOptionUpInData(T,K,Kneg));
+@test_throws(ErrorException,BarrierOptionUpOutData(T,Kneg,D));
+@test_throws(ErrorException,BarrierOptionUpOutData(T,K,Kneg));
 @test_throws(ErrorException,DoubleBarrierOptionData(T,K,K,Kneg));
 @test_throws(ErrorException,DoubleBarrierOptionData(T,Kneg,K,K));
 @test_throws(ErrorException,DoubleBarrierOptionData(T,K,Kneg,K));

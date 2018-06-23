@@ -1,37 +1,16 @@
-
-type GeneralAmericanOption<:AmericanPayoff end
-
-struct AMOptionData<:AbstractEuropeanOptionData
-	T::Float64
-	K::Float64
-	function AMOptionData(T::Float64,K::Float64)
-        if T <= 0.0
-            error("Time to Maturity must be positive")
-        elseif K <= 0.0
-            error("Strike Price must be positive")
-        else
-            return new(T,K)
-        end
-    end
-end
-
-export GeneralAmericanOption,AMOptionData;
-
 """
 Payoff computation from MonteCarlo paths
 
-		Payoff=payoff(S,amOptionData,GeneralAmericanOption,isCall=true)
+		Payoff=payoff(S,amOptionData)
 	
 Where:\n
 		S           = Paths of the Underlying.
 		amOptionData  = Datas of the Option.
-		GeneralAmericanOption = Type of the Option
-		isCall = true for Call Options, false for price Options.
 
 		Payoff      = payoff of the option.
 ```
 """
-function payoff(S::Matrix{num},spotData::equitySpotData,Payoff::GeneralAmericanOption,phi::Function,T::Number) where{num<:Number}
+function payoff(S::Matrix{num},spotData::equitySpotData,phi::Function,T::Number) where{num<:Number}
 	S0=S[1,1];
 	(Nsim,Nstep)=size(S)
 	Nstep-=1;

@@ -21,16 +21,16 @@ spotData1=equitySpotData(S0,r,d);
 
 FwdData=ForwardData(T)
 EUData=EUOptionData(T,K)
-AMData=AMOptionData(T,K)
-BarrierData=BarrierOptionData(T,K,D)
+AMData=AmericanStdOption(T,K)
+BarrierData=BarrierOptionDownOutData(T,K,D)
 AsianData=AsianFloatingStrikeOptionData(T)
 Model=NormalInverseGaussianProcess();
 
-@show FwdPrice=pricer(Model,spotData1,mc,FwdData,Forward());						
-@show EuPrice=pricer(Model,spotData1,mc,EUData,EuropeanOption());
-@show AmPrice=pricer(Model,spotData1,mc,AMData,AmericanOption());
-@show BarrierPrice=pricer(Model,spotData1,mc,BarrierData,BarrierOptionDownOut());
-@show AsianPrice=pricer(Model,spotData1,mc,AsianData,AsianFloatingStrikeOption());
+@show FwdPrice=pricer(Model,spotData1,mc,FwdData);						
+@show EuPrice=pricer(Model,spotData1,mc,EUData);
+@show AmPrice=pricer(Model,spotData1,mc,AMData);
+@show BarrierPrice=pricer(Model,spotData1,mc,BarrierData);
+@show AsianPrice=pricer(Model,spotData1,mc,AsianData);
 
 @test abs(FwdPrice-97.95852227697686)<toll
 @test abs(EuPrice-7.738298817933206)<toll
@@ -40,11 +40,11 @@ Model=NormalInverseGaussianProcess();
 
 
 
-@show FwdPrice=pricer(Model,spotData1,mc,FwdData,Forward(),true,MonteCarlo.antithetic);						
-@show EuPrice=pricer(Model,spotData1,mc,EUData,EuropeanOption(),true,MonteCarlo.antithetic);
-@show AmPrice=pricer(Model,spotData1,mc,AMData,AmericanOption(),true,MonteCarlo.antithetic);
-@show BarrierPrice=pricer(Model,spotData1,mc,BarrierData,BarrierOptionDownOut(),true,MonteCarlo.antithetic);
-@show AsianPrice=pricer(Model,spotData1,mc,AsianData,AsianFloatingStrikeOption(),true,MonteCarlo.antithetic);
+@show FwdPrice=pricer(Model,spotData1,mc,FwdData,MonteCarlo.antithetic);						
+@show EuPrice=pricer(Model,spotData1,mc,EUData,MonteCarlo.antithetic);
+@show AmPrice=pricer(Model,spotData1,mc,AMData,MonteCarlo.antithetic);
+@show BarrierPrice=pricer(Model,spotData1,mc,BarrierData,MonteCarlo.antithetic);
+@show AsianPrice=pricer(Model,spotData1,mc,AsianData,MonteCarlo.antithetic);
 tollanti=0.8;
 @test abs(FwdPrice-97.95852227697686)<tollanti
 @test abs(EuPrice-7.738298817933206)<tollanti

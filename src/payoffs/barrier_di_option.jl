@@ -1,23 +1,39 @@
-type BarrierOptionDownIn<:BarrierPayoff end
 
-export BarrierOptionDownIn;
+struct BarrierOptionDownInData<:OptionData
+	T::Float64
+	K::Float64
+	barrier::Float64
+	isCall::Bool
+	function BarrierOptionDownInData(T::Float64,K::Float64,barrier::Float64,isCall::Bool=true)
+        if T <= 0.0
+            error("Time to Maturity must be positive")
+        elseif K <= 0.0
+            error("Strike Price must be positive")
+        elseif barrier <= 0.0
+            error("Barrier must be positive")
+        else
+            return new(T,K,barrier,isCall)
+        end
+    end
+end
+
+export BarrierOptionDownInData;
 
 """
 Payoff computation from MonteCarlo paths
 
-		Payoff=payoff(S,barrierOptionData,BarrierOptionDownIn,isCall=true)
+		Payoff=payoff(S,barrierOptionData,BarrierOptionDownIn,)
 	
 Where:\n
 		S           = Paths of the Underlying.
 		barrierOptionData  = Datas of the Option.
 		BarrierOptionDownIn = Type of the Option
-		isCall = true for Call Options, false for Put Options.
 
 		Payoff      = payoff of the option.
 ```
 """
-function payoff(S::Matrix{num},barrierOptionData::BarrierOptionData,spotData::equitySpotData,Payoff::BarrierOptionDownIn,isCall::Bool=true,T1::Float64=barrierOptionData.T) where{num<:Number}
-	iscall=isCall?1:-1
+function payoff(S::Matrix{num},barrierOptionData::BarrierOptionDownInData,spotData::equitySpotData,T1::Float64=barrierOptionData.T) where{num<:Number}
+	iscall=barrierOptionData.isCall?1:-1
 	r=spotData.r;
 	T=barrierOptionData.T;
 	(Nsim,NStep)=size(S)

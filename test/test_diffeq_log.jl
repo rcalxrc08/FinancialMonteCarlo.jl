@@ -27,17 +27,17 @@ monte_prob = MonteCarloProblem(prob)
 
 FwdData=ForwardData(T)
 EUData=EUOptionData(T,K)
-AMData=AMOptionData(T,K)
-BarrierData=BarrierOptionData(T,K,D)
+AMData=AmericanStdOption(T,K)
+BarrierData=BarrierOptionDownOutData(T,K,D)
 AsianFloatingStrikeData=AsianFloatingStrikeOptionData(T)
 AsianFixedStrikeData=AsianFixedStrikeOptionData(T,K)
 
 
-@show FwdPrice=pricer(monte_prob,spotData1,mc,FwdData,Forward());						
-@show EuPrice=pricer(monte_prob,spotData1,mc,EUData,EuropeanOption());
-@show AmPrice=pricer(monte_prob,spotData1,mc,AMData,AmericanOption());
-@show BarrierPrice=pricer(monte_prob,spotData1,mc,BarrierData,BarrierOptionDownOut());
-@show AsianPrice1=pricer(monte_prob,spotData1,mc,AsianFloatingStrikeData,AsianFloatingStrikeOption());
-@show AsianPrice2=pricer(monte_prob,spotData1,mc,AsianFixedStrikeData,AsianFixedStrikeOption());
+@show FwdPrice=pricer(monte_prob,spotData1,mc,FwdData);						
+@show EuPrice=pricer(monte_prob,spotData1,mc,EUData);
+@show AmPrice=pricer(monte_prob,spotData1,mc,AMData);
+@show BarrierPrice=pricer(monte_prob,spotData1,mc,BarrierData);
+@show AsianPrice1=pricer(monte_prob,spotData1,mc,AsianFloatingStrikeData);
+@show AsianPrice2=pricer(monte_prob,spotData1,mc,AsianFixedStrikeData);
 
 @test abs(FwdPrice-98.81221412555766)<toll
