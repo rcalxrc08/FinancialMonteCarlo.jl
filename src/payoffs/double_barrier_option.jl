@@ -1,4 +1,3 @@
-type DoubleBarrierOption<:BarrierPayoff end
 
 struct DoubleBarrierOptionData<:OptionData
 	T::Float64
@@ -20,23 +19,22 @@ struct DoubleBarrierOptionData<:OptionData
     end
 end
 
-export DoubleBarrierOption,DoubleBarrierOptionData;
+export DoubleBarrierOptionData;
 
 """
 Payoff computation from MonteCarlo paths
 
-		Payoff=payoff(S,doubleBarrierOptionData,DoubleBarrierOption,isCall=true)
+		Payoff=payoff(S,doubleBarrierOptionData,isCall=true)
 	
 Where:\n
 		S           = Paths of the Underlying.
 		doubleBarrierOptionData  = Datas of the Option.
-		DoubleBarrierOption = Type of the Option
 		isCall = true for Call Options, false for Put Options.
 
 		Payoff      = payoff of the option.
 ```
 """
-function payoff(S::Matrix{num},doubleBarrierOptionData::DoubleBarrierOptionData,spotData::equitySpotData,Payoff::DoubleBarrierOption,isCall::Bool=true,T1::Float64=doubleBarrierOptionData.T) where{num<:Number}
+function payoff(S::Matrix{num},doubleBarrierOptionData::DoubleBarrierOptionData,spotData::equitySpotData,isCall::Bool=true,T1::Float64=doubleBarrierOptionData.T) where{num<:Number}
 	r=spotData.r;
 	T=doubleBarrierOptionData.T;
 	iscall=isCall?1:-1

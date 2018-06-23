@@ -1,6 +1,4 @@
 
-type GeneralAmericanOption<:AmericanPayoff end
-
 struct AMOptionData<:AbstractEuropeanOptionData
 	T::Float64
 	K::Float64
@@ -15,23 +13,22 @@ struct AMOptionData<:AbstractEuropeanOptionData
     end
 end
 
-export GeneralAmericanOption,AMOptionData;
+export AMOptionData;
 
 """
 Payoff computation from MonteCarlo paths
 
-		Payoff=payoff(S,amOptionData,GeneralAmericanOption,isCall=true)
+		Payoff=payoff(S,amOptionData,isCall=true)
 	
 Where:\n
 		S           = Paths of the Underlying.
 		amOptionData  = Datas of the Option.
-		GeneralAmericanOption = Type of the Option
 		isCall = true for Call Options, false for price Options.
 
 		Payoff      = payoff of the option.
 ```
 """
-function payoff(S::Matrix{num},spotData::equitySpotData,Payoff::GeneralAmericanOption,phi::Function,T::Number) where{num<:Number}
+function payoff(S::Matrix{num},spotData::equitySpotData,phi::Function,T::Number) where{num<:Number}
 	S0=S[1,1];
 	(Nsim,Nstep)=size(S)
 	Nstep-=1;

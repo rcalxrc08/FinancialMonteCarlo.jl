@@ -1,4 +1,3 @@
-type AsianFloatingStrikeOption<:AsianPayoff end
 
 struct AsianFloatingStrikeOptionData<:OptionData
 	T::Float64
@@ -11,23 +10,22 @@ struct AsianFloatingStrikeOptionData<:OptionData
     end
 end
 
-export AsianFloatingStrikeOption,AsianFloatingStrikeOptionData;
+export AsianFloatingStrikeOptionData;
 
 """
 Payoff computation from MonteCarlo paths
 
-		Payoff=payoff(S,asianFloatingStrikeOptionData,AsianFloatingStrikeOption,isCall=true)
+		Payoff=payoff(S,asianFloatingStrikeOptionData,isCall=true)
 
 Where:\n
 		S           = Paths of the Underlying.
 		asianFloatingStrikeOptionData  = Datas of the Option.
-		AsianFloatingStrikeOption = Type of the Option
 		isCall = true for Call Options, false for Put Options.
 
 		Payoff      = payoff of the option.
 ```
 """
-function payoff(S::Matrix{num},asianFloatingStrikeOptionData::AsianFloatingStrikeOptionData,spotData::equitySpotData,Payoff::AsianFloatingStrikeOption,isCall::Bool=true,T1::Float64=asianFloatingStrikeOptionData.T) where{num<:Number}
+function payoff(S::Matrix{num},asianFloatingStrikeOptionData::AsianFloatingStrikeOptionData,spotData::equitySpotData,isCall::Bool=true,T1::Float64=asianFloatingStrikeOptionData.T) where{num<:Number}
 	iscall=isCall?1:-1
 	r=spotData.r;
 	T=asianFloatingStrikeOptionData.T;

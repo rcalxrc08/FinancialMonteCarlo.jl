@@ -1,4 +1,3 @@
-type AsianFixedStrikeOption<:AsianPayoff end
 
 struct AsianFixedStrikeOptionData{T1,T2<:Number}<:OptionData
 	T::T1
@@ -16,23 +15,22 @@ struct AsianFixedStrikeOptionData{T1,T2<:Number}<:OptionData
 
 end
 
-export AsianFixedStrikeOption,AsianFixedStrikeOptionData;
+export AsianFixedStrikeOptionData;
 
 """
 Payoff computation from MonteCarlo paths
 
-		Payoff=payoff(S,asianFixedStrikeOptionData,AsianFixedStrikeOption,isCall=true)
+		Payoff=payoff(S,asianFixedStrikeOptionData,isCall=true)
 	
 Where:\n
 		S           = Paths of the Underlying.
 		asianFixedStrikeOptionData  = Datas of the Option.
-		AsianFixedStrikeOption = Type of the Option
 		isCall = true for Call Options, false for Put Options.
 
 		Payoff      = payoff of the option.
 ```
 """
-function payoff(S::Matrix{num},asianFixedStrikeOptionData::AsianFixedStrikeOptionData,spotData::equitySpotData,Payoff::AsianFixedStrikeOption,isCall::Bool=true,T1::Float64=asianFixedStrikeOptionData.T) where{num<:Number}
+function payoff(S::Matrix{num},asianFixedStrikeOptionData::AsianFixedStrikeOptionData,spotData::equitySpotData,isCall::Bool=true,T1::Float64=asianFixedStrikeOptionData.T) where{num<:Number}
 	iscall=isCall?1:-1
 	r=spotData.r;
 	T=asianFixedStrikeOptionData.T;

@@ -21,16 +21,16 @@ spotData1=equitySpotData(S0,r,d);
 
 FwdData=ForwardData(T)
 EUData=EUOptionData(T,K)
-AMData=AMOptionData(T,K)
+AMData=AmericanStdOption(T,K)
 BarrierData=BarrierOptionData(T,K,D)
 AsianData=AsianFloatingStrikeOptionData(T)
 Model=VarianceGammaProcess();
 
-@show FwdPrice=pricer(Model,spotData1,mc,FwdData,Forward());						
-@show EuPrice=pricer(Model,spotData1,mc,EUData,EuropeanOption());
-@show AmPrice=pricer(Model,spotData1,mc,AMData,AmericanOption());
-@show BarrierPrice=pricer(Model,spotData1,mc,BarrierData,BarrierOptionDownOut());
-@show AsianPrice=pricer(Model,spotData1,mc,AsianData,AsianFloatingStrikeOption());
+@show FwdPrice=pricer(Model,spotData1,mc,FwdData);						
+@show EuPrice=pricer(Model,spotData1,mc,EUData);
+@show AmPrice=pricer(Model,spotData1,mc,AMData);
+@show BarrierPrice=pricer(Model,spotData1,mc,BarrierData);
+@show AsianPrice=pricer(Model,spotData1,mc,AsianData);
 
 @test abs(FwdPrice-97.94751460264095)<toll
 @test abs(EuPrice-7.738298817933206)<toll
@@ -41,11 +41,11 @@ Model=VarianceGammaProcess();
 
 
 
-@show FwdPrice=pricer(Model,spotData1,mc,FwdData,Forward(),true,MonteCarlo.antithetic);						
-@show EuPrice=pricer(Model,spotData1,mc,EUData,EuropeanOption(),true,MonteCarlo.antithetic);
-@show AmPrice=pricer(Model,spotData1,mc,AMData,AmericanOption(),true,MonteCarlo.antithetic);
-@show BarrierPrice=pricer(Model,spotData1,mc,BarrierData,BarrierOptionDownOut(),true,MonteCarlo.antithetic);
-@show AsianPrice=pricer(Model,spotData1,mc,AsianData,AsianFloatingStrikeOption(),true,MonteCarlo.antithetic);
+@show FwdPrice=pricer(Model,spotData1,mc,FwdData,true,MonteCarlo.antithetic);						
+@show EuPrice=pricer(Model,spotData1,mc,EUData,true,MonteCarlo.antithetic);
+@show AmPrice=pricer(Model,spotData1,mc,AMData,true,MonteCarlo.antithetic);
+@show BarrierPrice=pricer(Model,spotData1,mc,BarrierData,true,MonteCarlo.antithetic);
+@show AsianPrice=pricer(Model,spotData1,mc,AsianData,true,MonteCarlo.antithetic);
 
 @test abs(FwdPrice-97.94751460264095)<toll
 @test abs(EuPrice-7.738298817933206)<toll

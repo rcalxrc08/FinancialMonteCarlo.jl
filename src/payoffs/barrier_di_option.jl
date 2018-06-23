@@ -16,7 +16,7 @@ Where:\n
 		Payoff      = payoff of the option.
 ```
 """
-function payoff(S::Matrix{num},barrierOptionData::BarrierOptionData,spotData::equitySpotData,Payoff::BarrierOptionDownIn,isCall::Bool=true,T1::Float64=barrierOptionData.T) where{num<:Number}
+function payoff(S::Matrix{num},barrierOptionData::BarrierOptionData,spotData::equitySpotData,isCall::Bool=true,T1::Float64=barrierOptionData.T) where{num<:Number}
 	iscall=isCall?1:-1
 	r=spotData.r;
 	T=barrierOptionData.T;

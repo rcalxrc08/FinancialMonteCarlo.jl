@@ -1,4 +1,3 @@
-type BinaryEuropeanOption<:EuropeanPayoff end
 
 struct BinaryEuropeanOptionData<:AbstractEuropeanOptionData
 	T::Float64
@@ -14,7 +13,7 @@ struct BinaryEuropeanOptionData<:AbstractEuropeanOptionData
     end
 end
 
-export BinaryEuropeanOption,BinaryEuropeanOptionData;
+export BinaryEuropeanOptionData;
 
 """
 Payoff computation from MonteCarlo paths
@@ -24,13 +23,12 @@ Payoff computation from MonteCarlo paths
 Where:\n
 		S           = Paths of the Underlying.
 		euOptionData  = Datas of the Option.
-		BinaryEuropeanOption = Type of the Option
 		isCall = true for Call Options, false for Put Options.
 
 		Payoff      = payoff of the option.
 ```
 """
-function payoff(S::Matrix{num},euOptionData::BinaryEuropeanOptionData,spotData::equitySpotData,Payoff::BinaryEuropeanOption,isCall::Bool=true,T1::Float64=euOptionData.T) where{num<:Number}
+function payoff(S::Matrix{num},euOptionData::BinaryEuropeanOptionData,spotData::equitySpotData,isCall::Bool=true,T1::Float64=euOptionData.T) where{num<:Number}
 	r=spotData.r;
 	T=euOptionData.T;
 	iscall=isCall?1:-1
