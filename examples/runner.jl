@@ -1,5 +1,5 @@
 function runnerMonteCarlo(Model::AbstractMonteCarloProcess,mc::MonteCarloBaseData)
-	@show Model
+	#@show Model
 	S0=100.0;
 	K=100.0;
 	r=0.02;
@@ -12,13 +12,13 @@ function runnerMonteCarlo(Model::AbstractMonteCarloProcess,mc::MonteCarloBaseDat
 
 	FwdData=ForwardData(T)
 	EUData=EUOptionData(T,K)
-	AMData=AMOptionData(T,K)
+	AMData=AmericanStdOption(T,K)
 	BarrierData=BarrierOptionData(T,K,D)
 	AsianData=AsianFloatingStrikeOptionData(T)
 
 	optionDatas=[FwdData,EUData,AMData,BarrierData,AsianData]
-	options=[Forward(),EuropeanOption(),AmericanOption(),BarrierOptionDownOut(),AsianFloatingStrikeOption()]
-	(FwdPrice,EuPrice,AMPrice,BarrierPrice,AsianPrice)=pricer(Model,spotData1,mc,optionDatas,options);
+	
+	(FwdPrice,EuPrice,AMPrice,BarrierPrice,AsianPrice)=pricer(Model,spotData1,mc,optionDatas)
 
 	@show FwdPrice
 	@show EuPrice
@@ -31,7 +31,7 @@ end
 using DualNumbers;
 
 function runnerMonteCarloDual(Model::AbstractMonteCarloProcess,mc::MonteCarloBaseData)
-	@show Model
+	#@show Model
 	S0=dual(100.0,1.0);
 	K=100.0;
 	r=0.02;
@@ -44,13 +44,13 @@ function runnerMonteCarloDual(Model::AbstractMonteCarloProcess,mc::MonteCarloBas
 
 	FwdData=ForwardData(T)
 	EUData=EUOptionData(T,K)
-	AMData=AMOptionData(T,K)
+	AMData=AmericanStdOption(T,K)
 	BarrierData=BarrierOptionData(T,K,D)
 	AsianData=AsianFloatingStrikeOptionData(T)
 
 	optionDatas=[FwdData,EUData,AMData,BarrierData,AsianData]
-	options=[Forward(),EuropeanOption(),AmericanOption(),BarrierOptionDownOut(),AsianFloatingStrikeOption()]
-	(FwdPrice,EuPrice,AMPrice,BarrierPrice,AsianPrice)=pricer(Model,spotData1,mc,optionDatas,options);
+	
+	(FwdPrice,EuPrice,AMPrice,BarrierPrice,AsianPrice)=pricer(Model,spotData1,mc,optionDatas)
 	
 
 	@show FwdPrice
