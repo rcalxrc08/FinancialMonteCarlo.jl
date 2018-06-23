@@ -32,7 +32,7 @@ spotData1=equitySpotData(S0,r,d);
 @test_throws(ErrorException,BarrierOptionDownOutData(Tneg,K,D));
 @test_throws(ErrorException,AsianFloatingStrikeOptionData(Tneg));
 @test_throws(ErrorException,AsianFixedStrikeOptionData(Tneg,K));
-@test_throws(ErrorException,DoubleBarrierOptionDownOutData(Tneg,K,K*10,D));
+@test_throws(ErrorException,DoubleBarrierOptionData(Tneg,K,K*10,D));
 
 # Negative Strike and Barriers
 @test_throws(ErrorException,EUOptionData(T,Kneg));
@@ -41,6 +41,6 @@ spotData1=equitySpotData(S0,r,d);
 @test_throws(ErrorException,AsianFixedStrikeOptionData(T,Kneg));
 @test_throws(ErrorException,BarrierOptionDownOutData(T,Kneg,D));
 @test_throws(ErrorException,BarrierOptionDownOutData(T,K,Kneg));
-@test_throws(ErrorException,DoubleBarrierOptionDownOutData(T,K,K,Kneg));
-@test_throws(ErrorException,DoubleBarrierOptionDownOutData(T,Kneg,K,K));
-@test_throws(ErrorException,DoubleBarrierOptionDownOutData(T,K,Kneg,K));
+@test_throws(ErrorException,DoubleBarrierOptionData(T,K,K,Kneg));
+@test_throws(ErrorException,DoubleBarrierOptionData(T,Kneg,K,K));
+@test_throws(ErrorException,DoubleBarrierOptionData(T,K,Kneg,K));
