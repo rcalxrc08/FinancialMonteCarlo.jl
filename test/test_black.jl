@@ -75,6 +75,11 @@ tollPut=0.6;
 @show BarrierPrice=pricer(Model,spotData1,mc,BarrierData,BarrierOptionDownOut(),false,MonteCarlo.antithetic);
 @show AsianPrice1=pricer(Model,spotData1,mc,AsianFloatingStrikeData,AsianFloatingStrikeOption(),false,MonteCarlo.antithetic);
 @show AsianPrice2=pricer(Model,spotData1,mc,AsianFixedStrikeData,AsianFixedStrikeOption(),false,MonteCarlo.antithetic);
+
+mc2=MonteCarloBaseData(ParamDict,Nsim,Nstep+1);
+
+@test_throws(ErrorException,pricer(Model,spotData1,mc2,AsianFixedStrikeData,AsianFixedStrikeOption(),false,MonteCarlo.antithetic));
+
 tollAntiPut=0.6;
 @test abs(FwdPrice-99.1078451563562)<tollAntiPut
 @test abs(EuPrice-7.383764847221101)<tollAntiPut
