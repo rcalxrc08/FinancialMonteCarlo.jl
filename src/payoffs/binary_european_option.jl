@@ -2,7 +2,7 @@
 struct BinaryEuropeanOptionData<:AbstractEuropeanOptionData
 	T::Float64
 	K::Float64
-	isCall::Bool=true
+	isCall::Bool
 	function BinaryEuropeanOptionData(T::Float64,K::Float64,isCall::Bool=true)
         if T <= 0.0
             error("Time to Maturity must be positive")

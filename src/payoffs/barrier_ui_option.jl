@@ -3,7 +3,7 @@ struct BarrierOptionUpInData<:OptionData
 	T::Float64
 	K::Float64
 	barrier::Float64
-	isCall::Bool=true
+	isCall::Bool
 	function BarrierOptionUpInData(T::Float64,K::Float64,barrier::Float64,isCall::Bool=true)
         if T <= 0.0
             error("Time to Maturity must be positive")

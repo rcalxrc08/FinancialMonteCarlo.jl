@@ -1,7 +1,7 @@
 
 struct AsianFloatingStrikeOptionData<:OptionData
 	T::Float64
-	isCall::Bool=true
+	isCall::Bool
 	function AsianFloatingStrikeOptionData(T::Float64,isCall::Bool=true)
         if T <= 0.0
             error("Time to Maturity must be positive")

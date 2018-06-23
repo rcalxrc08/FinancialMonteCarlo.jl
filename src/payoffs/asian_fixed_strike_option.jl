@@ -2,7 +2,7 @@
 struct AsianFixedStrikeOptionData{T1,T2<:Number}<:OptionData
 	T::T1
 	K::T2
-	isCall::Bool=true
+	isCall::Bool
 	function AsianFixedStrikeOptionData(T::T1,K::T2,isCall::Bool=true) where {T1, T2 <: Number}
         if T <= 0.0
             error("Time to Maturity must be positive")

@@ -4,7 +4,7 @@ struct DoubleBarrierOptionData<:OptionData
 	K::Float64
 	D::Float64
 	U::Float64
-	isCall::Bool=true
+	isCall::Bool
 	function DoubleBarrierOptionData(T::Float64,K::Float64,D::Float64,U::Float64,isCall::Bool=true)
         if T <= 0.0
             error("Time to Maturity must be positive")
