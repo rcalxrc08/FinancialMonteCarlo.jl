@@ -76,7 +76,7 @@ tollPut=0.6;
 @show AsianPrice1=pricer(Model,spotData1,mc,AsianFloatingStrikeData,AsianFloatingStrikeOption(),false,MonteCarlo.antithetic);
 @show AsianPrice2=pricer(Model,spotData1,mc,AsianFixedStrikeData,AsianFixedStrikeOption(),false,MonteCarlo.antithetic);
 
-mc2=MonteCarloBaseData(ParamDict,Nsim,Nstep+1);
+mc2=MonteCarloBaseData(ParamDict,Nsim+1,Nstep);
 
 @test_throws(ErrorException,pricer(Model,spotData1,mc2,AsianFixedStrikeData,AsianFixedStrikeOption(),false,MonteCarlo.antithetic));
 
