@@ -2,13 +2,14 @@
 struct AMOptionData<:AbstractEuropeanOptionData
 	T::Float64
 	K::Float64
-	function AMOptionData(T::Float64,K::Float64)
+	isCall::Bool
+	function AMOptionData(T::Float64,K::Float64,isCall::Bool=true)
         if T <= 0.0
             error("Time to Maturity must be positive")
         elseif K <= 0.0
             error("Strike Price must be positive")
         else
-            return new(T,K)
+            return new(T,K,isCall)
         end
     end
 end
@@ -18,12 +19,11 @@ export AMOptionData;
 """
 Payoff computation from MonteCarlo paths
 
-		Payoff=payoff(S,amOptionData,isCall=true)
+		Payoff=payoff(S,amOptionData)
 	
 Where:\n
 		S           = Paths of the Underlying.
 		amOptionData  = Datas of the Option.
-		isCall = true for Call Options, false for price Options.
 
 		Payoff      = payoff of the option.
 ```

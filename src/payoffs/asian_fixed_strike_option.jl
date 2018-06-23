@@ -2,14 +2,15 @@
 struct AsianFixedStrikeOptionData{T1,T2<:Number}<:OptionData
 	T::T1
 	K::T2
-	function AsianFixedStrikeOptionData(T::T1,K::T2) where {T1, T2 <: Number}
+	isCall::Bool
+	function AsianFixedStrikeOptionData(T::T1,K::T2,isCall::Bool=true) where {T1, T2 <: Number}
         if T <= 0.0
             error("Time to Maturity must be positive")
         elseif K <= 0.0
             error("Strike Price must be positive")
         else
 		
-            return new{T1,T2}(T,K)
+            return new{T1,T2}(T,K,isCall)
         end
     end
 
@@ -20,18 +21,17 @@ export AsianFixedStrikeOptionData;
 """
 Payoff computation from MonteCarlo paths
 
-		Payoff=payoff(S,asianFixedStrikeOptionData,isCall=true)
+		Payoff=payoff(S,asianFixedStrikeOptionData,)
 	
 Where:\n
 		S           = Paths of the Underlying.
 		asianFixedStrikeOptionData  = Datas of the Option.
-		isCall = true for Call Options, false for Put Options.
 
 		Payoff      = payoff of the option.
 ```
 """
-function payoff(S::Matrix{num},asianFixedStrikeOptionData::AsianFixedStrikeOptionData,spotData::equitySpotData,isCall::Bool=true,T1::Float64=asianFixedStrikeOptionData.T) where{num<:Number}
-	iscall=isCall?1:-1
+function payoff(S::Matrix{num},asianFixedStrikeOptionData::AsianFixedStrikeOptionData,spotData::equitySpotData,T1::Float64=asianFixedStrikeOptionData.T) where{num<:Number}
+	iscall=asianFixedStrikeOptionData.isCall?1:-1
 	r=spotData.r;
 	T=asianFixedStrikeOptionData.T;
 	K=asianFixedStrikeOptionData.K;
