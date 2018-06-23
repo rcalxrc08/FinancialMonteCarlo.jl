@@ -19,10 +19,10 @@ spotData1=equitySpotData(S0,r,d);
 FwdData=ForwardData(T)
 EUData=EUOptionData(T,K)
 AMData=AmericanStdOption(T,K)
-BarrierData=BarrierOptionData(T,K,D)
+BarrierData=BarrierOptionDownOutData(T,K,D)
 AsianFloatingStrikeData=AsianFloatingStrikeOptionData(T)
 AsianFixedStrikeData=AsianFixedStrikeOptionData(T,K)
-Model=BlackScholesProcess();@btime FwdPrice=pricer(Model,spotData1,mc,FwdData,Forward());	
+Model=BlackScholesProcess();@btime FwdPrice=pricer(Model,spotData1,mc,FwdData);	
 					
 @btime EuPrice=pricer(Model,spotData1,mc,EUData);
 @btime AmPrice=pricer(Model,spotData1,mc,AMData);
