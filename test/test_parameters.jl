@@ -120,3 +120,42 @@ McHeston4=MonteCarloBaseData(ParamDictHeston4,Nsim,Nstep);
 @test_throws(ErrorException,simulate(HestonProcess(),spotData1,McHeston2,T));
 @test_throws(ErrorException,simulate(HestonProcess(),spotData1,McHeston3,T));
 @test_throws(ErrorException,simulate(HestonProcess(),spotData1,McHeston4,T));
+
+
+
+##### Test DifferentialEquations Junctor for Spot Price
+toll=0.8;
+dict=Dict{String,Number}()
+mcDiff=MonteCarloBaseData(dict,Nsim,Nstep);
+u0=S0;
+#Drift
+f(u,p,t) = (r-d)*u
+#Diffusion
+g(u,p,t) = sigma*u
+#Time Window
+tspan = (0.0,T)
+#Definition of the SDE
+prob = SDEProblem(f,g,u0,tspan)
+monte_prob = MonteCarloProblem(prob)
+spotData1=equitySpotData(S0,r,d);
+
+@test_throws(ErrorException,simulate(monte_prob,spotData1,Mc,T));
+Tneg=-T;
+tspanNeg = (0.0,Tneg)
+prob = SDEProblem(f,g,u0,tspanNeg)
+monte_probNeg = MonteCarloProblem(prob)
+@test_throws(ErrorException,simulate(monte_probNeg,spotData1,mcDiff,Tneg));
+
+##### Test Subordinated BrownianMotion
+dt=T/Nstep;
+sub=dt*ones(Nsim,Nstep)
+ParamDictSub=Dict{String,Number}("drift"=>0.01,"sigma"=>sigma)
+McSub=MonteCarloBaseData(ParamDictSub,Nsim,Nstep);
+@test_throws(ErrorException,simulate(SubordinatedBrownianMotion(),spotData1,McSub,-T,sub));
+@test_throws(ErrorException,simulate(SubordinatedBrownianMotion(),spotData1,Mc,T,sub));
+
+ParamDictBlackNeg=Dict{String,Number}("drift"=>0.01,"sigma"=>-sigma)
+McBlackNeg=MonteCarloBaseData(ParamDictBlackNeg,Nsim,Nstep);
+@test_throws(ErrorException,simulate(SubordinatedBrownianMotion(),spotData1,McBlackNeg,T,sub));
+subw=dt*ones(1,1);
+@test_throws(ErrorException,simulate(SubordinatedBrownianMotion(),spotData1,McSub,T,subw));

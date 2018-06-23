@@ -7,6 +7,8 @@ function simulate(mcProcess::SubordinatedBrownianMotion,spotData::equitySpotData
 	Nstep=mcBaseData.Nstep;
 	if(length(mcBaseData.param)!=2)
 		error("Brownian Subordinator needs 2 parameters")
+	elseif(size(dt_s)!=(Nsim,Nstep))
+		error("Inconsistent Time Matrix")
 	end
 	drift=mcBaseData.param["drift"];
 	sigma=mcBaseData.param["sigma"];
