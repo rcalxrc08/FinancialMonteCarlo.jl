@@ -31,8 +31,7 @@ AsianData=AsianFloatingStrikeOptionData(T)
 spotData1=equitySpotData(S0,r,d);
 
 optionDatas=[FwdData,EUData,AMData,BarrierData,AsianData]
-options=[Forward()]
 
-optPrices=pricer(monte_prob,spotData1,mc,optionDatas,options);
+optPrices=pricer(monte_prob,spotData1,mc,optionDatas);
 
 @test 0==0
