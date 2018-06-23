@@ -41,11 +41,11 @@ Model=VarianceGammaProcess();
 
 
 
-@show FwdPrice=pricer(Model,spotData1,mc,FwdData,true,MonteCarlo.antithetic);						
-@show EuPrice=pricer(Model,spotData1,mc,EUData,true,MonteCarlo.antithetic);
-@show AmPrice=pricer(Model,spotData1,mc,AMData,true,MonteCarlo.antithetic);
-@show BarrierPrice=pricer(Model,spotData1,mc,BarrierData,true,MonteCarlo.antithetic);
-@show AsianPrice=pricer(Model,spotData1,mc,AsianData,true,MonteCarlo.antithetic);
+@show FwdPrice=pricer(Model,spotData1,mc,FwdDataMonteCarlo.antithetic);						
+@show EuPrice=pricer(Model,spotData1,mc,EUDataMonteCarlo.antithetic);
+@show AmPrice=pricer(Model,spotData1,mc,AMDataMonteCarlo.antithetic);
+@show BarrierPrice=pricer(Model,spotData1,mc,BarrierDataMonteCarlo.antithetic);
+@show AsianPrice=pricer(Model,spotData1,mc,AsianDataMonteCarlo.antithetic);
 
 @test abs(FwdPrice-97.94751460264095)<toll
 @test abs(EuPrice-7.738298817933206)<toll

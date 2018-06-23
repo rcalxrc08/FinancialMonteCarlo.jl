@@ -44,12 +44,12 @@ Model=KouProcess();
 
 
 
-@show FwdPrice=pricer(Model,spotData1,mc,FwdData,true,MonteCarlo.antithetic);						
-@show EuPrice=pricer(Model,spotData1,mc,EUData,true,MonteCarlo.antithetic);
-@show AmPrice=pricer(Model,spotData1,mc,AMData,true,MonteCarlo.antithetic);
-@show BarrierPrice=pricer(Model,spotData1,mc,BarrierData,true,MonteCarlo.antithetic);
-@show AsianPrice1=pricer(Model,spotData1,mc,AsianData1,true,MonteCarlo.antithetic);
-@show AsianPrice2=pricer(Model,spotData1,mc,AsianData2,true,MonteCarlo.antithetic);
+@show FwdPrice=pricer(Model,spotData1,mc,FwdDataMonteCarlo.antithetic);						
+@show EuPrice=pricer(Model,spotData1,mc,EUDataMonteCarlo.antithetic);
+@show AmPrice=pricer(Model,spotData1,mc,AMDataMonteCarlo.antithetic);
+@show BarrierPrice=pricer(Model,spotData1,mc,BarrierDataMonteCarlo.antithetic);
+@show AsianPrice1=pricer(Model,spotData1,mc,AsianData1MonteCarlo.antithetic);
+@show AsianPrice2=pricer(Model,spotData1,mc,AsianData2MonteCarlo.antithetic);
 tollanti=0.6
 @test abs(FwdPrice-99.41332633109904)<tollanti
 @test abs(EuPrice-10.347332240535199)<tollanti

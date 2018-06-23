@@ -3,7 +3,8 @@ struct BarrierOptionDownOutData<:OptionData
 	T::Float64
 	K::Float64
 	barrier::Float64
-	function BarrierOptionDownOutData(T::Float64,K::Float64,barrier::Float64)
+	isCall::Bool=true
+	function BarrierOptionDownOutData(T::Float64,K::Float64,barrier::Float64,isCall::Bool=true)
         if T <= 0.0
             error("Time to Maturity must be positive")
         elseif K <= 0.0
@@ -11,7 +12,7 @@ struct BarrierOptionDownOutData<:OptionData
         elseif barrier <= 0.0
             error("Barrier must be positive")
         else
-            return new(T,K,barrier)
+            return new(T,K,barrier,isCall)
         end
     end
 end
@@ -21,7 +22,7 @@ export BarrierOptionDownOutData;
 """
 Payoff computation from MonteCarlo paths
 
-		Payoff=payoff(S,barrierOptionData,isCall=true)
+		Payoff=payoff(S,barrierOptionData,)
 
 Where:\n
 		S           = Paths of the Underlying.
@@ -31,8 +32,8 @@ Where:\n
 		Payoff      = payoff of the option.
 ```
 """
-function payoff(S::Matrix{num},barrierOptionData::BarrierOptionDownOutData,spotData::equitySpotData,isCall::Bool=true,T1::Float64=barrierOptionData.T) where{num<:Number}
-	iscall=isCall?1:-1
+function payoff(S::Matrix{num},barrierOptionData::BarrierOptionDownOutData,spotData::equitySpotData,T1::Float64=barrierOptionData.T) where{num<:Number}
+	iscall=barrierOptionData.isCall?1:-1
 	r=spotData.r;
 	T=barrierOptionData.T;
 	(Nsim,NStep)=size(S)

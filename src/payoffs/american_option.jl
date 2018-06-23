@@ -1,13 +1,14 @@
 struct AmericanStdOption<:AbstractEuropeanOptionData
 	T::Float64
 	K::Float64
-	function AmericanStdOption(T::Float64,K::Float64)
+	isCall::Bool=true
+	function AmericanStdOption(T::Float64,K::Float64,isCall::Bool=true)
         if T <= 0.0
             error("Time to Maturity must be positive")
         elseif K <= 0.0
             error("Strike Price must be positive")
         else
-            return new(T,K)
+            return new(T,K,isCall)
         end
     end
 end
@@ -17,7 +18,7 @@ export AmericanStdOption;
 """
 Payoff computation from MonteCarlo paths
 
-		Payoff=payoff(S,amOptionData,AmericanOption,isCall=true)
+		Payoff=payoff(S,amOptionData,AmericanOption,)
 	
 Where:\n
 		S           = Paths of the Underlying.
@@ -27,8 +28,8 @@ Where:\n
 		Payoff      = payoff of the option.
 ```
 """
-function payoff(S::Matrix{num},amOptionData::AmericanStdOption,spotData::equitySpotData,isCall::Bool=true,T1::Float64=amOptionData.T) where{num<:Number}
-	iscall=isCall?1:-1
+function payoff(S::Matrix{num},amOptionData::AmericanStdOption,spotData::equitySpotData,T1::Float64=amOptionData.T) where{num<:Number}
+	iscall=amOptionData.isCall?1:-1
 	K=amOptionData.K;
 	T=amOptionData.T;
 	phi(Sti::Number)::Number=((Sti-K)*iscall>0.0)?(Sti-K)*iscall:0.0;
