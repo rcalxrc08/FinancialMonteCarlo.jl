@@ -13,7 +13,7 @@ function runnerMonteCarlo(Model::AbstractMonteCarloProcess,mc::MonteCarloBaseDat
 	FwdData=Forward(T)
 	EUData=EuropeanOption(T,K)
 	AMData=AmericanOption(T,K)
-	BarrierData=BarrierOptionData(T,K,D)
+	BarrierData=BarrierOptionDownOut(T,K,D)
 	AsianData=AsianFloatingStrikeOption(T)
 
 	optionDatas=[FwdData,EUData,AMData,BarrierData,AsianData]
@@ -45,7 +45,7 @@ function runnerMonteCarloDual(Model::AbstractMonteCarloProcess,mc::MonteCarloBas
 	FwdData=Forward(T)
 	EUData=EuropeanOption(T,K)
 	AMData=AmericanOption(T,K)
-	BarrierData=BarrierOptionData(T,K,D)
+	BarrierData=BarrierOptionDownOut(T,K,D)
 	AsianData=AsianFloatingStrikeOption(T)
 
 	optionDatas=[FwdData,EUData,AMData,BarrierData,AsianData]
