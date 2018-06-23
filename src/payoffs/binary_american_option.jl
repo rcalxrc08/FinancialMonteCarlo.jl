@@ -13,6 +13,8 @@ struct BinaryAmericanOption<:AbstractEuropeanOptionData
     end
 end
 
+export BinaryAmericanOption;
+
 """
 Payoff computation from MonteCarlo paths
 
