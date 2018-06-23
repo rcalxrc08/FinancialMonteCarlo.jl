@@ -1,5 +1,5 @@
 
-struct Forward<:AbstractEuropeanOptionData
+struct Forward<:EuropeanPayoff
 	T::Float64
 	function Forward(T::Float64)
         if T <= 0.0

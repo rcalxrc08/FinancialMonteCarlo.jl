@@ -1,5 +1,5 @@
 
-struct BarrierOptionDownIn<:OptionData
+struct BarrierOptionDownIn<:BarrierPayoff
 	T::Float64
 	K::Float64
 	barrier::Float64
@@ -22,24 +22,24 @@ export BarrierOptionDownIn;
 """
 Payoff computation from MonteCarlo paths
 
-		Payoff=payoff(S,barrierOptionData,BarrierOptionDownIn,)
+		Payoff=payoff(S,barrierPayoff,BarrierOptionDownIn,)
 	
 Where:\n
 		S           = Paths of the Underlying.
-		barrierOptionData  = Datas of the Option.
+		barrierPayoff  = Datas of the Option.
 		BarrierOptionDownIn = Type of the Option
 
 		Payoff      = payoff of the option.
 ```
 """
-function payoff(S::Matrix{num},barrierOptionData::BarrierOptionDownIn,spotData::equitySpotData,T1::Float64=barrierOptionData.T) where{num<:Number}
-	iscall=barrierOptionData.isCall?1:-1
+function payoff(S::Matrix{num},barrierPayoff::BarrierOptionDownIn,spotData::equitySpotData,T1::Float64=barrierPayoff.T) where{num<:Number}
+	iscall=barrierPayoff.isCall?1:-1
 	r=spotData.r;
-	T=barrierOptionData.T;
+	T=barrierPayoff.T;
 	(Nsim,NStep)=size(S)
 	NStep-=1;
-	K=barrierOptionData.K;
-	U=barrierOptionData.barrier;
+	K=barrierPayoff.K;
+	U=barrierPayoff.barrier;
 	index1=round(Int,T/T1 * NStep)+1;
 	S1=view(S,:,1:index1)
 	@inbounds f(S::Array{num})::num=(iscall*(S[end]-K)>0.0)&&(minimum(S)<U)?iscall*(S[end]-K):0.0;		

@@ -1,14 +1,10 @@
 ## Payoffs
-abstract type PayoffMC end
-#### Option Data
-abstract type OptionData end
+abstract type AbstractPayoff end
 
-abstract type EuropeanPayoff<:PayoffMC end
-abstract type AmericanPayoff<:PayoffMC end
-abstract type BarrierPayoff<:PayoffMC end
-abstract type AsianPayoff<:PayoffMC end
-
-abstract type AbstractEuropeanOptionData<:OptionData end
+abstract type EuropeanPayoff<:AbstractPayoff end
+abstract type AmericanPayoff<:AbstractPayoff end
+abstract type BarrierPayoff<:AbstractPayoff end
+abstract type AsianPayoff<:AbstractPayoff end
 
 ####### Payoffs definition
 

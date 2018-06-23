@@ -1,11 +1,11 @@
 """
 Payoff computation from MonteCarlo paths
 
-		Payoff=payoff(S,amOptionData)
+		Payoff=payoff(S,amPayoff)
 	
 Where:\n
 		S           = Paths of the Underlying.
-		amOptionData  = Datas of the Option.
+		amPayoff  = Datas of the Option.
 
 		Payoff      = payoff of the option.
 ```

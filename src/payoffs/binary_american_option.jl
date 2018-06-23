@@ -1,4 +1,4 @@
-struct BinaryAmericanOption<:AbstractEuropeanOptionData
+struct BinaryAmericanOption<:AmericanPayoff
 	T::Float64
 	K::Float64
 	isCall::Bool
@@ -18,20 +18,20 @@ export BinaryAmericanOption;
 """
 Payoff computation from MonteCarlo paths
 
-		Payoff=payoff(S,amOptionData,BinaryAmericanOption,)
+		Payoff=payoff(S,amPayoff,BinaryAmericanOption,)
 	
 Where:\n
 		S           = Paths of the Underlying.
-		amOptionData  = Datas of the Option.
+		amPayoff  = Datas of the Option.
 		BinaryAmericanOption = Type of the Option
 
 		Payoff      = payoff of the option.
 ```
 """
-function payoff(S::Matrix{num},amOptionData::BinaryAmericanOption,spotData::equitySpotData,T1::Float64=amOptionData.T) where{num<:Number}
-	iscall=amOptionData.isCall?1:-1
-	K=amOptionData.K;
-	T=amOptionData.T;
+function payoff(S::Matrix{num},amPayoff::BinaryAmericanOption,spotData::equitySpotData,T1::Float64=amPayoff.T) where{num<:Number}
+	iscall=amPayoff.isCall?1:-1
+	K=amPayoff.K;
+	T=amPayoff.T;
 	(Nsim,NStep)=size(S)
 	NStep-=1;
 	index1=round(Int,T/T1 * NStep)+1;
