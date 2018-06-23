@@ -23,11 +23,11 @@ tspan = (0.0,T)
 prob = SDEProblem(f,g,u0,tspan)
 monte_prob = MonteCarloProblem(prob)
 
-FwdData=ForwardData(T)
-EUData=EUOptionData(T,K)
+FwdData=Forward(T)
+EUData=EuropeanOption(T,K)
 AMData=AMOptionData(T,K)
 BarrierData=BarrierOptionData(T,K,D)
-AsianData=AsianFloatingStrikeOptionData(T)
+AsianData=AsianFloatingStrikeOption(T)
 spotData1=equitySpotData(S0,r,d);
 
 FwdPrice=pricer(monte_prob,spotData1,mc,FwdData,Forward());

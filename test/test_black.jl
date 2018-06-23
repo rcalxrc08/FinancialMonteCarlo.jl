@@ -16,12 +16,12 @@ toll=1e-3;
 
 spotData1=equitySpotData(S0,r,d);
 
-FwdData=ForwardData(T)
-EUData=EUOptionData(T,K)
-AMData=AmericanStdOption(T,K)
-BarrierData=BarrierOptionDownOutData(T,K,D)
-AsianFloatingStrikeData=AsianFloatingStrikeOptionData(T)
-AsianFixedStrikeData=AsianFixedStrikeOptionData(T,K)
+FwdData=Forward(T)
+EUData=EuropeanOption(T,K)
+AMData=AmericanOption(T,K)
+BarrierData=BarrierOptionDownOut(T,K,D)
+AsianFloatingStrikeData=AsianFloatingStrikeOption(T)
+AsianFixedStrikeData=AsianFixedStrikeOption(T,K)
 Model=BlackScholesProcess();
 
 @show FwdPrice=pricer(Model,spotData1,mc,FwdData);						
@@ -53,11 +53,11 @@ tollanti=0.6;
 
 
 
-EUDataPut=EUOptionData(T,K,false)
-AMDataPut=AmericanStdOption(T,K,false)
-BarrierDataPut=BarrierOptionDownOutData(T,K,D,false)
-AsianFloatingStrikeDataPut=AsianFloatingStrikeOptionData(T,false)
-AsianFixedStrikeDataPut=AsianFixedStrikeOptionData(T,K,false)
+EUDataPut=EuropeanOption(T,K,false)
+AMDataPut=AmericanOption(T,K,false)
+BarrierDataPut=BarrierOptionDownOut(T,K,D,false)
+AsianFloatingStrikeDataPut=AsianFloatingStrikeOption(T,false)
+AsianFixedStrikeDataPut=AsianFixedStrikeOption(T,K,false)
 						
 @show EuPrice=pricer(Model,spotData1,mc,EUDataPut);
 @show AmPrice=pricer(Model,spotData1,mc,AMDataPut);
@@ -79,16 +79,16 @@ mc2=MonteCarloBaseData(ParamDict,Nsim+1,Nstep);
 ############## Complete Options
 
 
-EUDataBin=BinaryEuropeanOptionData(T,K)
+EUDataBin=BinaryEuropeanOption(T,K)
 BinAMData=BinaryAmericanOption(T,K)
-BarrierDataDI=BarrierOptionDownInData(T,K,D)
-BarrierDataUI=BarrierOptionUpInData(T,K,D)
-BarrierDataUO=BarrierOptionUpOutData(T,K,D)
-doubleBarrierOptionDownOutData=DoubleBarrierOptionData(T,K,K/10.0,1.2*K)
+BarrierDataDI=BarrierOptionDownIn(T,K,D)
+BarrierDataUI=BarrierOptionUpIn(T,K,D)
+BarrierDataUO=BarrierOptionUpOut(T,K,D)
+doubleBarrierOptionDownOut=DoubleBarrierOption(T,K,K/10.0,1.2*K)
 
 @show BarrierPrice=pricer(Model,spotData1,mc,BarrierDataDI);
 @show BarrierPrice=pricer(Model,spotData1,mc,BarrierDataUI);
 @show BarrierPrice=pricer(Model,spotData1,mc,BarrierDataUO);
 @show AmBinPrice=pricer(Model,spotData1,mc,BinAMData);
 @show EuBinPrice=pricer(Model,spotData1,mc,EUDataBin);
-@show doubleBarrier=pricer(Model,spotData1,mc,doubleBarrierOptionDownOutData);
+@show doubleBarrier=pricer(Model,spotData1,mc,doubleBarrierOptionDownOut);

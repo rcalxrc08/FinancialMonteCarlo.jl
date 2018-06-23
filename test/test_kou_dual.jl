@@ -21,12 +21,12 @@ toll=0.8;
 
 spotData1=equitySpotData(S0,r,d);
 
-FwdData=ForwardData(T)
-EUData=EUOptionData(T,K)
-AMData=AmericanStdOption(T,K)
-BarrierData=BarrierOptionDownOutData(T,K,D)
-AsianData1=AsianFloatingStrikeOptionData(T)
-AsianData2=AsianFixedStrikeOptionData(T,K)
+FwdData=Forward(T)
+EUData=EuropeanOption(T,K)
+AMData=AmericanOption(T,K)
+BarrierData=BarrierOptionDownOut(T,K,D)
+AsianData1=AsianFloatingStrikeOption(T)
+AsianData2=AsianFixedStrikeOption(T,K)
 Model=KouProcess();
 
 @show FwdPrice=pricer(Model,spotData1,mc,FwdData);						

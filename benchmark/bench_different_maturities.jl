@@ -16,12 +16,12 @@ toll=1e-3;
 
 spotData1=equitySpotData(S0,r,d);
 
-FwdData=ForwardData(T*2.0)
-EUData=EUOptionData(T*1.1,K)
-AMData=AmericanStdOption(T*4.0,K)
-BarrierData=BarrierOptionDownOutData(T*0.5,K,D)
-AsianFloatingStrikeData=AsianFloatingStrikeOptionData(T*3.3)
-AsianFixedStrikeData=AsianFixedStrikeOptionData(T*1.2,K)
+FwdData=Forward(T*2.0)
+EUData=EuropeanOption(T*1.1,K)
+AMData=AmericanOption(T*4.0,K)
+BarrierData=BarrierOptionDownOut(T*0.5,K,D)
+AsianFloatingStrikeData=AsianFloatingStrikeOption(T*3.3)
+AsianFixedStrikeData=AsianFixedStrikeOption(T*1.2,K)
 Model=BlackScholesProcess();
 
 @show FwdPrice=pricer(Model,spotData1,mc,FwdData);						

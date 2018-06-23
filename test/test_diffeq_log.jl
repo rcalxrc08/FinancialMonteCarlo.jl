@@ -25,12 +25,12 @@ prob = SDEProblem(f1,g1,u0,tspan)
 monte_prob = MonteCarloProblem(prob)
 
 
-FwdData=ForwardData(T)
-EUData=EUOptionData(T,K)
-AMData=AmericanStdOption(T,K)
-BarrierData=BarrierOptionDownOutData(T,K,D)
-AsianFloatingStrikeData=AsianFloatingStrikeOptionData(T)
-AsianFixedStrikeData=AsianFixedStrikeOptionData(T,K)
+FwdData=Forward(T)
+EUData=EuropeanOption(T,K)
+AMData=AmericanOption(T,K)
+BarrierData=BarrierOptionDownOut(T,K,D)
+AsianFloatingStrikeData=AsianFloatingStrikeOption(T)
+AsianFixedStrikeData=AsianFixedStrikeOption(T,K)
 
 
 @show FwdPrice=pricer(monte_prob,spotData1,mc,FwdData);						

@@ -1,8 +1,8 @@
 
-struct AsianFloatingStrikeOptionData<:OptionData
+struct AsianFloatingStrikeOption<:OptionData
 	T::Float64
 	isCall::Bool
-	function AsianFloatingStrikeOptionData(T::Float64,isCall::Bool=true)
+	function AsianFloatingStrikeOption(T::Float64,isCall::Bool=true)
         if T <= 0.0
             error("Time to Maturity must be positive")
         else
@@ -11,7 +11,7 @@ struct AsianFloatingStrikeOptionData<:OptionData
     end
 end
 
-export AsianFloatingStrikeOptionData;
+export AsianFloatingStrikeOption;
 
 """
 Payoff computation from MonteCarlo paths
@@ -25,7 +25,7 @@ Where:\n
 		Payoff      = payoff of the option.
 ```
 """
-function payoff(S::Matrix{num},asianFloatingStrikeOptionData::AsianFloatingStrikeOptionData,spotData::equitySpotData,T1::Float64=asianFloatingStrikeOptionData.T) where{num<:Number}
+function payoff(S::Matrix{num},asianFloatingStrikeOptionData::AsianFloatingStrikeOption,spotData::equitySpotData,T1::Float64=asianFloatingStrikeOptionData.T) where{num<:Number}
 	iscall=asianFloatingStrikeOptionData.isCall?1:-1
 	r=spotData.r;
 	T=asianFloatingStrikeOptionData.T;

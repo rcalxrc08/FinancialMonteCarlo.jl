@@ -1,7 +1,7 @@
 
-struct ForwardData<:AbstractEuropeanOptionData
+struct Forward<:AbstractEuropeanOptionData
 	T::Float64
-	function ForwardData(T::Float64)
+	function Forward(T::Float64)
         if T <= 0.0
             error("Time to Maturity must be positive")
         else
@@ -10,9 +10,9 @@ struct ForwardData<:AbstractEuropeanOptionData
     end
 end
 
-export ForwardData;
+export Forward;
 
-function payoff(S::Matrix{num},optionData::ForwardData,spotData::equitySpotData,T1::Float64=optionData.T) where{num<:Number}
+function payoff(S::Matrix{num},optionData::Forward,spotData::equitySpotData,T1::Float64=optionData.T) where{num<:Number}
 	r=spotData.r;
 	T=optionData.T;
 	(Nsim,NStep)=size(S)

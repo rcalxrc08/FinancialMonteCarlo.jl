@@ -10,11 +10,11 @@ function runnerMonteCarlo(Model::AbstractMonteCarloProcess,mc::MonteCarloBaseDat
 	D=90.0;
 	spotData1=equitySpotData(S0,r,d);
 
-	FwdData=ForwardData(T)
-	EUData=EUOptionData(T,K)
-	AMData=AmericanStdOption(T,K)
+	FwdData=Forward(T)
+	EUData=EuropeanOption(T,K)
+	AMData=AmericanOption(T,K)
 	BarrierData=BarrierOptionData(T,K,D)
-	AsianData=AsianFloatingStrikeOptionData(T)
+	AsianData=AsianFloatingStrikeOption(T)
 
 	optionDatas=[FwdData,EUData,AMData,BarrierData,AsianData]
 	
@@ -42,11 +42,11 @@ function runnerMonteCarloDual(Model::AbstractMonteCarloProcess,mc::MonteCarloBas
 	D=90.0;
 	spotData1=equitySpotData(S0,r,d);
 
-	FwdData=ForwardData(T)
-	EUData=EUOptionData(T,K)
-	AMData=AmericanStdOption(T,K)
+	FwdData=Forward(T)
+	EUData=EuropeanOption(T,K)
+	AMData=AmericanOption(T,K)
 	BarrierData=BarrierOptionData(T,K,D)
-	AsianData=AsianFloatingStrikeOptionData(T)
+	AsianData=AsianFloatingStrikeOption(T)
 
 	optionDatas=[FwdData,EUData,AMData,BarrierData,AsianData]
 	

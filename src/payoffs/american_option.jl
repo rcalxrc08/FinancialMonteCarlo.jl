@@ -1,8 +1,8 @@
-struct AmericanStdOption<:AbstractEuropeanOptionData
+struct AmericanOption<:AbstractEuropeanOptionData
 	T::Float64
 	K::Float64
 	isCall::Bool
-	function AmericanStdOption(T::Float64,K::Float64,isCall::Bool=true)
+	function AmericanOption(T::Float64,K::Float64,isCall::Bool=true)
         if T <= 0.0
             error("Time to Maturity must be positive")
         elseif K <= 0.0
@@ -13,7 +13,7 @@ struct AmericanStdOption<:AbstractEuropeanOptionData
     end
 end
 
-export AmericanStdOption;
+export AmericanOption;
 
 """
 Payoff computation from MonteCarlo paths
@@ -27,7 +27,7 @@ Where:\n
 		Payoff      = payoff of the option.
 ```
 """
-function payoff(S::Matrix{num},amOptionData::AmericanStdOption,spotData::equitySpotData,T1::Float64=amOptionData.T) where{num<:Number}
+function payoff(S::Matrix{num},amOptionData::AmericanOption,spotData::equitySpotData,T1::Float64=amOptionData.T) where{num<:Number}
 	iscall=amOptionData.isCall?1:-1
 	K=amOptionData.K;
 	T=amOptionData.T;

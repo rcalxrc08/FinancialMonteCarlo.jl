@@ -1,10 +1,10 @@
 
-struct BarrierOptionDownInData<:OptionData
+struct BarrierOptionDownIn<:OptionData
 	T::Float64
 	K::Float64
 	barrier::Float64
 	isCall::Bool
-	function BarrierOptionDownInData(T::Float64,K::Float64,barrier::Float64,isCall::Bool=true)
+	function BarrierOptionDownIn(T::Float64,K::Float64,barrier::Float64,isCall::Bool=true)
         if T <= 0.0
             error("Time to Maturity must be positive")
         elseif K <= 0.0
@@ -17,7 +17,7 @@ struct BarrierOptionDownInData<:OptionData
     end
 end
 
-export BarrierOptionDownInData;
+export BarrierOptionDownIn;
 
 """
 Payoff computation from MonteCarlo paths
@@ -32,7 +32,7 @@ Where:\n
 		Payoff      = payoff of the option.
 ```
 """
-function payoff(S::Matrix{num},barrierOptionData::BarrierOptionDownInData,spotData::equitySpotData,T1::Float64=barrierOptionData.T) where{num<:Number}
+function payoff(S::Matrix{num},barrierOptionData::BarrierOptionDownIn,spotData::equitySpotData,T1::Float64=barrierOptionData.T) where{num<:Number}
 	iscall=barrierOptionData.isCall?1:-1
 	r=spotData.r;
 	T=barrierOptionData.T;

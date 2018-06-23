@@ -1,9 +1,9 @@
 
-struct BinaryEuropeanOptionData<:AbstractEuropeanOptionData
+struct BinaryEuropeanOption<:AbstractEuropeanOptionData
 	T::Float64
 	K::Float64
 	isCall::Bool
-	function BinaryEuropeanOptionData(T::Float64,K::Float64,isCall::Bool=true)
+	function BinaryEuropeanOption(T::Float64,K::Float64,isCall::Bool=true)
         if T <= 0.0
             error("Time to Maturity must be positive")
         elseif K <= 0.0
@@ -14,7 +14,7 @@ struct BinaryEuropeanOptionData<:AbstractEuropeanOptionData
     end
 end
 
-export BinaryEuropeanOptionData;
+export BinaryEuropeanOption;
 
 """
 Payoff computation from MonteCarlo paths
@@ -28,7 +28,7 @@ Where:\n
 		Payoff      = payoff of the option.
 ```
 """
-function payoff(S::Matrix{num},euOptionData::BinaryEuropeanOptionData,spotData::equitySpotData,T1::Float64=euOptionData.T) where{num<:Number}
+function payoff(S::Matrix{num},euOptionData::BinaryEuropeanOption,spotData::equitySpotData,T1::Float64=euOptionData.T) where{num<:Number}
 	r=spotData.r;
 	T=euOptionData.T;
 	iscall=euOptionData.isCall?1:-1
