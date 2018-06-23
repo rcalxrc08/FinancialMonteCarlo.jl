@@ -16,6 +16,8 @@ struct BarrierOptionUpOutData<:OptionData
     end
 end
 
+export BarrierOptionUpOutData;
+
 """
 Payoff computation from MonteCarlo paths
 

@@ -26,7 +26,7 @@ monte_prob = MonteCarloProblem(prob)
 FwdData=ForwardData(T)
 EUData=EUOptionData(T,K)
 AMData=AmericanStdOption(T,K)
-BarrierData=BarrierOptionData(T,K,D)
+BarrierData=BarrierOptionDownOutData(T,K,D)
 AsianData=AsianFloatingStrikeOptionData(T)
 spotData1=equitySpotData(S0,r,d);
 
