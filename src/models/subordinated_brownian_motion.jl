@@ -1,20 +1,27 @@
-type SubordinatedBrownianMotion<:AbstractMonteCarloProcess end
+
+type SubordinatedBrownianMotion{num,num1<:Number}<:AbstractMonteCarloProcess
+	sigma::num
+	drift::num1
+	function SubordinatedBrownianMotion(sigma::num,drift::num1) where {num,num1 <: Number}
+        if sigma<=0.0
+			error("volatility must be positive");
+		else
+            return new{num,num1}(sigma,drift)
+        end
+    end
+end
 
 export SubordinatedBrownianMotion;
 
 function simulate(mcProcess::SubordinatedBrownianMotion,spotData::equitySpotData,mcBaseData::MonteCarloBaseData,T::Float64,dt_s::Array{Float64,2},monteCarloMode::MonteCarloMode=standard)
 	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;
-	if(length(mcBaseData.param)!=2)
-		error("Brownian Subordinator needs 2 parameters")
-	elseif(size(dt_s)!=(Nsim,Nstep))
+	if(size(dt_s)!=(Nsim,Nstep))
 		error("Inconsistent Time Matrix")
 	end
-	drift=mcBaseData.param["drift"];
-	sigma=mcBaseData.param["sigma"];
-	if sigma<=0.0
-		error("Subordinator volatility must be positive")
-	elseif T<=0.0
+	drift=mcProcess.drift;
+	sigma=mcProcess.sigma;
+	if T<=0.0
 		error("Final time must be positive");
 	end
 	isDualZero=drift*sigma*dt_s[1,1]*0.0;

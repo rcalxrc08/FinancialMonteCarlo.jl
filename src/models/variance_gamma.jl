@@ -1,4 +1,21 @@
-type VarianceGammaProcess<:InfiniteActivityProcess end
+
+type VarianceGammaProcess{num,num1,num2<:Number}<:InfiniteActivityProcess
+	sigma::num
+	theta::num1
+	k::num2
+	function VarianceGammaProcess(sigma::num,theta::num1,k::num2) where {num,num1,num2 <: Number}
+        if sigma<=0.0
+			error("volatility must be positive");
+		elseif k<=0.0
+			error("kappa must be positive");
+		elseif 1-sigma*sigma*k/2.0-theta*k<0.0
+			error("Parameters with unfeasible values")
+		else
+            return new{num,num1,num2}(sigma,theta,k)
+        end
+    end
+end
+
 
 export VarianceGammaProcess;
 
@@ -8,17 +25,10 @@ function simulate(mcProcess::VarianceGammaProcess,spotData::equitySpotData,mcBas
 	d=spotData.d;
 	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;
-	if(length(mcBaseData.param)!=3)
-		error("Variance Gamma Model needs 3 parameters")
-	end
-	sigma=mcBaseData.param["sigma"];
-	theta1=mcBaseData.param["theta"];
-	k1=mcBaseData.param["k"];
-	if 1-sigma*sigma*k1/2.0-theta1*k1<=0.0
-		error("Parameters with unfeasible values")
-	elseif k1<=0.0
-		error("k must be positive");
-	elseif T<=0.0
+	sigma=mcProcess.sigma;
+	theta1=mcProcess.theta;
+	k1=mcProcess.k;
+	if T<=0.0
 		error("Final time must be positive");
 	end
 	
@@ -30,10 +40,9 @@ function simulate(mcProcess::VarianceGammaProcess,spotData::equitySpotData,mcBas
 	
 	gammaRandomVariable=Gamma(dt/k1);
 	dt_s=k1.*quantile.(gammaRandomVariable,rand(Nsim,Nstep));
-	const dict1=Dict{String,Number}("sigma"=>sigma, "drift" => drift)
-	subParam=MonteCarloBaseData(dict1,Nsim,Nstep);
+	subParam=MonteCarloBaseData(Nsim,Nstep);
 	
-	X=simulate(SubordinatedBrownianMotion(),spotData,subParam,T,dt_s,monteCarloMode);
+	X=simulate(SubordinatedBrownianMotion(sigma,drift),spotData,subParam,T,dt_s,monteCarloMode);
 
 	S=S0.*exp.(X);
 	

@@ -14,8 +14,7 @@ sigma=dual(0.2,1.0);
 theta1=0.01; 
 k1=0.03; 
 sigma1=0.02;
-ParamDict=Dict{String,Number}("sigma"=>sigma, "theta" => theta1, "k" => k1)
-mc=MonteCarloBaseData(ParamDict,Nsim,Nstep);
+mc=MonteCarloBaseData(Nsim,Nstep);
 toll=0.8;
 
 spotData1=equitySpotData(S0,r,d);
@@ -26,7 +25,7 @@ AMData=AmericanOption(T,K)
 BarrierData=BarrierOptionDownOut(T,K,D)
 AsianFloatingStrikeData=AsianFloatingStrikeOption(T)
 AsianFixedStrikeData=AsianFixedStrikeOption(T,K)
-Model=VarianceGammaProcess();
+Model=VarianceGammaProcess(sigma,theta1,k1);
 
 @btime FwdPrice=pricer(Model,spotData1,mc,FwdData);						
 @btime EuPrice=pricer(Model,spotData1,mc,EUData);

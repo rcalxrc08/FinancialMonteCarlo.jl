@@ -15,8 +15,7 @@ kappa=0.01;
 theta=0.03;
 lambda=0.01;
 rho=0.0;
-ParamDict=Dict{String,Number}("sigma"=>sigma,"theta"=>theta, "kappa"=>kappa, "sigma_zero" => sigma_zero, "lambda" => lambda, "rho" => rho)
-mc=MonteCarloBaseData(ParamDict,Nsim,Nstep);
+mc=MonteCarloBaseData(Nsim,Nstep);
 toll=0.8;
 
 spotData1=equitySpotData(S0,r,d);
@@ -27,7 +26,7 @@ AMData=AmericanOption(T,K)
 BarrierData=BarrierOptionDownOut(T,K,D)
 AsianFloatingStrikeData=AsianFloatingStrikeOption(T)
 AsianFixedStrikeData=AsianFixedStrikeOption(T,K)
-Model=HestonProcess();
+Model=HestonProcess(sigma,sigma_zero,lambda,kappa,rho,theta);
 
 @btime FwdPrice=pricer(Model,spotData1,mc,FwdData);						
 @btime EuPrice=pricer(Model,spotData1,mc,EUData);

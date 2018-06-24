@@ -15,8 +15,7 @@ p=0.3;
 lam=5.0; 
 lamp=30.0; 
 lamm=20.0;
-ParamDict=Dict{String,Number}("sigma"=>sigma, "lambda" => lam, "p" => p, "lambdap" => lamp, "lambdam" => lamm)
-mc=MonteCarloBaseData(ParamDict,Nsim,Nstep);
+mc=MonteCarloBaseData(Nsim,Nstep);
 toll=0.8;
 
 spotData1=equitySpotData(S0,r,d);
@@ -27,7 +26,7 @@ AMData=AmericanOption(T,K)
 BarrierData=BarrierOptionDownOut(T,K,D)
 AsianFloatingStrikeData=AsianFloatingStrikeOption(T)
 AsianFixedStrikeData=AsianFixedStrikeOption(T,K)
-Model=KouProcess();
+Model=KouProcess(sigma,lam,p,lamp,lamm);
 
 @btime FwdPrice=pricer(Model,spotData1,mc,FwdData);						
 @btime EuPrice=pricer(Model,spotData1,mc,EUData);

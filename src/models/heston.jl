@@ -1,4 +1,25 @@
-type HestonProcess<:ItoProcess end
+
+type HestonProcess{num,num1,num2,num3,num4,num5<:Number}<:ItoProcess
+	sigma::num
+	sigma_zero::num1
+	lambda::num2
+	kappa::num3
+	rho::num4
+	theta::num5
+	function HestonProcess(sigma::num,sigma_zero::num1,lambda::num2,	kappa::num3,rho::num4,theta::num5) where {num,num1,num2,num3,num4,num5 <: Number}
+        if sigma_zero<=0.0
+			error("initial volatility must be positive");
+		elseif sigma<=0.0
+			error("volatility of volatility must be positive");
+		elseif abs(kappa+lambda)<=1e-14
+			error("unfeasible parameters");
+		elseif !(-1.0<=rho<=1.0)
+			error("rho must be a correlation");
+        else
+            return new{num,num1,num2,num3,num4,num5}(sigma,sigma_zero,lambda,kappa,rho,theta)
+        end
+    end
+end
 
 export HestonProcess;
 
@@ -8,26 +29,14 @@ function simulate(mcProcess::HestonProcess,spotData::equitySpotData,mcBaseData::
 	d=spotData.d;
 	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;
-	
-	if(length(mcBaseData.param)!=6)
-		error("Heston Model needs 6 parameters")
-	end
-	sigma=mcBaseData.param["sigma"];
-	sigma_zero=mcBaseData.param["sigma_zero"];
-	lambda1=mcBaseData.param["lambda"];
-	kappa=mcBaseData.param["kappa"];
-	rho=mcBaseData.param["rho"];
-	theta=mcBaseData.param["theta"];
+	sigma=mcProcess.sigma;
+	sigma_zero=mcProcess.sigma_zero;
+	lambda1=mcProcess.lambda;
+	kappa=mcProcess.kappa;
+	rho=mcProcess.rho;
+	theta=mcProcess.theta;
 	if T<=0.0
 		error("Final time must be positive");
-	elseif sigma_zero<=0.0
-		error("initial volatility must be positive");
-	elseif sigma<=0.0
-		error("volatility of volatility must be positive");
-	elseif abs(kappa+lambda1)<=1e-14
-		error("unfeasible parameters");
-	elseif !(-1.0<=rho<=1.0)
-		error("rho must be a correlation");
 	end
 
 	####Simulation

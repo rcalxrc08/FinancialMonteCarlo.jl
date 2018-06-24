@@ -16,12 +16,12 @@ theta1=0.01;
 k1=0.03;
 sigma1=0.02;
 ParamDict=Dict{String,Number}("sigma"=>sigma, "theta" => theta1, "k" => k1)
-mc=MonteCarloBaseData(ParamDict,Nsim,Nstep);
+mc=MonteCarloBaseData(Nsim,Nstep);
 toll=0.8;
 
 spotData1=equitySpotData(S0,r,d);
-@test_throws(ErrorException,MonteCarloBaseData(ParamDict,-Nsim,Nstep))
-@test_throws(ErrorException,MonteCarloBaseData(ParamDict,Nsim,-Nstep))
+@test_throws(ErrorException,MonteCarloBaseData(-Nsim,Nstep))
+@test_throws(ErrorException,MonteCarloBaseData(Nsim,-Nstep))
 @test_throws(ErrorException,equitySpotData(-S0,r,d));
 #####################################################################
 #Payoff Structs Test: Negative TTM
