@@ -11,8 +11,7 @@ D=90.0;
 Nsim=10000;
 Nstep=30;
 sigma=0.2;
-ParamDict=Dict{String,Number}("sigma"=>sigma)
-mc=MonteCarloBaseData(ParamDict,Nsim,Nstep);
+mc=MonteCarloBaseData(Nsim,Nstep);
 toll=1e-3;
 
 spotData1=equitySpotData(S0,r,d);
@@ -23,7 +22,7 @@ AMData=AmericanOption(T,K)
 BarrierData=BarrierOptionDownOut(T,K,D)
 AsianFloatingStrikeData=AsianFloatingStrikeOption(T)
 AsianFixedStrikeData=AsianFixedStrikeOption(T,K)
-Model=BlackScholesProcess();
+Model=BlackScholesProcess(sigma);
 
 @btime FwdPrice=pricer(Model,spotData1,mc,FwdData);						
 @btime EuPrice=pricer(Model,spotData1,mc,EUData);

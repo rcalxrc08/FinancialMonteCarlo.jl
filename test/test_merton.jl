@@ -23,7 +23,7 @@ EUData=EuropeanOption(T,K)
 AMData=AmericanOption(T,K)
 BarrierData=BarrierOptionDownOut(T,K,D)
 AsianData=AsianFloatingStrikeOption(T)
-Model=MertonProcess(sigma,lambda,muJ,sigmaJ);
+Model=MertonProcess(sigma,lam,mu1,sigma1);
 
 @show FwdPrice=pricer(Model,spotData1,mc,FwdData);						
 @show EuPrice=pricer(Model,spotData1,mc,EUData);

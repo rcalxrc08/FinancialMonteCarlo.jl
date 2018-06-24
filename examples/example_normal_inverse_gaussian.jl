@@ -6,6 +6,5 @@ Nstep=30;
 sigma=0.2;
 theta1=-0.03; 
 k1=0.16; 
-const dict=Dict{String,Number}("sigma"=>sigma, "theta" => theta1, "k" => k1)
-mc=MonteCarloBaseData(dict,Nsim,Nstep);
-runnerMonteCarlo(NormalInverseGaussianProcess(),mc)
+mc=MonteCarloBaseData(Nsim,Nstep);
+runnerMonteCarlo(NormalInverseGaussianProcess(sigma,theta1,k1),mc)

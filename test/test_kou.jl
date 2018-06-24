@@ -25,7 +25,7 @@ AMData=AmericanOption(T,K)
 BarrierData=BarrierOptionDownOut(T,K,D)
 AsianData1=AsianFloatingStrikeOption(T)
 AsianData2=AsianFixedStrikeOption(T,K)
-Model=KouProcess(sigma,lambda,p,lambdap,lambdam);
+Model=KouProcess(sigma,lam,p,lamp,lamm);
 
 @show FwdPrice=pricer(Model,spotData1,mc,FwdData);						
 @show EuPrice=pricer(Model,spotData1,mc,EUData);
