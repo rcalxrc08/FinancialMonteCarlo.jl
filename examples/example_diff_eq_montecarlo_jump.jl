@@ -38,16 +38,16 @@ monte_prob = MonteCarloProblem(jump_prob)
 
 FwdData=Forward(T)
 EUData=EuropeanOption(T,K)
-AMData=AMOptionData(T,K)
-BarrierData=BarrierOptionData(T,K,D)
+AMData=AmericanOption(T,K)
+BarrierData=BarrierOptionDownOut(T,K,D)
 AsianData=AsianFloatingStrikeOption(T)
 spotData1=equitySpotData(S0,r,d);
 
-FwdPrice=pricer(monte_prob,spotData1,mc,FwdData,Forward());
-EuPrice=pricer(monte_prob,spotData1,mc,EUData,EuropeanOption());
-AMPrice=pricer(monte_prob,spotData1,mc,AMData,AmericanOption());
-BarrierPrice=pricer(monte_prob,spotData1,mc,BarrierData,BarrierOptionDownOut());
-AsianPrice=pricer(monte_prob,spotData1,mc,AsianData,AsianFloatingStrikeOption());
+FwdPrice=pricer(monte_prob,spotData1,mc,FwdData);
+EuPrice=pricer(monte_prob,spotData1,mc,EUData);
+AMPrice=pricer(monte_prob,spotData1,mc,AMData);
+BarrierPrice=pricer(monte_prob,spotData1,mc,BarrierData);
+AsianPrice=pricer(monte_prob,spotData1,mc,AsianData);
 
 @show FwdPrice
 @show EuPrice

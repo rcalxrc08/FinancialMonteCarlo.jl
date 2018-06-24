@@ -33,9 +33,8 @@ After the installation, to test the package type on the Julia REPL the following
 ```julia
 Pkg.test("MonteCarlo")
 ```
-## Example of Usage
-The following example is the pricing of a Different Kind of Options with underlying varying
-according to the Black Scholes Model, given the implied volatility.
+## Example of Usage: Pricing Options in Black Scholes Model
+The following example shows how to price different kind of options with underlying varying according to the Black Scholes Model, given the implied volatility.
 ```julia
 #Import the Package
 using MonteCarlo;
@@ -57,21 +56,21 @@ mc=MonteCarloBaseData(ParamDict,Nsim,Nstep);
 spotData1=equitySpotData(S0,r,d);
 
 #Define The Options
-FwdData=ForwardData(T)
-EUData=EUOptionData(T,K)
-AMData=AMOptionData(T,K)
-BarrierData=BarrierOptionData(T,K,D)
-AsianFloatingStrikeData=AsianFloatingStrikeOptionData(T)
-AsianFixedStrikeData=AsianFixedStrikeOptionData(T,K)
+FwdData=Forward(T)
+EUData=EuropeanOption(T,K)
+AMData=AmericanOption(T,K)
+BarrierData=BarrierOptionDownOut(T,K,D)
+AsianFloatingStrikeData=AsianFloatingStrikeOption(T)
+AsianFixedStrikeData=AsianFixedStrikeOption(T,K)
 
 #Define the Model
 Model=BlackScholesProcess();
 
 #Price
-@show FwdPrice=pricer(Model,spotData1,mc,FwdData,Forward());						
-@show EuPrice=pricer(Model,spotData1,mc,EUData,EuropeanOption());
-@show AmPrice=pricer(Model,spotData1,mc,AMData,AmericanOption());
-@show BarrierPrice=pricer(Model,spotData1,mc,BarrierData,BarrierOptionDownOut());
-@show AsianPrice1=pricer(Model,spotData1,mc,AsianFloatingStrikeData,AsianFloatingStrikeOption());
-@show AsianPrice2=pricer(Model,spotData1,mc,AsianFixedStrikeData,AsianFixedStrikeOption());
+@show FwdPrice=pricer(Model,spotData1,mc,FwdData);						
+@show EuPrice=pricer(Model,spotData1,mc,EUData);
+@show AmPrice=pricer(Model,spotData1,mc,AMData);
+@show BarrierPrice=pricer(Model,spotData1,mc,BarrierData);
+@show AsianPrice1=pricer(Model,spotData1,mc,AsianFloatingStrikeData);
+@show AsianPrice2=pricer(Model,spotData1,mc,AsianFixedStrikeData);
 ```

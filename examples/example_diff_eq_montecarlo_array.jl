@@ -25,14 +25,13 @@ monte_prob = MonteCarloProblem(prob)
 
 FwdData=Forward(T)
 EUData=EuropeanOption(T,K)
-AMData=AMOptionData(T,K)
-BarrierData=BarrierOptionData(T,K,D)
+AMData=AmericanOption(T,K)
+BarrierData=BarrierOptionDownOut(T,K,D)
 AsianData=AsianFloatingStrikeOption(T)
 spotData1=equitySpotData(S0,r,d);
 
 optionDatas=[FwdData,EUData,AMData,BarrierData,AsianData]
-options=[Forward(),EuropeanOption(),AmericanOption(),BarrierOptionDownOut(),AsianFloatingStrikeOption()]
 
-optPrices=pricer(monte_prob,spotData1,mc,optionDatas,options);
+optPrices=pricer(monte_prob,spotData1,mc,optionDatas);
 
 @show optPrices
