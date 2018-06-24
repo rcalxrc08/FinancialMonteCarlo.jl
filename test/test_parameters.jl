@@ -80,7 +80,6 @@ McHeston=MonteCarloBaseData(Nsim,Nstep);
 @test_throws(ErrorException,simulate(HestonProcess(sigma,sigma_zero,lambda,kappa,rho,theta),spotData1,McHeston,-T));
 @test_throws(ErrorException,simulate(HestonProcess(-sigma,sigma_zero,lambda,kappa,rho,theta),spotData1,McHeston,T));
 @test_throws(ErrorException,simulate(HestonProcess(sigma,-sigma_zero,lambda,kappa,rho,theta),spotData1,McHeston,T));
-@test_throws(ErrorException,simulate(HestonProcess(sigma,sigma_zero,lambda,kappa,rho,theta),spotData1,McHeston,T));
 @test_throws(ErrorException,simulate(HestonProcess(sigma,sigma_zero,lambda,kappa,-5.0,theta),spotData1,McHeston,T));
 @test_throws(ErrorException,simulate(HestonProcess(sigma,sigma_zero,1e-16,1e-16,rho,theta),spotData1,McHeston,T));
 

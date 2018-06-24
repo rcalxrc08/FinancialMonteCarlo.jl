@@ -12,7 +12,6 @@ Nstep=30;
 sigma=0.2; 
 theta1=0.01; 
 k1=0.03; 
-sigma1=0.02;
 mc=MonteCarloBaseData(Nsim,Nstep);
 toll=0.8;
 
@@ -23,7 +22,7 @@ EUData=EuropeanOption(T,K)
 AMData=AmericanOption(T,K)
 BarrierData=BarrierOptionDownOut(T,K,D)
 AsianData=AsianFloatingStrikeOption(T)
-Model=NormalInverseGaussianProcess(sigma,theta,k);
+Model=NormalInverseGaussianProcess(sigma,theta1,k1);
 
 @show FwdPrice=pricer(Model,spotData1,mc,FwdData);						
 @show EuPrice=pricer(Model,spotData1,mc,EUData);
