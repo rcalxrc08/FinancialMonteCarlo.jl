@@ -23,7 +23,7 @@ spotData1=equitySpotData(S0,r,d);
 @show "Test Black Scholes Parameters"
 drift=0.0
 @test_throws(ErrorException,BrownianMotion(-sigma,drift))
-@test_throws(ErrorException,simulate(BrownianMotion(-sigma,drift),spotData1,McConfig,-T));
+@test_throws(ErrorException,simulate(BrownianMotion(sigma,drift),spotData1,McConfig,-T));
 @test_throws(ErrorException,simulate(GeometricBrownianMotion(sigma,drift),spotData1,McConfig,-T));
 @test_throws(ErrorException,GeometricBrownianMotion(-sigma,drift))
 @test_throws(ErrorException,simulate(BlackScholesProcess(sigma),spotData1,McConfig,-T));
