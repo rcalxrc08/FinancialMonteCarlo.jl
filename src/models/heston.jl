@@ -29,10 +29,6 @@ function simulate(mcProcess::HestonProcess,spotData::equitySpotData,mcBaseData::
 	d=spotData.d;
 	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;
-	
-	if(length(mcBaseData.param)!=6)
-		error("Heston Model needs 6 parameters")
-	end
 	sigma=mcProcess.sigma;
 	sigma_zero=mcProcess.sigma_zero;
 	lambda1=mcProcess.lambda;

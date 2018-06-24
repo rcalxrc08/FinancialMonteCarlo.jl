@@ -1,4 +1,4 @@
-function runnerMonteCarlo(Model::AbstractMonteCarloProcess,mc::MonteCarloBaseData)
+function runnerMonteCarlo(Model::process,mc::MonteCarloBaseData) where {process<:AbstractMonteCarloProcess}
 	#@show Model
 	S0=100.0;
 	K=100.0;
@@ -30,7 +30,7 @@ end
 
 using DualNumbers;
 
-function runnerMonteCarloDual(Model::AbstractMonteCarloProcess,mc::MonteCarloBaseData)
+function runnerMonteCarloDual(Model::process,mc::MonteCarloBaseData) where {process<:AbstractMonteCarloProcess}
 	#@show Model
 	S0=dual(100.0,1.0);
 	K=100.0;

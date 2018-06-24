@@ -10,7 +10,6 @@ D=90.0;
 Nsim=10000;
 Nstep=30;
 sigma=dual(0.2,1.0);
-ParamDict=Dict{String,Number}("sigma"=>sigma)
 mc=MonteCarloBaseData(Nsim,Nstep);
 toll=1e-3;
 
@@ -22,7 +21,7 @@ AMData=AmericanOption(T,K)
 BarrierData=BarrierOptionDownOut(T,K,D)
 AsianFloatingStrikeData=AsianFloatingStrikeOption(T)
 AsianFixedStrikeData=AsianFixedStrikeOption(T,K)
-Model=BlackScholesProcess();
+Model=BlackScholesProcess(sigma);
 
 @show FwdPrice=pricer(Model,spotData1,mc,FwdData);						
 @show EuPrice=pricer(Model,spotData1,mc,EUData);

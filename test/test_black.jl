@@ -22,7 +22,7 @@ AMData=AmericanOption(T,K)
 BarrierData=BarrierOptionDownOut(T,K,D)
 AsianFloatingStrikeData=AsianFloatingStrikeOption(T)
 AsianFixedStrikeData=AsianFixedStrikeOption(T,K)
-Model=BlackScholesProcess();
+Model=BlackScholesProcess(sigma);
 
 @show FwdPrice=pricer(Model,spotData1,mc,FwdData);						
 @show EuPrice=pricer(Model,spotData1,mc,EUData);
@@ -72,7 +72,7 @@ tollPut=0.6;
 @test abs(AsianPrice1-4.230547012372306)<tollPut
 @test abs(AsianPrice2-4.236220218194027)<tollPut
 
-mc2=MonteCarloBaseData(ParamDict,Nsim+1,Nstep);
+mc2=MonteCarloBaseData(Nsim+1,Nstep);
 @test_throws(ErrorException,pricer(Model,spotData1,mc2,AsianFixedStrikeData,MonteCarlo.antithetic));
 
 

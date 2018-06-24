@@ -13,8 +13,7 @@ sigma=0.2;
 lam=5.0; 
 mu1=0.03; 
 sigma1=0.02;
-ParamDict=Dict{String,Number}("sigma"=>sigma, "lambda" => lam, "muJ" => mu1, "sigmaJ" => sigma1)
-mc=MonteCarloBaseData(ParamDict,Nsim,Nstep);
+mc=MonteCarloBaseData(Nsim,Nstep);
 toll=0.8;
 
 spotData1=equitySpotData(S0,r,d);
@@ -24,7 +23,7 @@ EUData=EuropeanOption(T,K)
 AMData=AmericanOption(T,K)
 BarrierData=BarrierOptionDownOut(T,K,D)
 AsianData=AsianFloatingStrikeOption(T)
-Model=MertonProcess();
+Model=MertonProcess(sigma,lambda,muJ,sigmaJ);
 
 @show FwdPrice=pricer(Model,spotData1,mc,FwdData);						
 @show EuPrice=pricer(Model,spotData1,mc,EUData);
