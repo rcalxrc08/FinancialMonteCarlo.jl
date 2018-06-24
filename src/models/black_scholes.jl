@@ -12,6 +12,9 @@ end
 export BlackScholesProcess;
 
 function simulate(mcProcess::BlackScholesProcess,spotData::equitySpotData,mcBaseData::MonteCarloBaseData,T::Float64,monteCarloMode::MonteCarloMode=standard)
+	if T<=0.0
+		error("Final time must be positive");
+	end
 	r=spotData.r;
 	S0=spotData.S0;
 	d=spotData.d;

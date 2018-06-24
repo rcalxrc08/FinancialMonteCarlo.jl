@@ -21,6 +21,14 @@ toll=0.8;
 spotData1=equitySpotData(S0,r,d);
 
 @show "Test Black Scholes Parameters"
+@test_throws(ErrorException,simulate(BrownianMotion(-sigma),spotData1,McBlack,T));
+@test_throws(ErrorException,simulate(BrownianMotion(-sigma),spotData1,McBlack,-T));
+@test_throws(ErrorException,simulate(GeometricBrownianMotion(sigma,drift),spotData1,McSub,-T));
+@test_throws(ErrorException,simulate(GeometricBrownianMotion(-sigma,drift),spotData1,McSub,T));
+@test_throws(ErrorException,simulate(BlackScholesProcess(sigma),spotData1,McBlack,-T));
+
+
+@show "Test Black Scholes Parameters"
 @test_throws(ErrorException,simulate(BlackScholesProcess(-sigma),spotData1,McBlack,T));
 @test_throws(ErrorException,simulate(BlackScholesProcess(sigma),spotData1,McBlack,-T));
 
@@ -32,10 +40,11 @@ lamm=20.0;
 
 McKou=MonteCarloBaseData(Nsim,Nstep);
 @test_throws(ErrorException,simulate(KouProcess(sigma, lam, p,  lamp,  lamm),spotData1,McKou,-T));
-@test_throws(ErrorException,simulate(KouProcess(sigma,-lam, p,  lamp,  lamm),spotData1,McKou,T));
-@test_throws(ErrorException,simulate(KouProcess(sigma, lam,-p,  lamp,  lamm),spotData1,McKou,T));
-@test_throws(ErrorException,simulate(KouProcess(sigma, lam, p, -lamp,  lamm),spotData1,McKou,T));
-@test_throws(ErrorException,simulate(KouProcess(sigma, lam, p,  lamp, -lamm),spotData1,McKou,T));
+@test_throws(ErrorException,simulate(KouProcess(-sigma,-lam, p,  lamp,  lamm),spotData1,McKou,T));
+@test_throws(ErrorException,simulate(KouProcess( sigma, lam, p,  lamp,  lamm),spotData1,McKou,T));
+@test_throws(ErrorException,simulate(KouProcess( sigma, lam,-p,  lamp,  lamm),spotData1,McKou,T));
+@test_throws(ErrorException,simulate(KouProcess( sigma, lam, p, -lamp,  lamm),spotData1,McKou,T));
+@test_throws(ErrorException,simulate(KouProcess( sigma, lam, p,  lamp, -lamm),spotData1,McKou,T));
 
 
 
@@ -111,7 +120,8 @@ drift=0.0;
 dt=T/Nstep;
 sub=dt*ones(Nsim,Nstep)
 McSub=MonteCarloBaseData(Nsim,Nstep);
-@test_throws(ErrorException,simulate(SubordinatedBrownianMotion(drift,sigma),spotData1,McSub,-T,sub));
+@test_throws(ErrorException,simulate(SubordinatedBrownianMotion(sigma,drift),spotData1,McSub,-T,sub));
+@test_throws(ErrorException,simulate(SubordinatedBrownianMotion(-sigma,drift),spotData1,McSub,T,sub));
 
 McBlackNeg=MonteCarloBaseData(Nsim,Nstep);
 @test_throws(ErrorException,simulate(SubordinatedBrownianMotion(-sigma,drift),spotData1,McBlackNeg,T,sub));

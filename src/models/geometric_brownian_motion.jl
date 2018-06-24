@@ -12,6 +12,9 @@ type GeometricBrownianMotion{num,num1<:Number}<:ItoProcess
 end
 
 function simulate(mcProcess::GeometricBrownianMotion,spotData::equitySpotData,mcBaseData::MonteCarloBaseData,T::Float64,monteCarloMode::MonteCarloMode=standard)
+	if T<=0.0
+		error("Final time must be positive");
+	end
 	d=spotData.d;
 	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;
