@@ -1,4 +1,13 @@
-type BlackScholesProcess<:ItoProcess end
+type BlackScholesProcess{num<:Number}<:ItoProcess
+	sigma::num
+	function BlackScholesProcess(sigma::num) where {num <: Number}
+        if sigma <= 0.0
+            error("Volatility must be positive")
+        else
+            return new{num}(sigma)
+        end
+    end
+end
 
 export BlackScholesProcess;
 
@@ -8,15 +17,11 @@ function simulate(mcProcess::BlackScholesProcess,spotData::equitySpotData,mcBase
 	d=spotData.d;
 	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;
-	if(length(mcBaseData.param)!=1)
-		error("Black Scholes Model needs 1 parameters")
-	end
-	sigma_gbm=mcBaseData.param["sigma"];
+	sigma_gbm=mcProcess.sigma;
 	mu_gbm=r-d;
-	const dictGBM=Dict{String,Number}("sigma"=>sigma_gbm, "drift" => mu_gbm)
-	GeomData=MonteCarloBaseData(dictGBM,mcBaseData.Nsim,mcBaseData.Nstep)
+	GeomData=MonteCarloBaseData(mcBaseData.Nsim,mcBaseData.Nstep)
 	
-	S=S0.*simulate(GeometricBrownianMotion(),spotData,GeomData,T,monteCarloMode)
+	S=S0.*simulate(GeometricBrownianMotion(sigma_gbm,mu_gbm),spotData,GeomData,T,monteCarloMode)
 	
 	return S;
 	

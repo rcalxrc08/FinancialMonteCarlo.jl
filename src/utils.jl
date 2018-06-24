@@ -18,16 +18,15 @@ end
 export equitySpotData,MonteCarloMode;
 
 struct MonteCarloBaseData
-	param::Dict{String,Number}
 	Nsim::Integer
 	Nstep::Integer
-	function MonteCarloBaseData(param::Dict{String,Number},Nsim::Integer,Nstep::Integer)
+	function MonteCarloBaseData(Nsim::Integer,Nstep::Integer)
         if Nsim <= 0
             error("Number of Simulations must be positive")
         elseif Nstep <= 0
             error("Number of Steps must be positive")
 		else
-            return new(param,Nsim,Nstep)
+            return new(Nsim,Nstep)
         end
     end
 end

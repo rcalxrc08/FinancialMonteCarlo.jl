@@ -1,4 +1,26 @@
-type KouProcess<:FiniteActivityProcess end
+
+type KouProcess{num,num1,num2,num3,num4<:Number}<:FiniteActivityProcess
+	sigma::num
+	lambda::num1
+	p::num2
+	lambdap::num3
+	lambdam::num4
+	function KouProcess(sigma::num,lambda::num1,p::num2,lambdap::num3,lambdam::num4) where {num,num1,num2,num3,num4 <: Number}
+        if sigma<=0.0
+			error("volatility must be positive");
+		elseif lambda<=0.0
+			error("jump intensity must be positive");
+		elseif lambdap<=0.0
+			error("positive lambda must be positive");
+		elseif lambdam<=0.0
+			error("negative lambda must be positive");
+		elseif !(0<=p<=1)
+			error("p must be a probability")
+        else
+            return new{num,num1,num2,num3,num4}(sigma,lambda,p,lambdap,lambdam)
+        end
+    end
+end
 
 export KouProcess;
 
@@ -8,33 +30,21 @@ function simulate(mcProcess::KouProcess,spotData::equitySpotData,mcBaseData::Mon
 	d=spotData.d;
 	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;
-	if(length(mcBaseData.param)!=5)
-		error("Kou Model needs 5 parameters")
-	end
-	sigma=mcBaseData.param["sigma"];
-	lambda1=mcBaseData.param["lambda"];
-	p=mcBaseData.param["p"];
-	lambdap=mcBaseData.param["lambdap"];
-	lambdam=mcBaseData.param["lambdam"];
+	sigma=mcProcess.sigma;
+	lambda1=mcProcess.lambda;
+	p=mcProcess.p;
+	lambdap=mcProcess.lambdap;
+	lambdam=mcProcess.lambdam;
 	if T<=0.0
 		error("Final time must be positive");
-	elseif lambda1<=0.0
-		error("jump intensity must be positive");
-	elseif lambdap<=0.0
-		error("positive lambda must be positive");
-	elseif lambdam<=0.0
-		error("negative lambda must be positive");
-	elseif !(0<=p<=1)
-		error("p must be a probability")
 	end
 
 	####Simulation
 	## Simulate
 	# r-d-psi(-i)
 	drift_RN=r-d-sigma^2/2-lambda1*(p/(lambdap-1)-(1-p)/(lambdam+1));
-	const dict1=Dict{String,Number}("sigma"=>sigma, "drift" => drift_RN)
-	brownianMcData=MonteCarloBaseData(dict1,Nsim,Nstep);
-	X=simulate(BrownianMotion(),spotData,brownianMcData,T,monteCarloMode)
+	brownianMcData=MonteCarloBaseData(Nsim,Nstep);
+	X=simulate(BrownianMotion(sigma,drift_RN),spotData,brownianMcData,T,monteCarloMode)
 
 	t=linspace(0.0,T,Nstep+1);
 

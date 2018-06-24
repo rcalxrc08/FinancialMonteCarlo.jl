@@ -6,9 +6,7 @@ function simulate(mcProcess::MonteCarloProblem,spotData::equitySpotData,mcBaseDa
 	Nstep=mcBaseData.Nstep;
 	Dt=T/Nstep
 	
-	if(length(mcBaseData.param)!=0)
-		error("Junctor for DifferentialEquations needs 0 parameters")
-	elseif T<=0.0
+	if T<=0.0
 		error("Final time must be positive");
 	end
 	sol = solve(mcProcess,SOSRI(),num_monte=Nsim,parallel_type=:threads,dt=Dt,adaptive=false)
