@@ -49,7 +49,7 @@ D=90.0;
 Nsim=10000;
 Nstep=30;
 #Define Model Parameters
-sigma=0.2;
+σ=0.2;
 #Build the Structs
 mc=MonteCarloBaseData(Nsim,Nstep);
 spotData1=equitySpotData(S0,r,d);
@@ -63,7 +63,7 @@ AsianFloatingStrikeData=AsianFloatingStrikeOption(T)
 AsianFixedStrikeData=AsianFixedStrikeOption(T,K)
 
 #Define the Model
-Model=BlackScholesProcess(sigma);
+Model=BlackScholesProcess(σ);
 
 #Price
 @show FwdPrice=pricer(Model,spotData1,mc,FwdData);						
