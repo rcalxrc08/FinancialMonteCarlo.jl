@@ -13,7 +13,7 @@ end
 
 export BrownianMotion;
 
-function simulate(mcProcess::BrownianMotion,spotData::equitySpotData,mcBaseData::MonteCarloBaseData,T::Float64,monteCarloMode::MonteCarloMode=standard)
+function simulate(mcProcess::BrownianMotion,spotData::equitySpotData,mcBaseData::MonteCarloConfiguration,T::Float64,monteCarloMode::MonteCarloMode=standard)
 	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;
 

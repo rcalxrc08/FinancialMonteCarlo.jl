@@ -20,7 +20,7 @@ export InfiniteActivityProcess
 
 using Distributions;
 
-#function simulate(mcProcess::AbstractMonteCarloProcess,spotData::equitySpotData,mcBaseData::MonteCarloBaseData,T::Float64,mode1::MonteCarloMode=standard)
+#function simulate(mcProcess::AbstractMonteCarloProcess,spotData::equitySpotData,mcBaseData::MonteCarloConfiguration,T::Float64,mode1::MonteCarloMode=standard)
 #	error("This is a Virtual function")
 #end
 

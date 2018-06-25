@@ -11,7 +11,7 @@ D=90.0;
 Nsim=10000;
 Nstep=30;
 sigma=0.2;
-mc=MonteCarloBaseData(Nsim,Nstep);
+mc=MonteCarloConfiguration(Nsim,Nstep);
 toll=1e-3;
 
 spotData1=equitySpotData(S0,r,d);

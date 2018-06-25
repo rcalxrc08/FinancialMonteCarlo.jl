@@ -3,7 +3,7 @@ using Base.Test, MonteCarlo,DifferentialEquations;
 Nsim=10000;
 Nstep=30;
 toll=0.8;
-mc=MonteCarloBaseData(Nsim,Nstep);
+mc=MonteCarloConfiguration(Nsim,Nstep);
 S0=100.0
 K=100.0;
 D=90.0;

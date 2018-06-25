@@ -23,7 +23,7 @@ end
 
 export HestonProcess;
 
-function simulate(mcProcess::HestonProcess,spotData::equitySpotData,mcBaseData::MonteCarloBaseData,T::Float64,monteCarloMode::MonteCarloMode=standard)
+function simulate(mcProcess::HestonProcess,spotData::equitySpotData,mcBaseData::MonteCarloConfiguration,T::Float64,monteCarloMode::MonteCarloMode=standard)
 	r=spotData.r;
 	S0=spotData.S0;
 	d=spotData.d;

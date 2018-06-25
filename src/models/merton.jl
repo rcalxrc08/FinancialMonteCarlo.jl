@@ -19,7 +19,7 @@ end
 
 export MertonProcess;
 
-function simulate(mcProcess::MertonProcess,spotData::equitySpotData,mcBaseData::MonteCarloBaseData,T::Float64,monteCarloMode::MonteCarloMode=standard)
+function simulate(mcProcess::MertonProcess,spotData::equitySpotData,mcBaseData::MonteCarloConfiguration,T::Float64,monteCarloMode::MonteCarloMode=standard)
 	r=spotData.r;
 	S0=spotData.S0;
 	d=spotData.d;
@@ -39,7 +39,7 @@ function simulate(mcProcess::MertonProcess,spotData::equitySpotData,mcBaseData::
 	## Simulate
 	# -psi(-i)
 	drift_RN=r-d-sigma^2/2-lambda1*(exp(mu1+sigma1*sigma1/2.0)-1.0); 
-	brownianMcData=MonteCarloBaseData(Nsim,Nstep);
+	brownianMcData=MonteCarloConfiguration(Nsim,Nstep);
 	X=simulate(BrownianMotion(sigma,drift_RN),spotData,brownianMcData,T,monteCarloMode)
 	D1=Poisson(lambda1*T);
 	NJumps=Int.(quantile.(D1,rand(Nsim)));

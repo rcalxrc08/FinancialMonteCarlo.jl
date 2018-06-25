@@ -13,7 +13,7 @@ end
 
 export GeometricBrownianMotion;
 
-function simulate(mcProcess::GeometricBrownianMotion,spotData::equitySpotData,mcBaseData::MonteCarloBaseData,T::Float64,monteCarloMode::MonteCarloMode=standard)
+function simulate(mcProcess::GeometricBrownianMotion,spotData::equitySpotData,mcBaseData::MonteCarloConfiguration,T::Float64,monteCarloMode::MonteCarloMode=standard)
 	if T<=0.0
 		error("Final time must be positive");
 	end
@@ -24,7 +24,7 @@ function simulate(mcProcess::GeometricBrownianMotion,spotData::equitySpotData,mc
 	mu_gbm=mcProcess.drift;
 	drift_bm=mu_gbm-sigma_gbm^2/2;
 	const dictGBM=Dict{String,Number}("sigma"=>sigma_gbm, "drift" => drift_bm)
-	BrownianData=MonteCarloBaseData(mcBaseData.Nsim,mcBaseData.Nstep)
+	BrownianData=MonteCarloConfiguration(mcBaseData.Nsim,mcBaseData.Nstep)
 	X=simulate(BrownianMotion(sigma_gbm,drift_bm),spotData,BrownianData,T,monteCarloMode)
 	S=exp.(X);
 	return S;

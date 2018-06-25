@@ -13,7 +13,7 @@ sigma=dual(0.2,1.0);
 theta1=0.01; 
 k1=0.03; 
 sigma1=0.02;
-mc=MonteCarloBaseData(Nsim,Nstep);
+mc=MonteCarloConfiguration(Nsim,Nstep);
 toll=0.8;
 
 spotData1=equitySpotData(S0,r,d);

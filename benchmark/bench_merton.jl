@@ -14,7 +14,7 @@ sigma=0.2;
 lam=5.0; 
 mu1=0.03; 
 sigma1=0.02;
-mc=MonteCarloBaseData(Nsim,Nstep);
+mc=MonteCarloConfiguration(Nsim,Nstep);
 toll=0.8;
 
 spotData1=equitySpotData(S0,r,d);

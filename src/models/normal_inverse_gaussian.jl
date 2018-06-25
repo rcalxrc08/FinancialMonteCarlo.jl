@@ -18,7 +18,7 @@ end
 
 export NormalInverseGaussianProcess;
 
-function simulate(mcProcess::NormalInverseGaussianProcess,spotData::equitySpotData,mcBaseData::MonteCarloBaseData,T::Float64,monteCarloMode::MonteCarloMode=standard)
+function simulate(mcProcess::NormalInverseGaussianProcess,spotData::equitySpotData,mcBaseData::MonteCarloConfiguration,T::Float64,monteCarloMode::MonteCarloMode=standard)
 	r=spotData.r;
 	S0=spotData.S0;
 	d=spotData.d;
@@ -36,7 +36,7 @@ function simulate(mcProcess::NormalInverseGaussianProcess,spotData::equitySpotDa
 	#psi1(v::Number)::Number=(1-sqrt(1.0+ ((sigma*v)^2-2.0*1im*theta1*v)*k1))/k1;
 	psi1=(1-sqrt(1.0-(sigma^2+2.0*theta1)*k1))/k1;
 	drift=r-d-psi1;
-	subParam=MonteCarloBaseData(Nsim,Nstep);
+	subParam=MonteCarloConfiguration(Nsim,Nstep);
 	
 	#Simulate subordinator
 	IGRandomVariable=InverseGaussian(dt,dt*dt/k1);

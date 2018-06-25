@@ -17,10 +17,10 @@ end
 
 export equitySpotData,MonteCarloMode;
 
-struct MonteCarloBaseData
+struct MonteCarloConfiguration
 	Nsim::Integer
 	Nstep::Integer
-	function MonteCarloBaseData(Nsim::Integer,Nstep::Integer)
+	function MonteCarloConfiguration(Nsim::Integer,Nstep::Integer)
         if Nsim <= 0
             error("Number of Simulations must be positive")
         elseif Nstep <= 0
@@ -31,4 +31,4 @@ struct MonteCarloBaseData
     end
 end
 
-export MonteCarloBaseData;
+export MonteCarloConfiguration;

@@ -11,7 +11,7 @@ end
 
 export BlackScholesProcess;
 
-function simulate(mcProcess::BlackScholesProcess,spotData::equitySpotData,mcBaseData::MonteCarloBaseData,T::Float64,monteCarloMode::MonteCarloMode=standard)
+function simulate(mcProcess::BlackScholesProcess,spotData::equitySpotData,mcBaseData::MonteCarloConfiguration,T::Float64,monteCarloMode::MonteCarloMode=standard)
 	if T<=0.0
 		error("Final time must be positive");
 	end
@@ -22,7 +22,7 @@ function simulate(mcProcess::BlackScholesProcess,spotData::equitySpotData,mcBase
 	Nstep=mcBaseData.Nstep;
 	sigma_gbm=mcProcess.sigma;
 	mu_gbm=r-d;
-	GeomData=MonteCarloBaseData(mcBaseData.Nsim,mcBaseData.Nstep)
+	GeomData=MonteCarloConfiguration(mcBaseData.Nsim,mcBaseData.Nstep)
 	
 	S=S0.*simulate(GeometricBrownianMotion(sigma_gbm,mu_gbm),spotData,GeomData,T,monteCarloMode)
 	

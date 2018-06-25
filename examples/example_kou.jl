@@ -8,5 +8,5 @@ p=0.3;
 lam=5.0; 
 lamp=30.0; 
 lamm=20.0; 
-mc=MonteCarloBaseData(Nsim,Nstep);
+mc=MonteCarloConfiguration(Nsim,Nstep);
 runnerMonteCarlo(KouProcess(sigma,lam,p,lamp,lamm),mc)

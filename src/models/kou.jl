@@ -24,7 +24,7 @@ end
 
 export KouProcess;
 
-function simulate(mcProcess::KouProcess,spotData::equitySpotData,mcBaseData::MonteCarloBaseData,T::Float64,monteCarloMode::MonteCarloMode=standard)
+function simulate(mcProcess::KouProcess,spotData::equitySpotData,mcBaseData::MonteCarloConfiguration,T::Float64,monteCarloMode::MonteCarloMode=standard)
 	r=spotData.r;
 	S0=spotData.S0;
 	d=spotData.d;
@@ -43,7 +43,7 @@ function simulate(mcProcess::KouProcess,spotData::equitySpotData,mcBaseData::Mon
 	## Simulate
 	# r-d-psi(-i)
 	drift_RN=r-d-sigma^2/2-lambda1*(p/(lambdap-1)-(1-p)/(lambdam+1));
-	brownianMcData=MonteCarloBaseData(Nsim,Nstep);
+	brownianMcData=MonteCarloConfiguration(Nsim,Nstep);
 	X=simulate(BrownianMotion(sigma,drift_RN),spotData,brownianMcData,T,monteCarloMode)
 
 	t=linspace(0.0,T,Nstep+1);

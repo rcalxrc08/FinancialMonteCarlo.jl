@@ -2,7 +2,7 @@ include("utils.jl")
 include("payoff.jl")
 include("models.jl")
 	
-function pricer(mcProcess::BaseProcess,spotData::equitySpotData,mcBaseData::MonteCarloBaseData,optionData::AbstractPayoff,mode1::MonteCarloMode=standard)
+function pricer(mcProcess::BaseProcess,spotData::equitySpotData,mcBaseData::MonteCarloConfiguration,optionData::AbstractPayoff,mode1::MonteCarloMode=standard)
 	srand(0)
 	T=optionData.T;
 	Nsim=mcBaseData.Nsim;
@@ -12,7 +12,7 @@ function pricer(mcProcess::BaseProcess,spotData::equitySpotData,mcBaseData::Mont
 	return Price;
 end
 
-function pricer(mcProcess::BaseProcess,spotData::equitySpotData,mcBaseData::MonteCarloBaseData,optionDatas::Array{AbstractPayoff},mode1::MonteCarloMode=standard)
+function pricer(mcProcess::BaseProcess,spotData::equitySpotData,mcBaseData::MonteCarloConfiguration,optionDatas::Array{AbstractPayoff},mode1::MonteCarloMode=standard)
 	srand(0)
 	maxT=maximum([optionData.T for optionData in optionDatas])
 	Nsim=mcBaseData.Nsim;

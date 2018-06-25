@@ -19,7 +19,7 @@ end
 
 export VarianceGammaProcess;
 
-function simulate(mcProcess::VarianceGammaProcess,spotData::equitySpotData,mcBaseData::MonteCarloBaseData,T::Float64,monteCarloMode::MonteCarloMode=standard)
+function simulate(mcProcess::VarianceGammaProcess,spotData::equitySpotData,mcBaseData::MonteCarloConfiguration,T::Float64,monteCarloMode::MonteCarloMode=standard)
 	r=spotData.r;
 	S0=spotData.S0;
 	d=spotData.d;
@@ -40,7 +40,7 @@ function simulate(mcProcess::VarianceGammaProcess,spotData::equitySpotData,mcBas
 	
 	gammaRandomVariable=Gamma(dt/k1);
 	dt_s=k1.*quantile.(gammaRandomVariable,rand(Nsim,Nstep));
-	subParam=MonteCarloBaseData(Nsim,Nstep);
+	subParam=MonteCarloConfiguration(Nsim,Nstep);
 	
 	X=simulate(SubordinatedBrownianMotion(sigma,drift),spotData,subParam,T,dt_s,monteCarloMode);
 

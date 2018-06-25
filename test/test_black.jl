@@ -11,7 +11,7 @@ Nsim=10000;
 Nstep=30;
 sigma=0.2;
 ParamDict=Dict{String,Number}("sigma"=>sigma)
-mc=MonteCarloBaseData(Nsim,Nstep);
+mc=MonteCarloConfiguration(Nsim,Nstep);
 toll=1e-3;
 
 spotData1=equitySpotData(S0,r,d);
@@ -72,7 +72,7 @@ tollPut=0.6;
 @test abs(AsianPrice1-4.230547012372306)<tollPut
 @test abs(AsianPrice2-4.236220218194027)<tollPut
 
-mc2=MonteCarloBaseData(Nsim+1,Nstep);
+mc2=MonteCarloConfiguration(Nsim+1,Nstep);
 @test_throws(ErrorException,pricer(Model,spotData1,mc2,AsianFixedStrikeData,MonteCarlo.antithetic));
 
 

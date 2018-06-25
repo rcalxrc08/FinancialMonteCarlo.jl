@@ -15,7 +15,7 @@ kappa=0.01;
 theta=0.03;
 lambda=0.01;
 rho=0.0;
-mc=MonteCarloBaseData(Nsim,Nstep);
+mc=MonteCarloConfiguration(Nsim,Nstep);
 toll=0.8;
 
 spotData1=equitySpotData(S0,r,d);
