@@ -1,23 +1,23 @@
 
 type KouProcess{num,num1,num2,num3,num4<:Number}<:FiniteActivityProcess
-	sigma::num
-	lambda::num1
+	σ::num
+	λ::num1
 	p::num2
-	lambdap::num3
-	lambdam::num4
-	function KouProcess(sigma::num,lambda::num1,p::num2,lambdap::num3,lambdam::num4) where {num,num1,num2,num3,num4 <: Number}
-        if sigma<=0.0
+	λp::num3
+	λm::num4
+	function KouProcess(σ::num,λ::num1,p::num2,λp::num3,λm::num4) where {num,num1,num2,num3,num4 <: Number}
+        if σ<=0.0
 			error("volatility must be positive");
-		elseif lambda<=0.0
+		elseif λ<=0.0
 			error("jump intensity must be positive");
-		elseif lambdap<=0.0
-			error("positive lambda must be positive");
-		elseif lambdam<=0.0
-			error("negative lambda must be positive");
+		elseif λp<=0.0
+			error("positive λ must be positive");
+		elseif λm<=0.0
+			error("negative λ must be positive");
 		elseif !(0<=p<=1)
 			error("p must be a probability")
         else
-            return new{num,num1,num2,num3,num4}(sigma,lambda,p,lambdap,lambdam)
+            return new{num,num1,num2,num3,num4}(σ,λ,p,λp,λm)
         end
     end
 end
@@ -30,11 +30,11 @@ function simulate(mcProcess::KouProcess,spotData::equitySpotData,mcBaseData::Mon
 	d=spotData.d;
 	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;
-	sigma=mcProcess.sigma;
-	lambda1=mcProcess.lambda;
+	σ=mcProcess.σ;
+	λ1=mcProcess.λ;
 	p=mcProcess.p;
-	lambdap=mcProcess.lambdap;
-	lambdam=mcProcess.lambdam;
+	λp=mcProcess.λp;
+	λm=mcProcess.λm;
 	if T<=0.0
 		error("Final time must be positive");
 	end
@@ -42,13 +42,13 @@ function simulate(mcProcess::KouProcess,spotData::equitySpotData,mcBaseData::Mon
 	####Simulation
 	## Simulate
 	# r-d-psi(-i)
-	drift_RN=r-d-sigma^2/2-lambda1*(p/(lambdap-1)-(1-p)/(lambdam+1));
+	drift_RN=r-d-σ^2/2-λ1*(p/(λp-1)-(1-p)/(λm+1));
 	brownianMcData=MonteCarloConfiguration(Nsim,Nstep);
-	X=simulate(BrownianMotion(sigma,drift_RN),spotData,brownianMcData,T,monteCarloMode)
+	X=simulate(BrownianMotion(σ,drift_RN),spotData,brownianMcData,T,monteCarloMode)
 
 	t=linspace(0.0,T,Nstep+1);
 
-	PoissonRV=Poisson(lambda1*T);
+	PoissonRV=Poisson(λ1*T);
 	NJumps=quantile.(PoissonRV,rand(Nsim));
 
 	for ii in 1:Nsim
@@ -60,7 +60,7 @@ function simulate(mcProcess::KouProcess,spotData::equitySpotData,mcBaseData::Mon
 			
 			idx1=findfirst(x->x>=tjump,t);
 			u=rand(); #simulate Uniform([0,1])
-			jump_size=u<p?quantile_exp(lambdap,rand()):-quantile_exp(lambdam,rand())
+			jump_size=u<p?quantile_exp(λp,rand()):-quantile_exp(λm,rand())
 			X[ii,idx1:end]+=jump_size; #add jump component
 			
 			#for i in 1:Nstep

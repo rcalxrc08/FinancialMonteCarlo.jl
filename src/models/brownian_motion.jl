@@ -1,12 +1,12 @@
 
 type BrownianMotion{num,num1<:Number}<:ItoProcess
-	sigma::num
-	drift::num1
-	function BrownianMotion(sigma::num,drift::num1) where {num,num1 <: Number}
-        if sigma <= 0.0
+	σ::num
+	μ::num1
+	function BrownianMotion(σ::num,μ::num1) where {num,num1 <: Number}
+        if σ <= 0.0
             error("Volatility must be positive")
         else
-            return new{num,num1}(sigma,drift)
+            return new{num,num1}(σ,μ)
         end
     end
 end
@@ -17,14 +17,14 @@ function simulate(mcProcess::BrownianMotion,spotData::equitySpotData,mcBaseData:
 	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;
 
-	sigma=mcProcess.sigma;
-	drift=mcProcess.drift;
+	σ=mcProcess.σ;
+	μ=mcProcess.μ;
 	if T<=0.0
 		error("Final time must be positive");
 	end
 	dt=T/Nstep
-	mean_bm=drift*dt
-	stddev_bm=sigma*sqrt(dt)
+	mean_bm=μ*dt
+	stddev_bm=σ*sqrt(dt)
 	isDualZero=mean_bm*stddev_bm*0.0;
 	X=Matrix{typeof(isDualZero)}(Nsim,Nstep+1);
 	X[:,1]=isDualZero;

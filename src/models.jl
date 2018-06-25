@@ -44,3 +44,14 @@ include("models/normal_inverse_gaussian.jl")
 
 ### Support for DiffentialEquations.jl
 include("models/diff_eq_monte_carlo.jl")
+
+############### Display Function
+
+import Base.Multimedia.display;
+
+function display(p::AbstractMonteCarloProcess)
+	fldnames=fieldnames(p);
+	for name in fldnames
+		println(name," = ",getfield(p,name))
+	end
+end

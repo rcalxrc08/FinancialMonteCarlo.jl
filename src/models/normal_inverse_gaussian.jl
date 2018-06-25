@@ -1,17 +1,17 @@
 
 type NormalInverseGaussianProcess{num,num1,num2<:Number}<:InfiniteActivityProcess
-	sigma::num
-	theta::num1
-	k::num2
-	function NormalInverseGaussianProcess(sigma::num,theta::num1,k::num2) where {num,num1,num2 <: Number}
-        if sigma<=0.0
+	σ::num
+	θ::num1
+	κ::num2
+	function NormalInverseGaussianProcess(σ::num,θ::num1,κ::num2) where {num,num1,num2 <: Number}
+        if σ<=0.0
 			error("volatility must be positive");
-		elseif k<=0.0
-			error("kappa must be positive");
-		elseif 1.0-(sigma^2+2.0*theta)*k<0.0
+		elseif κ<=0.0
+			error("κappa must be positive");
+		elseif 1.0-(σ^2+2.0*θ)*κ<0.0
 			error("Parameters with unfeasible values")
 		else
-            return new{num,num1,num2}(sigma,theta,k)
+            return new{num,num1,num2}(σ,θ,κ)
         end
     end
 end
@@ -25,24 +25,24 @@ function simulate(mcProcess::NormalInverseGaussianProcess,spotData::equitySpotDa
 	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;
 
-	sigma=mcProcess.sigma;
-	theta1=mcProcess.theta;
-	k1=mcProcess.k;
+	σ=mcProcess.σ;
+	θ1=mcProcess.θ;
+	κ1=mcProcess.κ;
 	if T<=0.0
 		error("Final time must be positive");
 	end
 	
 	dt=T/Nstep;
-	#psi1(v::Number)::Number=(1-sqrt(1.0+ ((sigma*v)^2-2.0*1im*theta1*v)*k1))/k1;
-	psi1=(1-sqrt(1.0-(sigma^2+2.0*theta1)*k1))/k1;
+	#psi1(v::Number)::Number=(1-sqrt(1.0+ ((σ*v)^2-2.0*1im*θ1*v)*κ1))/κ1;
+	psi1=(1-sqrt(1.0-(σ^2+2.0*θ1)*κ1))/κ1;
 	drift=r-d-psi1;
 	subParam=MonteCarloConfiguration(Nsim,Nstep);
 	
 	#Simulate subordinator
-	IGRandomVariable=InverseGaussian(dt,dt*dt/k1);
+	IGRandomVariable=InverseGaussian(dt,dt*dt/κ1);
 	dt_s=quantile.(IGRandomVariable,rand(Nsim,Nstep));
 	
-	X=simulate(SubordinatedBrownianMotion(sigma,drift),spotData,subParam,T,dt_s,monteCarloMode);
+	X=simulate(SubordinatedBrownianMotion(σ,drift),spotData,subParam,T,dt_s,monteCarloMode);
 
 	S=S0.*exp.(X);
 	

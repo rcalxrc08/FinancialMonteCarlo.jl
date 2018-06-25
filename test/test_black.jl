@@ -24,6 +24,8 @@ AsianFloatingStrikeData=AsianFloatingStrikeOption(T)
 AsianFixedStrikeData=AsianFixedStrikeOption(T,K)
 Model=BlackScholesProcess(sigma);
 
+display(Model)
+
 @show FwdPrice=pricer(Model,spotData1,mc,FwdData);						
 @show EuPrice=pricer(Model,spotData1,mc,EUData);
 @show AmPrice=pricer(Model,spotData1,mc,AMData);

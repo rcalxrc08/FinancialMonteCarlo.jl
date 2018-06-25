@@ -1,10 +1,10 @@
 type BlackScholesProcess{num<:Number}<:ItoProcess
-	sigma::num
-	function BlackScholesProcess(sigma::num) where {num <: Number}
-        if sigma <= 0.0
+	σ::num
+	function BlackScholesProcess(σ::num) where {num <: Number}
+        if σ <= 0.0
             error("Volatility must be positive")
         else
-            return new{num}(sigma)
+            return new{num}(σ)
         end
     end
 end
@@ -20,11 +20,11 @@ function simulate(mcProcess::BlackScholesProcess,spotData::equitySpotData,mcBase
 	d=spotData.d;
 	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;
-	sigma_gbm=mcProcess.sigma;
+	σ_gbm=mcProcess.σ;
 	mu_gbm=r-d;
 	GeomData=MonteCarloConfiguration(mcBaseData.Nsim,mcBaseData.Nstep)
 	
-	S=S0.*simulate(GeometricBrownianMotion(sigma_gbm,mu_gbm),spotData,GeomData,T,monteCarloMode)
+	S=S0.*simulate(GeometricBrownianMotion(σ_gbm,mu_gbm),spotData,GeomData,T,monteCarloMode)
 	
 	return S;
 	
