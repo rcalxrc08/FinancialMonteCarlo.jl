@@ -15,7 +15,6 @@ sigma=0.2;
 theta1=0.01;
 k1=0.03;
 sigma1=0.02;
-ParamDict=Dict{String,Number}("sigma"=>sigma, "theta" => theta1, "k" => k1)
 mc=MonteCarloConfiguration(Nsim,Nstep);
 toll=0.8;
 

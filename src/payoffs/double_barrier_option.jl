@@ -34,7 +34,7 @@ Where:\n
 		Payoff      = payoff of the option.
 ```
 """
-function payoff(S::Matrix{num},doubleBarrierPayoff::DoubleBarrierOption,spotData::equitySpotData,T1::Float64=doubleBarrierPayoff.T) where{num<:Number}
+function payoff(S::AbstractMatrix{num},doubleBarrierPayoff::DoubleBarrierOption,spotData::equitySpotData,T1::Float64=doubleBarrierPayoff.T) where{num<:Number}
 	r=spotData.r;
 	T=doubleBarrierPayoff.T;
 	iscall=doubleBarrierPayoff.isCall?1:-1

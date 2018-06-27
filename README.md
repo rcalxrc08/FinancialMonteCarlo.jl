@@ -18,9 +18,9 @@ It currently contains the following capabilities:
     - Barrier Options
     - Asian Options
 
-It also supports the pricing directly from the definition of the Stochastic Differential Equation, using the package [DifferentiatialEquations.jl](https://github.com/JuliaDiff/DualNumbers.jl).
+It also supports the pricing directly from the definition of the Stochastic Differential Equation, using the package [DifferentiatialEquations.jl](https://github.com/JuliaDiffEq/DifferentialEquations.jl).
 
-Currently supports [Dual Numbers](https://github.com/JuliaDiff/DualNumbers.jl) and [ForwardDiff](https://github.com/JuliaDiff/ForwardDiff.jl)
+Currently supports [Dual Numbers](https://github.com/JuliaDiff/DualNumbers.jl), [ForwardDiff](https://github.com/JuliaDiff/ForwardDiff.jl) and [ReverseDiff](https://github.com/JuliaDiff/ReverseDiff.jl)
 for Automatic Differentiation (where it makes sense).
 
 ## How to Install

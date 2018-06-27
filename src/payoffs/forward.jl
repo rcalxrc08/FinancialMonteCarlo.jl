@@ -12,7 +12,7 @@ end
 
 export Forward;
 
-function payoff(S::Matrix{num},optionData::Forward,spotData::equitySpotData,T1::Float64=optionData.T) where{num<:Number}
+function payoff(S::AbstractMatrix{num},optionData::Forward,spotData::equitySpotData,T1::Float64=optionData.T) where{num<:Number}
 	r=spotData.r;
 	T=optionData.T;
 	(Nsim,NStep)=size(S)

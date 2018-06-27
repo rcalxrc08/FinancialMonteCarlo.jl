@@ -10,7 +10,6 @@ D=90.0;
 Nsim=10000;
 Nstep=30;
 sigma=0.2;
-ParamDict=Dict{String,Number}("sigma"=>sigma)
 mc=MonteCarloConfiguration(Nsim,Nstep);
 toll=1e-3;
 

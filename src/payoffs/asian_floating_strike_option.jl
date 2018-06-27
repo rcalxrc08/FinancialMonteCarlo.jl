@@ -25,7 +25,7 @@ Where:\n
 		Payoff      = payoff of the option.
 ```
 """
-function payoff(S::Matrix{num},asianFloatingStrikePayoff::AsianFloatingStrikeOption,spotData::equitySpotData,T1::Float64=asianFloatingStrikePayoff.T) where{num<:Number}
+function payoff(S::AbstractMatrix{num},asianFloatingStrikePayoff::AsianFloatingStrikeOption,spotData::equitySpotData,T1::Float64=asianFloatingStrikePayoff.T) where{num<:Number}
 	iscall=asianFloatingStrikePayoff.isCall?1:-1
 	r=spotData.r;
 	T=asianFloatingStrikePayoff.T;
