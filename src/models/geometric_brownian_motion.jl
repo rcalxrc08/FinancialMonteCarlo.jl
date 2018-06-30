@@ -23,9 +23,7 @@ function simulate(mcProcess::GeometricBrownianMotion,spotData::equitySpotData,mc
 	σ_gbm=mcProcess.σ;
 	mu_gbm=mcProcess.μ;
 	μ_bm=mu_gbm-σ_gbm^2/2;
-	const dictGBM=Dict{String,Number}("σ"=>σ_gbm, "μ" => μ_bm)
-	BrownianData=MonteCarloConfiguration(mcBaseData.Nsim,mcBaseData.Nstep)
-	X=simulate(BrownianMotion(σ_gbm,μ_bm),spotData,BrownianData,T,monteCarloMode)
+	X=simulate(BrownianMotion(σ_gbm,μ_bm),spotData,mcBaseData,T,monteCarloMode)
 	S=exp.(X);
 	return S;
 end

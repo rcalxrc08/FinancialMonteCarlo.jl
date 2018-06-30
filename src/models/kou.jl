@@ -43,8 +43,7 @@ function simulate(mcProcess::KouProcess,spotData::equitySpotData,mcBaseData::Mon
 	## Simulate
 	# r-d-psi(-i)
 	drift_RN=r-d-σ^2/2-λ1*(p/(λp-1)-(1-p)/(λm+1));
-	brownianMcData=MonteCarloConfiguration(Nsim,Nstep);
-	X=simulate(BrownianMotion(σ,drift_RN),spotData,brownianMcData,T,monteCarloMode)
+	X=simulate(BrownianMotion(σ,drift_RN),spotData,mcBaseData,T,monteCarloMode)
 
 	t=linspace(0.0,T,Nstep+1);
 

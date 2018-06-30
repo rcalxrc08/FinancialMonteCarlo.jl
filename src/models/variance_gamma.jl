@@ -40,9 +40,8 @@ function simulate(mcProcess::VarianceGammaProcess,spotData::equitySpotData,mcBas
 	
 	gammaRandomVariable=Gamma(dt/κ1);
 	dt_s=κ1.*quantile.(gammaRandomVariable,rand(Nsim,Nstep));
-	subParam=MonteCarloConfiguration(Nsim,Nstep);
 	
-	X=simulate(SubordinatedBrownianMotion(σ,drift),spotData,subParam,T,dt_s,monteCarloMode);
+	X=simulate(SubordinatedBrownianMotion(σ,drift),spotData,mcBaseData,T,dt_s,monteCarloMode);
 
 	S=S0.*exp.(X);
 	

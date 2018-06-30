@@ -36,13 +36,12 @@ function simulate(mcProcess::NormalInverseGaussianProcess,spotData::equitySpotDa
 	#psi1(v::Number)::Number=(1-sqrt(1.0+ ((σ*v)^2-2.0*1im*θ1*v)*κ1))/κ1;
 	psi1=(1-sqrt(1.0-(σ^2+2.0*θ1)*κ1))/κ1;
 	drift=r-d-psi1;
-	subParam=MonteCarloConfiguration(Nsim,Nstep);
 	
 	#Simulate subordinator
 	IGRandomVariable=InverseGaussian(dt,dt*dt/κ1);
 	dt_s=quantile.(IGRandomVariable,rand(Nsim,Nstep));
 	
-	X=simulate(SubordinatedBrownianMotion(σ,drift),spotData,subParam,T,dt_s,monteCarloMode);
+	X=simulate(SubordinatedBrownianMotion(σ,drift),spotData,mcBaseData,T,dt_s,monteCarloMode);
 
 	S=S0.*exp.(X);
 	

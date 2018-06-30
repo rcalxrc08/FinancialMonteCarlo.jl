@@ -22,9 +22,8 @@ function simulate(mcProcess::BlackScholesProcess,spotData::equitySpotData,mcBase
 	Nstep=mcBaseData.Nstep;
 	σ_gbm=mcProcess.σ;
 	mu_gbm=r-d;
-	GeomData=MonteCarloConfiguration(mcBaseData.Nsim,mcBaseData.Nstep)
 	
-	S=S0.*simulate(GeometricBrownianMotion(σ_gbm,mu_gbm),spotData,GeomData,T,monteCarloMode)
+	S=S0.*simulate(GeometricBrownianMotion(σ_gbm,mu_gbm),spotData,mcBaseData,T,monteCarloMode)
 	
 	return S;
 	
