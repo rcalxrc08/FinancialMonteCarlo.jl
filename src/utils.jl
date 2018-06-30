@@ -17,16 +17,16 @@ end
 
 export equitySpotData,MonteCarloMode;
 
-struct MonteCarloConfiguration
-	Nsim::Integer
-	Nstep::Integer
-	function MonteCarloConfiguration(Nsim::Integer,Nstep::Integer)
-        if Nsim <= 0
+struct MonteCarloConfiguration{num1,num2<:Integer}
+	Nsim::num1
+	Nstep::num2
+	function MonteCarloConfiguration(Nsim::num1,Nstep::num2) where {num1,num2<:Integer}
+        if Nsim <= zero(num1)
             error("Number of Simulations must be positive")
-        elseif Nstep <= 0
+        elseif Nstep <= zero(num2)
             error("Number of Steps must be positive")
 		else
-            return new(Nsim,Nstep)
+            return new{num1,num2}(Nsim,Nstep)
         end
     end
 end
