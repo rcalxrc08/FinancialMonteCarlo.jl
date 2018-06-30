@@ -33,6 +33,16 @@ drift=0.0
 @test_throws(ErrorException,BlackScholesProcess(-sigma))
 @test_throws(ErrorException,simulate(BlackScholesProcess(sigma),spotData1,McConfig,-T));
 
+@show "Test LogNormalMixture Parameters"
+eta=[0.2,0.2]
+lam11=Float64[0.9999]
+@test_throws(ErrorException,LogNormalMixture(-0.2*ones(3),0.1*ones(2)))
+@test_throws(ErrorException,LogNormalMixture(0.2*ones(3),-0.1*ones(2)))
+@test_throws(ErrorException,LogNormalMixture(0.2*ones(3),ones(2)))
+@test_throws(ErrorException,LogNormalMixture(0.2*ones(3),0.2*ones(3)))
+
+@test_throws(ErrorException,simulate(LogNormalMixture(eta,lam11),spotData1,McConfig,-T));
+
 @show "Test Kou Parameters"
 p=0.3; 
 lam=5.0; 
