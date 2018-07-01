@@ -1,17 +1,17 @@
 type LogNormalMixture{num,num2<:Number}<:ItoProcess
-	eta::Array{num,1}
-	lambda::Array{num2,1}
-	function LogNormalMixture(eta::Array{num,1},lambda::Array{num2,1}) where {num,num2 <: Number}
-        if minimum(eta) <= 0.0
+	η::Array{num,1}
+	λ::Array{num2,1}
+	function LogNormalMixture(η::Array{num,1},λ::Array{num2,1}) where {num,num2 <: Number}
+        if minimum(η) <= 0.0
             error("Volatilities must be positive")
-        elseif minimum(lambda) <= 0.0
+        elseif minimum(λ) <= 0.0
             error("weights must be positive")
-        elseif sum(lambda) > 1.0
-            error("lambdas must be weights")
-        elseif length(lambda) != length(eta)-1
+        elseif sum(λ) > 1.0
+            error("λs must be weights")
+        elseif length(λ) != length(η)-1
             error("Check vector lengths")
         else
-            return new{num,num2}(eta,lambda)
+            return new{num,num2}(η,λ)
         end
     end
 end
@@ -27,13 +27,13 @@ function simulate(mcProcess::LogNormalMixture,spotData::equitySpotData,mcBaseDat
 	d=spotData.d;
 	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;
-	eta_gbm=mcProcess.eta;
-	lambda_gmb=mcProcess.lambda
-	push!(lambda_gmb,1.0-sum(mcProcess.lambda))
+	η_gbm=mcProcess.η;
+	λ_gmb=mcProcess.λ
+	push!(λ_gmb,1.0-sum(mcProcess.λ))
 	mu_gbm=r-d;
-	S=lambda_gmb[1]*S0.*simulate(GeometricBrownianMotion(eta_gbm[1],mu_gbm),spotData,mcBaseData,T,monteCarloMode);
-	for (eta_gbm_,lambda_gmb_) in zip(eta_gbm[2:end],lambda_gmb[2:end])
-		S+=lambda_gmb_*S0.*simulate(GeometricBrownianMotion(eta_gbm_,mu_gbm),spotData,mcBaseData,T,monteCarloMode)
+	S=λ_gmb[1]*S0.*simulate(GeometricBrownianMotion(η_gbm[1],mu_gbm),spotData,mcBaseData,T,monteCarloMode);
+	for (η_gbm_,λ_gmb_) in zip(η_gbm[2:end],λ_gmb[2:end])
+		S+=λ_gmb_*S0.*simulate(GeometricBrownianMotion(η_gbm_,mu_gbm),spotData,mcBaseData,T,monteCarloMode)
 	end
 	return S;
 	
