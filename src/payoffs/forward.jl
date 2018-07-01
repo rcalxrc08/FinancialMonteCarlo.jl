@@ -1,11 +1,11 @@
 
-struct Forward<:EuropeanPayoff
-	T::Float64
-	function Forward(T::Float64)
+struct Forward{num<:Number}<:EuropeanPayoff
+	T::num
+	function Forward(T::num) where {num<:Number}
         if T <= 0.0
             error("Time to Maturity must be positive")
         else
-            return new(T)
+            return new{num}(T)
         end
     end
 end

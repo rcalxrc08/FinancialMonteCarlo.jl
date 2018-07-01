@@ -1,10 +1,10 @@
 
-struct BarrierOptionUpIn<:BarrierPayoff
-	T::Float64
-	K::Float64
-	barrier::Float64
+struct BarrierOptionUpIn{num1,num2,num3<:Number}<:BarrierPayoff
+	T::num1
+	K::num2
+	barrier::num3
 	isCall::Bool
-	function BarrierOptionUpIn(T::Float64,K::Float64,barrier::Float64,isCall::Bool=true)
+	function BarrierOptionUpIn(T::num1,K::num2,barrier::num3,isCall::Bool=true) where {num1,num2,num3<:Number}
         if T <= 0.0
             error("Time to Maturity must be positive")
         elseif K <= 0.0
@@ -12,7 +12,7 @@ struct BarrierOptionUpIn<:BarrierPayoff
         elseif barrier <= 0.0
             error("Barrier must be positive")
         else
-            return new(T,K,barrier,isCall)
+            return new{num1,num2,num3}(T,K,barrier,isCall)
         end
     end
 end

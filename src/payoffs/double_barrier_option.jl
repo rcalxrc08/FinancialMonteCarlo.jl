@@ -1,11 +1,11 @@
 
-struct DoubleBarrierOption<:BarrierPayoff
-	T::Float64
-	K::Float64
-	D::Float64
-	U::Float64
+struct DoubleBarrierOption{num1,num2,num3,num4<:Number}<:BarrierPayoff
+	T::num1
+	K::num2
+	D::num3
+	U::num4
 	isCall::Bool
-	function DoubleBarrierOption(T::Float64,K::Float64,D::Float64,U::Float64,isCall::Bool=true)
+	function DoubleBarrierOption(T::num1,K::num2,D::num3,U::num4,isCall::Bool=true) where {num1,num2,num3,num4<:Number}
         if T <= 0.0
             error("Time to Maturity must be positive")
         elseif K <= 0.0
@@ -15,7 +15,7 @@ struct DoubleBarrierOption<:BarrierPayoff
         elseif U <= 0.0
             error("High Barrier must be positive")
         else
-            return new(T,K,D,U,isCall)
+            return new{num1,num2,num3,num4}(T,K,D,U,isCall)
         end
     end
 end

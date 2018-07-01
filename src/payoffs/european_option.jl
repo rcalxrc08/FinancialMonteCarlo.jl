@@ -1,15 +1,15 @@
 
-struct EuropeanOption<:EuropeanPayoff
-	T::Float64
-	K::Float64
+struct EuropeanOption{num1,num2<:Number}<:EuropeanPayoff
+	T::num1
+	K::num2
 	isCall::Bool
-	function EuropeanOption(T::Float64,K::Float64,isCall::Bool=true)
+	function EuropeanOption(T::num1,K::num2,isCall::Bool=true) where {num1,num2<:Number}
         if T <= 0.0
             error("Time to Maturity must be positive")
         elseif K <= 0.0
             error("Strike Price must be positive")
         else
-            return new(T,K,isCall)
+            return new{num1,num2}(T,K,isCall)
         end
     end
 end

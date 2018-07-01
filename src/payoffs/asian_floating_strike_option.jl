@@ -1,12 +1,12 @@
 
-struct AsianFloatingStrikeOption<:AsianPayoff
-	T::Float64
+struct AsianFloatingStrikeOption{num<:Number}<:AsianPayoff
+	T::num
 	isCall::Bool
-	function AsianFloatingStrikeOption(T::Float64,isCall::Bool=true)
+	function AsianFloatingStrikeOption(T::num,isCall::Bool=true) where {num<:Number}
         if T <= 0.0
             error("Time to Maturity must be positive")
         else
-            return new(T,isCall)
+            return new{num}(T,isCall)
         end
     end
 end
