@@ -55,21 +55,71 @@ mc=MonteCarloConfiguration(Nsim,Nstep);
 spotData1=equitySpotData(S0,r,d);
 
 #Define The Options
-FwdData=Forward(T)
-EUData=EuropeanOption(T,K)
-AMData=AmericanOption(T,K)
-BarrierData=BarrierOptionDownOut(T,K,D)
-AsianFloatingStrikeData=AsianFloatingStrikeOption(T)
-AsianFixedStrikeData=AsianFixedStrikeOption(T,K)
+Fwd_payoff=Forward(T)
+EU_payoff=EuropeanOption(T,K)
+AM_payoff=AmericanOption(T,K)
+Barrier_payoff=BarrierOptionDownOut(T,K,D)
+AsianFloatingStrike_payoff=AsianFloatingStrikeOption(T)
+AsianFixedStrike_payoff=AsianFixedStrikeOption(T,K)
 
 #Define the Model
 Model=BlackScholesProcess(σ);
 
 #Price
-@show FwdPrice=pricer(Model,spotData1,mc,FwdData);						
-@show EuPrice=pricer(Model,spotData1,mc,EUData);
-@show AmPrice=pricer(Model,spotData1,mc,AMData);
-@show BarrierPrice=pricer(Model,spotData1,mc,BarrierData);
-@show AsianPrice1=pricer(Model,spotData1,mc,AsianFloatingStrikeData);
-@show AsianPrice2=pricer(Model,spotData1,mc,AsianFixedStrikeData);
+@show FwdPrice=pricer(Model,spotData1,mc,Fwd_payoff);						
+@show EuPrice=pricer(Model,spotData1,mc,EU_payoff);
+@show AmPrice=pricer(Model,spotData1,mc,AM_payoff);
+@show BarrierPrice=pricer(Model,spotData1,mc,Barrier_payoff);
+@show AsianPrice1=pricer(Model,spotData1,mc,AsianFloatingStrike_payoff);
+@show AsianPrice2=pricer(Model,spotData1,mc,AsianFixedStrike_payoff);
+```
+
+
+## Example of Interaction with DifferentialEquations.jl: Pricing Options in Black Scholes Model
+The following example shows how to price different kind of options with underlying varying according to the Black Scholes Model simulates using the library DifferentialEquations.jl.
+```julia
+#Import the Package
+using MonteCarlo,DifferentialEquations;
+#Define Spot Datas
+S0=100.0;
+K=100.0;
+r=0.02;
+T=1.0;
+d=0.01;
+D=90.0;
+u0=S0;
+#Define MonteCarlo Parameters
+Nsim=10000;
+Nstep=30;
+#Define Model Parameters
+σ=0.2;
+#Build the Structs
+mc=MonteCarloConfiguration(Nsim,Nstep);
+spotData1=equitySpotData(S0,r,d);
+
+#Define The Options
+Fwd_payoff=Forward(T)
+EU_payoff=EuropeanOption(T,K)
+AM_payoff=AmericanOption(T,K)
+Barrier_payoff=BarrierOptionDownOut(T,K,D)
+AsianFloatingStrike_payoff=AsianFloatingStrikeOption(T)
+AsianFixedStrike_payoff=AsianFixedStrikeOption(T,K)
+
+##Define the Model
+#Drift
+f(u,p,t) = (r-d)*u
+#Diffusion
+g(u,p,t) = σ*u
+#Time Window
+tspan = (0.0,T)
+#Definition of the SDE
+prob = SDEProblem(f,g,u0,tspan)
+Model = MonteCarloProblem(prob)
+#Price
+@show FwdPrice=pricer(Model,spotData1,mc,Fwd_payoff);						
+@show EuPrice=pricer(Model,spotData1,mc,EU_payoff);
+@show AmPrice=pricer(Model,spotData1,mc,AM_payoff);
+@show BarrierPrice=pricer(Model,spotData1,mc,Barrier_payoff);
+@show AsianPrice1=pricer(Model,spotData1,mc,AsianFloatingStrike_payoff);
+@show AsianPrice2=pricer(Model,spotData1,mc,AsianFixedStrike_payoff);
 ```
