@@ -32,5 +32,5 @@ spotData1=equitySpotData(S0,r,d);
 optionDatas=[FwdData,EUData,AMData,BarrierData,AsianData]
 
 optPrices=pricer(monte_prob,spotData1,mc,optionDatas);
-
+@show optPrices
 @test 0==0

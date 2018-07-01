@@ -1,8 +1,8 @@
 
-struct AsianFloatingStrikeOption{num,num2<:Number}<:AsianPayoff
+struct AsianFloatingStrikeOption{num<:Number}<:AsianPayoff
 	T::num
 	isCall::Bool
-	function AsianFloatingStrikeOption(T::num,isCall::Bool=true) where {num,num2<:Number}
+	function AsianFloatingStrikeOption(T::num,isCall::Bool=true) where {num<:Number}
         if T <= 0.0
             error("Time to Maturity must be positive")
         else
