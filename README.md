@@ -51,7 +51,7 @@ Nstep=30;
 #Define Model Parameters
 σ=0.2;
 #Build the Structs
-mc=MonteCarloConfiguration(Nsim,Nstep);
+mcConfig=MonteCarloConfiguration(Nsim,Nstep);
 spotData1=equitySpotData(S0,r,d);
 
 #Define The Options
@@ -66,12 +66,12 @@ AsianFixedStrike_payoff=AsianFixedStrikeOption(T,K)
 Model=BlackScholesProcess(σ);
 
 #Price
-@show FwdPrice=pricer(Model,spotData1,mc,Fwd_payoff);						
-@show EuPrice=pricer(Model,spotData1,mc,EU_payoff);
-@show AmPrice=pricer(Model,spotData1,mc,AM_payoff);
-@show BarrierPrice=pricer(Model,spotData1,mc,Barrier_payoff);
-@show AsianPrice1=pricer(Model,spotData1,mc,AsianFloatingStrike_payoff);
-@show AsianPrice2=pricer(Model,spotData1,mc,AsianFixedStrike_payoff);
+@show FwdPrice=pricer(Model,spotData1,mcConfig,Fwd_payoff);						
+@show EuPrice=pricer(Model,spotData1,mcConfig,EU_payoff);
+@show AmPrice=pricer(Model,spotData1,mcConfig,AM_payoff);
+@show BarrierPrice=pricer(Model,spotData1,mcConfig,Barrier_payoff);
+@show AsianPrice1=pricer(Model,spotData1,mcConfig,AsianFloatingStrike_payoff);
+@show AsianPrice2=pricer(Model,spotData1,mcConfig,AsianFixedStrike_payoff);
 ```
 
 
@@ -94,7 +94,7 @@ Nstep=30;
 #Define Model Parameters
 σ=0.2;
 #Build the Structs
-mc=MonteCarloConfiguration(Nsim,Nstep);
+mcConfig=MonteCarloConfiguration(Nsim,Nstep);
 spotData1=equitySpotData(S0,r,d);
 
 #Define The Options
@@ -116,10 +116,10 @@ tspan = (0.0,T)
 prob = SDEProblem(f,g,u0,tspan)
 Model = MonteCarloProblem(prob)
 #Price
-@show FwdPrice=pricer(Model,spotData1,mc,Fwd_payoff);						
-@show EuPrice=pricer(Model,spotData1,mc,EU_payoff);
-@show AmPrice=pricer(Model,spotData1,mc,AM_payoff);
-@show BarrierPrice=pricer(Model,spotData1,mc,Barrier_payoff);
-@show AsianPrice1=pricer(Model,spotData1,mc,AsianFloatingStrike_payoff);
-@show AsianPrice2=pricer(Model,spotData1,mc,AsianFixedStrike_payoff);
+@show FwdPrice=pricer(Model,spotData1,mcConfig,Fwd_payoff);						
+@show EuPrice=pricer(Model,spotData1,mcConfig,EU_payoff);
+@show AmPrice=pricer(Model,spotData1,mcConfig,AM_payoff);
+@show BarrierPrice=pricer(Model,spotData1,mcConfig,Barrier_payoff);
+@show AsianPrice1=pricer(Model,spotData1,mcConfig,AsianFloatingStrike_payoff);
+@show AsianPrice2=pricer(Model,spotData1,mcConfig,AsianFixedStrike_payoff);
 ```
