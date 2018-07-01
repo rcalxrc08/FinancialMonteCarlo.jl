@@ -1,4 +1,4 @@
-using MonteCarlo, Base.Test,DifferentialEquations
+using MonteCarlo, Base.Test
 @show "Test Parameters"
 S0=100.0;
 K=100.0;
