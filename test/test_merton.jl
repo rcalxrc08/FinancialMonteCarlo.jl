@@ -49,3 +49,11 @@ tollanti=0.6;
 @test abs(EuPrice-9.084327245917533)<tollanti
 @test abs(BarrierPrice-7.880881290426765)<tollanti
 @test abs(AsianPrice-5.129020349580892)<tollanti
+
+
+
+@show "Test Merton Parameters"
+@test_throws(ErrorException,simulate(MertonProcess(sigma,lam,mu1,sigma1),spotData1,mc,-T));
+@test_throws(ErrorException,MertonProcess(-sigma,lam,mu1,sigma1))
+@test_throws(ErrorException,MertonProcess(sigma,lam,mu1,-sigma1))
+@test_throws(ErrorException,MertonProcess(sigma,-lam,mu1,sigma1))

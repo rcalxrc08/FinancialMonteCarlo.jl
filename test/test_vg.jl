@@ -47,3 +47,11 @@ Model=VarianceGammaProcess(sigma,theta1,k1);
 @test abs(EuPrice-7.738298817933206)<toll
 @test abs(BarrierPrice-6.886023820038332)<toll
 @test abs(AsianPrice-4.414948846776423)<toll
+
+
+@show "Test Variance Gamma Parameters"
+
+@test_throws(ErrorException,simulate(VarianceGammaProcess(sigma,theta1,k1),spotData1,mc,-T));
+@test_throws(ErrorException,VarianceGammaProcess(-sigma,theta1,k1))
+@test_throws(ErrorException,VarianceGammaProcess(sigma,theta1,-k1))
+@test_throws(ErrorException,VarianceGammaProcess(sigma,10000.0,k1))

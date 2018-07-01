@@ -48,3 +48,11 @@ tollanti=0.8;
 @test abs(EuPrice-7.738298817933206)<tollanti
 @test abs(BarrierPrice-6.886023820038332)<tollanti
 @test abs(AsianPrice-4.414948846776423)<tollanti
+
+
+@show "Test NIG Parameters"
+
+@test_throws(ErrorException,simulate(NormalInverseGaussianProcess(sigma,theta1,k1),spotData1,mc,-T));
+@test_throws(ErrorException,NormalInverseGaussianProcess(-sigma,theta1,k1))
+@test_throws(ErrorException,NormalInverseGaussianProcess(sigma,theta1,-k1))
+@test_throws(ErrorException,NormalInverseGaussianProcess(sigma,10000.0,k1))

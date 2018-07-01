@@ -43,3 +43,11 @@ AsianFixedStrikeData=AsianFixedStrikeOption(T,K)
 @test abs(EuPrice-8.17917706833563)<toll
 @test abs(BarrierPrice-7.08419994877601)<toll
 @test abs(AsianPrice1-4.70419181812687)<toll
+
+
+
+Tneg=-T;
+tspanNeg = (0.0,Tneg)
+probNeg = SDEProblem(f,g,u0,tspanNeg)
+monte_probNeg = MonteCarloProblem(probNeg)
+@test_throws(ErrorException,simulate(monte_probNeg,spotData1,mc,Tneg));

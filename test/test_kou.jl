@@ -51,3 +51,15 @@ tollanti=0.6
 @test abs(EuPrice-10.347332240535199)<tollanti
 @test abs(BarrierPrice-8.860123655599818)<tollanti
 @test abs(AsianPrice1-5.81798437145069)<tollanti
+
+
+
+
+@show "Test Kou Parameters"
+
+@test_throws(ErrorException,simulate(KouProcess(sigma, lam, p,  lamp,  lamm),spotData1,mc,-T));
+@test_throws(ErrorException,KouProcess(-sigma,lam, p,  lamp,  lamm))
+@test_throws(ErrorException,KouProcess( sigma, -lam, p,  lamp,  lamm))
+@test_throws(ErrorException,KouProcess( sigma, lam,-p,  lamp,  lamm))
+@test_throws(ErrorException,KouProcess( sigma, lam, p, -lamp,  lamm))
+@test_throws(ErrorException,KouProcess( sigma, lam, p,  lamp, -lamm))

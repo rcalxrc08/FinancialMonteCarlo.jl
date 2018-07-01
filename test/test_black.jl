@@ -93,3 +93,10 @@ doubleBarrierOptionDownOut=DoubleBarrierOption(T,K,K/10.0,1.2*K)
 @show AmBinPrice=pricer(Model,spotData1,mc,BinAMData);
 @show EuBinPrice=pricer(Model,spotData1,mc,EUDataBin);
 @show doubleBarrier=pricer(Model,spotData1,mc,doubleBarrierOptionDownOut);
+
+
+
+
+@show "Test Black Scholes Parameters"
+@test_throws(ErrorException,simulate(BlackScholesProcess(sigma),spotData1,mc,-T));
+@test_throws(ErrorException,BlackScholesProcess(-sigma))
