@@ -28,7 +28,7 @@ Where:\n
 		Payoff      = payoff of the option.
 ```
 """
-function payoff(S::AbstractMatrix{num},amPayoff::BinaryAmericanOption,spotData::equitySpotData,T1::Float64=amPayoff.T) where{num<:Number}
+function payoff(S::AbstractMatrix{num},amPayoff::BinaryAmericanOption,spotData::equitySpotData,T1::num2=amPayoff.T) where{num,num2<:Number}
 	iscall=amPayoff.isCall?1:-1
 	K=amPayoff.K;
 	T=amPayoff.T;

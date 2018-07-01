@@ -10,7 +10,7 @@ Where:\n
 		Payoff      = payoff of the option.
 ```
 """
-function payoff(S::AbstractMatrix{num},spotData::equitySpotData,phi::Function,T::Number) where{num<:Number}
+function payoff(S::AbstractMatrix{num},spotData::equitySpotData,phi::Function,T::Number) where{num,num2<:Number}
 	S0=S[1,1];
 	(Nsim,Nstep)=size(S)
 	Nstep-=1;

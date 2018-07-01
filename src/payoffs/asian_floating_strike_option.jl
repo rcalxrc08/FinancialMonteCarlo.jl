@@ -1,8 +1,8 @@
 
-struct AsianFloatingStrikeOption{num<:Number}<:AsianPayoff
+struct AsianFloatingStrikeOption{num,num2<:Number}<:AsianPayoff
 	T::num
 	isCall::Bool
-	function AsianFloatingStrikeOption(T::num,isCall::Bool=true) where {num<:Number}
+	function AsianFloatingStrikeOption(T::num,isCall::Bool=true) where {num,num2<:Number}
         if T <= 0.0
             error("Time to Maturity must be positive")
         else
@@ -25,7 +25,7 @@ Where:\n
 		Payoff      = payoff of the option.
 ```
 """
-function payoff(S::AbstractMatrix{num},asianFloatingStrikePayoff::AsianFloatingStrikeOption,spotData::equitySpotData,T1::Float64=asianFloatingStrikePayoff.T) where{num<:Number}
+function payoff(S::AbstractMatrix{num},asianFloatingStrikePayoff::AsianFloatingStrikeOption,spotData::equitySpotData,T1::num2=asianFloatingStrikePayoff.T) where{num,num2<:Number}
 	iscall=asianFloatingStrikePayoff.isCall?1:-1
 	r=spotData.r;
 	T=asianFloatingStrikePayoff.T;
