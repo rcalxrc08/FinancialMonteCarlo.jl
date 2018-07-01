@@ -123,3 +123,9 @@ Model = MonteCarloProblem(prob)
 @show AsianPrice1=pricer(Model,spotData1,mcConfig,AsianFloatingStrike_payoff);
 @show AsianPrice2=pricer(Model,spotData1,mcConfig,AsianFixedStrike_payoff);
 ```
+## Keep in mind
+There are few things that you should keep in mind when using this library:
+- First Order Automatic Differentiation is enabled for any kind of option, also for such that there is no sense (e.g. Binary, Barriers).
+- Second Order Automatic Differentiation is enabled for any kind of option but the results are useless.
+- Automatic Differentiation is enabled but does not work for process that rely on the simulation of complicated random numbers distributions. If you try you will get a runtime exception.
+- Support of Jump Diffusion Differential Equations from DifferentialEquations.jl is broken since [#298](https://github.com/JuliaDiffEq/DifferentialEquations.jl/issues/298)
