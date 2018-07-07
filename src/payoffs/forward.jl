@@ -1,10 +1,10 @@
 """
 Class for Dispatching Forward Payoff
 
-		forward=Forward(T)
+		forward=Forward(T::num) where {num<:Number}
 	
 Where:\n
-		T           = Time to maturity of the Forward.
+		T	=	Time to maturity of the Forward.
 """
 struct Forward{num<:Number}<:EuropeanPayoff
 	T::num
