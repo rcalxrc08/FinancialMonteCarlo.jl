@@ -77,6 +77,7 @@ coverage:latest release:
 build:dev:
   stage: build
   image: julia:0-rc
+  allow_failure: true
   <<: *build_definition
 test:dev:
   image: julia:0-rc
