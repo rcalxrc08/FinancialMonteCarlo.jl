@@ -56,17 +56,17 @@ before_script:
       println("(", cl/tl*100, "%) covered")'
 
 # Name a test and select an appropriate image.
-build:0.6.2:
+build:latest release:
   stage: build
-  image: julia:0.6.2
+  image: julia:latest
   <<: *build_definition
-test:0.6.2:
+test:latest release:
   stage: test
-  image: julia:0.6.2
+  image: julia:latest
   <<: *test_definition
-coverage:0.6.2:
+coverage:latest release:
   stage: coverage
-  image: julia:0.6.2
+  image: julia:latest
   <<: *cov_definition
 # Windows
 #test:0.6.3-Windows:
@@ -76,10 +76,10 @@ coverage:0.6.2:
 ## Maybe you would like to test your package against the development branch:
 build:dev:
   stage: build
-  image: julia:latest
+  image: julia:0-rc
   <<: *build_definition
 test:dev:
-  image: julia:latest
+  image: julia:0-rc
   stage: test
   allow_failure: true
   # ... allowing for failures, since we are testing against the development
