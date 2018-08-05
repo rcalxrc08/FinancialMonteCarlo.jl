@@ -44,7 +44,7 @@ function payoff(S::AbstractMatrix{num},doubleBarrierPayoff::DoubleBarrierOption,
 	D=doubleBarrierPayoff.D;
 	U=doubleBarrierPayoff.U;
 	index1=round(Int,T/T1 * NStep)+1;
-	@inbounds f(S::Array{num})::num=(iscall*(S[end]-K)>0.0)&&(minimum(S)>D)&&(maximum(S)<U)?iscall*(S[end]-K) : 0.0;		
+	@inbounds f(S::Array{num})::num=(iscall*(S[end]-K)>0.0)&&(minimum(S)>D)&&(maximum(S)<U) ? iscall*(S[end]-K) : 0.0;		
 	@inbounds payoff2=[f(S[i,1:index1]) for i in 1:Nsim];
 	
 	return payoff2*exp(-r*T);

@@ -38,7 +38,7 @@ function payoff(S::AbstractMatrix{num},euPayoff::EuropeanOption,spotData::equity
 	S1=view(S,:,1:index1)
 	ST=S1[:,end];
 	K=euPayoff.K;
-	f(ST::num)::num=(iscall*(ST-K)>0.0)?iscall*(ST-K) : 0.0;
+	f(ST::num)::num=(iscall*(ST-K)>0.0) ? iscall*(ST-K) : 0.0;
 	payoff2=f.(ST);
 	
 	return payoff2*exp(-r*T);

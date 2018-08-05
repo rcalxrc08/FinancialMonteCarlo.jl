@@ -31,7 +31,7 @@ function payoff(S::AbstractMatrix{num},amPayoff::AmericanOption,spotData::equity
 	iscall=amPayoff.isCall ? 1 : -1
 	K=amPayoff.K;
 	T=amPayoff.T;
-	phi(Sti::Number)::Number=((Sti-K)*iscall>0.0)?(Sti-K)*iscall : 0.0;
+	phi(Sti::Number)::Number=((Sti-K)*iscall>0.0) ? (Sti-K)*iscall : 0.0;
 	(Nsim,NStep)=size(S)
 	NStep-=1;
 	index1=round(Int,T/T1 * NStep)+1;#round(Int,T/T1 * NStep)
