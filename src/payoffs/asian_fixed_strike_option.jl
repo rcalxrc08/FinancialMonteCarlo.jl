@@ -31,7 +31,7 @@ Where:\n
 ```
 """
 function payoff(S::AbstractMatrix{num},asianFixedStrikePayoff::AsianFixedStrikeOption,spotData::equitySpotData,T1::num2=asianFixedStrikePayoff.T) where{num,num2<:Number}
-	iscall=asianFixedStrikePayoff.isCall?1:-1
+	iscall=asianFixedStrikePayoff.isCall ? 1 : -1
 	r=spotData.r;
 	T=asianFixedStrikePayoff.T;
 	K=asianFixedStrikePayoff.K;

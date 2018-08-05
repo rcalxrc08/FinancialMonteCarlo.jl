@@ -1,5 +1,6 @@
 julia 0.5
 SpecialFunctions
 Distributions
+DiffEqBase
 DifferentialEquations
 DiffEqMonteCarlo

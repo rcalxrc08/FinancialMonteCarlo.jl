@@ -15,6 +15,7 @@ function payoff(S::AbstractMatrix{num},spotData::equitySpotData,phi::Function,T:
 	(Nsim,Nstep)=size(S)
 	Nstep-=1;
 	r=spotData.r;
+	d=spotData.d;
 	dt=T/Nstep
 	# initialize 
 	exerciseTimes=Nstep.*ones(Nsim);
@@ -30,7 +31,7 @@ function payoff(S::AbstractMatrix{num},spotData::equitySpotData,phi::Function,T:
 			#-- Continuation Value 
 			#- Linear Regression on Quadratic Form
 			A=[ones(length(S_I)) S_I S_I.^2];
-			b=V[inMoneyIndexes].*exp.(-r*dt*(exerciseTimes[inMoneyIndexes]-j));
+			b=V[inMoneyIndexes].*exp.(-(r-d)*dt*(exerciseTimes[inMoneyIndexes]-j));
 			#MAT=A'*A;			
 			LuMat=lufact(A'*A);
 			Btilde=A'*b;
@@ -47,7 +48,7 @@ function payoff(S::AbstractMatrix{num},spotData::equitySpotData,phi::Function,T:
 			exerciseTimes[exercisePositions]=j;
 		end
 	end
-	price=max.(phi(S0),V.*exp.(-r*dt.*exerciseTimes))
+	price=max.(phi(S0),V.*exp.(-d*dt.*exerciseTimes))
 	
 	return price;
 end
