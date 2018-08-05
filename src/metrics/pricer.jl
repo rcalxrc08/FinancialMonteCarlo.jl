@@ -1,6 +1,3 @@
-include("utils.jl")
-include("payoff.jl")
-include("models.jl")
 	
 function pricer(mcProcess::BaseProcess,spotData::equitySpotData,mcConfig::MonteCarloConfiguration,abstractPayoff::AbstractPayoff,mode1::MonteCarloMode=standard)
 	srand(0)

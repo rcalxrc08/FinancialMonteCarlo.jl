@@ -76,7 +76,13 @@ tollPut=0.6;
 mc2=MonteCarloConfiguration(Nsim+1,Nstep);
 @test_throws(ErrorException,pricer(Model,spotData1,mc2,AsianFixedStrikeData,MonteCarlo.antithetic));
 
+@test variance(Model,spotData1,mc,EUDataPut)>variance(Model,spotData1,mc,EUDataPut,MonteCarlo.antithetic);
 
+IC1=confinter(Model,spotData1,mc,EUDataPut);
+IC2=confinter(Model,spotData1,mc,EUDataPut,MonteCarlo.antithetic);
+L1=IC1[2]-IC1[1]
+L2=IC2[2]-IC2[1]
+@test L1>L2
 ############## Complete Options
 
 
