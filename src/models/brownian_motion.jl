@@ -1,5 +1,5 @@
 
-type BrownianMotion{num,num1<:Number}<:ItoProcess
+mutable struct BrownianMotion{num,num1<:Number}<:ItoProcess
 	σ::num
 	μ::num1
 	function BrownianMotion(σ::num,μ::num1) where {num,num1 <: Number}

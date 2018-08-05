@@ -31,7 +31,7 @@ Where:\n
 function payoff(S::AbstractMatrix{num},euPayoff::BinaryEuropeanOption,spotData::equitySpotData,T1::num2=euPayoff.T) where{num,num2<:Number}
 	r=spotData.r;
 	T=euPayoff.T;
-	iscall=euPayoff.isCall?1:-1
+	iscall=euPayoff.isCall ? 1 : -1
 	K=euPayoff.K;
 	(Nsim,NStep)=size(S)
 	NStep-=1;

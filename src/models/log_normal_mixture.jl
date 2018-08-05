@@ -1,4 +1,4 @@
-type LogNormalMixture{num,num2<:Number}<:ItoProcess
+mutable struct LogNormalMixture{num,num2<:Number}<:ItoProcess
 	η::Array{num,1}
 	λ::Array{num2,1}
 	function LogNormalMixture(η::Array{num,1},λ::Array{num2,1}) where {num,num2 <: Number}

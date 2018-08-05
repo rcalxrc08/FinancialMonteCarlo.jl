@@ -1,5 +1,5 @@
 
-type HestonProcess{num,num1,num2,num3,num4,num5<:Number}<:ItoProcess
+mutable struct HestonProcess{num,num1,num2,num3,num4,num5<:Number}<:ItoProcess
 	σ::num
 	σ_zero::num1
 	λ::num2

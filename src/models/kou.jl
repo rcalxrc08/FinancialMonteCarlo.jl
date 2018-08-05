@@ -1,5 +1,5 @@
 
-type KouProcess{num,num1,num2,num3,num4<:Number}<:FiniteActivityProcess
+mutable struct KouProcess{num,num1,num2,num3,num4<:Number}<:FiniteActivityProcess
 	σ::num
 	λ::num1
 	p::num2
@@ -59,13 +59,13 @@ function simulate(mcProcess::KouProcess,spotData::equitySpotData,mcBaseData::Mon
 			
 			idx1=findfirst(x->x>=tjump,t);
 			u=rand(); #simulate Uniform([0,1])
-			jump_size=u<p?quantile_exp(λp,rand()):-quantile_exp(λm,rand())
+			jump_size=u<p ? quantile_exp(λp,rand()) : -quantile_exp(λm,rand())
 			X[ii,idx1:end]+=jump_size; #add jump component
 			
 			#for i in 1:Nstep
 			#   if tjump>t[i] && tjump<=t[i+1] #Look for where it is happening the jump
 			#	  u=rand(); #simulate Uniform([0,1])
-			#	  jump_size=(u<p)?quantile(PosExpRV,rand()):-quantile(NegExpRV,rand()) #Compute jump size
+			#	  jump_size=(u<p) ? quantile(PosExpRV,rand()):-quantile(NegExpRV,rand()) #Compute jump size
 			#	  X[ii,i+1:end]+=jump_size; #add jump component
 			#	  break;
 			#   end

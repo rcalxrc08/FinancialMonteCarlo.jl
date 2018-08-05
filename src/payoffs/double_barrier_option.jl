@@ -37,14 +37,14 @@ Where:\n
 function payoff(S::AbstractMatrix{num},doubleBarrierPayoff::DoubleBarrierOption,spotData::equitySpotData,T1::num2=doubleBarrierPayoff.T) where{num,num2<:Number}
 	r=spotData.r;
 	T=doubleBarrierPayoff.T;
-	iscall=doubleBarrierPayoff.isCall?1:-1
+	iscall=doubleBarrierPayoff.isCall ? 1 : -1
 	(Nsim,NStep)=size(S)
 	NStep-=1;
 	K=doubleBarrierPayoff.K;
 	D=doubleBarrierPayoff.D;
 	U=doubleBarrierPayoff.U;
 	index1=round(Int,T/T1 * NStep)+1;
-	@inbounds f(S::Array{num})::num=(iscall*(S[end]-K)>0.0)&&(minimum(S)>D)&&(maximum(S)<U)?iscall*(S[end]-K):0.0;		
+	@inbounds f(S::Array{num})::num=(iscall*(S[end]-K)>0.0)&&(minimum(S)>D)&&(maximum(S)<U)?iscall*(S[end]-K) : 0.0;		
 	@inbounds payoff2=[f(S[i,1:index1]) for i in 1:Nsim];
 	
 	return payoff2*exp(-r*T);

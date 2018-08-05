@@ -31,14 +31,14 @@ Where:\n
 function payoff(S::AbstractMatrix{num},euPayoff::EuropeanOption,spotData::equitySpotData,T1::num2=euPayoff.T) where{num,num2<:Number}
 	r=spotData.r;
 	T=euPayoff.T;
-	iscall=euPayoff.isCall?1:-1
+	iscall=euPayoff.isCall ? 1 : -1
 	(Nsim,NStep)=size(S)
 	NStep-=1;
 	index1=round(Int,T/T1 * NStep)+1;
 	S1=view(S,:,1:index1)
 	ST=S1[:,end];
 	K=euPayoff.K;
-	f(ST::num)::num=(iscall*(ST-K)>0.0)?iscall*(ST-K):0.0;
+	f(ST::num)::num=(iscall*(ST-K)>0.0)?iscall*(ST-K) : 0.0;
 	payoff2=f.(ST);
 	
 	return payoff2*exp(-r*T);

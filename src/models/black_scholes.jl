@@ -1,4 +1,4 @@
-type BlackScholesProcess{num<:Number}<:ItoProcess
+mutable struct BlackScholesProcess{num<:Number}<:ItoProcess
 	σ::num
 	function BlackScholesProcess(σ::num) where {num <: Number}
         if σ <= 0.0

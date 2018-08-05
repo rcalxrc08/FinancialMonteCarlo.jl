@@ -1,5 +1,5 @@
 
-type GeometricBrownianMotion{num,num1<:Number}<:ItoProcess
+mutable struct GeometricBrownianMotion{num,num1<:Number}<:ItoProcess
 	σ::num
 	μ::num1
 	function GeometricBrownianMotion(σ::num,μ::num1) where {num,num1 <: Number}

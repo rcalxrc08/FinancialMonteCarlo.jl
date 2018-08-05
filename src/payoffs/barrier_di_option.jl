@@ -33,7 +33,7 @@ Where:\n
 ```
 """
 function payoff(S::AbstractMatrix{num},barrierPayoff::BarrierOptionDownIn,spotData::equitySpotData,T1::num2=barrierPayoff.T) where{num,num2<:Number}
-	iscall=barrierPayoff.isCall?1:-1
+	iscall=barrierPayoff.isCall ? 1 : -1
 	r=spotData.r;
 	T=barrierPayoff.T;
 	(Nsim,NStep)=size(S)
@@ -42,7 +42,7 @@ function payoff(S::AbstractMatrix{num},barrierPayoff::BarrierOptionDownIn,spotDa
 	U=barrierPayoff.barrier;
 	index1=round(Int,T/T1 * NStep)+1;
 	S1=view(S,:,1:index1)
-	@inbounds f(S::Array{num})::num=(iscall*(S[end]-K)>0.0)&&(minimum(S)<U)?iscall*(S[end]-K):0.0;		
+	@inbounds f(S::Array{num})::num=(iscall*(S[end]-K)>0.0)&&(minimum(S)<U)?iscall*(S[end]-K) : 0.0;		
 	@inbounds payoff2=[f(S1[i,:]) for i in 1:Nsim];
 	
 	return payoff2*exp(-r*T);

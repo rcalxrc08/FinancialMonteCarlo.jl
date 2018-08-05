@@ -1,5 +1,5 @@
 
-type MertonProcess{num,num1,num2,num3<:Number}<:FiniteActivityProcess
+mutable struct MertonProcess{num,num1,num2,num3<:Number}<:FiniteActivityProcess
 	σ::num
 	λ::num1
 	μJ::num2

@@ -1,5 +1,5 @@
 
-type VarianceGammaProcess{num,num1,num2<:Number}<:InfiniteActivityProcess
+mutable struct VarianceGammaProcess{num,num1,num2<:Number}<:InfiniteActivityProcess
 	σ::num
 	θ::num1
 	κ::num2

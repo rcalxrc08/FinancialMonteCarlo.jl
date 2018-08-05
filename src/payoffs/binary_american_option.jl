@@ -29,14 +29,14 @@ Where:\n
 ```
 """
 function payoff(S::AbstractMatrix{num},amPayoff::BinaryAmericanOption,spotData::equitySpotData,T1::num2=amPayoff.T) where{num,num2<:Number}
-	iscall=amPayoff.isCall?1:-1
+	iscall=amPayoff.isCall ? 1 : -1
 	K=amPayoff.K;
 	T=amPayoff.T;
 	(Nsim,NStep)=size(S)
 	NStep-=1;
 	index1=round(Int,T/T1 * NStep)+1;
 	S1=view(S,:,1:index1)
-	phi(Sti::Number)::Number=((Sti-K)*iscall>0.0)?1.0:0.0;
+	phi(Sti::Number)::Number=((Sti-K)*iscall>0.0)?1.0 : 0.0;
 	
 	payoff1=payoff(collect(S1),spotData,phi,T);
 	
