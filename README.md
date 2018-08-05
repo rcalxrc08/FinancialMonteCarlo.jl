@@ -12,6 +12,7 @@ It currently contains the following capabilities:
     - Normal Inverse Gaussian
     - Variance Gamma
     - Heston
+    - LogNormal Mixture
 - Support for the following Option families:
     - European Options 
     - American Options

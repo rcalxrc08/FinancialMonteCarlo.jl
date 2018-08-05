@@ -12,7 +12,7 @@ Nstep=30;
 sigma=[0.2,0.2];
 lam=Float64[0.999999999];
 mc=MonteCarloConfiguration(Nsim,Nstep);
-toll=1e-3;
+toll=0.8
 
 spotData1=equitySpotData(S0,r,d);
 

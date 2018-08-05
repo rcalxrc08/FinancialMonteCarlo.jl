@@ -11,7 +11,7 @@ Nsim=10000;
 Nstep=30;
 sigma=ForwardDiff.Dual{Float64}(0.2,1.0)
 mc=MonteCarloConfiguration(Nsim,Nstep);
-toll=1e-3;
+toll=0.8
 
 spotData1=equitySpotData(S0,r,d);
 
