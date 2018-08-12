@@ -26,7 +26,7 @@ function simulate(mcProcess::SubordinatedBrownianMotion,spotData::equitySpotData
 	end
 	isDualZero=drift*sigma*dt_s[1,1]*0.0;
 	X=Matrix{typeof(isDualZero)}(Nsim,Nstep+1);
-	X[:,1]=isDualZero;
+	X[:,1].=isDualZero;
 	if monteCarloMode==antithetic
 		for i=1:Nstep
 			NsimAnti=Int(floor(Nsim/2))

@@ -58,15 +58,15 @@ before_script:
 # Name a test and select an appropriate image.
 build:latest release:
   stage: build
-  image: julia:latest
+  image: julia:0.7
   <<: *build_definition
 test:latest release:
   stage: test
-  image: julia:latest
+  image: julia:0.7
   <<: *test_definition
 coverage:latest release:
   stage: coverage
-  image: julia:latest
+  image: julia:0.7
   <<: *cov_definition
 # Windows
 #test:0.6.3-Windows:
@@ -76,11 +76,11 @@ coverage:latest release:
 ## Maybe you would like to test your package against the development branch:
 build:dev:
   stage: build
-  image: julia:0-rc
+  image: julia:1.0
   allow_failure: true
   <<: *build_definition
 test:dev:
-  image: julia:0-rc
+  image: julia:1.0
   stage: test
   allow_failure: true
   # ... allowing for failures, since we are testing against the development
