@@ -1,3 +1,4 @@
+using MonteCarlo
 path1=joinpath(dirname(pathof(MonteCarlo)),"..","test")
 test_listTmp=readdir(path1);
 BlackList=["REQUIRE","runtests.jl","runner.jl"]
