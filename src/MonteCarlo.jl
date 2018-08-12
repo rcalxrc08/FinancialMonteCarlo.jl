@@ -1,6 +1,7 @@
 __precompile__()
 
 module MonteCarlo
+	DIFFEQ_MONTECARLO_ACTIVE_FLAG=true
 	if(!((VERSION.major==0)&&(VERSION.minor<=6)))
 		using Random, LinearAlgebra
 	end
@@ -13,7 +14,8 @@ module MonteCarlo
 	    variance,
 		confinter,
 		simulate,
-		payoff
+		payoff,
+		DIFFEQ_MONTECARLO_ACTIVE_FLAG
 
 
 
