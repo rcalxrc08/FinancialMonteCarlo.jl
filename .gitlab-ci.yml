@@ -28,7 +28,7 @@ before_script:
   script:
     # Let's run the tests. Substitute `coverage = false` below, if you do not
     # want coverage results.
-    - /usr/local/julia/bin/julia -e 'versioninfo(); Pkg.clone(pwd()); using MonteCarlo'
+    - /usr/local/julia/bin/julia -e 'using InteractiveUtils;versioninfo();  using Pkg; Pkg.clone(pwd()); using MonteCarlo'
     - /usr/local/julia/bin/julia -e 'Pkg.test("MonteCarlo",coverage = true)'
 
 .test_template: &build_definition
@@ -40,7 +40,7 @@ before_script:
   script:
     # Let's run the tests. Substitute `coverage = false` below, if you do not
     # want coverage results.
-    - /usr/local/julia/bin/julia -e 'versioninfo(); Pkg.clone(pwd()); using MonteCarlo'
+    - /usr/local/julia/bin/julia -e 'using InteractiveUtils;versioninfo();  using Pkg; Pkg.clone(pwd()); using MonteCarlo'
     
 .test_template: &cov_definition
   # Uncomment below if you would like to run the tests on specific references
@@ -49,22 +49,22 @@ before_script:
   #   - master
   #   - development
   script:
-    - /usr/local/julia/bin/julia -e 'versioninfo(); Pkg.clone(pwd()); using MonteCarlo'
+    - /usr/local/julia/bin/julia -e 'using InteractiveUtils;versioninfo();  using Pkg; Pkg.clone(pwd()); using MonteCarlo'
     - /usr/local/julia/bin/julia -e 'Pkg.test("MonteCarlo",coverage = true)'
     - /usr/local/julia/bin/julia -e 'Pkg.add("Coverage"); cd(Pkg.dir("MonteCarlo"));
       using Coverage; cl, tl = get_summary(process_folder());
       println("(", cl/tl*100, "%) covered")'
 
 # Name a test and select an appropriate image.
-build:latest release:
+build:0.7:
   stage: build
   image: julia:0.7
   <<: *build_definition
-test:latest release:
+test:0.7:
   stage: test
   image: julia:0.7
   <<: *test_definition
-coverage:latest release:
+coverage:0.7:
   stage: coverage
   image: julia:0.7
   <<: *cov_definition
@@ -74,12 +74,12 @@ coverage:latest release:
 #  <<: *test_definition
 
 ## Maybe you would like to test your package against the development branch:
-build:dev:
+build:1.0:
   stage: build
   image: julia:1.0
   allow_failure: true
   <<: *build_definition
-test:dev:
+test:1.0:
   image: julia:1.0
   stage: test
   allow_failure: true
