@@ -35,7 +35,7 @@ function simulate(mcProcess::MertonProcess,spotData::equitySpotData,mcBaseData::
 	end
 	
 	####Simulation
-	t=linspace(0,T,Nstep+1);
+	t=range(0.0, stop=T, length=Nstep+1);
 	## Simulate
 	# -psi(-i)
 	drift_RN=r-d-σ^2/2-λ1*(exp(μ+σ1*σ1/2.0)-1.0); 
@@ -55,7 +55,7 @@ function simulate(mcProcess::MertonProcess,spotData::equitySpotData,mcBaseData::
 			for i in 1:Nstep
 			   if tjump>t[i] && tjump<=t[i+1] #Look for where it is happening the jump
 				  jump_size=μ+σ1*randn() #Compute jump size
-				  X[ii,i+1:end]+=jump_size; #add jump component
+				  X[ii,i+1:end].+=jump_size; #add jump component
 				  break;
 			   end
 			end
