@@ -1,4 +1,4 @@
-using Base.Test, DualNumbers,MonteCarlo
+using Test, DualNumbers,MonteCarlo
 @show "KouModel"
 S0=100.0;
 K=100.0;

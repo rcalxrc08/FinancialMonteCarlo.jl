@@ -1,4 +1,4 @@
-using Base.Test, MonteCarlo;
+using Test, MonteCarlo;
 @show "Black Scholes Model"
 S0=100.0;
 K=100.0;

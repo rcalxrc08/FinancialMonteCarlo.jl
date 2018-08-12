@@ -23,7 +23,7 @@ function payoff(S::AbstractMatrix{num},spotData::equitySpotData,phi::Function,T:
 	V=phi.(S[:,end]); #payoff
 	# Backward Procedure 
 	for j in Nstep-1:-1:1
-		inMoneyIndexes=find(phi.(S[:,j]).>0.0);
+		inMoneyIndexes=findall(phi.(S[:,j]).>0.0);
 		if !isempty(inMoneyIndexes)
 			S_I=S[inMoneyIndexes,j];
 			#-- Intrinsic Value
@@ -31,7 +31,7 @@ function payoff(S::AbstractMatrix{num},spotData::equitySpotData,phi::Function,T:
 			#-- Continuation Value 
 			#- Linear Regression on Quadratic Form
 			A=[ones(length(S_I)) S_I S_I.^2];
-			b=V[inMoneyIndexes].*exp.(-(r-d)*dt*(exerciseTimes[inMoneyIndexes]-j));
+			b=V[inMoneyIndexes].*exp.(-(r-d)*dt*(exerciseTimes[inMoneyIndexes].-j));
 			#MAT=A'*A;			
 			LuMat=lufact(A'*A);
 			Btilde=A'*b;
@@ -41,11 +41,11 @@ function payoff(S::AbstractMatrix{num},spotData::equitySpotData,phi::Function,T:
 			CV=A*alpha;
 			#----------
 			# Find premature exercise times
-			Index=find(IV.>CV);
+			Index=findall(IV.>CV);
 			exercisePositions=inMoneyIndexes[Index];
 			# Update the outputs
 			V[exercisePositions]=IV[Index];
-			exerciseTimes[exercisePositions]=j;
+			exerciseTimes[exercisePositions].=j;
 		end
 	end
 	price=max.(phi(S0),V.*exp.(-d*dt.*exerciseTimes))

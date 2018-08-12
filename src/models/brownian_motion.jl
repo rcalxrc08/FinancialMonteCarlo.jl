@@ -26,8 +26,8 @@ function simulate(mcProcess::BrownianMotion,spotData::equitySpotData,mcBaseData:
 	mean_bm=μ*dt
 	stddev_bm=σ*sqrt(dt)
 	isDualZero=mean_bm*stddev_bm*0.0;
-	X=Matrix{typeof(isDualZero)}(Nsim,Nstep+1);
-	X[:,1]=isDualZero;
+	X=Matrix{typeof(isDualZero)}(undef,Nsim,Nstep+1);
+	X[:,1].=isDualZero;
 	if monteCarloMode==antithetic
 		Nsim_2=Int(floor(Nsim/2))
 		if Nsim_2*2!=Nsim
@@ -36,12 +36,12 @@ function simulate(mcProcess::BrownianMotion,spotData::equitySpotData,mcBaseData:
 		for j in 1:Nstep
 			Z=randn(Nsim_2);
 			Z=[Z;-Z];
-			X[:,j+1]=X[:,j]+mean_bm.+stddev_bm.*Z;
+			X[:,j+1]=X[:,j].+mean_bm.+stddev_bm.*Z;
 		end
 	else
 		for i=1:Nsim
 			for j=1:Nstep
-				X[i,j+1]=X[i,j]+mean_bm.+stddev_bm.*randn();
+				X[i,j+1]=X[i,j].+mean_bm.+stddev_bm.*randn();
 			end
 		end
 	end

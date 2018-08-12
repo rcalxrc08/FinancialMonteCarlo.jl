@@ -2,7 +2,7 @@ __precompile__()
 
 module MonteCarlo
 	if(!((VERSION.major==0)&&(VERSION.minor<=6)))
-		using Random
+		using Random, LinearAlgebra
 	end
 	include("utils.jl")
 	include("payoffs.jl")

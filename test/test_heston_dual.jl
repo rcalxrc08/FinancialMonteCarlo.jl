@@ -1,4 +1,4 @@
-using Base.Test, MonteCarlo,DualNumbers;
+using Test, MonteCarlo,DualNumbers;
 @show "HestonModel"
 S0=100.0;
 K=100.0;

@@ -1,4 +1,4 @@
-using Base.Test, MonteCarlo,DifferentialEquations;
+using Test, MonteCarlo,DifferentialEquations;
 @show "Differential Equation Junctor"
 Nsim=10000;
 Nstep=30;

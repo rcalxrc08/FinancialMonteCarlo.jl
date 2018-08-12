@@ -1,4 +1,4 @@
-using MonteCarlo, Base.Test
+using MonteCarlo, Test
 @show "Test Parameters"
 S0=100.0;
 K=100.0;

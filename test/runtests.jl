@@ -1,4 +1,4 @@
-path1=joinpath(Pkg.dir("MonteCarlo"),"test")
+path1=joinpath(dirname(pathof(MonteCarlo)),"..","test")
 test_listTmp=readdir(path1);
 BlackList=["REQUIRE","runtests.jl","runner.jl"]
 test_list=[test_element for test_element in test_listTmp if !Bool(sum(test_element.==BlackList))]
