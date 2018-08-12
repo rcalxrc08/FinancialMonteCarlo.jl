@@ -45,8 +45,7 @@ function simulate(mcProcess::KouProcess,spotData::equitySpotData,mcBaseData::Mon
 	drift_RN=r-d-σ^2/2-λ1*(p/(λp-1)-(1-p)/(λm+1));
 	X=simulate(BrownianMotion(σ,drift_RN),spotData,mcBaseData,T,monteCarloMode)
 
-	t=linspace(0.0,T,Nstep+1);
-
+	t=range(0.0, stop=T, length=Nstep+1);
 	PoissonRV=Poisson(λ1*T);
 	NJumps=quantile.(PoissonRV,rand(Nsim));
 
@@ -60,7 +59,7 @@ function simulate(mcProcess::KouProcess,spotData::equitySpotData,mcBaseData::Mon
 			idx1=findfirst(x->x>=tjump,t);
 			u=rand(); #simulate Uniform([0,1])
 			jump_size=u<p ? quantile_exp(λp,rand()) : -quantile_exp(λm,rand())
-			X[ii,idx1:end]+=jump_size; #add jump component
+			X[ii,idx1:end].+=jump_size; #add jump component
 			
 			#for i in 1:Nstep
 			#   if tjump>t[i] && tjump<=t[i+1] #Look for where it is happening the jump

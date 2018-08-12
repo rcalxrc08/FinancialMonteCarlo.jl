@@ -46,8 +46,8 @@ function simulate(mcProcess::HestonProcess,spotData::equitySpotData,mcBaseData::
 
 	dt=T/Nstep
 	isDualZero=S0*T*r*σ_zero*κ*θ*λ1*σ*ρ*0.0;
-	X=Matrix{typeof(isDualZero)}(Nsim,Nstep+1);
-	X[:,1]=isDualZero;
+	X=Matrix{typeof(isDualZero)}(undef,Nsim,Nstep+1);
+	X[:,1].=isDualZero;
 	if monteCarloMode!=antithetic
 		v_m=[σ_zero+isDualZero for _ in 1:Nsim];
 		for j in 1:Nstep

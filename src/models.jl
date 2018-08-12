@@ -47,7 +47,7 @@ include("models/diff_eq_monte_carlo.jl")
 import Base.Multimedia.display;
 
 function display(p::AbstractMonteCarloProcess)
-	fldnames=fieldnames(p);
+	fldnames=fieldnames(typeof(p));
 	for name in fldnames
 		println(name," = ",getfield(p,name))
 	end

@@ -33,7 +33,7 @@ function payoff(S::AbstractMatrix{num},spotData::equitySpotData,phi::Function,T:
 			A=[ones(length(S_I)) S_I S_I.^2];
 			b=V[inMoneyIndexes].*exp.(-(r-d)*dt*(exerciseTimes[inMoneyIndexes].-j));
 			#MAT=A'*A;			
-			LuMat=lufact(A'*A);
+			LuMat=lu(A'*A);
 			Btilde=A'*b;
 			alpha=LuMat\Btilde;
 			#alpha=A\b;
