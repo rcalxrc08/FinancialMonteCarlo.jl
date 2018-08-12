@@ -28,7 +28,7 @@ before_script:
   script:
     # Let's run the tests. Substitute `coverage = false` below, if you do not
     # want coverage results.
-    - /usr/local/julia/bin/julia -e 'using InteractiveUtils; versioninfo(); using Pkg; Pkg.add(pwd()); using MonteCarlo'
+    - /usr/local/julia/bin/julia -e 'using InteractiveUtils; versioninfo(); using Pkg; Pkg.clone(pwd()); using MonteCarlo'
     - /usr/local/julia/bin/julia -e 'Pkg.test("MonteCarlo",coverage = true)'
 
 .test_template: &build_definition
@@ -40,7 +40,7 @@ before_script:
   script:
     # Let's run the tests. Substitute `coverage = false` below, if you do not
     # want coverage results.
-    - /usr/local/julia/bin/julia -e 'using InteractiveUtils; versioninfo(); using Pkg; Pkg.add(pwd()); using MonteCarlo'
+    - /usr/local/julia/bin/julia -e 'using InteractiveUtils; versioninfo(); using Pkg; Pkg.clone(pwd()); using MonteCarlo'
     
 .test_template: &cov_definition
   # Uncomment below if you would like to run the tests on specific references
@@ -49,7 +49,7 @@ before_script:
   #   - master
   #   - development
   script:
-    - /usr/local/julia/bin/julia -e 'using InteractiveUtils; versioninfo(); using Pkg; Pkg.add(pwd()); using MonteCarlo'
+    - /usr/local/julia/bin/julia -e 'using InteractiveUtils; versioninfo(); using Pkg; Pkg.clone(pwd()); using MonteCarlo'
     - /usr/local/julia/bin/julia -e 'Pkg.test("MonteCarlo",coverage = true)'
     - /usr/local/julia/bin/julia -e 'Pkg.add("Coverage"); cd(Pkg.dir("MonteCarlo"));
       using Coverage; cl, tl = get_summary(process_folder());
