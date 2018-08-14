@@ -41,7 +41,7 @@ function simulate(mcProcess::MertonProcess,spotData::equitySpotData,mcBaseData::
 	drift_RN=r-d-σ^2/2-λ1*(exp(μ+σ1*σ1/2.0)-1.0); 
 	X=simulate(BrownianMotion(σ,drift_RN),spotData,mcBaseData,T,monteCarloMode)
 	D1=Poisson(λ1*T);
-	NJumps=Int.(quantile.(D1,rand(Nsim)));
+	NJumps=Int.(quantile.([D1],rand(Nsim)));
 	for ii in 1:Nsim
 		Njumps_=NJumps[ii];
 		# Simulate the number of jumps (conditional simulation)

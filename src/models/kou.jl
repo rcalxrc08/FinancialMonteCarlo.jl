@@ -47,7 +47,7 @@ function simulate(mcProcess::KouProcess,spotData::equitySpotData,mcBaseData::Mon
 
 	t=range(0.0, stop=T, length=Nstep+1);
 	PoissonRV=Poisson(λ1*T);
-	NJumps=quantile.(PoissonRV,rand(Nsim));
+	NJumps=quantile.([PoissonRV],rand(Nsim));
 
 	for ii in 1:Nsim
 		Njumps_=NJumps[ii];
