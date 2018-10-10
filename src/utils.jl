@@ -13,7 +13,7 @@ struct equitySpotData{T1,T2,T3<:Number}
     end
 end 
 
-@enum MonteCarloMode standard=1 antithetic=2
+@enum MonteCarloMode standard=1 antithetic=2 parallel_cuda_gpu=3
 
 export equitySpotData,MonteCarloMode;
 
