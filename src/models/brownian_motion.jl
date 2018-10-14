@@ -50,6 +50,7 @@ function simulate(mcProcess::BrownianMotion,spotData::equitySpotData,mcBaseData:
 		X=Matrix(X_cu);
 		return X;
 	else
+		isDualZero=mean_bm*stddev_bm*0.0;
 		X=Matrix{typeof(isDualZero)}(undef,Nsim,Nstep+1);
 		X[:,1].=isDualZero;
 		for i=1:Nsim
