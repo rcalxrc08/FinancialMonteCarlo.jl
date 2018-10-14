@@ -40,8 +40,8 @@ function simulate(mcProcess::BrownianMotion,spotData::equitySpotData,mcBaseData:
 		end
 	elseif monteCarloMode==parallel_cuda_gpu
 		X_cu=cu(X);
-		for j=1:Nstep
-			X_cu[:,j+1]=X_cu[:,j].+mean_bm.+stddev_bm.*CuArrays.CURAND.curandn(Nsim,0.0,1.0));
+		for i=1:Nstep
+			X_cu[:,i+1]=X_cu[:,i]+(drift.+std_dev1.*cu(randn(Nsim)));
 		end
 		X=Matrix(X_cu);
 	else
