@@ -13,6 +13,8 @@ end
 
 export BrownianMotion;
 
+Float32(p::Dual{Float64})=dual(Float32(p.value),Float32(p.epsilon))
+
 function simulate(mcProcess::BrownianMotion,spotData::equitySpotData,mcBaseData::MonteCarloConfiguration,T::numb,monteCarloMode::MonteCarloMode=standard) where {numb<:Number}
 	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;
