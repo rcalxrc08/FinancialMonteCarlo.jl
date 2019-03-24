@@ -48,16 +48,7 @@ function simulate(mcProcess::HestonProcess,spotData::equitySpotData,mcBaseData::
 	isDualZero=S0*T*r*σ_zero*κ*θ*λ1*σ*ρ*0.0;
 	X=Matrix{typeof(isDualZero)}(undef,Nsim,Nstep+1);
 	X[:,1].=isDualZero;
-	if monteCarloMode!=antithetic
-		v_m=[σ_zero+isDualZero for _ in 1:Nsim];
-		for j in 1:Nstep
-			e1=randn(Nsim);
-			e2=randn(Nsim);
-			e2=e1.*ρ.+e2.*sqrt(1-ρ*ρ);
-			X[:,j+1]=X[:,j]+((r-d).-0.5.*max.(v_m,0)).*dt+sqrt.(max.(v_m,0)).*sqrt(dt).*e1;
-			v_m+=κ_s.*(θ_s.-max.(v_m,0)).*dt+σ.*sqrt.(max.(v_m,0)).*sqrt(dt).*e2;
-		end
-	else
+	if monteCarloMode==antithetic
 		v_m=[σ_zero+isDualZero for _ in 1:Nsim];
 		NsimAnti=Int(floor(Nsim/2))
 		for j in 1:Nstep
@@ -68,6 +59,15 @@ function simulate(mcProcess::HestonProcess,spotData::equitySpotData,mcBaseData::
 			e2=e1.*ρ.+e2.*sqrt(1-ρ*ρ);
 			X[:,j+1]=X[:,j]+((r-d).-0.5.*max.(v_m,0)).*dt+sqrt.(max.(v_m,0)).*sqrt(dt).*e1;
 			v_m+=κ_s.*(θ_s.-max.(v_m,0)).*dt+(σ*sqrt(dt)).*sqrt.(max.(v_m,0)).*e2;
+		end
+	else
+		v_m=[σ_zero+isDualZero for _ in 1:Nsim];
+		for j in 1:Nstep
+			e1=randn(Nsim);
+			e2=randn(Nsim);
+			e2=e1.*ρ.+e2.*sqrt(1-ρ*ρ);
+			X[:,j+1]=X[:,j]+((r-d).-0.5.*max.(v_m,0)).*dt+sqrt.(max.(v_m,0)).*sqrt(dt).*e1;
+			v_m+=κ_s.*(θ_s.-max.(v_m,0)).*dt+σ.*sqrt.(max.(v_m,0)).*sqrt(dt).*e2;
 		end
 	end
 	## Conclude
