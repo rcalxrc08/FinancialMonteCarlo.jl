@@ -1,4 +1,4 @@
-using BenchmarkTools,MonteCarlo,DualNumbers
+using BenchmarkTools,MonteCarlo,DualNumbers;
 
 S0=100.0;
 K=100.0;
@@ -7,11 +7,16 @@ T=1.0;
 d=0.01;
 D=90.0;
 
-Nsim=100000;
+Nsim=10000;
 Nstep=30;
-sigma=dual(0.2,1.0);
+sigma=0.2; 
+sigma_zero=0.2;
+kappa=0.01;
+theta=0.03;
+lambda=0.01;
+rho=0.0;
 mc=MonteCarloConfiguration(Nsim,Nstep);
-toll=1e-3;
+toll=0.8;
 
 spotData1=equitySpotData(S0,r,d);
 
@@ -21,16 +26,11 @@ AMData=AmericanOption(T,K)
 BarrierData=BarrierOptionDownOut(T,K,D)
 AsianFloatingStrikeData=AsianFloatingStrikeOption(T)
 AsianFixedStrikeData=AsianFixedStrikeOption(T,K)
-Model=BlackScholesProcess(sigma);
-
-@btime FwdPrice=pricer(Model,spotData1,mc,FwdData,MonteCarlo.parallel_cuda_gpu);						
+Model=HestonProcess(sigma,sigma_zero,lambda,kappa,rho,theta);
 
 @btime FwdPrice=pricer(Model,spotData1,mc,FwdData);						
 @btime FwdPrice=pricer(Model,spotData1,mc,FwdData,MonteCarlo.parallel_cuda_gpu);						
-#@btime FwdPrice=pricer(Model,spotData1,mc,FwdData,MonteCarlo.parallel_cuda_gpu_trial);						
 @btime EuPrice=pricer(Model,spotData1,mc,EUData);
 @btime EuPrice=pricer(Model,spotData1,mc,EUData,MonteCarlo.parallel_cuda_gpu);
-#@btime EuPrice=pricer(Model,spotData1,mc,EUData,MonteCarlo.parallel_cuda_gpu_trial);
 @btime AmPrice=pricer(Model,spotData1,mc,AMData);
 @btime AmPrice=pricer(Model,spotData1,mc,AMData,MonteCarlo.parallel_cuda_gpu);
-#@btime AmPrice=pricer(Model,spotData1,mc,AMData,MonteCarlo.parallel_cuda_gpu_trial);

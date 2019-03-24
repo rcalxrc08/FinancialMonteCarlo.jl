@@ -46,9 +46,9 @@ function simulate(mcProcess::HestonProcess,spotData::equitySpotData,mcBaseData::
 
 	dt=T/Nstep
 	isDualZero=S0*T*r*σ_zero*κ*θ*λ1*σ*ρ*0.0;
-	X=Matrix{typeof(isDualZero)}(undef,Nsim,Nstep+1);
-	X[:,1].=isDualZero;
 	if monteCarloMode==antithetic
+		X=Matrix{typeof(isDualZero)}(undef,Nsim,Nstep+1);
+		X[:,1].=isDualZero;
 		v_m=[σ_zero+isDualZero for _ in 1:Nsim];
 		NsimAnti=Int(floor(Nsim/2))
 		for j in 1:Nstep
@@ -60,7 +60,52 @@ function simulate(mcProcess::HestonProcess,spotData::equitySpotData,mcBaseData::
 			X[:,j+1]=X[:,j]+((r-d).-0.5.*max.(v_m,0)).*dt+sqrt.(max.(v_m,0)).*sqrt(dt).*e1;
 			v_m+=κ_s.*(θ_s.-max.(v_m,0)).*dt+(σ*sqrt(dt)).*sqrt.(max.(v_m,0)).*e2;
 		end
+		## Conclude
+		S=S0.*exp.(X);
+		return S;
+	elseif monteCarloMode==parallel_cuda_gpu
+		ρ_f=Float32(ρ);
+		κ_s_f=Float32(κ_s);
+		θ_s_f=Float32(θ_s);
+		r_d_f=Float32(r-d)
+		dt_f=Float32(dt)
+		σ_f=Float32(σ)
+		X=CuMatrix{typeof(Float32(isDualZero+σ_zero))}(undef,Nsim,Nstep+1);
+		X[:,1].=Float32(isDualZero);
+		v_m=CuArray{typeof(σ_zero+isDualZero)}(undef,Nsim)
+		for j in 1:Nstep
+			e1=cu(randn(Float32,Nsim));
+			e2=cu(randn(Float32,Nsim));
+			e2=e1.*ρ_f.+e2.*sqrt(1-ρ_f*ρ_f);
+			X[:,j+1]=X[:,j]+((r_d_f).-0.5.*max.(v_m,0)).*dt_f+sqrt.(max.(v_m,0)).*sqrt(dt_f).*e1;
+			v_m+=κ_s_f.*(θ_s_f.-max.(v_m,0)).*dt_f+σ_f.*sqrt.(max.(v_m,0)).*sqrt(dt_f).*e2;
+		end
+		## Conclude
+		S=S0.*exp.(Matrix(X));
+		return S;
+	elseif monteCarloMode==parallel_cuda_gpu_trial
+		ρ_f=Float32(ρ);
+		κ_s_f=Float32(κ_s);
+		θ_s_f=Float32(θ_s);
+		r_d_f=Float32(r-d)
+		dt_f=Float32(dt)
+		σ_f=Float32(σ)
+		X=CuMatrix{typeof(Float32(isDualZero+σ_zero))}(undef,Nsim,Nstep+1);
+		X[:,1].=Float32(isDualZero);
+		v_m=CuArray{typeof(σ_zero+isDualZero)}(undef,Nsim)
+		for j in 1:Nstep
+			e1=cu(randn(Float32,Nsim));
+			e2=cu(randn(Float32,Nsim));
+			e2=e1.*ρ_f.+e2.*sqrt(1-ρ_f*ρ_f);
+			X[:,j+1]=X[:,j]+((r_d_f).-0.5.*max.(v_m,0)).*dt_f+sqrt.(max.(v_m,0)).*sqrt(dt_f).*e1;
+			v_m+=κ_s_f.*(θ_s_f.-max.(v_m,0)).*dt_f+σ_f.*sqrt.(max.(v_m,0)).*sqrt(dt_f).*e2;
+		end
+		## Conclude
+		S=Float32(S0).*exp.(X);
+		return S;
 	else
+		X=Matrix{typeof(isDualZero)}(undef,Nsim,Nstep+1);
+		X[:,1].=isDualZero;
 		v_m=[σ_zero+isDualZero for _ in 1:Nsim];
 		for j in 1:Nstep
 			e1=randn(Nsim);
@@ -69,9 +114,9 @@ function simulate(mcProcess::HestonProcess,spotData::equitySpotData,mcBaseData::
 			X[:,j+1]=X[:,j]+((r-d).-0.5.*max.(v_m,0)).*dt+sqrt.(max.(v_m,0)).*sqrt(dt).*e1;
 			v_m+=κ_s.*(θ_s.-max.(v_m,0)).*dt+σ.*sqrt.(max.(v_m,0)).*sqrt(dt).*e2;
 		end
+		## Conclude
+		S=S0.*exp.(X);
+		return S;
 	end
-	## Conclude
-	S=S0.*exp.(X);
-	return S;
 
 end
