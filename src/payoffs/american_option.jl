@@ -27,12 +27,12 @@ Where:\n
 		Payoff      = payoff of the option.
 ```
 """
-function payoff(S::AbstractMatrix{num},amPayoff::AmericanOption,spotData::equitySpotData,T1::num2=amPayoff.T) where{num,num2<:Number}
+function payoff(S::AbstractMatrix{numtype},amPayoff::AmericanOption,spotData::equitySpotData,T1::num2=amPayoff.T) where{numtype,num2<:Number}
 	iscall=amPayoff.isCall ? 1 : -1
 	K=amPayoff.K;
 	T=amPayoff.T;
 	isDualZero=typeof(S[1,1]*K*0.0)
-	phi_(Sti::num_)::isDualZero where {num_<:Number}=((Sti-K)*iscall>0.0) ? (Sti-K)*iscall : 0.0;
+	phi_(Sti::numtype)::isDualZero=((Sti-K)*iscall>0.0) ? (Sti-K)*iscall : 0.0;
 	(Nsim,NStep)=size(S)
 	NStep-=1;
 	index1=round(Int,T/T1 * NStep)+1;#round(Int,T/T1 * NStep)
