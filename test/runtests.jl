@@ -1,5 +1,5 @@
-using MonteCarlo
-path1=joinpath(dirname(pathof(MonteCarlo)),"..","test")
+using FinancialMonteCarlo
+path1=joinpath(dirname(pathof(FinancialMonteCarlo)),"..","test")
 test_listTmp=readdir(path1);
 BlackList=["REQUIRE","runtests.jl","runner.jl"]
 if(!DIFFEQ_MONTECARLO_ACTIVE_FLAG)

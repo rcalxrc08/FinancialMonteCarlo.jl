@@ -1,4 +1,4 @@
-using Test, MonteCarlo;
+using Test, FinancialMonteCarlo;
 @show "NormalInverseGaussianProcess"
 S0=100.0;
 K=100.0;
@@ -38,11 +38,11 @@ Model=NormalInverseGaussianProcess(sigma,theta1,k1);
 
 
 
-@show FwdPrice=pricer(Model,spotData1,mc,FwdData,MonteCarlo.antithetic);						
-@show EuPrice=pricer(Model,spotData1,mc,EUData,MonteCarlo.antithetic);
-@show AmPrice=pricer(Model,spotData1,mc,AMData,MonteCarlo.antithetic);
-@show BarrierPrice=pricer(Model,spotData1,mc,BarrierData,MonteCarlo.antithetic);
-@show AsianPrice=pricer(Model,spotData1,mc,AsianData,MonteCarlo.antithetic);
+@show FwdPrice=pricer(Model,spotData1,mc,FwdData,FinancialMonteCarlo.antithetic);						
+@show EuPrice=pricer(Model,spotData1,mc,EUData,FinancialMonteCarlo.antithetic);
+@show AmPrice=pricer(Model,spotData1,mc,AMData,FinancialMonteCarlo.antithetic);
+@show BarrierPrice=pricer(Model,spotData1,mc,BarrierData,FinancialMonteCarlo.antithetic);
+@show AsianPrice=pricer(Model,spotData1,mc,AsianData,FinancialMonteCarlo.antithetic);
 tollanti=0.8;
 @test abs(FwdPrice-97.95852227697686)<tollanti
 @test abs(EuPrice-7.738298817933206)<tollanti

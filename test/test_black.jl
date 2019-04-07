@@ -1,4 +1,4 @@
-using Test, MonteCarlo;
+using Test, FinancialMonteCarlo;
 @show "Black Scholes Model"
 S0=100.0;
 K=100.0;
@@ -39,12 +39,12 @@ display(Model)
 @test abs(AsianPrice1-4.774451704549382)<toll
 
 
-@show FwdPrice=pricer(Model,spotData1,mc,FwdData,MonteCarlo.antithetic);						
-@show EuPrice=pricer(Model,spotData1,mc,EUData,MonteCarlo.antithetic);
-@show AmPrice=pricer(Model,spotData1,mc,AMData,MonteCarlo.antithetic);
-@show BarrierPrice=pricer(Model,spotData1,mc,BarrierData,MonteCarlo.antithetic);
-@show AsianPrice1=pricer(Model,spotData1,mc,AsianFloatingStrikeData,MonteCarlo.antithetic);
-@show AsianPrice2=pricer(Model,spotData1,mc,AsianFixedStrikeData,MonteCarlo.antithetic);
+@show FwdPrice=pricer(Model,spotData1,mc,FwdData,FinancialMonteCarlo.antithetic);						
+@show EuPrice=pricer(Model,spotData1,mc,EUData,FinancialMonteCarlo.antithetic);
+@show AmPrice=pricer(Model,spotData1,mc,AMData,FinancialMonteCarlo.antithetic);
+@show BarrierPrice=pricer(Model,spotData1,mc,BarrierData,FinancialMonteCarlo.antithetic);
+@show AsianPrice1=pricer(Model,spotData1,mc,AsianFloatingStrikeData,FinancialMonteCarlo.antithetic);
+@show AsianPrice2=pricer(Model,spotData1,mc,AsianFixedStrikeData,FinancialMonteCarlo.antithetic);
 tollanti=0.6;
 @test abs(FwdPrice-99.1078451563562)<tollanti
 @test abs(EuPrice-8.43005524824866)<tollanti
@@ -74,19 +74,19 @@ tollPut=0.6;
 @test abs(AsianPrice2-4.236220218194027)<tollPut
 
 mc2=MonteCarloConfiguration(Nsim+1,Nstep);
-@test_throws(ErrorException,pricer(Model,spotData1,mc2,AsianFixedStrikeData,MonteCarlo.antithetic));
+@test_throws(ErrorException,pricer(Model,spotData1,mc2,AsianFixedStrikeData,FinancialMonteCarlo.antithetic));
 
-@test variance(Model,spotData1,mc,EUDataPut)>variance(Model,spotData1,mc,EUDataPut,MonteCarlo.antithetic);
-@test prod(variance(Model,spotData1,mc,[EUDataPut,AMDataPut]).>=variance(Model,spotData1,mc,[EUDataPut,AMDataPut],MonteCarlo.antithetic));
+@test variance(Model,spotData1,mc,EUDataPut)>variance(Model,spotData1,mc,EUDataPut,FinancialMonteCarlo.antithetic);
+@test prod(variance(Model,spotData1,mc,[EUDataPut,AMDataPut]).>=variance(Model,spotData1,mc,[EUDataPut,AMDataPut],FinancialMonteCarlo.antithetic));
 
 IC1=confinter(Model,spotData1,mc,EUDataPut);
-IC2=confinter(Model,spotData1,mc,EUDataPut,MonteCarlo.antithetic);
+IC2=confinter(Model,spotData1,mc,EUDataPut,FinancialMonteCarlo.antithetic);
 L1=IC1[2]-IC1[1]
 L2=IC2[2]-IC2[1]
 @test L1>L2
 
 IC1=confinter(Model,spotData1,mc,[EUDataPut,AMDataPut]);
-IC2=confinter(Model,spotData1,mc,[EUDataPut,AMDataPut],MonteCarlo.antithetic);
+IC2=confinter(Model,spotData1,mc,[EUDataPut,AMDataPut],FinancialMonteCarlo.antithetic);
 L1=IC1[2][2]-IC1[2][1]
 L2=IC2[2][2]-IC2[2][1]
 @test L1>L2

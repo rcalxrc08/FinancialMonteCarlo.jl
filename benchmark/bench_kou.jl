@@ -1,5 +1,5 @@
 using BenchmarkTools
-using MonteCarlo
+using FinancialMonteCarlo
 
 S0=100.0;
 K=100.0;

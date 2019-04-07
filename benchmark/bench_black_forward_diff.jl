@@ -1,4 +1,4 @@
-using BenchmarkTools,MonteCarlo,ForwardDiff
+using BenchmarkTools,FinancialMonteCarlo,ForwardDiff
 
 S0=100.0;
 K=100.0;

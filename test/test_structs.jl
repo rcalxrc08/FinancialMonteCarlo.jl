@@ -1,4 +1,4 @@
-using MonteCarlo
+using FinancialMonteCarlo
 @show "Test Structs Building"
 S0=100.0;
 K=100.0;

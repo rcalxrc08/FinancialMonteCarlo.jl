@@ -1,4 +1,4 @@
-using Test, MonteCarlo;
+using Test, FinancialMonteCarlo;
 @show "MertonProcess"
 S0=100.0;
 K=100.0;
@@ -39,11 +39,11 @@ Model=MertonProcess(sigma,lam,mu1,sigma1);
 
 
 
-@show FwdPrice=pricer(Model,spotData1,mc,FwdData,MonteCarlo.antithetic);						
-@show EuPrice=pricer(Model,spotData1,mc,EUData,MonteCarlo.antithetic);
-@show AmPrice=pricer(Model,spotData1,mc,AMData,MonteCarlo.antithetic);
-@show BarrierPrice=pricer(Model,spotData1,mc,BarrierData,MonteCarlo.antithetic);
-@show AsianPrice=pricer(Model,spotData1,mc,AsianData,MonteCarlo.antithetic);
+@show FwdPrice=pricer(Model,spotData1,mc,FwdData,FinancialMonteCarlo.antithetic);						
+@show EuPrice=pricer(Model,spotData1,mc,EUData,FinancialMonteCarlo.antithetic);
+@show AmPrice=pricer(Model,spotData1,mc,AMData,FinancialMonteCarlo.antithetic);
+@show BarrierPrice=pricer(Model,spotData1,mc,BarrierData,FinancialMonteCarlo.antithetic);
+@show AsianPrice=pricer(Model,spotData1,mc,AsianData,FinancialMonteCarlo.antithetic);
 tollanti=0.6;
 @test abs(FwdPrice-99.1188767166039)<tollanti
 @test abs(EuPrice-9.084327245917533)<tollanti

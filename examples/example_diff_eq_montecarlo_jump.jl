@@ -1,4 +1,4 @@
-using MonteCarlo,DifferentialEquations
+using FinancialMonteCarlo,DifferentialEquations
 
 Nsim=10000;
 Nstep=30;
@@ -29,7 +29,7 @@ tspan = (0.0,T)
 #Definition of the SDE
 prob = SDEProblem(f,g,u0,tspan)
 rate(u,p,t) = (lam*T)
-affect!(integrator) = (integrator.u = integrator.u+((rand()<p1)?MonteCarlo.quantile_exp(lamp,rand()):-MonteCarlo.quantile_exp(lamm,rand())))
+affect!(integrator) = (integrator.u = integrator.u+((rand()<p1)?FinancialMonteCarlo.quantile_exp(lamp,rand()):-FinancialMonteCarlo.quantile_exp(lamm,rand())))
 jump = ConstantRateJump(rate,affect!)
 jump_prob = JumpProblem(prob,Direct(),jump)
 monte_prob = MonteCarloProblem(jump_prob)

@@ -1,4 +1,4 @@
-using MonteCarlo, Test;
+using FinancialMonteCarlo, Test;
 @show "Test Parameters"
 S0=100.0;
 K=100.0;

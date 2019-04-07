@@ -1,6 +1,6 @@
-# MonteCarlo.jl <img src="etc/logo.png" width="40">  
+# FinancialMonteCarlo.jl <img src="etc/logo.png" width="40">  
 
-[![pipeline status](https://gitlab.com/rcalxrc08/MonteCarlo.jl/badges/master/pipeline.svg)](https://gitlab.com/rcalxrc08/MonteCarlo.jl/commits/master) [![coverage report](https://gitlab.com/rcalxrc08/MonteCarlo.jl/badges/master/coverage.svg)](https://gitlab.com/rcalxrc08/MonteCarlo.jl/commits/master)
+[![pipeline status](https://gitlab.com/rcalxrc08/FinancialMonteCarlo.jl/badges/master/pipeline.svg)](https://gitlab.com/rcalxrc08/FinancialMonteCarlo.jl/commits/master) [![coverage report](https://gitlab.com/rcalxrc08/FinancialMonteCarlo.jl/badges/master/coverage.svg)](https://gitlab.com/rcalxrc08/FinancialMonteCarlo.jl/commits/master)
 ##### This is a Julia package containing some useful Financial function for Pricing and Risk Management for Equity products.
 
 It currently contains the following capabilities:
@@ -27,18 +27,18 @@ for Automatic Differentiation (where it makes sense).
 ## How to Install
 To install the package simply type on the Julia REPL the following:
 ```julia
-Pkg.clone("https://gitlab.com/rcalxrc08/MonteCarlo.jl.git")
+Pkg.clone("https://gitlab.com/rcalxrc08/FinancialMonteCarlo.jl.git")
 ```
 ## How to Test
 After the installation, to test the package type on the Julia REPL the following:
 ```julia
-Pkg.test("MonteCarlo")
+Pkg.test("FinancialMonteCarlo")
 ```
 ## Example of Usage: Pricing Options in Black Scholes Model
 The following example shows how to price different kind of options with underlying varying according to the Black Scholes Model, given the implied volatility.
 ```julia
 #Import the Package
-using MonteCarlo;
+using FinancialMonteCarlo;
 #Define Spot Datas
 S0=100.0;
 K=100.0;
@@ -46,7 +46,7 @@ r=0.02;
 T=1.0;
 d=0.01;
 D=90.0;
-#Define MonteCarlo Parameters
+#Define FinancialMonteCarlo Parameters
 Nsim=10000;
 Nstep=30;
 #Define Model Parameters
@@ -80,7 +80,7 @@ Model=BlackScholesProcess(σ);
 The following example shows how to price different kind of options with underlying varying according to the Black Scholes Model simulates using the library DifferentialEquations.jl.
 ```julia
 #Import the Package
-using MonteCarlo,DifferentialEquations;
+using FinancialMonteCarlo,DifferentialEquations;
 #Define Spot Datas
 S0=100.0;
 K=100.0;
@@ -89,7 +89,7 @@ T=1.0;
 d=0.01;
 D=90.0;
 u0=S0;
-#Define MonteCarlo Parameters
+#Define FinancialMonteCarlo Parameters
 Nsim=10000;
 Nstep=30;
 #Define Model Parameters

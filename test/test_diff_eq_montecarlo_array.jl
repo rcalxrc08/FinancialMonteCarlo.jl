@@ -1,4 +1,4 @@
-using Test, MonteCarlo,DifferentialEquations;
+using Test, FinancialMonteCarlo,DifferentialEquations;
 
 Nsim=10000;
 Nstep=30;

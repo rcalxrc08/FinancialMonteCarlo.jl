@@ -1,4 +1,4 @@
-using Test, MonteCarlo;
+using Test, FinancialMonteCarlo;
 @show "LogNormalMixture Model"
 S0=100.0;
 K=100.0;

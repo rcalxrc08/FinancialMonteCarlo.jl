@@ -1,4 +1,4 @@
-path1=joinpath(Pkg.dir("MonteCarlo"),"benchmark")
+path1=joinpath(Pkg.dir("FinancialMonteCarlo"),"benchmark")
 test_listTmp=readdir(path1);
 test_list=[test_element for test_element in test_listTmp if test_element!="REQUIRE"&&test_element!="benchmarks.jl"&&test_element!="runner.jl"]
 println("Running tests:\n")

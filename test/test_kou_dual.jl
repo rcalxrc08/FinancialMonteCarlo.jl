@@ -1,4 +1,4 @@
-using Test, DualNumbers,MonteCarlo
+using Test, DualNumbers,FinancialMonteCarlo
 @show "KouModel"
 S0=100.0;
 K=100.0;
@@ -43,12 +43,12 @@ Model=KouProcess(sigma,lam,p,lamp,lamm);
 
 
 
-@show FwdPrice=pricer(Model,spotData1,mc,FwdData,MonteCarlo.antithetic);						
-@show EuPrice=pricer(Model,spotData1,mc,EUData,MonteCarlo.antithetic);
-@show AmPrice=pricer(Model,spotData1,mc,AMData,MonteCarlo.antithetic);
-@show BarrierPrice=pricer(Model,spotData1,mc,BarrierData,MonteCarlo.antithetic);
-@show AsianPrice1=pricer(Model,spotData1,mc,AsianData1,MonteCarlo.antithetic);
-@show AsianPrice2=pricer(Model,spotData1,mc,AsianData2,MonteCarlo.antithetic);
+@show FwdPrice=pricer(Model,spotData1,mc,FwdData,FinancialMonteCarlo.antithetic);						
+@show EuPrice=pricer(Model,spotData1,mc,EUData,FinancialMonteCarlo.antithetic);
+@show AmPrice=pricer(Model,spotData1,mc,AMData,FinancialMonteCarlo.antithetic);
+@show BarrierPrice=pricer(Model,spotData1,mc,BarrierData,FinancialMonteCarlo.antithetic);
+@show AsianPrice1=pricer(Model,spotData1,mc,AsianData1,FinancialMonteCarlo.antithetic);
+@show AsianPrice2=pricer(Model,spotData1,mc,AsianData2,FinancialMonteCarlo.antithetic);
 tollanti=0.6
 @test abs(FwdPrice-99.41332633109904)<tollanti
 @test abs(EuPrice-10.347332240535199)<tollanti

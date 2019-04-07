@@ -2,7 +2,7 @@
 # results of) your [Julia][1] packages. Please refer to the [documentation][2]
 # for more information about package development in Julia.
 #
-# Here, it is assumed that your Julia package is named `MonteCarlo`. Change it to
+# Here, it is assumed that your Julia package is named `FinancialMonteCarlo`. Change it to
 # whatever name you have given to your package.
 #
 # [1]: http://julialang.org/
@@ -30,8 +30,8 @@ before_script:
   script:
     # Let's run the tests. Substitute `coverage = false` below, if you do not
     # want coverage results.
-    - /usr/local/julia/bin/julia -e 'using InteractiveUtils; versioninfo(); using Pkg; Pkg.clone(pwd()); using MonteCarlo'
-    - /usr/local/julia/bin/julia -e 'using Pkg; Pkg.test("MonteCarlo",coverage = true)'
+    - /usr/local/julia/bin/julia -e 'using InteractiveUtils; versioninfo(); using Pkg; Pkg.clone(pwd()); using FinancialMonteCarlo'
+    - /usr/local/julia/bin/julia -e 'using Pkg; Pkg.test("FinancialMonteCarlo",coverage = true)'
 
 .test_template: &build_definition
   # Uncomment below if you would like to run the tests on specific references
@@ -42,7 +42,7 @@ before_script:
   script:
     # Let's run the tests. Substitute `coverage = false` below, if you do not
     # want coverage results.
-    - /usr/local/julia/bin/julia -e 'using InteractiveUtils; versioninfo(); using Pkg; Pkg.clone(pwd()); using MonteCarlo'
+    - /usr/local/julia/bin/julia -e 'using InteractiveUtils; versioninfo(); using Pkg; Pkg.clone(pwd()); using FinancialMonteCarlo'
     
 .test_template: &build_definition_cuda
   # Uncomment below if you would like to run the tests on specific references
@@ -53,13 +53,13 @@ before_script:
   script:
     # Let's run the tests. Substitute `coverage = false` below, if you do not
     # want coverage results.
-    #- /usr/local/julia/bin/julia -e 'using InteractiveUtils; versioninfo(); using Pkg; Pkg.clone(pwd()); using MonteCarlo; using CuArrays'
+    #- /usr/local/julia/bin/julia -e 'using InteractiveUtils; versioninfo(); using Pkg; Pkg.clone(pwd()); using FinancialMonteCarlo; using CuArrays'
     - mkdir $JULIA_DEPOT_PATH
     - julia -e 'using Pkg;
                 Pkg.develop(PackageSpec(path=pwd()));
                 Pkg.build();
                 Pkg.add(PackageSpec(name="CuArrays", rev="master"));
-                using CuArrays,MonteCarlo;'
+                using CuArrays,FinancialMonteCarlo;'
     
 .test_template: &cov_definition
   # Uncomment below if you would like to run the tests on specific references
@@ -68,9 +68,9 @@ before_script:
   #   - master
   #   - development
   script:
-    - /usr/local/julia/bin/julia -e 'using InteractiveUtils; versioninfo(); using Pkg; Pkg.clone(pwd()); using MonteCarlo'
-    - /usr/local/julia/bin/julia -e 'using Pkg; Pkg.test("MonteCarlo",coverage = true)'
-    - /usr/local/julia/bin/julia -e 'using Pkg; Pkg.add("Coverage"); cd(Pkg.dir("MonteCarlo"));
+    - /usr/local/julia/bin/julia -e 'using InteractiveUtils; versioninfo(); using Pkg; Pkg.clone(pwd()); using FinancialMonteCarlo'
+    - /usr/local/julia/bin/julia -e 'using Pkg; Pkg.test("FinancialMonteCarlo",coverage = true)'
+    - /usr/local/julia/bin/julia -e 'using Pkg; Pkg.add("Coverage"); cd(Pkg.dir("FinancialMonteCarlo"));
       using Coverage; cl, tl = get_summary(process_folder());
       println("(", cl/tl*100, "%) covered")'
 

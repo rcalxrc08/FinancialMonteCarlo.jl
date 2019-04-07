@@ -1,4 +1,4 @@
-using BenchmarkTools,MonteCarlo,DualNumbers
+using BenchmarkTools,FinancialMonteCarlo,DualNumbers
 
 S0=100.0;
 K=100.0;

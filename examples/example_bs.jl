@@ -1,4 +1,4 @@
-using MonteCarlo
+using FinancialMonteCarlo
 include("runner.jl")
 
 Nsim=10000;
