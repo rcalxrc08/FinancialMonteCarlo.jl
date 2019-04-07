@@ -32,12 +32,12 @@ function payoff(S::AbstractMatrix{num},amPayoff::AmericanOption,spotData::equity
 	K=amPayoff.K;
 	T=amPayoff.T;
 	isDualZero=typeof(S[1,1]*K*0.0)
-	phi(Sti::num)::isDualZero where {num<:Number}=((Sti-K)*iscall>0.0) ? (Sti-K)*iscall : 0.0;
+	phi_(Sti::num)::isDualZero where {num<:Number}=((Sti-K)*iscall>0.0) ? (Sti-K)*iscall : 0.0;
 	(Nsim,NStep)=size(S)
 	NStep-=1;
 	index1=round(Int,T/T1 * NStep)+1;#round(Int,T/T1 * NStep)
 	S1=view(S,:,1:index1)
-	payoff1=payoff(collect(S1),spotData,phi,T);
+	payoff1=payoff(collect(S1),spotData,phi_,T);
 	
 	return payoff1;
 end

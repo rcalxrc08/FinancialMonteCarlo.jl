@@ -42,6 +42,17 @@ before_script:
     # want coverage results.
     - /usr/local/julia/bin/julia -e 'using InteractiveUtils; versioninfo(); using Pkg; Pkg.clone(pwd()); using MonteCarlo'
     
+.test_template: &build_definition_cuda
+  # Uncomment below if you would like to run the tests on specific references
+  # only, such as the branches `master`, `development`, etc.
+  # only:
+  #   - master
+  #   - development
+  script:
+    # Let's run the tests. Substitute `coverage = false` below, if you do not
+    # want coverage results.
+    - /usr/local/julia/bin/julia -e 'using InteractiveUtils; versioninfo(); using Pkg; Pkg.clone(pwd()); using MonteCarlo; using CuArrays'
+    
 .test_template: &cov_definition
   # Uncomment below if you would like to run the tests on specific references
   # only, such as the branches `master`, `development`, etc.
@@ -79,6 +90,11 @@ build:1.1:
   image: julia:1.1
   allow_failure: true
   <<: *build_definition
+build:1.1_cuda:
+  stage: build
+  image: juliagpu/julia:v1.1-cuda
+  allow_failure: true
+  <<: *build_definition_cuda
 test:1.1:
   image: julia:1.1
   stage: test
