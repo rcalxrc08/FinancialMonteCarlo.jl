@@ -23,7 +23,7 @@ function simulate(mcProcess::GeometricBrownianMotion,spotData::equitySpotData,mc
 	σ_gbm=mcProcess.σ;
 	mu_gbm=mcProcess.μ;
 	μ_bm=mu_gbm-σ_gbm^2/2;
-	X=simulate(BrownianMotion(σ_gbm,μ_bm),spotData,mcBaseData,T,monteCarloMode)
+	X=simulate(BrownianMotion(σ_gbm,μ_bm),spotData,mcBaseData,T,monteCarloMode,parallelMode)
 	S=exp.(X);
 	return S;
 end

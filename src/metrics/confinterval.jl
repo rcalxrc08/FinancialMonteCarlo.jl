@@ -4,7 +4,7 @@ function confinter(mcProcess::BaseProcess,spotData::equitySpotData,mcConfig::Mon
 	Random.seed!(0)
 	T=abstractPayoff.T;
 	Nsim=mcConfig.Nsim;
-	S=simulate(mcProcess,spotData,mcConfig,T,mode1)
+	S=simulate(mcProcess,spotData,mcConfig,T,mode1,parallelMode)
 	Payoff=payoff(S,abstractPayoff,spotData);
 	mean1=mean(Payoff);
 	var1=var(Payoff);
@@ -18,7 +18,7 @@ function confinter(mcProcess::BaseProcess,spotData::equitySpotData,mcConfig::Mon
 	Random.seed!(0)
 	maxT=maximum([abstractPayoff.T for abstractPayoff in abstractPayoffs])
 	Nsim=mcConfig.Nsim;
-	S=simulate(mcProcess,spotData,mcConfig,maxT,mode1)
+	S=simulate(mcProcess,spotData,mcConfig,maxT,mode1,parallelMode)
 	Means=[mean(payoff(S,abstractPayoff,spotData,maxT)) for abstractPayoff in abstractPayoffs  ]
 	Vars=[var(payoff(S,abstractPayoff,spotData,maxT)) for abstractPayoff in abstractPayoffs  ]
 	dist1=Distributions.TDist(Nsim);

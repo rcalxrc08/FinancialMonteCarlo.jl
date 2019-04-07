@@ -23,7 +23,7 @@ function simulate(mcProcess::BlackScholesProcess,spotData::equitySpotData,mcBase
 	σ_gbm=mcProcess.σ;
 	mu_gbm=r-d;
 	
-	S=S0.*simulate(GeometricBrownianMotion(σ_gbm,mu_gbm),spotData,mcBaseData,T,monteCarloMode)
+	S=S0.*simulate(GeometricBrownianMotion(σ_gbm,mu_gbm),spotData,mcBaseData,T,monteCarloMode,parallelMode)
 	
 	return S;
 	
