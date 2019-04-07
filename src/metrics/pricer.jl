@@ -1,5 +1,5 @@
 	
-function pricer(mcProcess::BaseProcess,spotData::equitySpotData,mcConfig::MonteCarloConfiguration,abstractPayoff::AbstractPayoff,mode1::MonteCarloMode=standard)
+function pricer(mcProcess::BaseProcess,spotData::equitySpotData,mcConfig::MonteCarloConfiguration,abstractPayoff::AbstractPayoff,mode1::MonteCarloMode=standard,parallelMode::BaseMode=SerialMode())
 	Random.seed!(0)
 	T=abstractPayoff.T;
 	Nsim=mcConfig.Nsim;
@@ -9,7 +9,7 @@ function pricer(mcProcess::BaseProcess,spotData::equitySpotData,mcConfig::MonteC
 	return Price;
 end
 
-function pricer(mcProcess::BaseProcess,spotData::equitySpotData,mcConfig::MonteCarloConfiguration,abstractPayoffs::Array{AbstractPayoff},mode1::MonteCarloMode=standard)
+function pricer(mcProcess::BaseProcess,spotData::equitySpotData,mcConfig::MonteCarloConfiguration,abstractPayoffs::Array{AbstractPayoff},mode1::MonteCarloMode=standard,parallelMode::BaseMode=SerialMode())
 	Random.seed!(0)
 	maxT=maximum([abstractPayoff.T for abstractPayoff in abstractPayoffs])
 	Nsim=mcConfig.Nsim;

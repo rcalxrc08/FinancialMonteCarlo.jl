@@ -1,4 +1,4 @@
-using BenchmarkTools,MonteCarlo,DualNumbers;
+using BenchmarkTools,MonteCarlo,DualNumbers,CuArrays;
 
 S0=100.0;
 K=100.0;
@@ -29,8 +29,8 @@ AsianFixedStrikeData=AsianFixedStrikeOption(T,K)
 Model=HestonProcess(sigma,sigma_zero,lambda,kappa,rho,theta);
 
 @btime FwdPrice=pricer(Model,spotData1,mc,FwdData);						
-@btime FwdPrice=pricer(Model,spotData1,mc,FwdData,MonteCarlo.parallel_cuda_gpu);						
+@btime FwdPrice=pricer(Model,spotData1,mc,FwdData,MonteCarlo.standard,MonteCarlo.CudaMode());						
 @btime EuPrice=pricer(Model,spotData1,mc,EUData);
-@btime EuPrice=pricer(Model,spotData1,mc,EUData,MonteCarlo.parallel_cuda_gpu);
+@btime EuPrice=pricer(Model,spotData1,mc,EUData,MonteCarlo.standard,MonteCarlo.CudaMode());
 @btime AmPrice=pricer(Model,spotData1,mc,AMData);
-@btime AmPrice=pricer(Model,spotData1,mc,AMData,MonteCarlo.parallel_cuda_gpu);
+@btime AmPrice=pricer(Model,spotData1,mc,AMData,MonteCarlo.standard,MonteCarlo.CudaMode());

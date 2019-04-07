@@ -1,6 +1,6 @@
 using Distributions
 	
-function confinter(mcProcess::BaseProcess,spotData::equitySpotData,mcConfig::MonteCarloConfiguration,abstractPayoff::AbstractPayoff,mode1::MonteCarloMode=standard,alpha::Real=0.99)
+function confinter(mcProcess::BaseProcess,spotData::equitySpotData,mcConfig::MonteCarloConfiguration,abstractPayoff::AbstractPayoff,mode1::MonteCarloMode=standard,alpha::Real=0.99,parallelMode::BaseMode=SerialMode())
 	Random.seed!(0)
 	T=abstractPayoff.T;
 	Nsim=mcConfig.Nsim;
@@ -14,7 +14,7 @@ function confinter(mcProcess::BaseProcess,spotData::equitySpotData,mcConfig::Mon
 	return IC;
 end
 
-function confinter(mcProcess::BaseProcess,spotData::equitySpotData,mcConfig::MonteCarloConfiguration,abstractPayoffs::Array{AbstractPayoff},mode1::MonteCarloMode=standard,alpha::Real=0.99)
+function confinter(mcProcess::BaseProcess,spotData::equitySpotData,mcConfig::MonteCarloConfiguration,abstractPayoffs::Array{AbstractPayoff},mode1::MonteCarloMode=standard,alpha::Real=0.99,parallelMode::BaseMode=SerialMode())
 	Random.seed!(0)
 	maxT=maximum([abstractPayoff.T for abstractPayoff in abstractPayoffs])
 	Nsim=mcConfig.Nsim;
