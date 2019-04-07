@@ -16,11 +16,11 @@ u0=0.0;
 #Drift
 f1(u,p,t) = (r-d-sigma*sigma/2.0)
 #Diffusion
-g1(u,p,t) = sigma
+g1_(u,p,t) = sigma
 #Time Window
 tspan = (0.0,T)
 #Definition of the SDE
-prob = SDEProblem(f1,g1,u0,tspan)
+prob = SDEProblem(f1,g1_,u0,tspan)
 monte_prob = MonteCarloProblem(prob)
 
 

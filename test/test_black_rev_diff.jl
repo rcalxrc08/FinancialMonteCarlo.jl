@@ -24,10 +24,10 @@ AsianFixedStrikeData=AsianFixedStrikeOption(T,K)
 Model=BlackScholesProcess(sigma);
 
 
-f(x) = pricer(BlackScholesProcess(x[1]),equitySpotData(x[2],r,d),mc,EUData);
+f__(x) = pricer(BlackScholesProcess(x[1]),equitySpotData(x[2],r,d),mc,EUData);
 
 x=Float64[sigma,S0]
 
-g = x -> ReverseDiff.gradient(f, x);
+g__ = x -> ReverseDiff.gradient(f__, x);
 
-@show g(x)
+@show g__(x)

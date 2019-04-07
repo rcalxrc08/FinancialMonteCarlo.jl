@@ -13,13 +13,13 @@ T=1.0;
 d=0.01;
 u0=S0;
 #Drift
-f(u,p,t) = (r-d)*u
+drift_(u,p,t) = (r-d)*u
 #Diffusion
-g(u,p,t) = sigma*u
+diffusion_(u,p,t) = sigma*u
 #Time Window
 tspan = (0.0,T)
 #Definition of the SDE
-prob = SDEProblem(f,g,u0,tspan)
+prob = SDEProblem(drift_,diffusion_,u0,tspan)
 monte_prob = MonteCarloProblem(prob)
 
 FwdData=Forward(T)

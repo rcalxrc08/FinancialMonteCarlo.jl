@@ -80,13 +80,13 @@ mc2=MonteCarloConfiguration(Nsim+1,Nstep);
 @test prod(variance(Model,spotData1,mc,[EUDataPut,AMDataPut]).>=variance(Model,spotData1,mc,[EUDataPut,AMDataPut],FinancialMonteCarlo.antithetic));
 
 IC1=confinter(Model,spotData1,mc,EUDataPut);
-IC2=confinter(Model,spotData1,mc,EUDataPut,FinancialMonteCarlo.antithetic);
+IC2=confinter(Model,spotData1,mc,EUDataPut,0.99,FinancialMonteCarlo.antithetic);
 L1=IC1[2]-IC1[1]
 L2=IC2[2]-IC2[1]
 @test L1>L2
 
 IC1=confinter(Model,spotData1,mc,[EUDataPut,AMDataPut]);
-IC2=confinter(Model,spotData1,mc,[EUDataPut,AMDataPut],FinancialMonteCarlo.antithetic);
+IC2=confinter(Model,spotData1,mc,[EUDataPut,AMDataPut],0.99,FinancialMonteCarlo.antithetic);
 L1=IC1[2][2]-IC1[2][1]
 L2=IC2[2][2]-IC2[2][1]
 @test L1>L2
