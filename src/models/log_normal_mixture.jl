@@ -18,7 +18,7 @@ end
 
 export LogNormalMixture;
 
-function simulate(mcProcess::LogNormalMixture,spotData::equitySpotData,mcBaseData::MonteCarloConfiguration,T::numb,monteCarloMode::MonteCarloMode=standard) where {numb<:Number}
+function simulate(mcProcess::LogNormalMixture,spotData::equitySpotData,mcBaseData::MonteCarloConfiguration,T::numb,monteCarloMode::MonteCarloMode=standard,parallelMode::BaseMode=SerialMode()) where {numb<:Number}
 	if T<=0.0
 		error("Final time must be positive");
 	end
@@ -31,9 +31,9 @@ function simulate(mcProcess::LogNormalMixture,spotData::equitySpotData,mcBaseDat
 	λ_gmb=mcProcess.λ
 	push!(λ_gmb,1.0-sum(mcProcess.λ))
 	mu_gbm=r-d;
-	S=λ_gmb[1]*S0.*simulate(GeometricBrownianMotion(η_gbm[1],mu_gbm),spotData,mcBaseData,T,monteCarloMode);
+	S=λ_gmb[1]*S0.*simulate(GeometricBrownianMotion(η_gbm[1],mu_gbm),spotData,mcBaseData,T,monteCarloMode,parallelMode);
 	for (η_gbm_,λ_gmb_) in zip(η_gbm[2:end],λ_gmb[2:end])
-		S+=λ_gmb_*S0.*simulate(GeometricBrownianMotion(η_gbm_,mu_gbm),spotData,mcBaseData,T,monteCarloMode)
+		S+=λ_gmb_*S0.*simulate(GeometricBrownianMotion(η_gbm_,mu_gbm),spotData,mcBaseData,T,monteCarloMode,parallelMode)
 	end
 	return S;
 	

@@ -4,3 +4,5 @@ Distributions
 DiffEqBase
 DifferentialEquations
 DiffEqMonteCarlo
+DualNumbers
+Requires
