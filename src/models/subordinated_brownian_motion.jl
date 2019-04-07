@@ -13,7 +13,7 @@ end
 
 export SubordinatedBrownianMotion;
 
-function simulate(mcProcess::SubordinatedBrownianMotion,spotData::equitySpotData,mcBaseData::MonteCarloConfiguration,T::numb,dt_s::Array{num1,2},monteCarloMode::MonteCarloMode=standard,parallelMode::BaseMode=SerialMode()) where {numb,num1<:Number}
+function simulate(mcProcess::SubordinatedBrownianMotion,spotData::equitySpotData,mcBaseData::MonteCarloConfiguration,T::numb,dt_s::Array{num1,2},monteCarloMode::MonteCarloMode=standard,parallelMode::SerialMode=SerialMode()) where {numb,num1<:Number}
 	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;
 	if(size(dt_s)!=(Nsim,Nstep))
