@@ -51,7 +51,13 @@ before_script:
   script:
     # Let's run the tests. Substitute `coverage = false` below, if you do not
     # want coverage results.
-    - /usr/local/julia/bin/julia -e 'using InteractiveUtils; versioninfo(); using Pkg; Pkg.clone(pwd()); using MonteCarlo; using CuArrays'
+    #- /usr/local/julia/bin/julia -e 'using InteractiveUtils; versioninfo(); using Pkg; Pkg.clone(pwd()); using MonteCarlo; using CuArrays'
+    - mkdir $JULIA_DEPOT_PATH
+    - julia -e 'using Pkg;
+                Pkg.develop(PackageSpec(path=pwd()));
+                Pkg.build();
+                Pkg.add(PackageSpec(name="CuArrays", rev="master"));
+                using CuArrays,MonteCarlo;'
     
 .test_template: &cov_definition
   # Uncomment below if you would like to run the tests on specific references
