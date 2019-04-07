@@ -23,6 +23,10 @@ function simulate(mcProcess::HestonProcess,spotData::equitySpotData,mcBaseData::
 	dt=T/Nstep
 	isDualZero=S0*T*r*σ_zero*κ*θ*λ1*σ*ρ*0.0;
 	if monteCarloMode==antithetic
+		Nsim_2=Int(floor(Nsim/2))
+		if Nsim_2*2!=Nsim
+			error("Antithetic support only odd number of simulations")
+		end
 		ρ_f=Float32(ρ);
 		κ_s_f=Float32(κ_s);
 		θ_s_f=Float32(θ_s);
@@ -33,8 +37,10 @@ function simulate(mcProcess::HestonProcess,spotData::equitySpotData,mcBaseData::
 		X[:,1].=Float32(isDualZero);
 		v_m=CuArray{typeof(σ_zero+isDualZero)}(undef,Nsim)
 		for j in 1:Nstep
-			e1=cu(randn(Float32,Nsim));
-			e2=cu(randn(Float32,Nsim));
+			e1=randn(Float32,Nsim_2);
+			e2=randn(Float32,Nsim_2);
+			e1=cu([e1;-e1]);
+			e2=cu([e2;-e2]);
 			e2=e1.*ρ_f.+e2.*sqrt(1-ρ_f*ρ_f);
 			X[:,j+1]=X[:,j]+((r_d_f).-0.5.*max.(v_m,0)).*dt_f+sqrt.(max.(v_m,0)).*sqrt(dt_f).*e1;
 			v_m+=κ_s_f.*(θ_s_f.-max.(v_m,0)).*dt_f+σ_f.*sqrt.(max.(v_m,0)).*sqrt(dt_f).*e2;
