@@ -13,8 +13,7 @@ end
 
 export BrownianMotion;
 
-
-function simulate(mcProcess::BrownianMotion,spotData::equitySpotData,mcBaseData::MonteCarloConfiguration,T::numb,monteCarloMode::MonteCarloMode=standard) where {numb<:Number}
+function simulate(mcProcess::BrownianMotion,spotData::equitySpotData,mcBaseData::MonteCarloConfiguration,T::numb,monteCarloMode::MonteCarloMode=standard,parallelMode::BaseMode=SerialMode()) where {numb<:Number}
 	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;
 
@@ -26,10 +25,10 @@ function simulate(mcProcess::BrownianMotion,spotData::equitySpotData,mcBaseData:
 	dt=T/Nstep
 	mean_bm=μ*dt
 	stddev_bm=σ*sqrt(dt)
+	isDualZero=mean_bm*stddev_bm*0.0;
+	X=Matrix{typeof(isDualZero)}(undef,Nsim,Nstep+1);
+	X[:,1].=isDualZero;
 	if monteCarloMode==antithetic
-		isDualZero=mean_bm*stddev_bm*0.0;
-		X=Matrix{typeof(isDualZero)}(undef,Nsim,Nstep+1);
-		X[:,1].=isDualZero;
 		Nsim_2=Int(floor(Nsim/2))
 		if Nsim_2*2!=Nsim
 			error("Antithetic support only odd number of simulations")
@@ -39,36 +38,14 @@ function simulate(mcProcess::BrownianMotion,spotData::equitySpotData,mcBaseData:
 			Z=[Z;-Z];
 			X[:,j+1]=X[:,j].+mean_bm.+stddev_bm.*Z;
 		end
-		return X;
-	elseif monteCarloMode==parallel_cuda_gpu
-		mean_bm_f=Float32(mean_bm);
-		stddev_bm_f=Float32(stddev_bm);
-		isDualZero=mean_bm_f*stddev_bm_f*zero(Float32);
-		X_cu=CuMatrix{typeof(isDualZero)}(undef,Nsim,Nstep+1);
-		for i=1:Nstep
-			X_cu[:,i+1]=X_cu[:,i]+(mean_bm_f.+stddev_bm_f.*cu(randn(Float32,Nsim)));
-		end
-		X=Matrix(X_cu);
-		return X;
-	elseif monteCarloMode==parallel_cuda_gpu_trial
-		mean_bm_f=Float32(mean_bm);
-		stddev_bm_f=Float32(stddev_bm);
-		isDualZero=mean_bm_f*stddev_bm_f*zero(Float32);
-		X_cu=CuMatrix{typeof(isDualZero)}(undef,Nsim,Nstep+1);
-		for i=1:Nstep
-			X_cu[:,i+1]=X_cu[:,i]+(mean_bm_f.+stddev_bm_f.*cu(randn(Float32,Nsim)));
-		end
-		return X_cu;
 	else
-		isDualZero=mean_bm*stddev_bm*0.0;
-		X=Matrix{typeof(isDualZero)}(undef,Nsim,Nstep+1);
-		X[:,1].=isDualZero;
 		for i=1:Nsim
 			for j=1:Nstep
 				X[i,j+1]=X[i,j].+mean_bm.+stddev_bm.*randn();
 			end
 		end
-		return X;
 	end
+
+	return X;
 
 end

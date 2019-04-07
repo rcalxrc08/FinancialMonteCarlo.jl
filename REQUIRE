@@ -5,4 +5,4 @@ DiffEqBase
 DifferentialEquations
 DiffEqMonteCarlo
 DualNumbers
-CuArrays
+Requires

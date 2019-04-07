@@ -13,7 +13,7 @@ end
 
 export GeometricBrownianMotion;
 
-function simulate(mcProcess::GeometricBrownianMotion,spotData::equitySpotData,mcBaseData::MonteCarloConfiguration,T::numb,monteCarloMode::MonteCarloMode=standard) where {numb<:Number}
+function simulate(mcProcess::GeometricBrownianMotion,spotData::equitySpotData,mcBaseData::MonteCarloConfiguration,T::numb,monteCarloMode::MonteCarloMode=standard,parallelMode::BaseMode=SerialMode()) where {numb<:Number}
 	if T<=0.0
 		error("Final time must be positive");
 	end
@@ -23,7 +23,7 @@ function simulate(mcProcess::GeometricBrownianMotion,spotData::equitySpotData,mc
 	σ_gbm=mcProcess.σ;
 	mu_gbm=mcProcess.μ;
 	μ_bm=mu_gbm-σ_gbm^2/2;
-	X=simulate(BrownianMotion(σ_gbm,μ_bm),spotData,mcBaseData,T,monteCarloMode)
+	X=simulate(BrownianMotion(σ_gbm,μ_bm),spotData,mcBaseData,T,monteCarloMode,parallelMode)
 	S=exp.(X);
 	return S;
 end

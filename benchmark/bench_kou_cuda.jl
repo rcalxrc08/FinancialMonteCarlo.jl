@@ -1,4 +1,5 @@
-using BenchmarkTools,MonteCarlo,DualNumbers,CuArrays;
+using BenchmarkTools
+using MonteCarlo,CuArrays
 
 S0=100.0;
 K=100.0;
@@ -10,11 +11,10 @@ D=90.0;
 Nsim=10000;
 Nstep=30;
 sigma=0.2; 
-sigma_zero=0.2;
-kappa=0.01;
-theta=0.03;
-lambda=0.01;
-rho=0.0;
+p=0.3; 
+lam=5.0; 
+lamp=30.0; 
+lamm=20.0;
 mc=MonteCarloConfiguration(Nsim,Nstep);
 toll=0.8;
 
@@ -26,11 +26,13 @@ AMData=AmericanOption(T,K)
 BarrierData=BarrierOptionDownOut(T,K,D)
 AsianFloatingStrikeData=AsianFloatingStrikeOption(T)
 AsianFixedStrikeData=AsianFixedStrikeOption(T,K)
-Model=HestonProcess(sigma,sigma_zero,lambda,kappa,rho,theta);
+Model=KouProcess(sigma,lam,p,lamp,lamm);
 
 @btime FwdPrice=pricer(Model,spotData1,mc,FwdData);						
 @btime FwdPrice=pricer(Model,spotData1,mc,FwdData,MonteCarlo.standard,MonteCarlo.CudaMode());						
+@btime FwdPrice=pricer(Model,spotData1,mc,FwdData,MonteCarlo.standard,MonteCarlo.CudaMode_2());						
 @btime EuPrice=pricer(Model,spotData1,mc,EUData);
 @btime EuPrice=pricer(Model,spotData1,mc,EUData,MonteCarlo.standard,MonteCarlo.CudaMode());
+@btime EuPrice=pricer(Model,spotData1,mc,EUData,MonteCarlo.standard,MonteCarlo.CudaMode_2());
 @btime AmPrice=pricer(Model,spotData1,mc,AMData);
-@btime AmPrice=pricer(Model,spotData1,mc,AMData,MonteCarlo.standard,MonteCarlo.CudaMode());
+@btime AmPrice=pricer(Model,spotData1,mc,AMData,MonteCarlo.standard,MonteCarlo.CudaMode_2());
