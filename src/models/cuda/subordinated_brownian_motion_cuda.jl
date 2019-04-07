@@ -25,7 +25,7 @@ function simulate(mcProcess::SubordinatedBrownianMotion,spotData::equitySpotData
 		Z=Array{Float64}(undef,Nsim)
 		for i=1:Nstep
 			# SUBORDINATED BROWNIAN MOTION (dt_s=time change)
-			X[:,i+1]=X[:,i].+drift.*dt_s[:,i].+sigma.*sqrt.(dt_s[:,i]).*CuArrays.CURAND.curandn(Float32,Nsim));
+			X[:,i+1]=X[:,i].+drift.*dt_s[:,i].+sigma.*sqrt.(dt_s[:,i]).*CuArrays.CURAND.curandn(Float32,Nsim);
 		end
 	end
 	return X;
