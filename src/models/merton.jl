@@ -39,7 +39,7 @@ function simulate(mcProcess::MertonProcess,spotData::equitySpotData,mcBaseData::
 	## Simulate
 	# -psi(-i)
 	drift_RN=r-d-σ^2/2-λ1*(exp(μ+σ1*σ1/2.0)-1.0); 
-	X=simulate(BrownianMotion(σ,drift_RN),spotData,mcBaseData,T,monteCarloMode,parallelMode)
+	X=Matrix(simulate(BrownianMotion(σ,drift_RN),spotData,mcBaseData,T,monteCarloMode,parallelMode))
 	D1=Poisson(λ1*T);
 	NJumps=Int.(quantile.([D1],rand(Nsim)));
 	for ii in 1:Nsim

@@ -1,7 +1,7 @@
 using FinancialMonteCarlo
 path1=joinpath(dirname(pathof(FinancialMonteCarlo)),"..","test")
 test_listTmp=readdir(path1);
-BlackList=["REQUIRE","runtests.jl","runner.jl","test_black_cuda.jl"]
+BlackList=["REQUIRE","runtests.jl","runner.jl","test_black_cuda.jl","cuda"]
 if(!DIFFEQ_MONTECARLO_ACTIVE_FLAG)
 	BlackList=vcat("test_diffeq_log.jl","test_diffeq.jl","test_diff_eq_montecarlo_array.jl",BlackList)
 end
