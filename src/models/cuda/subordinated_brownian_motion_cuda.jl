@@ -11,7 +11,7 @@ function simulate(mcProcess::SubordinatedBrownianMotion,spotData::equitySpotData
 		error("Final time must be positive");
 	end
 	dt_s=cu(dt_s)
-	isDualZero=drift*sigma*dt_s[1,1]*zero(Float32);
+	isDualZero=drift*sigma*zero(eltype(dt_s))*zero(Float32);
 	X_cu=CuMatrix{typeof(isDualZero)}(undef,Nsim,Nstep+1);
 	X_cu[:,1].=isDualZero;
 	if monteCarloMode==antithetic

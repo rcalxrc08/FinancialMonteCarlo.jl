@@ -1,5 +1,6 @@
 using BenchmarkTools
 using FinancialMonteCarlo,CuArrays
+CuArrays.allowscalar(false)
 
 S0=100.0;
 K=100.0;

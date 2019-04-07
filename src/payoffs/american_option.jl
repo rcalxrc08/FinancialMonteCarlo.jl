@@ -31,7 +31,7 @@ function payoff(S::AbstractMatrix{numtype},amPayoff::AmericanOption,spotData::eq
 	iscall=amPayoff.isCall ? 1 : -1
 	K=amPayoff.K;
 	T=amPayoff.T;
-	isDualZero=typeof(S[1,1]*K*0.0)
+	isDualZero=typeof(zero(eltype(S))*K*0.0)
 	phi_(Sti::numtype)::isDualZero=((Sti-K)*iscall>0.0) ? (Sti-K)*iscall : 0.0;
 	(Nsim,NStep)=size(S)
 	NStep-=1;
