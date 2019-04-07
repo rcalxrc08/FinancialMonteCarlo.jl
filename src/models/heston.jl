@@ -59,10 +59,13 @@ function simulate(mcProcess::HestonProcess,spotData::equitySpotData,mcBaseData::
 		end
 	else
 		v_m=[σ_zero+isDualZero for _ in 1:Nsim];
-		NsimAnti=Int(floor(Nsim/2))
+		Nsim_2=Int(floor(Nsim/2))
+		if Nsim_2*2!=Nsim
+			error("Antithetic support only odd number of simulations")
+		end
 		for j in 1:Nstep
-			e1=randn(NsimAnti);
-			e2=randn(NsimAnti);
+			e1=randn(Nsim_2);
+			e2=randn(Nsim_2);
 			e1=[e1;-e1];
 			e2=[e2;-e2];
 			e2=e1.*ρ.+e2.*sqrt(1-ρ*ρ);
