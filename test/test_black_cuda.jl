@@ -77,26 +77,26 @@ tollPut=0.6;
 @test abs(AsianPrice2-4.236220218194027)<tollPut
 
 #Check Nsim even for antithetic
-#mc2=MonteCarloConfiguration(Nsim+1,Nstep);
-#@test_throws(ErrorException,pricer(Model,spotData1,mc2,AsianFixedStrikeData,FinancialMonteCarlo.antithetic,FinancialMonteCarlo.CudaMode()));
+mc2=MonteCarloConfiguration(Nsim+1,Nstep);
+@test_throws(ErrorException,pricer(Model,spotData1,mc2,AsianFixedStrikeData,FinancialMonteCarlo.antithetic,FinancialMonteCarlo.CudaMode()));
 
 
 
-#@test variance(Model,spotData1,mc,EUDataPut,FinancialMonteCarlo.antithetic,FinancialMonteCarlo.CudaMode())>variance(Model,spotData1,mc,EUDataPut,FinancialMonteCarlo.antithetic,FinancialMonteCarlo.CudaMode());
-#@test prod(variance(Model,spotData1,mc,[EUDataPut,AMDataPut],FinancialMonteCarlo.standard,FinancialMonteCarlo.CudaMode()).>=variance(Model,spotData1,mc,[EUDataPut,AMDataPut],FinancialMonteCarlo.antithetic,FinancialMonteCarlo.CudaMode()));
+@test variance(Model,spotData1,mc,EUDataPut,FinancialMonteCarlo.standard,FinancialMonteCarlo.CudaMode())>variance(Model,spotData1,mc,EUDataPut,FinancialMonteCarlo.antithetic,FinancialMonteCarlo.CudaMode());
+@test prod(variance(Model,spotData1,mc,[EUDataPut,AMDataPut],FinancialMonteCarlo.standard,FinancialMonteCarlo.CudaMode()).>=variance(Model,spotData1,mc,[EUDataPut,AMDataPut],FinancialMonteCarlo.antithetic,FinancialMonteCarlo.CudaMode()));
 
 
 
 ##############################################################
 
-#IC1=confinter(Model,spotData1,mc,EUDataPut,0.99,FinancialMonteCarlo.standard,FinancialMonteCarlo.CudaMode());
-#IC2=confinter(Model,spotData1,mc,EUDataPut,0.99,FinancialMonteCarlo.antithetic,FinancialMonteCarlo.CudaMode());
-#L1=IC1[2]-IC1[1]
-#L2=IC2[2]-IC2[1]
-#@test L1>L2
+IC1=confinter(Model,spotData1,mc,EUDataPut,0.99,FinancialMonteCarlo.standard,FinancialMonteCarlo.CudaMode());
+IC2=confinter(Model,spotData1,mc,EUDataPut,0.99,FinancialMonteCarlo.antithetic,FinancialMonteCarlo.CudaMode());
+L1=IC1[2]-IC1[1]
+L2=IC2[2]-IC2[1]
+@test L1>L2
 
-#IC1=confinter(Model,spotData1,mc,[EUDataPut,AMDataPut]);
-#IC2=confinter(Model,spotData1,mc,[EUDataPut,AMDataPut],FinancialMonteCarlo.antithetic);
-#L1=IC1[2][2]-IC1[2][1]
-#L2=IC2[2][2]-IC2[2][1]
-#@test L1>L2
+IC1=confinter(Model,spotData1,mc,[EUDataPut,AMDataPut],0.99,FinancialMonteCarlo.standard,FinancialMonteCarlo.CudaMode());
+IC2=confinter(Model,spotData1,mc,[EUDataPut,AMDataPut],0.99,FinancialMonteCarlo.antithetic,FinancialMonteCarlo.CudaMode());
+L1=IC1[2][2]-IC1[2][1]
+L2=IC2[2][2]-IC2[2][1]
+@test L1>L2
