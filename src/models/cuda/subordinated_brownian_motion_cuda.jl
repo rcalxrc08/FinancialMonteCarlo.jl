@@ -16,7 +16,7 @@ function simulate(mcProcess::SubordinatedBrownianMotion,spotData::equitySpotData
 	if monteCarloMode==antithetic
 		for i=1:Nstep
 			NsimAnti=Int(floor(Nsim/2))
-			Z=CuArrays.CURAND.curandn(Float32,NsimAnti));
+			Z=CuArrays.CURAND.curandn(Float32,NsimAnti);
 			Z=[Z;-Z];
 			# SUBORDINATED BROWNIAN MOTION (dt_s=time change)
 			X[:,i+1]=X[:,i].+drift.*dt_s[:,i].+sigma.*sqrt.(dt_s[:,i]).*Z;
