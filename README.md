@@ -24,6 +24,8 @@ It also supports the pricing directly from the definition of the Stochastic Diff
 Currently supports [Dual Numbers](https://github.com/JuliaDiff/DualNumbers.jl), [ForwardDiff](https://github.com/JuliaDiff/ForwardDiff.jl) and [ReverseDiff](https://github.com/JuliaDiff/ReverseDiff.jl)
 for Automatic Differentiation (where it makes sense).
 
+Additionally, there has been added support for GPU Parallel execution using [CuArrays](https://github.com/JuliaGPU/CuArrays.jl), you can find examples of this in the benchmark folder.
+
 ## How to Install
 To install the package simply type on the Julia REPL the following:
 ```julia
