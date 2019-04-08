@@ -8,6 +8,7 @@ module FinancialMonteCarlo
 	using Requires
 	function __init__()
 		@require CuArrays = "3a865a2d-5b23-5a0f-bc46-62713ec82fae" include("cuda_dependencies.cujl")
+		@require ArrayFire = "b19378d9-d87a-599a-927f-45f220a2c452" include("af_dependencies.cujl")
 	end
 	include("utils.jl")
 	include("payoffs.jl")

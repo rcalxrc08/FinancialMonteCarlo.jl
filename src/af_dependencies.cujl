@@ -1,0 +1,8 @@
+struct AFMode <: ParallelMode end
+
+using .ArrayFire
+include("models/af/brownian_motion_af.cujl")
+#include("models/af/brownian_motion_cuda_2.cujl")
+#include("models/af/heston_cuda.cujl")
+#include("models/af/heston_cuda_2.cujl")
+#include("models/af/subordinated_brownian_motion_cuda.cujl")

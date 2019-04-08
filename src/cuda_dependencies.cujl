@@ -1,3 +1,6 @@
+struct CudaMode <: ParallelMode end
+struct CudaMode_2 <: ParallelMode end
+
 using .CuArrays
 include("models/cuda/brownian_motion_cuda.cujl")
 include("models/cuda/brownian_motion_cuda_2.cujl")
