@@ -18,6 +18,9 @@ It currently contains the following capabilities:
     - American Options
     - Barrier Options
     - Asian Options
+- Partial Support for the following Parallelization:
+    - CUDA using  [CuArrays.jl](https://github.com/JuliaGPU/CuArrays.jl)
+    - ArrayFire using  [ArrayFire.jl](https://github.com/JuliaComputing/ArrayFire.jl)
 
 It also supports the pricing directly from the definition of the Stochastic Differential Equation, using the package [DifferentiatialEquations.jl](https://github.com/JuliaDiffEq/DifferentialEquations.jl).
 
@@ -79,7 +82,7 @@ Model=BlackScholesProcess(σ);
 
 
 ## Example of Interaction with DifferentialEquations.jl: Pricing Options in Black Scholes Model
-The following example shows how to price different kind of options with underlying varying according to the Black Scholes Model simulates using the library DifferentialEquations.jl.
+The following example shows how to price different kind of options with underlying varying according to the Black Scholes Model, simulated using DifferentialEquations.jl.
 ```julia
 #Import the Package
 using FinancialMonteCarlo,DifferentialEquations;
