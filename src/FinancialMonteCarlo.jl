@@ -7,7 +7,7 @@ module FinancialMonteCarlo
 	end
 	using Requires
 	function __init__()
-		@require CuArrays = "3a865a2d-5b23-5a0f-bc46-62713ec82fae" include("cuda_dependencies.jl")
+		@require CuArrays = "3a865a2d-5b23-5a0f-bc46-62713ec82fae" include("cuda_dependencies.cujl")
 	end
 	include("utils.jl")
 	include("payoffs.jl")
