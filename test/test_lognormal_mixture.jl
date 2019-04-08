@@ -26,7 +26,7 @@ Model=LogNormalMixture(sigma,lam);
 
 display(Model)
 
-@show FwdPrice=pricer(Model,spotData1,mc,FwdData);						
+@show FwdPrice=pricer(Model,spotData1,mc,FwdData);
 @show EuPrice=pricer(Model,spotData1,mc,EUData);
 @show AmPrice=pricer(Model,spotData1,mc,AMData);
 @show BarrierPrice=pricer(Model,spotData1,mc,BarrierData);

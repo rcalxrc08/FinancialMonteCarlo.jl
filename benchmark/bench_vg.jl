@@ -27,7 +27,7 @@ AsianFloatingStrikeData=AsianFloatingStrikeOption(T)
 AsianFixedStrikeData=AsianFixedStrikeOption(T,K)
 Model=VarianceGammaProcess(sigma,theta1,k1);
 
-@btime FwdPrice=pricer(Model,spotData1,mc,FwdData);						
+@btime FwdPrice=pricer(Model,spotData1,mc,FwdData);
 @btime EuPrice=pricer(Model,spotData1,mc,EUData);
 @btime AmPrice=pricer(Model,spotData1,mc,AMData);
 @btime BarrierPrice=pricer(Model,spotData1,mc,BarrierData);

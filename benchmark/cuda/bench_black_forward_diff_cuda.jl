@@ -1,5 +1,5 @@
 using BenchmarkTools,FinancialMonteCarlo,CuArrays,ForwardDiff
-
+CuArrays.allowscalar(false)
 S0=100.0;
 K=100.0;
 r=0.02;

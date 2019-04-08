@@ -32,7 +32,7 @@ AsianFloatingStrikeData=AsianFloatingStrikeOption(T)
 AsianFixedStrikeData=AsianFixedStrikeOption(T,K)
 
 
-@show FwdPrice=pricer(monte_prob,spotData1,mc,FwdData);						
+@show FwdPrice=pricer(monte_prob,spotData1,mc,FwdData);
 @show EuPrice=pricer(monte_prob,spotData1,mc,EUData);
 @show AmPrice=pricer(monte_prob,spotData1,mc,AMData);
 @show BarrierPrice=pricer(monte_prob,spotData1,mc,BarrierData);

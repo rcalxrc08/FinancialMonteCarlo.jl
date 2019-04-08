@@ -1,5 +1,5 @@
 using BenchmarkTools,FinancialMonteCarlo,DualNumbers,CuArrays;
-
+CuArrays.allowscalar(false)
 S0=100.0;
 K=100.0;
 r=0.02;
@@ -28,9 +28,12 @@ AsianFloatingStrikeData=AsianFloatingStrikeOption(T)
 AsianFixedStrikeData=AsianFixedStrikeOption(T,K)
 Model=HestonProcess(sigma,sigma_zero,lambda,kappa,rho,theta);
 
-@btime FwdPrice=pricer(Model,spotData1,mc,FwdData);						
-@btime FwdPrice=pricer(Model,spotData1,mc,FwdData,FinancialMonteCarlo.standard,FinancialMonteCarlo.CudaMode());						
+@btime FwdPrice=pricer(Model,spotData1,mc,FwdData);
+@btime FwdPrice=pricer(Model,spotData1,mc,FwdData,FinancialMonteCarlo.standard,FinancialMonteCarlo.CudaMode());
+@btime FwdPrice=pricer(Model,spotData1,mc,FwdData,FinancialMonteCarlo.standard,FinancialMonteCarlo.CudaMode_2());
 @btime EuPrice=pricer(Model,spotData1,mc,EUData);
 @btime EuPrice=pricer(Model,spotData1,mc,EUData,FinancialMonteCarlo.standard,FinancialMonteCarlo.CudaMode());
+@btime EuPrice=pricer(Model,spotData1,mc,EUData,FinancialMonteCarlo.standard,FinancialMonteCarlo.CudaMode_2());
 @btime AmPrice=pricer(Model,spotData1,mc,AMData);
 @btime AmPrice=pricer(Model,spotData1,mc,AMData,FinancialMonteCarlo.standard,FinancialMonteCarlo.CudaMode());
+@btime AmPrice=pricer(Model,spotData1,mc,AMData,FinancialMonteCarlo.standard,FinancialMonteCarlo.CudaMode_2());

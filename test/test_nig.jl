@@ -24,7 +24,7 @@ BarrierData=BarrierOptionDownOut(T,K,D)
 AsianData=AsianFloatingStrikeOption(T)
 Model=NormalInverseGaussianProcess(sigma,theta1,k1);
 
-@show FwdPrice=pricer(Model,spotData1,mc,FwdData);						
+@show FwdPrice=pricer(Model,spotData1,mc,FwdData);
 @show EuPrice=pricer(Model,spotData1,mc,EUData);
 @show AmPrice=pricer(Model,spotData1,mc,AMData);
 @show BarrierPrice=pricer(Model,spotData1,mc,BarrierData);
@@ -38,7 +38,7 @@ Model=NormalInverseGaussianProcess(sigma,theta1,k1);
 
 
 
-@show FwdPrice=pricer(Model,spotData1,mc,FwdData,FinancialMonteCarlo.antithetic);						
+@show FwdPrice=pricer(Model,spotData1,mc,FwdData,FinancialMonteCarlo.antithetic);
 @show EuPrice=pricer(Model,spotData1,mc,EUData,FinancialMonteCarlo.antithetic);
 @show AmPrice=pricer(Model,spotData1,mc,AMData,FinancialMonteCarlo.antithetic);
 @show BarrierPrice=pricer(Model,spotData1,mc,BarrierData,FinancialMonteCarlo.antithetic);
