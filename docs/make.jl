@@ -1,3 +1,6 @@
-using Documenter, FinancialMontecarlo
+using Documenter, FinancialMonteCarlo
 
-makedocs(sitename="My Documentation")
+makedocs(sitename="FinancialMonteCarlo.jl")
+deploydocs(
+    repo = "https://gitlab.com/rcalxrc08/FinancialMonteCarlo.jl.git",
+)
