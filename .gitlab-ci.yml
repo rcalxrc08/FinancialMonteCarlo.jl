@@ -13,6 +13,7 @@ stages:
   - build
   - test
   - coverage
+  - deploy
 before_script:
     # Install build dependencies
     - apt-get update && apt-get -y install cmake
