@@ -21,8 +21,10 @@ Payoff computation from MonteCarlo paths
 Where:\n
 		S           = Paths of the Underlying.
 		asianFloatingStrikePayoff  = Datas of the Option.
+		spotData  = Datas of the Spot.
+		T1=Final Time of Spot Simulation (default equals Time to Maturity of the option)
 
-		Payoff      = payoff of the option.
+		Payoff      = payoff of the Option.
 ```
 """
 function payoff(S::AbstractMatrix{num},asianFloatingStrikePayoff::AsianFloatingStrikeOption,spotData::equitySpotData,T1::num2=asianFloatingStrikePayoff.T) where{num,num2<:Number}

@@ -19,13 +19,15 @@ export BinaryEuropeanOption;
 """
 Payoff computation from MonteCarlo paths
 
-		Payoff=payoff(S,euPayoff,EuropeanOption,)
+		Payoff=payoff(S,EuropeanOption,spotData,T1)
 
 Where:\n
 		S           = Paths of the Underlying.
-		euPayoff  = Datas of the Option.
+		EuropeanOption  = Datas of the Option.
+		spotData  = Datas of the Spot.
+		T1=Final Time of Spot Simulation (default equals Time to Maturity of the option)
 
-		Payoff      = payoff of the option.
+		Payoff      = payoff of the Option.
 ```
 """
 function payoff(S::AbstractMatrix{num},euPayoff::BinaryEuropeanOption,spotData::equitySpotData,T1::num2=euPayoff.T) where{num,num2<:Number}
