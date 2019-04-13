@@ -7,12 +7,7 @@
 Both distributions implement the same set of methods:
 
 ```@docs
-size(::MatrixDistribution)
-length(::MatrixDistribution)
-mean(::MatrixDistribution)
-pdf{T<:Real}(d::MatrixDistribution, x::AbstractMatrix{T})
-logpdf{T<:Real}(d::MatrixDistribution, x::AbstractMatrix{T})
-rand(::MatrixDistribution, ::Int)
+payoff(S::AbstractMatrix{num},optionData::FinancialMonteCarlo.AbstractPayoff,spotData::equitySpotData,T1::num2=optionData.T) where{num,num2<:Number}
 ```
 
 ## Distributions
@@ -25,5 +20,5 @@ InverseWishart
 ## Internal Methods (for creating your own matrix-variate distributions)
 
 ```@docs
-Distributions._logpdf(d::MatrixDistribution, x::AbstractArray)
+payoff(S::AbstractMatrix{num},optionData::FinancialMonteCarlo.AbstractPayoff,spotData::equitySpotData,T1::num2=optionData.T) where{num,num2<:Number}
 ```

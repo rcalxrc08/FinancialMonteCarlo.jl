@@ -46,8 +46,7 @@ MixtureModel{Univariate,Continuous,Normal}
 ## Constructors
 
 ```@docs
-MixtureModel(::Vector{Distribution})
-MixtureModel(::Type{Distribution}, ::AbstractArray)
+payoff(S::AbstractMatrix{num},optionData::FinancialMonteCarlo.AbstractPayoff,spotData::equitySpotData,T1::num2=optionData.T) where{num,num2<:Number}
 ```
 
 
@@ -83,21 +82,13 @@ MixtureModel(map(u -> Normal(u, 1.0), [-2.0, 0.0, 3.0]))
 All subtypes of `AbstractMixtureModel` (obviously including `MixtureModel`) provide the following two methods:
 
 ```@docs
-components(::AbstractMixtureModel)
-probs(::AbstractMixtureModel)
-Distributions.component_type(::AbstractMixtureModel)
+payoff(S::AbstractMatrix{num},optionData::FinancialMonteCarlo.AbstractPayoff,spotData::equitySpotData,T1::num2=optionData.T) where{num,num2<:Number}
 ```
 
 In addition, for all subtypes of `UnivariateMixture` and `MultivariateMixture`, the following generic methods are provided:
 
 ```@docs
-mean(::AbstractMixtureModel)
-var(::UnivariateMixture)
-length(::MultivariateMixture)
-pdf(::AbstractMixtureModel, ::Any)
-logpdf(::AbstractMixtureModel, ::Any)
-rand(::AbstractMixtureModel)
-rand!(::AbstractMixtureModel, ::AbstractArray)
+payoff(S::AbstractMatrix{num},optionData::FinancialMonteCarlo.AbstractPayoff,spotData::equitySpotData,T1::num2=optionData.T) where{num,num2<:Number}
 ```
 
 ## Estimation

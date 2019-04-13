@@ -18,31 +18,31 @@ end
 A truncated distribution can be constructed using the constructor `Truncated` as follows:
 
 ```@docs
-Truncated
+pricer(mcProcess::FinancialMonteCarlo.BaseProcess,spotData::equitySpotData,mcConfig::MonteCarloConfiguration,abstractPayoffs::Array{FinancialMonteCarlo.AbstractPayoff},mode1::MonteCarloMode=standard,parallelMode::FinancialMonteCarlo.BaseMode=SerialMode())
 ```
 
 Many functions, including those for the evaluation of pdf and sampling, are defined for all truncated univariate distributions:
 
-- [`maximum(::UnivariateDistribution)`](@ref)
-- [`minimum(::UnivariateDistribution)`](@ref)
-- [`insupport(::UnivariateDistribution, x::Any)`](@ref)
-- [`pdf(::UnivariateDistribution, ::Real)`](@ref)
-- [`logpdf(::UnivariateDistribution, ::Real)`](@ref)
-- [`cdf(::UnivariateDistribution, ::Real)`](@ref)
-- [`logcdf(::UnivariateDistribution, ::Real)`](@ref)
-- [`ccdf(::UnivariateDistribution, ::Real)`](@ref)
-- [`logccdf(::UnivariateDistribution, ::Real)`](@ref)
-- [`quantile(::UnivariateDistribution, ::Real)`](@ref)
-- [`cquantile(::UnivariateDistribution, ::Real)`](@ref)
-- [`invlogcdf(::UnivariateDistribution, ::Real)`](@ref)
-- [`invlogccdf(::UnivariateDistribution, ::Real)`](@ref)
-- [`rand(::UnivariateDistribution)`](@ref)
-- [`rand!(::UnivariateDistribution, ::AbstractArray)`](@ref)
-- [`median(::UnivariateDistribution)`](@ref)
+- [`payoff(S::AbstractMatrix{num},optionData::FinancialMonteCarlo.AbstractPayoff,spotData::equitySpotData,T1::num2=optionData.T) where{num,num2<:Number}`](@ref)
+- [`payoff(S::AbstractMatrix{num},optionData::FinancialMonteCarlo.AbstractPayoff,spotData::equitySpotData,T1::num2=optionData.T) where{num,num2<:Number}`](@ref)
+- [`payoff(S::AbstractMatrix{num},optionData::FinancialMonteCarlo.AbstractPayoff,spotData::equitySpotData,T1::num2=optionData.T) where{num,num2<:Number}`](@ref)
+- [`payoff(S::AbstractMatrix{num},optionData::FinancialMonteCarlo.AbstractPayoff,spotData::equitySpotData,T1::num2=optionData.T) where{num,num2<:Number}`](@ref)
+- [`payoff(S::AbstractMatrix{num},optionData::FinancialMonteCarlo.AbstractPayoff,spotData::equitySpotData,T1::num2=optionData.T) where{num,num2<:Number}`](@ref)
+- [`payoff(S::AbstractMatrix{num},optionData::FinancialMonteCarlo.AbstractPayoff,spotData::equitySpotData,T1::num2=optionData.T) where{num,num2<:Number}`](@ref)
+- [`payoff(S::AbstractMatrix{num},optionData::FinancialMonteCarlo.AbstractPayoff,spotData::equitySpotData,T1::num2=optionData.T) where{num,num2<:Number}`](@ref)
+- [`payoff(S::AbstractMatrix{num},optionData::FinancialMonteCarlo.AbstractPayoff,spotData::equitySpotData,T1::num2=optionData.T) where{num,num2<:Number}`](@ref)
+- [`payoff(S::AbstractMatrix{num},optionData::FinancialMonteCarlo.AbstractPayoff,spotData::equitySpotData,T1::num2=optionData.T) where{num,num2<:Number}`](@ref)
+- [`payoff(S::AbstractMatrix{num},optionData::FinancialMonteCarlo.AbstractPayoff,spotData::equitySpotData,T1::num2=optionData.T) where{num,num2<:Number}`](@ref)
+- [`payoff(S::AbstractMatrix{num},optionData::FinancialMonteCarlo.AbstractPayoff,spotData::equitySpotData,T1::num2=optionData.T) where{num,num2<:Number}`](@ref)
+- [`payoff(S::AbstractMatrix{num},optionData::FinancialMonteCarlo.AbstractPayoff,spotData::equitySpotData,T1::num2=optionData.T) where{num,num2<:Number}`](@ref)
+- [`payoff(S::AbstractMatrix{num},optionData::FinancialMonteCarlo.AbstractPayoff,spotData::equitySpotData,T1::num2=optionData.T) where{num,num2<:Number}`](@ref)
+- [`payoff(S::AbstractMatrix{num},optionData::FinancialMonteCarlo.AbstractPayoff,spotData::equitySpotData,T1::num2=optionData.T) where{num,num2<:Number}`](@ref)
+- [`payoff(S::AbstractMatrix{num},optionData::FinancialMonteCarlo.AbstractPayoff,spotData::equitySpotData,T1::num2=optionData.T) where{num,num2<:Number}`](@ref)
+- [`payoff(S::AbstractMatrix{num},optionData::FinancialMonteCarlo.AbstractPayoff,spotData::equitySpotData,T1::num2=optionData.T) where{num,num2<:Number}`](@ref)
 
 Functions to compute statistics, such as `mean`, `mode`, `var`, `std`, and `entropy`, are not available for generic truncated distributions. Generally, there are no easy ways to compute such quantities due to the complications incurred by truncation.
 However, these methods are supported for truncated normal distributions.
 
 ```@docs
-TruncatedNormal
+pricer(mcProcess::FinancialMonteCarlo.BaseProcess,spotData::equitySpotData,mcConfig::MonteCarloConfiguration,abstractPayoffs::Array{FinancialMonteCarlo.AbstractPayoff},mode1::MonteCarloMode=standard,parallelMode::FinancialMonteCarlo.BaseMode=SerialMode())
 ```

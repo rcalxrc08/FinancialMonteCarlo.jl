@@ -97,7 +97,7 @@ Note that you can assume `x` has correct dimensions in `_rand!` and don't have t
 Most distributions should implement a `sampler` method to improve batch sampling efficiency.
 
 ```@docs
-sampler(d::Distribution)
+payoff(S::AbstractMatrix{num},optionData::FinancialMonteCarlo.AbstractPayoff,spotData::equitySpotData,T1::num2=optionData.T) where{num,num2<:Number}
 ```
 
 ### Univariate Distribution
@@ -106,27 +106,27 @@ A univariate distribution type should be defined as a subtype of `DiscreteUnivar
 
 Following methods need to be implemented for each univariate distribution type:
 
-- [`rand(d::UnivariateDistribution)`](@ref)
-- [`sampler(d::Distribution)`](@ref)
-- [`pdf(d::UnivariateDistribution, x::Real)`](@ref)
-- [`logpdf(d::UnivariateDistribution, x::Real)`](@ref)
-- [`cdf(d::UnivariateDistribution, x::Real)`](@ref)
-- [`quantile(d::UnivariateDistribution, q::Real)`](@ref)
-- [`minimum(d::UnivariateDistribution)`](@ref)
-- [`maximum(d::UnivariateDistribution)`](@ref)
-- [`insupport(d::UnivariateDistribution, x::Real)`](@ref)
+- [`payoff(S::AbstractMatrix{num},optionData::FinancialMonteCarlo.AbstractPayoff,spotData::equitySpotData,T1::num2=optionData.T) where{num,num2<:Number}`](@ref)
+- [`payoff(S::AbstractMatrix{num},optionData::FinancialMonteCarlo.AbstractPayoff,spotData::equitySpotData,T1::num2=optionData.T) where{num,num2<:Number}`](@ref)
+- [`payoff(S::AbstractMatrix{num},optionData::FinancialMonteCarlo.AbstractPayoff,spotData::equitySpotData,T1::num2=optionData.T) where{num,num2<:Number}`](@ref)
+- [`payoff(S::AbstractMatrix{num},optionData::FinancialMonteCarlo.AbstractPayoff,spotData::equitySpotData,T1::num2=optionData.T) where{num,num2<:Number}`](@ref)
+- [`payoff(S::AbstractMatrix{num},optionData::FinancialMonteCarlo.AbstractPayoff,spotData::equitySpotData,T1::num2=optionData.T) where{num,num2<:Number}`](@ref)
+- [`payoff(S::AbstractMatrix{num},optionData::FinancialMonteCarlo.AbstractPayoff,spotData::equitySpotData,T1::num2=optionData.T) where{num,num2<:Number}`](@ref)
+- [`payoff(S::AbstractMatrix{num},optionData::FinancialMonteCarlo.AbstractPayoff,spotData::equitySpotData,T1::num2=optionData.T) where{num,num2<:Number}`](@ref)
+- [`payoff(S::AbstractMatrix{num},optionData::FinancialMonteCarlo.AbstractPayoff,spotData::equitySpotData,T1::num2=optionData.T) where{num,num2<:Number}`](@ref)
+- [`payoff(S::AbstractMatrix{num},optionData::FinancialMonteCarlo.AbstractPayoff,spotData::equitySpotData,T1::num2=optionData.T) where{num,num2<:Number}`](@ref)
 
 It is also recommended that one also implements the following statistics functions:
 
-- [`mean(d::UnivariateDistribution)`](@ref)
-- [`var(d::UnivariateDistribution)`](@ref)
-- [`modes(d::UnivariateDistribution)`](@ref)
-- [`mode(d::UnivariateDistribution)`](@ref)
-- [`skewness(d::UnivariateDistribution)`](@ref)
-- [`kurtosis(d::Distribution, ::Bool)`](@ref)
-- [`entropy(d::UnivariateDistribution, ::Real)`](@ref)
-- [`mgf(d::UnivariateDistribution, ::Any)`](@ref)
-- [`cf(d::UnivariateDistribution, ::Any)`](@ref)
+- [`payoff(S::AbstractMatrix{num},optionData::FinancialMonteCarlo.AbstractPayoff,spotData::equitySpotData,T1::num2=optionData.T) where{num,num2<:Number}`](@ref)
+- [`payoff(S::AbstractMatrix{num},optionData::FinancialMonteCarlo.AbstractPayoff,spotData::equitySpotData,T1::num2=optionData.T) where{num,num2<:Number}`](@ref)
+- [`payoff(S::AbstractMatrix{num},optionData::FinancialMonteCarlo.AbstractPayoff,spotData::equitySpotData,T1::num2=optionData.T) where{num,num2<:Number}`](@ref)
+- [`payoff(S::AbstractMatrix{num},optionData::FinancialMonteCarlo.AbstractPayoff,spotData::equitySpotData,T1::num2=optionData.T) where{num,num2<:Number}`](@ref)
+- [`payoff(S::AbstractMatrix{num},optionData::FinancialMonteCarlo.AbstractPayoff,spotData::equitySpotData,T1::num2=optionData.T) where{num,num2<:Number}`](@ref)
+- [`payoff(S::AbstractMatrix{num},optionData::FinancialMonteCarlo.AbstractPayoff,spotData::equitySpotData,T1::num2=optionData.T) where{num,num2<:Number}`](@ref)
+- [`payoff(S::AbstractMatrix{num},optionData::FinancialMonteCarlo.AbstractPayoff,spotData::equitySpotData,T1::num2=optionData.T) where{num,num2<:Number}`](@ref)
+- [`payoff(S::AbstractMatrix{num},optionData::FinancialMonteCarlo.AbstractPayoff,spotData::equitySpotData,T1::num2=optionData.T) where{num,num2<:Number}`](@ref)
+- [`payoff(S::AbstractMatrix{num},optionData::FinancialMonteCarlo.AbstractPayoff,spotData::equitySpotData,T1::num2=optionData.T) where{num,num2<:Number}`](@ref)
 
 You may refer to the source file `src/univariates.jl` to see details about how generic fallback functions for univariates are implemented.
 
@@ -137,10 +137,10 @@ A multivariate distribution type should be defined as a subtype of `DiscreteMult
 
 Following methods need to be implemented for each multivariate distribution type:
 
-- [`length(d::MultivariateDistribution)`](@ref)
-- [`sampler(d::Distribution)`](@ref)
-- [`Distributions._rand!(d::MultivariateDistribution, x::AbstractArray)`](@ref)
-- [`Distributions._logpdf(d::MultivariateDistribution, x::AbstractArray)`](@ref)
+- [`payoff(S::AbstractMatrix{num},optionData::FinancialMonteCarlo.AbstractPayoff,spotData::equitySpotData,T1::num2=optionData.T) where{num,num2<:Number}`](@ref)
+- [`payoff(S::AbstractMatrix{num},optionData::FinancialMonteCarlo.AbstractPayoff,spotData::equitySpotData,T1::num2=optionData.T) where{num,num2<:Number}`](@ref)
+- [`payoff(S::AbstractMatrix{num},optionData::FinancialMonteCarlo.AbstractPayoff,spotData::equitySpotData,T1::num2=optionData.T) where{num,num2<:Number}`](@ref)
+- [`payoff(S::AbstractMatrix{num},optionData::FinancialMonteCarlo.AbstractPayoff,spotData::equitySpotData,T1::num2=optionData.T) where{num,num2<:Number}`](@ref)
 
 Note that if there exists faster methods for batch evaluation, one should override `_logpdf!` and `_pdf!`.
 
@@ -148,10 +148,10 @@ Furthermore, the generic `loglikelihood` function delegates to `_loglikelihood`,
 
 It is also recommended that one also implements the following statistics functions:
 
-- [`mean(d::MultivariateDistribution)`](@ref)
-- [`var(d::MultivariateDistribution)`](@ref)
-- [`entropy(d::MultivariateDistribution)`](@ref)
-- [`cov(d::MultivariateDistribution)`](@ref)
+- [`payoff(S::AbstractMatrix{num},optionData::FinancialMonteCarlo.AbstractPayoff,spotData::equitySpotData,T1::num2=optionData.T) where{num,num2<:Number}`](@ref)
+- [`payoff(S::AbstractMatrix{num},optionData::FinancialMonteCarlo.AbstractPayoff,spotData::equitySpotData,T1::num2=optionData.T) where{num,num2<:Number}`](@ref)
+- [`payoff(S::AbstractMatrix{num},optionData::FinancialMonteCarlo.AbstractPayoff,spotData::equitySpotData,T1::num2=optionData.T) where{num,num2<:Number}`](@ref)
+- [`payoff(S::AbstractMatrix{num},optionData::FinancialMonteCarlo.AbstractPayoff,spotData::equitySpotData,T1::num2=optionData.T) where{num,num2<:Number}`](@ref)
 
 ## Create a Matrix-variate Distribution
 
@@ -159,7 +159,7 @@ A multivariate distribution type should be defined as a subtype of `DiscreteMatr
 
 Following methods need to be implemented for each matrix-variate distribution type:
 
-- [`size(d::MatrixDistribution)`](@ref)
-- [`rand(d::MatrixDistribution)`](@ref)
-- [`sampler(d::MatrixDistribution)`](@ref)
-- [`Distributions._logpdf(d::MatrixDistribution, x::AbstractArray)`](@ref)
+- [`payoff(S::AbstractMatrix{num},optionData::FinancialMonteCarlo.AbstractPayoff,spotData::equitySpotData,T1::num2=optionData.T) where{num,num2<:Number}`](@ref)
+- [`payoff(S::AbstractMatrix{num},optionData::FinancialMonteCarlo.AbstractPayoff,spotData::equitySpotData,T1::num2=optionData.T) where{num,num2<:Number}`](@ref)
+- [`payoff(S::AbstractMatrix{num},optionData::FinancialMonteCarlo.AbstractPayoff,spotData::equitySpotData,T1::num2=optionData.T) where{num,num2<:Number}`](@ref)
+- [`payoff(S::AbstractMatrix{num},optionData::FinancialMonteCarlo.AbstractPayoff,spotData::equitySpotData,T1::num2=optionData.T) where{num,num2<:Number}`](@ref)

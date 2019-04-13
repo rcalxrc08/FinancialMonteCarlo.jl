@@ -36,12 +36,7 @@ Multiple samples are often organized into an array, depending on the variate for
 The basic functionalities that a sampleable object provides is to *retrieve information about the samples it generates* and to *draw samples*. Particularly, the following functions are provided for sampleable objects:
 
 ```@docs
-length(::Sampleable)
-size(::Sampleable)
-nsamples(::Type{Sampleable}, x::Any)
-eltype(::Sampleable)
-rand(::Sampleable)
-rand!(::Sampleable, ::AbstractArray)
+pricer(mcProcess::FinancialMonteCarlo.BaseProcess,spotData::equitySpotData,mcConfig::MonteCarloConfiguration,abstractPayoffs::Array{FinancialMonteCarlo.AbstractPayoff},mode1::MonteCarloMode=standard,parallelMode::FinancialMonteCarlo.BaseMode=SerialMode())
 ```
 
 ## Distributions

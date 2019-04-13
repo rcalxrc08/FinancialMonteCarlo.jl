@@ -1,8 +1,5 @@
 # FinancialMonteCarlo.jl
 
-```@contents
-```
-
 ## Functions
 
 ```@docs
@@ -11,6 +8,7 @@ simulate(mcProcess::FinancialMonteCarlo.BaseProcess,spotData::equitySpotData,mcB
 pricer(mcProcess::FinancialMonteCarlo.BaseProcess,spotData::equitySpotData,mcConfig::MonteCarloConfiguration,abstractPayoff::FinancialMonteCarlo.AbstractPayoff,mode1::MonteCarloMode=standard,parallelMode::FinancialMonteCarlo.BaseMode=SerialMode())
 pricer(mcProcess::FinancialMonteCarlo.BaseProcess,spotData::equitySpotData,mcConfig::MonteCarloConfiguration,abstractPayoffs::Array{FinancialMonteCarlo.AbstractPayoff},mode1::MonteCarloMode=standard,parallelMode::FinancialMonteCarlo.BaseMode=SerialMode())
 struct AmericanOption{num1,num2<:Number}<:AmericanPayoff
+AmericanOption
 ```
 
 ## Index

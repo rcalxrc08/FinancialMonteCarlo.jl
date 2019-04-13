@@ -40,21 +40,6 @@ pricer(mcProcess::FinancialMonteCarlo.BaseProcess,spotData::equitySpotData,mcCon
 
 ### Probability Evaluation
 
-```@docs
-insupport(::UnivariateDistribution, x::Any)
-pdf(::UnivariateDistribution, ::Real)
-logpdf(::UnivariateDistribution, ::Real)
-loglikelihood(::UnivariateDistribution, ::AbstractArray)
-cdf(::UnivariateDistribution, ::Real)
-logcdf(::UnivariateDistribution, ::Real)
-ccdf(::UnivariateDistribution, ::Real)
-logccdf(::UnivariateDistribution, ::Real)
-quantile(::UnivariateDistribution, ::Real)
-cquantile(::UnivariateDistribution, ::Real)
-invlogcdf(::UnivariateDistribution, ::Real)
-invlogccdf(::UnivariateDistribution, ::Real)
-```
-
 ### Sampling (Random number generation)
 ```@docs
 pricer(mcProcess::FinancialMonteCarlo.BaseProcess,spotData::equitySpotData,mcConfig::MonteCarloConfiguration,abstractPayoffs::Array{FinancialMonteCarlo.AbstractPayoff},mode1::MonteCarloMode=standard,parallelMode::FinancialMonteCarlo.BaseMode=SerialMode())

@@ -16,8 +16,7 @@ The function `fit_mle` is for maximum likelihood estimation.
 ### Synopsis
 
 ```@docs
-fit_mle(D, x)
-fit_mle(D, x, w)
+payoff(S::AbstractMatrix{num},optionData::FinancialMonteCarlo.AbstractPayoff,spotData::equitySpotData,T1::num2=optionData.T) where{num,num2<:Number}
 ```
 
 ### Applicable distributions
@@ -26,26 +25,26 @@ The `fit_mle` method has been implemented for the following distributions:
 
 **Univariate:**
 
-- [`Bernoulli`](@ref)
-- [`Beta`](@ref)
-- [`Binomial`](@ref)
-- [`Categorical`](@ref)
-- [`DiscreteUniform`](@ref)
-- [`Exponential`](@ref)
-- [`Normal`](@ref)
-- [`Gamma`](@ref)
-- [`Geometric`](@ref)
-- [`Laplace`](@ref)
-- [`Pareto`](@ref)
-- [`Poisson`](@ref)
-- [`InverseGaussian`](@ref)
-- [`Uniform`](@ref)
+- [`payoff(S::AbstractMatrix{num},optionData::FinancialMonteCarlo.AbstractPayoff,spotData::equitySpotData,T1::num2=optionData.T) where{num,num2<:Number}`](@ref)
+- [`payoff(S::AbstractMatrix{num},optionData::FinancialMonteCarlo.AbstractPayoff,spotData::equitySpotData,T1::num2=optionData.T) where{num,num2<:Number}`](@ref)
+- [`payoff(S::AbstractMatrix{num},optionData::FinancialMonteCarlo.AbstractPayoff,spotData::equitySpotData,T1::num2=optionData.T) where{num,num2<:Number}`](@ref)
+- [`payoff(S::AbstractMatrix{num},optionData::FinancialMonteCarlo.AbstractPayoff,spotData::equitySpotData,T1::num2=optionData.T) where{num,num2<:Number}`](@ref)
+- [`payoff(S::AbstractMatrix{num},optionData::FinancialMonteCarlo.AbstractPayoff,spotData::equitySpotData,T1::num2=optionData.T) where{num,num2<:Number}`](@ref)
+- [`payoff(S::AbstractMatrix{num},optionData::FinancialMonteCarlo.AbstractPayoff,spotData::equitySpotData,T1::num2=optionData.T) where{num,num2<:Number}`](@ref)
+- [`payoff(S::AbstractMatrix{num},optionData::FinancialMonteCarlo.AbstractPayoff,spotData::equitySpotData,T1::num2=optionData.T) where{num,num2<:Number}`](@ref)
+- [`payoff(S::AbstractMatrix{num},optionData::FinancialMonteCarlo.AbstractPayoff,spotData::equitySpotData,T1::num2=optionData.T) where{num,num2<:Number}`](@ref)
+- [`payoff(S::AbstractMatrix{num},optionData::FinancialMonteCarlo.AbstractPayoff,spotData::equitySpotData,T1::num2=optionData.T) where{num,num2<:Number}`](@ref)
+- [`payoff(S::AbstractMatrix{num},optionData::FinancialMonteCarlo.AbstractPayoff,spotData::equitySpotData,T1::num2=optionData.T) where{num,num2<:Number}`](@ref)
+- [`payoff(S::AbstractMatrix{num},optionData::FinancialMonteCarlo.AbstractPayoff,spotData::equitySpotData,T1::num2=optionData.T) where{num,num2<:Number}`](@ref)
+- [`payoff(S::AbstractMatrix{num},optionData::FinancialMonteCarlo.AbstractPayoff,spotData::equitySpotData,T1::num2=optionData.T) where{num,num2<:Number}`](@ref)
+- [`payoff(S::AbstractMatrix{num},optionData::FinancialMonteCarlo.AbstractPayoff,spotData::equitySpotData,T1::num2=optionData.T) where{num,num2<:Number}`](@ref)
+- [`payoff(S::AbstractMatrix{num},optionData::FinancialMonteCarlo.AbstractPayoff,spotData::equitySpotData,T1::num2=optionData.T) where{num,num2<:Number}`](@ref)
 
 **Multivariate:**
 
-- [`Multinomial`](@ref)
-- [`MvNormal`](@ref)
-- [`Dirichlet`](@ref)
+- [`payoff(S::AbstractMatrix{num},optionData::FinancialMonteCarlo.AbstractPayoff,spotData::equitySpotData,T1::num2=optionData.T) where{num,num2<:Number}`](@ref)
+- [`payoff(S::AbstractMatrix{num},optionData::FinancialMonteCarlo.AbstractPayoff,spotData::equitySpotData,T1::num2=optionData.T) where{num,num2<:Number}`](@ref)
+- [`payoff(S::AbstractMatrix{num},optionData::FinancialMonteCarlo.AbstractPayoff,spotData::equitySpotData,T1::num2=optionData.T) where{num,num2<:Number}`](@ref)
 
 For most of these distributions, the usage is as described above. For a few special distributions that require additional information for estimation, we have to use modified interface:
 
