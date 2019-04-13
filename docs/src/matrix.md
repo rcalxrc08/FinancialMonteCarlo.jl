@@ -1,23 +1,15 @@
-# [Matrix-variate Distributions](@id matrix-variates)
+# [Payoff](@id payoff)
 
-*Matrix-variate distributions* are the distributions whose variate forms are `Matrixvariate` (*i.e* each sample is a matrix). Abstract types for matrix-variate distributions:
+The following type of *Payoff* are supported from the package:
+
+* `European Options`
+* `Asian Options`
+* `Barrier Options`
+* `American Options`
 
 ## Common Interface
 
-Both distributions implement the same set of methods:
-
-```@docs
-payoff(S::AbstractMatrix{num},optionData::FinancialMonteCarlo.AbstractPayoff,spotData::equitySpotData,T1::num2=optionData.T) where{num,num2<:Number}
-```
-
-## Distributions
-
-```@docs
-Wishart
-InverseWishart
-```
-
-## Internal Methods (for creating your own matrix-variate distributions)
+Each payoff must implement its own *payoff* method; the general interface is the following:
 
 ```@docs
 payoff(S::AbstractMatrix{num},optionData::FinancialMonteCarlo.AbstractPayoff,spotData::equitySpotData,T1::num2=optionData.T) where{num,num2<:Number}

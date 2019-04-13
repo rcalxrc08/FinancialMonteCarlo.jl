@@ -65,4 +65,4 @@ const DiscreteMatrixDistribution         = Distribution{Matrixvariate, Discrete}
 const ContinuousMatrixDistribution       = Distribution{Matrixvariate, Continuous}
 ```
 
-All methods applicable to `Sampleable` also applies to `Distribution`. The API for distributions of different variate forms are different (refer to [Stochastic Process](@ref stochproc), [multivariates](@ref multivariates), and [matrix](@ref matrix-variates) for details).
+All methods applicable to `Sampleable` also applies to `Distribution`. The API for distributions of different variate forms are different (refer to [Stochastic Process](@ref stochproc), [multivariates](@ref multivariates), and [matrix](@ref payoff) for details).
