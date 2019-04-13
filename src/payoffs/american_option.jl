@@ -1,3 +1,14 @@
+"""
+Struct for Standard American Option
+
+		AmericanOption{num1,num2<:Number}<:AmericanPayoff
+	
+Fields:\n
+		T           = Time to Maturity of the Options.
+		K  = Strike of the Option.
+		isCall  = true for call, false for put.
+```
+"""
 struct AmericanOption{num1,num2<:Number}<:AmericanPayoff
 	T::num1
 	K::num2
@@ -18,7 +29,7 @@ export AmericanOption;
 """
 Payoff computation from MonteCarlo paths
 
-		Payoff=payoff(S,amPayoff,AmericanOption,)
+		Payoff=payoff(S,amPayoff,AmericanOption,T1)
 	
 Where:\n
 		S           = Paths of the Underlying.

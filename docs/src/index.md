@@ -20,6 +20,7 @@ payoff(S::AbstractMatrix{num},euPayoff::EuropeanOption,spotData::equitySpotData,
 payoff(S::AbstractMatrix{num},optionData::Forward,spotData::equitySpotData,T1::num2=optionData.T) where{num,num2<:Number}
 payoff(S::AbstractMatrix{num},spotData::equitySpotData,phi::Function,T::num2) where{num,num2<:Number}
 payoff(S::AbstractMatrix{num},optionData::Forward,spotData::equitySpotData,T1::num2=optionData.T) where{num,num2<:Number}
+struct AmericanOption{num1,num2<:Number}<:AmericanPayoff
 ```
 
 ## Index
