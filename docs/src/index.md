@@ -1,4 +1,4 @@
-# FinancialMonteCarlo.jl Documentation
+# FinancialMonteCarlo.jl
 
 ```@contents
 ```
