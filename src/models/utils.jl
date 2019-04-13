@@ -9,6 +9,3 @@ quantile_exp(lam::Number,rand1::Number)::Number=-log(1-rand1)/lam;
 #	y=Dual(yval,der1);
 #	return y;
 #end
-
-import Base.Float32
-Float32(p::Dual{Float64})=dual(Float32(p.value),Float32(p.epsilon))

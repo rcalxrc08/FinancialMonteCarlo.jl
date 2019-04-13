@@ -84,9 +84,9 @@ test:1.0:
   stage: test
   image: julia:1.0
   <<: *test_definition
-coverage:1.0:
+coverage:1.1:
   stage: coverage
-  image: julia:1.0
+  image: julia:1.1
   <<: *cov_definition
 # Windows
 #test:0.6.3-Windows:
