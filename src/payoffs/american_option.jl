@@ -7,7 +7,7 @@ Fields:\n
 		T           = Time to Maturity of the Options.
 		K  = Strike of the Option.
 		isCall  = true for call, false for put.
-```
+
 """
 struct AmericanOption{num1,num2<:Number}<:AmericanPayoff
 	T::num1

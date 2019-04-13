@@ -12,7 +12,7 @@ Where:\n
 		parallelMode  [Optional, default to SerialMode()] = SerialMode(), CudaMode(), AFMode()
 
 		Price     = Price of the derivative
-```
+
 """	
 function pricer(mcProcess::BaseProcess,spotData::equitySpotData,mcConfig::MonteCarloConfiguration,abstractPayoff::AbstractPayoff,mode1::MonteCarloMode=standard,parallelMode::BaseMode=SerialMode())
 	Random.seed!(0)
@@ -38,7 +38,7 @@ Where:\n
 		parallelMode  [Optional, default to SerialMode()] = SerialMode(), CudaMode(), AFMode()
 
 		Price     = Price of the derivative
-```
+
 """	
 function pricer(mcProcess::BaseProcess,spotData::equitySpotData,mcConfig::MonteCarloConfiguration,abstractPayoffs::Array{AbstractPayoff},mode1::MonteCarloMode=standard,parallelMode::BaseMode=SerialMode())
 	Random.seed!(0)

@@ -71,7 +71,7 @@ Where:\n
 		parallelMode  [Optional, default to SerialMode()] = SerialMode(), CudaMode(), AFMode()
 
 		S      = Matrix with path of underlying.
-```
+
 """
 function simulate(mcProcess::BaseProcess,spotData::equitySpotData,mcBaseData::MonteCarloConfiguration,T::numb,monteCarloMode::MonteCarloMode=standard,parallelMode::BaseMode=SerialMode()) where {numb<:Number}
 	error("Function used just for documentation")
