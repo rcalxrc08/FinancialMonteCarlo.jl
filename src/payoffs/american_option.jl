@@ -26,20 +26,7 @@ end
 
 export AmericanOption;
 
-"""
-Payoff computation from MonteCarlo paths
 
-		Payoff=payoff(S,amPayoff,AmericanOption,T1)
-	
-Where:\n
-		S           = Paths of the Underlying.
-		amPayoff  = Datas of the Option.
-		spotData  = Datas of the Spot.
-		T1=Final Time of Spot Simulation (default equals Time to Maturity of the option)
-
-		Payoff      = payoff of the Option.
-```
-"""
 function payoff(S::AbstractMatrix{numtype},amPayoff::AmericanOption,spotData::equitySpotData,T1::num2=amPayoff.T) where{numtype,num2<:Number}
 	iscall=amPayoff.isCall ? 1 : -1
 	K=amPayoff.K;

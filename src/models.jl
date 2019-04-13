@@ -57,3 +57,22 @@ function display(p::AbstractMonteCarloProcess)
 		println(name," = ",getfield(p,name))
 	end
 end
+
+"""
+General Interface for Stochastic Process simulation
+
+		S=simulate(mcProcess,spotData,mcBaseData,T,monteCarloMode=standard,parallelMode=SerialMode())
+	
+Where:\n
+		mcProcess          = Process to be simulated.
+		spotData  = Datas of the Spot.
+		mcBaseData = Basic properties of MonteCarlo simulation
+		monteCarloMode [Optional, default to standard]= standard or antitethic
+		parallelMode  [Optional, default to SerialMode()] = SerialMode(), CudaMode(), AFMode()
+
+		S      = Matrix with path of underlying.
+```
+"""
+function simulate(mcProcess::BaseProcess,spotData::equitySpotData,mcBaseData::MonteCarloConfiguration,T::numb,monteCarloMode::MonteCarloMode=standard,parallelMode::BaseMode=SerialMode()) where {numb<:Number}
+	error("Function used just for documentation")
+end

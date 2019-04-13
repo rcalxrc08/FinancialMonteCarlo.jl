@@ -26,20 +26,7 @@ end
 
 export BarrierOptionUpIn;
 
-"""
-Payoff computation from MonteCarlo paths
 
-		Payoff=payoff(S,BarrierOptionUpIn,spotData,T1)
-	
-Where:\n
-		S           = Paths of the Underlying.
-		BarrierOptionUpIn  = Datas of the Option.
-		spotData  = Datas of the Spot.
-		T1=Final Time of Spot Simulation (default equals Time to Maturity of the option)
-
-		Payoff      = payoff of the Option.
-```
-"""
 function payoff(S::AbstractMatrix{num},barrierPayoff::BarrierOptionUpIn,spotData::equitySpotData,T1::num2=barrierPayoff.T) where{num,num2<:Number}
 	iscall=barrierPayoff.isCall ? 1 : -1
 	r=spotData.r;

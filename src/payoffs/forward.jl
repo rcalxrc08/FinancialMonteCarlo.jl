@@ -19,20 +19,7 @@ end
 
 export Forward;
 
-"""
-Payoff computation from MonteCarlo paths
 
-		Payoff=payoff(S,forwardData,spotData,T1)
-	
-Where:\n
-		S           = Paths of the Underlying.
-		forwardData  = Datas of the Forward.
-		spotData  = Datas of the Spot.
-		T1=Final Time of Spot Simulation (default equals Time to Maturity of the option)
-
-		Payoff      = payoff of the Forward.
-```
-"""
 function payoff(S::AbstractMatrix{num},optionData::Forward,spotData::equitySpotData,T1::num2=optionData.T) where{num,num2<:Number}
 	r=spotData.r;
 	T=optionData.T;

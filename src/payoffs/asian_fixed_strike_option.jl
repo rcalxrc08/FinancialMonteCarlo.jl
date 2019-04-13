@@ -25,20 +25,7 @@ end
 
 export AsianFixedStrikeOption;
 
-"""
-Payoff computation from MonteCarlo paths
 
-		Payoff=payoff(S,asianFixedStrikePayoff,spotData,T1)
-	
-Where:\n
-		S           = Paths of the Underlying.
-		asianFixedStrikePayoff  = Datas of the Option.
-		spotData  = Datas of the Spot.
-		T1=Final Time of Spot Simulation (default equals Time to Maturity of the option)
-
-		Payoff      = payoff of the Option.
-```
-"""
 function payoff(S::AbstractMatrix{num},asianFixedStrikePayoff::AsianFixedStrikeOption,spotData::equitySpotData,T1::num2=asianFixedStrikePayoff.T) where{num,num2<:Number}
 	iscall=asianFixedStrikePayoff.isCall ? 1 : -1
 	r=spotData.r;

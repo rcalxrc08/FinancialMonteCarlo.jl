@@ -28,3 +28,22 @@ include("payoffs/binary_american_option.jl")
 ### Asian Payoffs
 include("payoffs/asian_fixed_strike_option.jl")
 include("payoffs/asian_floating_strike_option.jl")
+
+
+"""
+General Interface for Payoff computation from MonteCarlo paths
+
+		Payoff=payoff(S,optionData,spotData,T1=optionData.T)
+	
+Where:\n
+		S           = Paths of the Underlying.
+		optionData  = Datas of the Forward.
+		spotData  = Datas of the Spot.
+		T1 [Optional, default to optionData.T]=Final Time of Spot Simulation (default equals Time to Maturity of the option)
+
+		Payoff      = payoff of the Forward.
+```
+"""
+function payoff(S::AbstractMatrix{num},optionData::AbstractPayoff,spotData::equitySpotData,T1::num2=optionData.T) where{num,num2<:Number}
+	error("Function used just for documentation")
+end
