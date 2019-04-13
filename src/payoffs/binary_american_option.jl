@@ -1,3 +1,11 @@
+"""
+Class for Dispatching Forward Payoff
+
+		forward=Forward(T::num) where {num<:Number}
+	
+Where:\n
+		T	=	Time to maturity of the Forward.
+"""
 struct BinaryAmericanOption{num1,num2<:Number}<:AmericanPayoff
 	T::num1
 	K::num2
@@ -18,11 +26,11 @@ export BinaryAmericanOption;
 """
 Payoff computation from MonteCarlo paths
 
-		Payoff=payoff(S,amPayoff,BinaryAmericanOption,)
+		Payoff=payoff(S,binaryAmericanOption,spotData,T1)
 	
 Where:\n
 		S           = Paths of the Underlying.
-		amPayoff  = Datas of the Option.
+		binaryAmericanOption  = Datas of the Option.
 		spotData  = Datas of the Spot.
 		T1=Final Time of Spot Simulation (default equals Time to Maturity of the option)
 

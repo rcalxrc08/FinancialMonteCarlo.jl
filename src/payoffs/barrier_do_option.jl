@@ -1,4 +1,11 @@
+"""
+Class for Dispatching Forward Payoff
 
+		forward=Forward(T::num) where {num<:Number}
+	
+Where:\n
+		T	=	Time to maturity of the Forward.
+"""
 struct BarrierOptionDownOut{num1,num2,num3<:Number}<:BarrierPayoff
 	T::num1
 	K::num2
@@ -22,7 +29,7 @@ export BarrierOptionDownOut;
 """
 Payoff computation from MonteCarlo paths
 
-		Payoff=payoff(S,barrierPayoff,)
+		Payoff=payoff(S,barrierPayoff,spotData,T1)
 
 Where:\n
 		S           = Paths of the Underlying.

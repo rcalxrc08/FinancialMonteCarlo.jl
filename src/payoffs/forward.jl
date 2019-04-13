@@ -22,11 +22,11 @@ export Forward;
 """
 Payoff computation from MonteCarlo paths
 
-		Payoff=payoff(S,Forward,spotData,T1)
-
+		Payoff=payoff(S,forwardData,spotData,T1)
+	
 Where:\n
 		S           = Paths of the Underlying.
-		Forward  = Datas of the Forward.
+		forwardData  = Datas of the Forward.
 		spotData  = Datas of the Spot.
 		T1=Final Time of Spot Simulation (default equals Time to Maturity of the option)
 

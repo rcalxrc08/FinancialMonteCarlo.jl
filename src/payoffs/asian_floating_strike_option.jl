@@ -1,4 +1,11 @@
+"""
+Class for Dispatching Forward Payoff
 
+		forward=Forward(T::num) where {num<:Number}
+	
+Where:\n
+		T	=	Time to maturity of the Forward.
+"""
 struct AsianFloatingStrikeOption{num<:Number}<:AsianPayoff
 	T::num
 	isCall::Bool
@@ -16,7 +23,7 @@ export AsianFloatingStrikeOption;
 """
 Payoff computation from MonteCarlo paths
 
-		Payoff=payoff(S,asianFloatingStrikePayoff,)
+		Payoff=payoff(S,asianFloatingStrikePayoff,spotData,T1)
 
 Where:\n
 		S           = Paths of the Underlying.
