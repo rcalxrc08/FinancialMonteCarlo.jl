@@ -21,7 +21,7 @@ export LevyProcess
 export FiniteActivityProcess
 export InfiniteActivityProcess
 
-using Distributions,DualNumbers;
+using Distributions;
 
 include("models/utils.jl")
 
