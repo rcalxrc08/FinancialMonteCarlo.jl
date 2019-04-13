@@ -5,6 +5,7 @@ makedocs(
         prettyurls = get(ENV, "CI", nothing) == "true"
     ),
 		sitename="FinancialMonteCarlo.jl",
+		modules = [FinancialMonteCarlo],
 		pages = [
 				"index.md",
 				"starting.md",

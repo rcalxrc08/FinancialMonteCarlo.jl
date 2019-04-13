@@ -1,56 +1,26 @@
-# [Univariate Distributions](@id univariates)
+# [Stochastic Processes](@id stochproc)
 
-*Univariate distributions* are the distributions whose variate forms are `Univariate` (*i.e* each sample is a scalar). Abstract types for univariate distributions:
+The package support the following processes:
 
-```julia
-const UnivariateDistribution{S<:ValueSupport} = Distribution{Univariate,S}
+* `Black Scholes Process`
+* `Heston Process`
+* `Kou Process`
+* `Merton Process`
+* `Variance Gamma Process`
+* `Normal Inverse Gaussian Process`
+* `Lognormal Mixture Process`
 
-const DiscreteUnivariateDistribution   = Distribution{Univariate, Discrete}
-const ContinuousUnivariateDistribution = Distribution{Univariate, Continuous}
-```
+To be noticed that in order to work also with package DifferentialEquations.jl, the base class of the process is from it.
 
 ## Common Interface
 
-A series of methods are implemented for each univariate distribution, which provide
-useful functionalities such as moment computation, pdf evaluation, and sampling
-(*i.e.* random number generation).
+A single method is implemented for each process, which provide the simulation output.
 
-### Parameter Retrieval
+### Simulation
 
-**Note:** `params` are defined for all univariate distributions, while other parameter
-retrieval methods are only defined for those distributions for which these parameters make sense.
-See below for details.
-
+Each process behave in its own different way but returning the same kind of object after simulation,
+the generic interface for simulating is the following:
 ```@docs
-pricer(mcProcess::FinancialMonteCarlo.BaseProcess,spotData::equitySpotData,mcConfig::MonteCarloConfiguration,abstractPayoffs::Array{FinancialMonteCarlo.AbstractPayoff},mode1::MonteCarloMode=standard,parallelMode::FinancialMonteCarlo.BaseMode=SerialMode())
+simulate(mcProcess::FinancialMonteCarlo.BaseProcess,spotData::equitySpotData,mcBaseData::MonteCarloConfiguration,T::numb,monteCarloMode::MonteCarloMode=standard,parallelMode::FinancialMonteCarlo.BaseMode=SerialMode()) where {numb<:Number}
 ```
 
-For distributions for which success and failure have a meaning,
-the following methods are defined:
-```@docs
-pricer(mcProcess::FinancialMonteCarlo.BaseProcess,spotData::equitySpotData,mcConfig::MonteCarloConfiguration,abstractPayoffs::Array{FinancialMonteCarlo.AbstractPayoff},mode1::MonteCarloMode=standard,parallelMode::FinancialMonteCarlo.BaseMode=SerialMode())
-```
-
-
-### Computation of statistics
-
-```@docs
-pricer(mcProcess::FinancialMonteCarlo.BaseProcess,spotData::equitySpotData,mcConfig::MonteCarloConfiguration,abstractPayoffs::Array{FinancialMonteCarlo.AbstractPayoff},mode1::MonteCarloMode=standard,parallelMode::FinancialMonteCarlo.BaseMode=SerialMode())
-```
-
-### Probability Evaluation
-
-### Sampling (Random number generation)
-```@docs
-pricer(mcProcess::FinancialMonteCarlo.BaseProcess,spotData::equitySpotData,mcConfig::MonteCarloConfiguration,abstractPayoffs::Array{FinancialMonteCarlo.AbstractPayoff},mode1::MonteCarloMode=standard,parallelMode::FinancialMonteCarlo.BaseMode=SerialMode())
-```
-
-## Continuous Distributions
-
-```@docs
-pricer(mcProcess::FinancialMonteCarlo.BaseProcess,spotData::equitySpotData,mcConfig::MonteCarloConfiguration,abstractPayoffs::Array{FinancialMonteCarlo.AbstractPayoff},mode1::MonteCarloMode=standard,parallelMode::FinancialMonteCarlo.BaseMode=SerialMode())
-```
-
-### Vectorized evaluation
-
-Vectorized computation and inplace vectorized computation have been deprecated.
