@@ -102,6 +102,7 @@ pages:
     - julia --project=docs -e 'using Pkg; Pkg.instantiate(); Pkg.develop(PackageSpec(path=pwd()))'
     - julia --project=docs --color=yes docs/make.jl
     - mv docs/build public # move to the directory picked up by Gitlab pages
+    - mv docs/logo.png public/ # move to the directory picked up by Gitlab pages
   artifacts:
     paths:
       - public
