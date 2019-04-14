@@ -1,3 +1,12 @@
+"""
+Struct for LogNormalMixture
+
+		lnmModel=LogNormalMixture(η::Array{num1},λ::Array{num2}) where {num1,num2<: Number}
+	
+Where:\n
+		η  =	Array of volatilities.
+		λ  = 	Array of weights.
+"""
 mutable struct LogNormalMixture{num,num2<:Number}<:ItoProcess
 	η::Array{num,1}
 	λ::Array{num2,1}

@@ -1,4 +1,12 @@
+"""
+Struct for Brownian Motion
 
+		bmProcess=BrownianMotion(σ::num1,μ::num2) where {num1,num2 <: Number}
+	
+Where:\n
+		σ	=	volatility of the process.
+		μ	=	drift of the process.
+"""
 mutable struct BrownianMotion{num,num1<:Number}<:ItoProcess
 	σ::num
 	μ::num1

@@ -1,4 +1,15 @@
+"""
+Struct for Kou Process
 
+		kouProcess=KouProcess(σ::num1,λ::num2,p::num3,λp::num4,λm::num5) where {num1,num2,num3,num4,num5 <: Number}
+	
+Where:\n
+		σ  =	volatility of the process.
+		λ  = 	jumps intensity.
+		p  =	prob. of having positive jump.
+		λp =	positive jump size.
+		λm =	negative jump size.
+"""
 mutable struct KouProcess{num,num1,num2,num3,num4<:Number}<:FiniteActivityProcess
 	σ::num
 	λ::num1

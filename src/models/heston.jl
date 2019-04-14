@@ -1,4 +1,16 @@
+"""
+Struct for Heston Process
 
+		hstProcess=HestonProcess(σ::num1,σ_zero::num2,λ::num3,κ::num4,ρ::num5,θ::num6) where {num1,num2,num3,num4,num5,num6 <: Number}
+	
+Where:\n
+		σ	=	volatility of volatility of the process.
+		σ_zero	= initial volatility of the process.
+		λ	=	??volatility of the process.
+		κ	=	??volatility of the process.
+		ρ	=	??volatility of the process.
+		θ	=	??drift of the process.
+"""
 mutable struct HestonProcess{num,num1,num2,num3,num4,num5<:Number}<:ItoProcess
 	σ::num
 	σ_zero::num1

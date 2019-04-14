@@ -1,3 +1,11 @@
+"""
+Struct for Black Scholes Process
+
+		bsProcess=BlackScholesProcess(σ::num1) where {num1 <: Number}
+	
+Where:\n
+		σ	=	volatility of the process.
+"""
 mutable struct BlackScholesProcess{num<:Number}<:ItoProcess
 	σ::num
 	function BlackScholesProcess(σ::num) where {num <: Number}

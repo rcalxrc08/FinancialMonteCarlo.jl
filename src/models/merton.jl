@@ -1,4 +1,14 @@
+"""
+Struct for Merton Process
 
+		mertonProcess=MertonProcess(σ::num1,λ::num2,μJ::num3,σJ::num4) where {num1,num2,num3,num4<: Number}
+	
+Where:\n
+		σ  =	volatility of the process.
+		λ  = 	jumps intensity.
+		μJ =	jumps mean.
+		σJ =	jumps variance.
+"""
 mutable struct MertonProcess{num,num1,num2,num3<:Number}<:FiniteActivityProcess
 	σ::num
 	λ::num1
