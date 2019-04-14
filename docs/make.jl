@@ -14,7 +14,7 @@ makedocs(
 				"parallel_vr.md",
 				"multivariate.md",
 				"payoffs.md",
-				"mixture.md",
+				"intdiffeq.md",
 				"fit.md",
 				"extends.md",
 			])
