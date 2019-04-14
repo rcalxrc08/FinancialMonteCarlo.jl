@@ -12,3 +12,14 @@ The package provides the BaseMode type to represent the type of parallel process
 
 ## Variance Reduction
 The variance reduction is achieved using antithetic variables approach.
+
+
+
+## Parallelization vs Number Type
+Keep in mind the following table when trying to use parallelization and automatic differentiation / complex numbers
+**Element Type** | **Parallelization mode** | **Descriptions**
+--- | --- | ---
+`Float X` | `Serial` | Works with any type of Float
+`Float X` | `GPU` | Works with any type of Float, best with Float32
+`num<:Number` | `Serial` | Works almost everywhere with any type of Number, like Duals,Complex,Hypers,etc.
+`num<:Number` | `GPU` | Works just with Complex and ForwardDiff.Dual.

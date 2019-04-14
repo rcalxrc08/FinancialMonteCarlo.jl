@@ -1,68 +1,69 @@
 # Type Hierarchy
 
-All samplers and distributions provided in this package are organized into a type hierarchy described as follows.
+All models, payoffs and modes provided in this package are organized into a type hierarchy described as follows.
 
-## Sampleable
+## Models
 
-The root of this type hierarchy is `Sampleable`. The abstract type `Sampleable` subsumes any types of objects from which one can draw samples, which particularly includes *samplers* and *distributions*. Formally, `Sampleable` is defined as
+The root of this type hierarchy is a DifferentialEquations.jl abstract class `AbstractMonteCarloProblem`. 
+The abstract type `AbstractMonteCarloProblem` is used in order to guarantee the compatibility with DifferentialEquations.jl; 
+such type is used whenever it is not necessary to know exactly the model type, like in `payoff`,`pricer`, etc.
+Remember that each model must have a `simulate` method implemented that specifies the way that the model behaves.
+From that abstract class the followings are derived and decomposed as follows:
+
+`AbstractMonteCarloProcess` is used to represent any model that is implemented completely inside this package:
+```julia
+abstract type AbstractMonteCarloProcess <: AbstractMonteCarloProblem end
+```
+`ItoProcess` is used to represent any Ito Process:
+```julia
+abstract type ItoProcess<:AbstractMonteCarloProcess end
+```
+
+`LevyProcess` is used to represent any Levy Process:
+```julia
+abstract type LevyProcess<:AbstractMonteCarloProcess end
+```
+
+`FiniteActivityProcess` is used to represent any Finite Activity Levy Process:
+```julia
+abstract type FiniteActivityProcess<:LevyProcess end
+```
+
+`InfiniteActivityProcess` is used to represent any Infinite Activity Levy Process:
+```julia
+abstract type InfiniteActivityProcess<:LevyProcess end
+```
+
+Each concrete model that is implemented inside this package inherits from one of these above models.
+Remember that the model type is used to carry the parameters of the model and the dispatch when it's time to simulate, i.e., 
+there is just one function `simulate` that is overloaded with respect to the model type.
+
+## Payoffs
+
+The type hierarchy has a root type called `AbstractPayoff`, that type is used whenever it is not necessary to know the model type, like in `pricer`,`var` and `ci`.
+
+Each payoff must have a `payoff` method implemented that specifies the way that the payoff behaves.
+From that abstract class the followings are derived and decomposed as follows:
 
 ```julia
-abstract type Sampleable{F<:VariateForm,S<:ValueSupport} end
+abstract type AbstractPayoff end
 ```
-
-It has two type parameters that define the kind of samples that can be drawn therefrom.
-
-### VariateForm
-
-`F <: VariateForm` specifies the form of the variate, which can be one of the following:
-
-**Type** | **A single sample** | **Multiple samples**
---- | --- |---
-`Univariate` | a scalar number | A numeric array of arbitrary shape, each element being a sample
-`Multivariate` | a numeric vector | A matrix, each column being a sample
-`Matrixvariate` | a numeric matrix | An array of matrices, each element being a sample matrix
-
-### ValueSupport
-
-`S <: ValueSupport` specifies the support of sample elements, which can be either of the following:
-
-**Type** | **Element type** | **Descriptions**
---- | --- | ---
-`Discrete` | `Int` | Samples take discrete values
-`Continuous` | `Float64` | Samples take continuous real values
-
-Multiple samples are often organized into an array, depending on the variate form.
-
-The basic functionalities that a sampleable object provides is to *retrieve information about the samples it generates* and to *draw samples*. Particularly, the following functions are provided for sampleable objects:
-
-```@docs
-pricer(mcProcess::FinancialMonteCarlo.BaseProcess,spotData::equitySpotData,mcConfig::MonteCarloConfiguration,abstractPayoffs::Array{FinancialMonteCarlo.AbstractPayoff},mode1::MonteCarloMode=standard,parallelMode::FinancialMonteCarlo.BaseMode=SerialMode())
+```julia
+abstract type EuropeanPayoff<:AbstractPayoff end
 ```
-
-## Distributions
-
-We use `Distribution`, a subtype of `Sampleable` as defined below, to capture probabilistic distributions. In addition to being sampleable, a *distribution* typically comes with an explicit way to combine its domain, probability density functions, among many other quantities.
 
 ```julia
-abstract type Distribution{F<:VariateForm,S<:ValueSupport} <: Sampleable{F,S} end
+abstract type AmericanPayoff<:AbstractPayoff end
 ```
 
-To simplify the use in practice, we introduce a series of type alias as follows:
 ```julia
-const UnivariateDistribution{S<:ValueSupport}   = Distribution{Univariate,S}
-const MultivariateDistribution{S<:ValueSupport} = Distribution{Multivariate,S}
-const MatrixDistribution{S<:ValueSupport}       = Distribution{Matrixvariate,S}
-const NonMatrixDistribution = Union{UnivariateDistribution, MultivariateDistribution}
-
-const DiscreteDistribution{F<:VariateForm}   = Distribution{F,Discrete}
-const ContinuousDistribution{F<:VariateForm} = Distribution{F,Continuous}
-
-const DiscreteUnivariateDistribution     = Distribution{Univariate,    Discrete}
-const ContinuousUnivariateDistribution   = Distribution{Univariate,    Continuous}
-const DiscreteMultivariateDistribution   = Distribution{Multivariate,  Discrete}
-const ContinuousMultivariateDistribution = Distribution{Multivariate,  Continuous}
-const DiscreteMatrixDistribution         = Distribution{Matrixvariate, Discrete}
-const ContinuousMatrixDistribution       = Distribution{Matrixvariate, Continuous}
+abstract type BarrierPayoff<:AbstractPayoff end
 ```
 
-All methods applicable to `Sampleable` also applies to `Distribution`. The API for distributions of different variate forms are different (refer to [Stochastic Process](@ref stochproc), [multivariates](@ref multivariates), and [matrix](@ref payoff) for details).
+```julia
+abstract type AsianPayoff<:AbstractPayoff end
+```
+
+Each concrete payoff that is implemented inside this package inherits from one of these above payoffs.
+Remember that the payoff type is used to carry the parameters of the model and the dispatch when it's time to price, i.e., 
+there is just one function `payoff` that is overloaded with respect to the payoff type.
