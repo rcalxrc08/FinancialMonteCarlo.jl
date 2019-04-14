@@ -11,4 +11,4 @@ The package provides the BaseMode type to represent the type of parallel process
 
 
 ## Variance Reduction
-The variance reduction is achieved using antithetic variables appr
+The variance reduction is achieved using antithetic variables approach.

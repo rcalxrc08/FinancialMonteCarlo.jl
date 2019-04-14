@@ -24,3 +24,16 @@ the generic interface for simulating is the following:
 simulate(mcProcess::FinancialMonteCarlo.BaseProcess,spotData::equitySpotData,mcBaseData::MonteCarloConfiguration,T::numb,monteCarloMode::MonteCarloMode=standard,parallelMode::FinancialMonteCarlo.BaseMode=SerialMode()) where {numb<:Number}
 ```
 
+The following option structs are provided:
+```@docs
+BlackScholesProcess
+BrownianMotion
+GeometricBrownianMotion
+HestonProcess
+KouProcess
+LogNormalMixture
+MertonProcess
+NormalInverseGaussianProcess
+SubordinatedBrownianMotion
+VarianceGammaProcess
+```
