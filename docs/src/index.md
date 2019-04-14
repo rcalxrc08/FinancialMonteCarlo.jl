@@ -133,14 +133,6 @@ There are few things that you should keep in mind when using this library:
 - Automatic Differentiation is enabled but does not work for process that rely on the simulation of complicated random numbers distributions. If you try you will get a runtime exception.
 - Support of Jump Diffusion Differential Equations from DifferentialEquations.jl is broken since [#298](https://github.com/JuliaDiffEq/DifferentialEquations.jl/issues/298)
 
-
-## Functions
-
-```@docs
-pricer(mcProcess::FinancialMonteCarlo.BaseProcess,spotData::equitySpotData,mcConfig::MonteCarloConfiguration,abstractPayoff::FinancialMonteCarlo.AbstractPayoff,mode1::MonteCarloMode=standard,parallelMode::FinancialMonteCarlo.BaseMode=SerialMode())
-pricer(mcProcess::FinancialMonteCarlo.BaseProcess,spotData::equitySpotData,mcConfig::MonteCarloConfiguration,abstractPayoffs::Array{FinancialMonteCarlo.AbstractPayoff},mode1::MonteCarloMode=standard,parallelMode::FinancialMonteCarlo.BaseMode=SerialMode())
-```
-
 ## Index
 
 ```@index

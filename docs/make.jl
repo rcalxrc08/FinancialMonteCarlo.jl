@@ -11,7 +11,7 @@ makedocs(
 				"starting.md",
 				"types.md",
 				"stochproc.md",
-				"truncate.md",
+				"parallel_vr.md",
 				"multivariate.md",
 				"payoffs.md",
 				"mixture.md",
