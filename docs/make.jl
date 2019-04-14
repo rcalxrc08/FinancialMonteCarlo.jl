@@ -13,10 +13,8 @@ makedocs(
 				"types.md",
 				"stochproc.md",
 				"parallel_vr.md",
-				"multivariate.md",
 				"payoffs.md",
 				"intdiffeq.md",
-				"fit.md",
 				"extends.md",
 			])
 deploydocs(
