@@ -2,7 +2,8 @@ using Documenter, FinancialMonteCarlo
 
 makedocs(
 		format = Documenter.HTML(
-        prettyurls = get(ENV, "CI", nothing) == "true"
+        prettyurls = get(ENV, "CI", nothing) == "true",
+		assets = ["logo.png"]
     ),
 		sitename="FinancialMonteCarlo.jl",
 		modules = [FinancialMonteCarlo],
