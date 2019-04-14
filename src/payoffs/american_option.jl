@@ -1,13 +1,12 @@
 """
 Struct for Standard American Option
 
-		AmericanOption{num1,num2<:Number}<:AmericanPayoff
+		amOption=AmericanOption{num1,num2<:Number}<:AmericanPayoff
 	
-Fields:\n
-		T           = Time to Maturity of the Options.
-		K  = Strike of the Option.
-		isCall  = true for call, false for put.
-
+Where:\n
+		T	=	Time to maturity of the Option.
+		K	=	Strike Price of the Option.
+		isCall  = true for CALL, false for PUT.
 """
 struct AmericanOption{num1,num2<:Number}<:AmericanPayoff
 	T::num1

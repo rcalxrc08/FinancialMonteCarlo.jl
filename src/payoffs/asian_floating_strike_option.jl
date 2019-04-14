@@ -1,10 +1,11 @@
 """
-Class for Dispatching Forward Payoff
+Struct for Asian Floating Strike Option
 
-		forward=Forward(T::num) where {num<:Number}
+		asOption=AsianFloatingStrikeOption(T::num1,isCall::Bool=true) where {num1<:Number}
 	
 Where:\n
-		T	=	Time to maturity of the Forward.
+		T	=	Time to maturity of the Option.
+		isCall  = true for CALL, false for PUT.
 """
 struct AsianFloatingStrikeOption{num<:Number}<:AsianPayoff
 	T::num
