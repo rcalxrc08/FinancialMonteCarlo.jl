@@ -11,8 +11,7 @@ variables:
   JULIA_DEPOT_PATH: "$CI_PROJECT_DIR/.julia/"
 stages:
   - build
-  - test
-  - coverage
+  - test-coverage
   - deploy
 before_script:
     # Install build dependencies
@@ -76,8 +75,8 @@ before_script:
       println("(", cl/tl*100, "%) covered")'
 
 # Name a test and select an appropriate image.
-coverage:1.1:
-  stage: coverage
+test-coverage:1.1:
+  stage: test-coverage
   image: julia:1.1
   <<: *cov_definition
 # Windows
@@ -89,20 +88,12 @@ coverage:1.1:
 build:1.1:
   stage: build
   image: julia:1.1
-  allow_failure: true
   <<: *build_definition
 #build:1.1_cuda:
 #  stage: build
 #  image: juliagpu/julia:v1.1-cuda
 #  allow_failure: true
 #  <<: *build_definition_cuda
-test:1.1:
-  image: julia:1.1
-  stage: test
-  allow_failure: true
-  # ... allowing for failures, since we are testing against the development
-  # branch:
-  <<: *test_definition
 
 pages:
   stage: deploy
