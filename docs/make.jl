@@ -3,7 +3,7 @@ using Documenter, FinancialMonteCarlo
 makedocs(
 		format = Documenter.HTML(
         prettyurls = get(ENV, "CI", nothing) == "true",
-		assets = ["logo.png"]
+		assets = ["assets/favicon.ico"]
     ),
 		sitename="FinancialMonteCarlo.jl",
 		modules = [FinancialMonteCarlo],
