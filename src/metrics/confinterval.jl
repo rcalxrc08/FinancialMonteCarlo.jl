@@ -1,5 +1,22 @@
 using Distributions
+
+"""
+General Interface for Computation of confidence interval of price
+
+		IC=confinter(mcProcess,spotData,mcBaseData,payoff_,,alpha,monteCarloMode=standard,parallelMode=SerialMode())
 	
+Where:\n
+		mcProcess          = Process to be simulated.
+		spotData  = Datas of the Spot.
+		mcBaseData = Basic properties of MonteCarlo simulation
+		payoff_ = Payoff(s) to be priced
+		alpha [Optional, default to 99%] = confidence level
+		monteCarloMode [Optional, default to standard]= standard or antitethic
+		parallelMode  [Optional, default to SerialMode()] = SerialMode(), CudaMode(), AFMode()
+
+		Price     = Price of the derivative
+
+"""	
 function confinter(mcProcess::BaseProcess,spotData::equitySpotData,mcConfig::MonteCarloConfiguration,abstractPayoff::AbstractPayoff,alpha::Real=0.99,mode1::MonteCarloMode=standard,parallelMode::BaseMode=SerialMode())
 	Random.seed!(0)
 	T=abstractPayoff.T;

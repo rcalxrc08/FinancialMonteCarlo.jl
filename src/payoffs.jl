@@ -37,11 +37,11 @@ General Interface for Payoff computation from MonteCarlo paths
 	
 Where:\n
 		S           = Paths of the Underlying.
-		optionData  = Datas of the Forward.
+		optionData  = Datas of the Option.
 		spotData  = Datas of the Spot.
 		T1 [Optional, default to optionData.T]=Final Time of Spot Simulation (default equals Time to Maturity of the option)
 
-		Payoff      = payoff of the Forward.
+		Payoff      = payoff of the Option.
 
 """
 function payoff(S::AbstractMatrix{num},optionData::AbstractPayoff,spotData::equitySpotData,T1::num2=optionData.T) where{num,num2<:Number}

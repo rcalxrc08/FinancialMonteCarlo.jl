@@ -1,13 +1,13 @@
 """
-General Interface for Stochastic Process simulation
+General Interface for Pricing
 
-		S=pricer(mcProcess,spotData,mcBaseData,payoff_,monteCarloMode=standard,parallelMode=SerialMode())
+		Price=pricer(mcProcess,spotData,mcBaseData,payoff_,monteCarloMode=standard,parallelMode=SerialMode())
 	
 Where:\n
 		mcProcess          = Process to be simulated.
 		spotData  = Datas of the Spot.
 		mcBaseData = Basic properties of MonteCarlo simulation
-		payoff_ = Payoff to be priced
+		payoff_ = Payoff(s) to be priced
 		monteCarloMode [Optional, default to standard]= standard or antitethic
 		parallelMode  [Optional, default to SerialMode()] = SerialMode(), CudaMode(), AFMode()
 
@@ -24,22 +24,6 @@ function pricer(mcProcess::BaseProcess,spotData::equitySpotData,mcConfig::MonteC
 	return Price;
 end
 
-"""
-General Interface for Stochastic Process simulation
-
-		S=pricer(mcProcess,spotData,mcBaseData,payoffs_,monteCarloMode=standard,parallelMode=SerialMode())
-	
-Where:\n
-		mcProcess          = Process to be simulated.
-		spotData  = Datas of the Spot.
-		mcBaseData = Basic properties of MonteCarlo simulation
-		payoffs_ = Payoffs to be priced
-		monteCarloMode [Optional, default to standard]= standard or antitethic
-		parallelMode  [Optional, default to SerialMode()] = SerialMode(), CudaMode(), AFMode()
-
-		Price     = Price of the derivative
-
-"""	
 function pricer(mcProcess::BaseProcess,spotData::equitySpotData,mcConfig::MonteCarloConfiguration,abstractPayoffs::Array{AbstractPayoff},mode1::MonteCarloMode=standard,parallelMode::BaseMode=SerialMode())
 	Random.seed!(0)
 	maxT=maximum([abstractPayoff.T for abstractPayoff in abstractPayoffs])
