@@ -1,6 +1,6 @@
-# FinancialMonteCarlo.jl
+# FinancialMonteCarlo.jl <img src="etc/logo.png" width="40">  
 
-It currently contains the following capabilities:
+FinancialMonteCarlo.jl contains the following capabilities:
 
 - Support for the following Models:
     - Black Scholes

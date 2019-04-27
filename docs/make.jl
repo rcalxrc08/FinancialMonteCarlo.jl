@@ -4,6 +4,7 @@ makedocs(
 		format = Documenter.HTML(
         prettyurls = get(ENV, "CI", nothing) == "true",
 		assets = ["assets/favicon.ico"]
+		assets = ["assets/logo.png"]
     ),
 		sitename="FinancialMonteCarlo.jl",
 		modules = [FinancialMonteCarlo],
@@ -17,6 +18,6 @@ makedocs(
 				"intdiffeq.md",
 				"extends.md",
 			])
-deploydocs(
+get(ENV, "CI", nothing) == "true" ? deploydocs(
     repo = "https://gitlab.com/rcalxrc08/FinancialMonteCarlo.jl.git",
-)
+) : nothing
