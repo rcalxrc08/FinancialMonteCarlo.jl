@@ -1,4 +1,4 @@
-# FinancialMonteCarlo.jl <img src="etc/logo.png" width="40">  
+# FinancialMonteCarlo.jl
 
 FinancialMonteCarlo.jl contains the following capabilities:
 
