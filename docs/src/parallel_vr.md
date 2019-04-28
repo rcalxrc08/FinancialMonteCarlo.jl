@@ -17,6 +17,7 @@ The variance reduction is achieved using antithetic variables approach.
 
 ## Parallelization vs Number Type
 Keep in mind the following table when trying to use parallelization and automatic differentiation / complex numbers
+
 **Element Type** | **Parallelization mode** | **Descriptions**
 --- | --- | ---
 `Float X` | `Serial` | Works with any type of Float
