@@ -17,7 +17,7 @@ Where:\n
 		Price     = Price of the derivative
 
 """	
-function confinter(mcProcess::DiffEqBase.AbstractMonteCarloProblem,spotData::equitySpotData,mcConfig::MonteCarloConfiguration,abstractPayoff::AbstractPayoff,alpha::Real=0.99,mode1::MonteCarloMode=standard,parallelMode::BaseMode=SerialMode())
+function confinter(mcProcess::MonteCarloProblem,spotData::equitySpotData,mcConfig::MonteCarloConfiguration,abstractPayoff::AbstractPayoff,alpha::Real=0.99,mode1::MonteCarloMode=standard,parallelMode::BaseMode=SerialMode())
 	Random.seed!(0)
 	T=abstractPayoff.T;
 	Nsim=mcConfig.Nsim;
@@ -31,7 +31,7 @@ function confinter(mcProcess::DiffEqBase.AbstractMonteCarloProblem,spotData::equ
 	return IC;
 end
 
-function confinter(mcProcess::DiffEqBase.AbstractMonteCarloProblem,spotData::equitySpotData,mcConfig::MonteCarloConfiguration,abstractPayoffs::Array{AbstractPayoff},alpha::Real=0.99,mode1::MonteCarloMode=standard,parallelMode::BaseMode=SerialMode())
+function confinter(mcProcess::MonteCarloProblem,spotData::equitySpotData,mcConfig::MonteCarloConfiguration,abstractPayoffs::Array{AbstractPayoff},alpha::Real=0.99,mode1::MonteCarloMode=standard,parallelMode::BaseMode=SerialMode())
 	Random.seed!(0)
 	maxT=maximum([abstractPayoff.T for abstractPayoff in abstractPayoffs])
 	Nsim=mcConfig.Nsim;
