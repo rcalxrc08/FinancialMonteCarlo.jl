@@ -1,13 +1,10 @@
 name = "FinancialMonteCarlo"
 uuid = "078f23cc-2637-5a1d-aba6-8a9ba9a6ff83"
 license = "MIT"
-version = "v0.1.0rc1"
+version = "v0.1.1"
 author = ["rcalxrc08"]
 
 [deps]
-DiffEqBase = "2b5f629d-d688-5b77-993f-72d75c75574e"
-DiffEqMonteCarlo = "78ddff82-25fc-5f2b-89aa-309469cbf16f"
-DifferentialEquations = "0c46a032-eb83-5123-abaf-570d42b7fbaa"
 Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
@@ -21,6 +18,9 @@ julia = "≥ 1.1.0"
 DualNumbers = "fa6b7ba4-c1ee-5f82-b5fc-ecf0adba8f74"
 ForwardDiff = "f6369f11-7733-5829-9624-2563aa707210"
 ReverseDiff = "37e2e3b7-166d-5795-8a7a-e32c996b4267"
+DiffEqBase = "2b5f629d-d688-5b77-993f-72d75c75574e"
+DiffEqMonteCarlo = "78ddff82-25fc-5f2b-89aa-309469cbf16f"
+DifferentialEquations = "0c46a032-eb83-5123-abaf-570d42b7fbaa"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]

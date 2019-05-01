@@ -1,15 +1,13 @@
 __precompile__()
 
 module FinancialMonteCarlo
-	DIFFEQ_MONTECARLO_ACTIVE_FLAG=true
-	if(!((VERSION.major==0)&&(VERSION.minor<=6)))
-		using Random, LinearAlgebra
-	end
-	using Requires
+
+	using Requires,Random, LinearAlgebra
 	function __init__()
 		@require CuArrays = "3a865a2d-5b23-5a0f-bc46-62713ec82fae" include("cuda_dependencies.cujl")
 		@require ArrayFire = "b19378d9-d87a-599a-927f-45f220a2c452" include("af_dependencies.cujl")
 		@require DualNumbers = "fa6b7ba4-c1ee-5f82-b5fc-ecf0adba8f74" include("dual_dependencies.jl")
+		@require DifferentialEquations = "0c46a032-eb83-5123-abaf-570d42b7fbaa" include("diffeq_dependencies.jl")
 	end
 	include("utils.jl")
 	include("payoffs.jl")
@@ -20,8 +18,7 @@ module FinancialMonteCarlo
 	    variance,
 		confinter,
 		simulate,
-		payoff,
-		DIFFEQ_MONTECARLO_ACTIVE_FLAG
+		payoff
 
 
 

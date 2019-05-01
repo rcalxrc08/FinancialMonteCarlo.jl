@@ -1,9 +1,4 @@
-if(DIFFEQ_MONTECARLO_ACTIVE_FLAG)
-	import DiffEqBase.AbstractMonteCarloProblem
-	const BaseProcess=DiffEqBase.AbstractMonteCarloProblem
-else
-	abstract type BaseProcess end
-end
+abstract type BaseProcess end
 
 abstract type AbstractMonteCarloProcess <: BaseProcess end
 
@@ -40,12 +35,6 @@ include("models/merton.jl")
 include("models/subordinated_brownian_motion.jl")
 include("models/variance_gamma.jl")
 include("models/normal_inverse_gaussian.jl")
-
-
-if(DIFFEQ_MONTECARLO_ACTIVE_FLAG)
-	### Support for DiffentialEquations.jl
-	include("models/diff_eq_monte_carlo.jl")
-end
 
 ############### Display Function
 
