@@ -29,7 +29,7 @@ function simulate(mcProcess::BrownianMotion,spotData::equitySpotData,mcBaseData:
 			X_cu[:,i+1]=X_cu[:,i]+(mean_bm.+stddev_bm.*CuArrays.CURAND.curandn(Float32,Nsim));
 		end
 	end
-	isdual(p::Number)=false
+	isdual(p)=false
 	if(isdual(isDualZero))
 		return Matrix(X_cu)
 	else

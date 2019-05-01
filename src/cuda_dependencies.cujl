@@ -2,7 +2,6 @@ struct CudaMode <: ParallelMode end
 struct CudaMode_2 <: ParallelMode end
 
 using .CuArrays
-import .CuArrays.isdual
 include("models/cuda/brownian_motion_cuda.cujl")
 include("models/cuda/brownian_motion_cuda_2.cujl")
 include("models/cuda/heston_cuda.cujl")
