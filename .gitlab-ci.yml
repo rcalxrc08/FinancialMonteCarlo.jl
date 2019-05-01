@@ -43,6 +43,11 @@ before_script:
     # Let's run the tests. Substitute `coverage = false` below, if you do not
     # want coverage results.
     - /usr/local/julia/bin/julia -e 'using InteractiveUtils; versioninfo(); using Pkg; Pkg.clone(pwd()); using FinancialMonteCarlo'
+    artifacts:
+      when: on_success
+      paths:
+        - .julia/
+      expire_in: '1 day'
     
 .test_template: &build_definition_cuda
   # Uncomment below if you would like to run the tests on specific references
@@ -89,11 +94,7 @@ build:1.1:
   stage: build
   image: julia:1.1
   <<: *build_definition
-    artifacts:
-        when: on_success
-        paths:
-          - .julia/
-        expire_in: '1 day'
+    
         
 #build:1.1_cuda:
 #  stage: build
