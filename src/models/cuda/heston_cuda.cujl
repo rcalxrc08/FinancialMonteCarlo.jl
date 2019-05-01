@@ -21,16 +21,16 @@ function simulate(mcProcess::HestonProcess,spotData::equitySpotData,mcBaseData::
 	θ_s=κ*θ/(κ+λ1);
 
 	dt=T/Nstep
-	isDualZero=S0*T*r*σ_zero*κ*θ*λ1*σ*ρ*0.0;
+	isDualZero=zero(S0*T*r*σ_zero*κ*θ*λ1*σ*ρ);
 	ρ_f=Float32(ρ);
 	κ_s_f=Float32(κ_s);
 	θ_s_f=Float32(θ_s);
 	r_d_f=Float32(r-d)
 	dt_f=Float32(dt)
 	σ_f=Float32(σ)
-	X=CuMatrix{typeof(Float32(isDualZero+σ_zero))}(undef,Nsim,Nstep+1);
+	X=CuMatrix{typeof(Float32(isDualZero))}(undef,Nsim,Nstep+1);
 	X[:,1].=Float32(isDualZero);
-	v_m=CuArray{typeof(σ_zero+isDualZero)}(undef,Nsim)
+	v_m=zeros(CuArray{typeof(Float32(isDualZero))},Nsim).+σ_zero;
 	if monteCarloMode==antithetic
 		Nsim_2=Int(floor(Nsim/2))
 		if Nsim_2*2!=Nsim
@@ -52,7 +52,7 @@ function simulate(mcProcess::HestonProcess,spotData::equitySpotData,mcBaseData::
 			e1=CuArrays.CURAND.curandn(Float32,Nsim);
 			e2=CuArrays.CURAND.curandn(Float32,Nsim);
 			e2=e1.*ρ_f.+e2.*sqrt(1-ρ_f*ρ_f);
-			X[:,j+1]=X[:,j]+((r_d_f).-0.5.*max.(v_m,0)).*dt_f+sqrt.(max.(v_m,0)).*sqrt(dt_f).*e1;
+			@inbounds X[:,j+1].=X[:,j]+((r_d_f).-0.5.*max.(v_m,0)).*dt_f+sqrt.(max.(v_m,0)).*sqrt(dt_f).*e1;
 			v_m+=κ_s_f.*(θ_s_f.-max.(v_m,0)).*dt_f+σ_f.*sqrt.(max.(v_m,0)).*sqrt(dt_f).*e2;
 		end
 		
