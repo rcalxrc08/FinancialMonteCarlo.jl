@@ -11,7 +11,8 @@ variables:
   JULIA_DEPOT_PATH: "$CI_PROJECT_DIR/.julia/"
 stages:
   - build
-  - test-coverage
+  - test
+  - coverage
   - deploy
 before_script:
     # Install build dependencies
@@ -32,6 +33,14 @@ before_script:
     # want coverage results.
     - /usr/local/julia/bin/julia -e 'using InteractiveUtils; versioninfo(); using Pkg; Pkg.clone(pwd()); using FinancialMonteCarlo'
     - /usr/local/julia/bin/julia -e 'using Pkg; Pkg.test("FinancialMonteCarlo",coverage = true)'
+  artifacts:
+    when: on_success
+    paths:
+      - .julia/
+      - src/*.cov
+      - src/*/*.cov
+      - src/*/*/*.cov
+    expire_in: '1 hour'
 
 .test_template: &build_definition
   # Uncomment below if you would like to run the tests on specific references
@@ -47,7 +56,7 @@ before_script:
     when: on_success
     paths:
       - .julia/
-    expire_in: '1 day'
+    expire_in: '1 hour'
     
 .test_template: &build_definition_cuda
   # Uncomment below if you would like to run the tests on specific references
@@ -73,15 +82,18 @@ before_script:
   #   - master
   #   - development
   script:
-    - /usr/local/julia/bin/julia -e 'using InteractiveUtils; versioninfo(); using Pkg; Pkg.clone(pwd()); using FinancialMonteCarlo'
-    - /usr/local/julia/bin/julia -e 'using Pkg; Pkg.test("FinancialMonteCarlo",coverage = true)'
     - /usr/local/julia/bin/julia -e 'using Pkg; Pkg.add("Coverage"); cd(Pkg.dir("FinancialMonteCarlo"));
       using Coverage; cl, tl = get_summary(process_folder());
       println("(", cl/tl*100, "%) covered")'
 
 # Name a test and select an appropriate image.
-test-coverage:1.1:
-  stage: test-coverage
+test:1.1:
+  stage: test
+  image: julia:1.1
+  <<: *test_definition
+  
+coverage:1.1:
+  stage: coverage
   image: julia:1.1
   <<: *cov_definition
 # Windows
