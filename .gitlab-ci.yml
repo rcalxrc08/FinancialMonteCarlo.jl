@@ -89,6 +89,12 @@ build:1.1:
   stage: build
   image: julia:1.1
   <<: *build_definition
+    artifacts:
+        when: on_success
+        paths:
+          - .julia/
+        expire_in: '1 day'
+        
 #build:1.1_cuda:
 #  stage: build
 #  image: juliagpu/julia:v1.1-cuda

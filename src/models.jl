@@ -53,9 +53,11 @@ import Base.Multimedia.display;
 
 function display(p::AbstractMonteCarloProcess)
 	fldnames=fieldnames(typeof(p));
+	print(typeof(p),"(");
 	for name in fldnames
-		println(name," = ",getfield(p,name))
+		print(name,"=",getfield(p,name))
 	end
+	println(")");
 end
 
 """
