@@ -34,8 +34,7 @@ function payoff(S::AbstractMatrix{num},euPayoff::BinaryEuropeanOption,spotData::
 	(Nsim,NStep)=size(S)
 	NStep-=1;
 	index1=round(Int,T/T1 * NStep)+1;
-	S1=view(S,:,1:index1)
-	ST=S1[:,end];
+	ST=S[:,index1];
 	f(ST::num)::num=iscall*(ST-K)>0.0;
 	payoff2=f.(ST);
 

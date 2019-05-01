@@ -26,8 +26,7 @@ function payoff(S::AbstractMatrix{num},optionData::Forward,spotData::equitySpotD
 	(Nsim,NStep)=size(S)
 	NStep-=1;
 	index1=round(Int,T/T1 * NStep)+1;
-	S1=view(S,:,1:index1)
-	ST=S1[:,end];
+	ST=S[:,index1];
 	
 	return ST*exp(-r*T);
 end

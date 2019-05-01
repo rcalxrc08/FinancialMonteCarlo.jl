@@ -12,7 +12,7 @@ function simulate(mcProcess::BrownianMotion,spotData::equitySpotData,mcBaseData:
 	mean_bm=μ*dt
 	stddev_bm=σ*sqrt(dt)
 	isDualZero=mean_bm*stddev_bm*zero(Float32);
-	X_cu=CuMatrix{typeof(isDualZero)}(undef,Nsim,Nstep+1);
+	X_cu=zeros(CuMatrix{typeof(isDualZero)},Nsim,Nstep+1);
 	if monteCarloMode==antithetic
 		Nsim_2=Int(floor(Nsim/2))
 		if Nsim_2*2!=Nsim

@@ -35,8 +35,7 @@ function payoff(S::AbstractMatrix{numtype},amPayoff::AmericanOption,spotData::eq
 	(Nsim,NStep)=size(S)
 	NStep-=1;
 	index1=round(Int,T/T1 * NStep)+1;#round(Int,T/T1 * NStep)
-	S1=view(S,:,1:index1)
-	payoff1=payoff(collect(S1),spotData,phi_,T);
+	payoff1=payoff(collect(S[:,1:index1]),spotData,phi_,T);
 	
 	return payoff1;
 end

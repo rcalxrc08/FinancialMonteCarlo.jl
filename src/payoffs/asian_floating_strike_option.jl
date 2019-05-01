@@ -29,9 +29,8 @@ function payoff(S::AbstractMatrix{num},asianFloatingStrikePayoff::AsianFloatingS
 	(Nsim,NStep)=size(S)
 	NStep-=1;
 	index1=round(Int,T/T1 * NStep)+1;
-	S1=view(S,:,1:index1)
 	@inbounds f(S::AbstractArray{num})::num=(iscall*(S[end]-mean(S))>0.0) ? (iscall*(S[end]-mean(S))) : 0.0;
-	@inbounds payoff2=[f(S1[i,:]) for i in 1:Nsim];
+	@inbounds payoff2=[f(S[i,1:index1]) for i in 1:Nsim];
 
 	return payoff2*exp(-r*T);
 end

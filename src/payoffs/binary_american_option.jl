@@ -33,11 +33,10 @@ function payoff(S::AbstractMatrix{num},amPayoff::BinaryAmericanOption,spotData::
 	(Nsim,NStep)=size(S)
 	NStep-=1;
 	index1=round(Int,T/T1 * NStep)+1;
-	S1=view(S,:,1:index1)
 	isDualZero=typeof(S[1,1]*K*0.0)
 	phi_(Sti::num)::isDualZero=((Sti-K)*iscall>0.0) ? 1.0 : 0.0;
 	
-	payoff1=payoff(collect(S1),spotData,phi_,T);
+	payoff1=payoff(collect(S[:,1:index1]),spotData,phi_,T);
 	
 	return payoff1;
 end
