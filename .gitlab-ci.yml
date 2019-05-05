@@ -13,6 +13,7 @@ stages:
   - build
   - test
   - coverage
+  - benchmark
   - deploy
 before_script:
     # Install build dependencies
@@ -87,7 +88,31 @@ before_script:
     # want coverage results.
     #- /usr/local/julia/bin/julia -e 'using InteractiveUtils; versioninfo(); using Pkg; Pkg.clone(pwd()); using FinancialMonteCarlo; using CuArrays'
     - /usr/local/julia/bin/julia -e 'using InteractiveUtils; versioninfo(); using Pkg; Pkg.clone(pwd()); Pkg.add(PackageSpec(name="ArrayFire", rev="master")); using FinancialMonteCarlo,ArrayFire'
-    
+
+.test_template: &install_af
+  # Uncomment below if you would like to run the tests on specific references
+  # only, such as the branches `master`, `development`, etc.
+  # only:
+  #   - master
+  #   - development
+  before_script:
+    - apt-get update && apt-get -y install cmake
+    - apt-get update && apt-get -y install gcc
+    - apt-get update && apt-get -y install g++
+    - apt-get update && apt-get -y install bzip2
+    - apt-get update && apt-get -y install wget
+    - apt-get update && apt-get -y install software-properties-common
+    # Install additional build dependencies
+    - apt-get update
+    - apt-get -y install libfreeimage-dev libatlas3-base libfftw3-dev cmake libglfw3-dev mesa-utils
+    - wget -q http://arrayfire.s3.amazonaws.com/3.5.1/ArrayFire-v3.5.1_Linux_x86_64.sh
+    - ls -l
+    - chmod +x ArrayFire-v3.5.1_Linux_x86_64.sh
+    - ./ArrayFire-v3.5.1_Linux_x86_64.sh --include-subdir --prefix=/opt
+    - echo /opt/arrayfire-3/lib64 > /etc/ld.so.conf.d/arrayfire.conf
+    - ldconfig
+    - export LD_LIBRARY_PATH=/usr/local/lib/
+
 .test_template: &cov_definition
   # Uncomment below if you would like to run the tests on specific references
   # only, such as the branches `master`, `development`, etc.
@@ -98,12 +123,42 @@ before_script:
     - /usr/local/julia/bin/julia -e 'using Pkg; Pkg.add("Coverage");using FinancialMonteCarlo; cd(joinpath(dirname(pathof(FinancialMonteCarlo)), ".."));
       using Coverage; cl, tl = get_summary(process_folder());
       println("(", cl/tl*100, "%) covered")'
+      
+.test_template: &bench_definition
+  # Uncomment below if you would like to run the tests on specific references
+  # only, such as the branches `master`, `development`, etc.
+  # only:
+  #   - master
+  #   - development
+  script:
+    - /usr/local/julia/bin/julia -e 'using Pkg; Pkg.add("BenchmarkTools"); cd(joinpath(dirname(pathof(FinancialMonteCarlo)), ".."));
+      include("benchmark/benchmarks.jl");'
+      
+.test_template: &bench_definition_af
+  # Uncomment below if you would like to run the tests on specific references
+  # only, such as the branches `master`, `development`, etc.
+  # only:
+  #   - master
+  #   - development
+  script:
+    - /usr/local/julia/bin/julia -e 'using Pkg; Pkg.add("BenchmarkTools"); cd(joinpath(dirname(pathof(FinancialMonteCarlo)), ".."));
+      include("benchmark/af/bench_black_af.jl");'
 
 # Name a test and select an appropriate image.
+build:1.1:
+  stage: build
+  image: julia:1.1
+  <<: *build_definition
+  
 test:1.1:
   stage: test
   image: julia:1.1
   <<: *test_definition
+
+benchmark:1.1:
+  stage: benchmark
+  image: julia:1.1
+  <<: *bench_definition
   
 coverage:1.1:
   stage: coverage
@@ -115,10 +170,7 @@ coverage:1.1:
 #  <<: *test_definition
 
 ## Maybe you would like to test your package against the development branch:
-build:1.1:
-  stage: build
-  image: julia:1.1
-  <<: *build_definition
+
     
         
 build:1.1_af:
@@ -126,6 +178,13 @@ build:1.1_af:
   image: julia:1.1
   allow_failure: true
   <<: *build_definition_af
+  
+benchmark:1.1_af:
+  stage: benchmark
+  image: julia:1.1
+  allow_failure: true
+  <<: *install_af
+  <<: *bench_definition_af
 
 pages:
   stage: deploy
