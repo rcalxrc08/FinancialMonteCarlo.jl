@@ -14,22 +14,31 @@ Where:\n
 		Price     = Price of the derivative
 
 """	
-function pricer(mcProcess::BaseProcess,spotData::equitySpotData,mcConfig::MonteCarloConfiguration,abstractPayoff::AbstractPayoff,mode1::MonteCarloMode=standard,parallelMode::BaseMode=SerialMode())
-	Random.seed!(0)
-	T=abstractPayoff.T;
-	Nsim=mcConfig.Nsim;
-	S=simulate(mcProcess,spotData,mcConfig,T,mode1,parallelMode)
-	Payoff=payoff(S,abstractPayoff,spotData);
-	Price=mean(Payoff);
-	return Price;
+function pricer_macro(num1)
+	@eval function pricer(mcProcess::$num1,spotData::equitySpotData,mcConfig::MonteCarloConfiguration,abstractPayoff::AbstractPayoff,mode1::MonteCarloMode=standard,parallelMode::BaseMode=SerialMode())
+
+		Random.seed!(0)
+		T=abstractPayoff.T;
+		Nsim=mcConfig.Nsim;
+		S=simulate(mcProcess,spotData,mcConfig,T,mode1,parallelMode)
+		Payoff=payoff(S,abstractPayoff,spotData);
+		Price=mean(Payoff);
+		return Price;
+	end
 end
 
-function pricer(mcProcess::BaseProcess,spotData::equitySpotData,mcConfig::MonteCarloConfiguration,abstractPayoffs::Array{AbstractPayoff},mode1::MonteCarloMode=standard,parallelMode::BaseMode=SerialMode())
-	Random.seed!(0)
-	maxT=maximum([abstractPayoff.T for abstractPayoff in abstractPayoffs])
-	Nsim=mcConfig.Nsim;
-	S=simulate(mcProcess,spotData,mcConfig,maxT,mode1,parallelMode)
-	Prices=[mean(payoff(S,abstractPayoff,spotData,maxT)) for abstractPayoff in abstractPayoffs  ]
-	
-	return Prices;
+pricer_macro(BaseProcess)
+
+function pricer_macro_array(num1)
+	@eval function pricer(mcProcess::$num1,spotData::equitySpotData,mcConfig::MonteCarloConfiguration,abstractPayoffs::Array{AbstractPayoff},mode1::MonteCarloMode=standard,parallelMode::BaseMode=SerialMode())
+		Random.seed!(0)
+		maxT=maximum([abstractPayoff.T for abstractPayoff in abstractPayoffs])
+		Nsim=mcConfig.Nsim;
+		S=simulate(mcProcess,spotData,mcConfig,maxT,mode1,parallelMode)
+		Prices=[mean(payoff(S,abstractPayoff,spotData,maxT)) for abstractPayoff in abstractPayoffs  ]
+		
+		return Prices;
+	end
 end
+
+pricer_macro_array(BaseProcess)
