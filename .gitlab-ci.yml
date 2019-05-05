@@ -78,7 +78,9 @@ before_script:
     - wget -q http://arrayfire.s3.amazonaws.com/3.5.1/ArrayFire-v3.5.1_Linux_x86_64.sh
     - ls -l
     - chmod +x ArrayFire-v3.5.1_Linux_x86_64.sh
-    - ./ArrayFire-v3.5.1_Linux_x86_64.sh --exclude-subdir --prefix=/usr/local
+    - ./ArrayFire-v3.5.1_Linux_x86_64.sh --include-subdir --prefix=/opt
+    - echo /opt/arrayfire/lib64 > /etc/ld.so.conf.d/arrayfire.conf
+    - ldconfig
   script:
     # Let's run the tests. Substitute `coverage = false` below, if you do not
     # want coverage results.
