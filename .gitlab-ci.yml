@@ -78,7 +78,6 @@ before_script:
     # Let's run the tests. Substitute `coverage = false` below, if you do not
     # want coverage results.
     #- /usr/local/julia/bin/julia -e 'using InteractiveUtils; versioninfo(); using Pkg; Pkg.clone(pwd()); using FinancialMonteCarlo; using CuArrays'
-    - mkdir $JULIA_DEPOT_PATH
     - /usr/local/julia/bin/julia -e 'using InteractiveUtils; versioninfo(); using Pkg; Pkg.clone(pwd()); Pkg.add(PackageSpec(name="ArrayFire", rev="master")); using FinancialMonteCarlo,ArrayFire'
     
 .test_template: &cov_definition
