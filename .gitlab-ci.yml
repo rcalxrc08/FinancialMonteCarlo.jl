@@ -20,6 +20,7 @@ before_script:
     - apt-get update && apt-get -y install gcc
     - apt-get update && apt-get -y install g++
     - apt-get update && apt-get -y install bzip2
+    - apt-get update && apt-get -y install software-properties-common
 
 # Below is the template to run your tests in Julia
 .test_template: &test_definition
