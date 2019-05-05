@@ -70,6 +70,7 @@ before_script:
     - apt-get update && apt-get -y install gcc
     - apt-get update && apt-get -y install g++
     - apt-get update && apt-get -y install bzip2
+    - apt-get update && apt-get -y install wget
     - apt-get update && apt-get -y install software-properties-common
     # Install additional build dependencies
     - apt-get update
