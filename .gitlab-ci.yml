@@ -92,7 +92,7 @@ before_script:
   #   - master
   #   - development
   script:
-    - /usr/local/julia/bin/julia -e 'using Pkg; Pkg.add("Coverage"); cd(Pkg.dir("FinancialMonteCarlo"));
+    - /usr/local/julia/bin/julia -e 'using Pkg; Pkg.add("Coverage");using FinancialMonteCarlo; cd(joinpath(dirname(pathof(FinancialMonteCarlo)), ".."));
       using Coverage; cl, tl = get_summary(process_folder());
       println("(", cl/tl*100, "%) covered")'
 
