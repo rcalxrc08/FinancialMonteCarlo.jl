@@ -81,7 +81,7 @@ before_script:
     - apt-get update && apt-get -y install wget
     # Install additional build dependencies
     - apt-get update
-    - apt-get -y install libfreeimage-dev libatlas3-base libfftw3-dev cmake libglfw3-dev mesa-utils glfw3
+    - apt-get -y install libfreeimage-dev libatlas3-base libfftw3-dev cmake libglfw3-dev mesa-utils
     - wget -q http://arrayfire.s3.amazonaws.com/3.5.1/ArrayFire-v3.5.1_Linux_x86_64.sh
     - ls -l
     - chmod +x ArrayFire-v3.5.1_Linux_x86_64.sh
