@@ -81,6 +81,7 @@ before_script:
     - ./ArrayFire-v3.5.1_Linux_x86_64.sh --include-subdir --prefix=/opt
     - echo /opt/arrayfire/lib64 > /etc/ld.so.conf.d/arrayfire.conf
     - ldconfig
+    - export LD_LIBRARY_PATH=/usr/local/lib/
   script:
     # Let's run the tests. Substitute `coverage = false` below, if you do not
     # want coverage results.
