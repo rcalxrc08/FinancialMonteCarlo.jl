@@ -38,6 +38,7 @@ function variance_macro_array(num1)
 		variance_=[var(payoff(S,abstractPayoff,spotData,maxT)) for abstractPayoff in abstractPayoffs  ]
 		
 		return variance_;
+	end
 end
 
 variance_macro_array(BaseProcess)
