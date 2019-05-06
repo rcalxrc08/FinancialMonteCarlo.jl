@@ -88,7 +88,7 @@ before_script:
     - export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib/
     - ldconfig
     - ldconfig -p | grep libaf
-    - ldd usr/local/lib/libaf*.so
+    - ldd usr/local/lib/libaf.so
 
 .test_template: &cov_definition
   # Uncomment below if you would like to run the tests on specific references
@@ -114,7 +114,7 @@ before_script:
   #   - master
   #   - development
   script:
-    - /usr/local/julia/bin/julia -e 'using Pkg, FinancialMonteCarlo; Pkg.add("BenchmarkTools"); cd(joinpath(dirname(pathof(FinancialMonteCarlo)), ".."));
+    - /usr/local/julia/bin/julia -e 'using Pkg, FinancialMonteCarlo; Pkg.add("BenchmarkTools");Pkg.add("ForwardDiff");Pkg.add("ReverseDiff");Pkg.add("DualNumbers"); cd(joinpath(dirname(pathof(FinancialMonteCarlo)), ".."));
       include("benchmark/benchmarks.jl");'
       
 .test_template: &bench_definition_af
