@@ -121,7 +121,7 @@ before_script:
   #   - master
   #   - development
   script:
-    - /usr/local/julia/bin/julia -e 'using Pkg; Pkg.add("BenchmarkTools");Pkg.add("ForwardDiff");Pkg.add("ReverseDiff");Pkg.add("DualNumbers"); cd(joinpath(dirname(pathof(FinancialMonteCarlo)), ".."));
+    - /usr/local/julia/bin/julia -e 'using Pkg; Pkg.add("BenchmarkTools");Pkg.add("ForwardDiff");Pkg.add("ReverseDiff");Pkg.add("DualNumbers");Pkg.clone(pwd()); cd(joinpath(dirname(pathof(FinancialMonteCarlo)), ".."));
       include("benchmark/af/bench_black_af.jl");'
 
 # Name a test and select an appropriate image.
