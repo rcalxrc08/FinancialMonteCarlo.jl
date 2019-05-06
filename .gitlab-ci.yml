@@ -21,7 +21,6 @@ before_script:
     - apt-get update && apt-get -y install gcc
     - apt-get update && apt-get -y install g++
     - apt-get update && apt-get -y install bzip2
-    - apt-get update && apt-get -y install software-properties-common
 
 # Below is the template to run your tests in Julia
 .test_template: &test_definition
@@ -89,7 +88,7 @@ before_script:
     - export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib/
     - ldconfig
     - ldconfig -p | grep libaf
-    - ldd libaf*.so
+    - ldd usr/local/lib/libaf*.so
 
 .test_template: &cov_definition
   # Uncomment below if you would like to run the tests on specific references
@@ -99,7 +98,7 @@ before_script:
   #   - development
   script:
     - export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib/
-    - /usr/local/julia/bin/julia -e 'using Pkg; Pkg.add("Coverage");using FinancialMonteCarlo; cd(joinpath(dirname(pathof(FinancialMonteCarlo)), ".."));
+    - /usr/local/julia/bin/julia -e 'using Pkg; Pkg.add("Coverage"); using FinancialMonteCarlo; cd(joinpath(dirname(pathof(FinancialMonteCarlo)), ".."));
       using Coverage; cl, tl = get_summary(process_folder());
       println("(", cl/tl*100, "%) covered")'
   artifacts:
@@ -125,7 +124,7 @@ before_script:
   #   - master
   #   - development
   script:
-    - /usr/local/julia/bin/julia -e 'using Pkg; Pkg.add("BenchmarkTools"); cd(joinpath(dirname(pathof(FinancialMonteCarlo)), ".."));
+    - /usr/local/julia/bin/julia -e 'using Pkg; Pkg.add("BenchmarkTools");Pkg.add("ForwardDiff");Pkg.add("ReverseDiff");Pkg.add("DualNumbers"); cd(joinpath(dirname(pathof(FinancialMonteCarlo)), ".."));
       include("benchmark/af/bench_black_af.jl");'
 
 # Name a test and select an appropriate image.
