@@ -112,7 +112,7 @@ before_script:
   #   - master
   #   - development
   script:
-    - /usr/local/julia/bin/julia --project=bench benchmark/benchmarks.jl
+    - /usr/local/julia/bin/julia --project=benchmark benchmark/benchmarks.jl
       
 .test_template: &bench_definition_af
   # Uncomment below if you would like to run the tests on specific references
