@@ -1,3 +1,4 @@
+using Pkg
 path1=joinpath(Pkg.dir("FinancialMonteCarlo"),"benchmark")
 test_listTmp=readdir(path1);
 BlackList=["benchmarks.jl","runner.jl","cuda","af"]
