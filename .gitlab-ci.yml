@@ -78,6 +78,7 @@ before_script:
     - apt-get update && apt-get -y install g++
     - apt-get update && apt-get -y install bzip2
     - apt-get update && apt-get -y install wget
+    - apt-get update && apt-get -y install fontconfig
     # Install additional build dependencies
     - apt-get update
     - apt-get -y install libfreeimage-dev libatlas3-base libfftw3-dev cmake libglfw3-dev mesa-utils
