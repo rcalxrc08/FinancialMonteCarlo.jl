@@ -88,7 +88,8 @@ before_script:
     - export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib/
     - ldconfig
     - ldconfig -p | grep libaf
-    - ldd usr/local/lib/libaf.so
+    - ldd /usr/local/lib/libaf.so
+    - ldd /usr/local/lib/lib*.so
 
 .test_template: &cov_definition
   # Uncomment below if you would like to run the tests on specific references
