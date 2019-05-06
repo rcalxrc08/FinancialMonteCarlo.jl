@@ -88,6 +88,7 @@ before_script:
     - ./ArrayFire-v3.5.1_Linux_x86_64.sh --exclude-subdir --prefix=/usr/local
     - export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib/
     - ldconfig
+    - ldconfig -p | grep libaf
 
 .test_template: &cov_definition
   # Uncomment below if you would like to run the tests on specific references
