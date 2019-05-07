@@ -79,12 +79,12 @@ before_script:
     
 .test_template: &test_definition_af
   script:
-    - /usr/local/julia/bin/julia -e 'using Pkg; Pkg.add("ArrayFire"); Pkg.clone(pwd()); cd(joinpath(dirname(pathof(FinancialMonteCarlo)), "..","test","af"));
+    - /usr/local/julia/bin/julia -e 'using Pkg; Pkg.add("ArrayFire"); Pkg.clone(pwd());using FinancialMonteCarlo; cd(joinpath(dirname(pathof(FinancialMonteCarlo)), "..","test","af"));
       include("test_black_af.jl");'
       
 .test_template: &bench_definition_af
   script:
-    - /usr/local/julia/bin/julia -e 'using Pkg; Pkg.add("BenchmarkTools"); Pkg.add("ArrayFire");Pkg.clone(pwd()); cd(joinpath(dirname(pathof(FinancialMonteCarlo)), "..","benchmark","af"));
+    - /usr/local/julia/bin/julia -e 'using Pkg; Pkg.add("BenchmarkTools"); Pkg.add("ArrayFire");Pkg.clone(pwd());using FinancialMonteCarlo; cd(joinpath(dirname(pathof(FinancialMonteCarlo)), "..","benchmark","af"));
       include("bench_black_af.jl");'
 
 # Name a test and select an appropriate image.
