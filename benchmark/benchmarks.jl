@@ -1,4 +1,5 @@
-using Pkg
+using Pkg;
+get(ENV, "CI", nothing) == "true" ? Pkg.instantiate() : nothing;
 path1=joinpath(Pkg.dir("FinancialMonteCarlo"),"benchmark")
 test_listTmp=readdir(path1);
 BlackList=["benchmarks.jl","runner.jl","cuda","af"]
