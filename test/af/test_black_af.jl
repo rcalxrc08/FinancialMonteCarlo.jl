@@ -1,5 +1,5 @@
 using Test, FinancialMonteCarlo,ArrayFire;
-@show_ "Black Scholes Model"
+@show "Black Scholes Model"
 S0=100.0;
 K=100.0;
 r=0.02;
