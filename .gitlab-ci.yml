@@ -1,12 +1,4 @@
-# An example .gitlab-ci.yml file to test (and optionally report the coverage
-# results of) your [Julia][1] packages. Please refer to the [documentation][2]
-# for more information about package development in Julia.
-#
-# Here, it is assumed that your Julia package is named `FinancialMonteCarlo`. Change it to
-# whatever name you have given to your package.
-#
-# [1]: http://julialang.org/
-# [2]: http://julia.readthedocs.org/
+#FinancialMonteCarlo.jl
 variables:
   JULIA_DEPOT_PATH: "$CI_PROJECT_DIR/.julia/"
 stages:
@@ -24,14 +16,7 @@ before_script:
 
 # Below is the template to run your tests in Julia
 .test_template: &test_definition
-  # Uncomment below if you would like to run the tests on specific references
-  # only, such as the branches `master`, `development`, etc.
-  # only:
-  #   - master
-  #   - development
   script:
-    # Let's run the tests. Substitute `coverage = false` below, if you do not
-    # want coverage results.
     - /usr/local/julia/bin/julia -e 'using InteractiveUtils; versioninfo(); using FinancialMonteCarlo'
     - /usr/local/julia/bin/julia -e 'using Pkg; Pkg.test("FinancialMonteCarlo",coverage = true)'
   artifacts:
@@ -44,56 +29,15 @@ before_script:
     expire_in: '1 hour'
 
 .test_template: &build_definition
-  # Uncomment below if you would like to run the tests on specific references
-  # only, such as the branches `master`, `development`, etc.
-  # only:
-  #   - master
-  #   - development
   script:
-    # Let's run the tests. Substitute `coverage = false` below, if you do not
-    # want coverage results.
     - /usr/local/julia/bin/julia -e 'using InteractiveUtils; versioninfo(); using Pkg; Pkg.clone(pwd()); using FinancialMonteCarlo'
   artifacts:
     when: on_success
     paths:
       - .julia/
     expire_in: '1 hour'
-    
-.test_template: &build_definition_af
-  script:
-    # Let's run the tests. Substitute `coverage = false` below, if you do not
-    # want coverage results.
-    #- /usr/local/julia/bin/julia -e 'using InteractiveUtils; versioninfo(); using Pkg; Pkg.clone(pwd()); using FinancialMonteCarlo; using CuArrays'
-    - /usr/local/julia/bin/julia -e 'using InteractiveUtils; versioninfo(); using Pkg; Pkg.clone(pwd()); Pkg.add(PackageSpec(name="ArrayFire", rev="master")); using FinancialMonteCarlo,ArrayFire'
-
-.test_template: &install_af
-  # Uncomment below if you would like to run the tests on specific references
-  # only, such as the branches `master`, `development`, etc.
-  # only:
-  #   - master
-  #   - development
-  before_script:
-    - apt-get update && apt-get -y install cmake
-    - apt-get update && apt-get -y install gcc
-    - apt-get update && apt-get -y install g++
-    - apt-get update && apt-get -y install bzip2
-    - apt-get update && apt-get -y install wget
-    - apt-get update && apt-get -y install fontconfig
-    # Install additional build dependencies
-    - apt-get update
-    - apt-get -y install libfreeimage-dev libatlas3-base libfftw3-dev cmake libglfw3-dev mesa-utils
-    - wget -q http://arrayfire.s3.amazonaws.com/3.5.1/ArrayFire-v3.5.1_Linux_x86_64.sh
-    - chmod +x ArrayFire-v3.5.1_Linux_x86_64.sh
-    - ./ArrayFire-v3.5.1_Linux_x86_64.sh --exclude-subdir --prefix=/usr/local
-    - export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib/
-    - ldconfig
 
 .test_template: &cov_definition
-  # Uncomment below if you would like to run the tests on specific references
-  # only, such as the branches `master`, `development`, etc.
-  # only:
-  #   - master
-  #   - development
   script:
     - export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib/
     - /usr/local/julia/bin/julia -e 'using Pkg; Pkg.add("Coverage"); using FinancialMonteCarlo; cd(joinpath(dirname(pathof(FinancialMonteCarlo)), ".."));
@@ -106,23 +50,42 @@ before_script:
     expire_in: '1 hour'
       
 .test_template: &bench_definition
-  # Uncomment below if you would like to run the tests on specific references
-  # only, such as the branches `master`, `development`, etc.
-  # only:
-  #   - master
-  #   - development
   script:
-    - /usr/local/julia/bin/julia --project=benchmark benchmark/benchmarks.jl
+    - julia --project=benchmark -e 'using Pkg; Pkg.instantiate(); Pkg.develop(PackageSpec(path=pwd()))'
+    - /usr/local/julia/bin/julia --project=benchmark benchmark/benchmarks.jl'
+    
+################################################################
+################ AFArrays
+################################################################
+.test_template: &install_af
+  before_script:
+    - apt-get update && apt-get -y install cmake
+    - apt-get update && apt-get -y install gcc
+    - apt-get update && apt-get -y install g++
+    - apt-get update && apt-get -y install bzip2
+    - apt-get update && apt-get -y install wget
+    - apt-get update && apt-get -y install fontconfig
+    - apt-get update
+    - apt-get -y install libfreeimage-dev libatlas3-base libfftw3-dev cmake libglfw3-dev mesa-utils
+    - wget -q http://arrayfire.s3.amazonaws.com/3.5.1/ArrayFire-v3.5.1_Linux_x86_64.sh
+    - chmod +x ArrayFire-v3.5.1_Linux_x86_64.sh
+    - ./ArrayFire-v3.5.1_Linux_x86_64.sh --exclude-subdir --prefix=/usr/local
+    - export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib/
+    - ldconfig
+
+.test_template: &build_definition_af
+  script:
+    - /usr/local/julia/bin/julia -e 'using InteractiveUtils; versioninfo(); using Pkg; Pkg.clone(pwd()); Pkg.add(PackageSpec(name="ArrayFire", rev="master")); using FinancialMonteCarlo,ArrayFire'
+    
+.test_template: &test_definition_af
+  script:
+    - /usr/local/julia/bin/julia -e 'using Pkg; Pkg.add("ArrayFire"); Pkg.clone(pwd()); cd(joinpath(dirname(pathof(FinancialMonteCarlo)), "..","test","af"));
+      include("test_black_af.jl");'
       
 .test_template: &bench_definition_af
-  # Uncomment below if you would like to run the tests on specific references
-  # only, such as the branches `master`, `development`, etc.
-  # only:
-  #   - master
-  #   - development
   script:
-    - /usr/local/julia/bin/julia -e 'using Pkg; Pkg.add("BenchmarkTools");Pkg.add("ForwardDiff");Pkg.add("ReverseDiff");Pkg.add("DualNumbers");Pkg.clone(pwd()); cd(joinpath(dirname(pathof(FinancialMonteCarlo)), ".."));
-      include("benchmark/af/bench_black_af.jl");'
+    - /usr/local/julia/bin/julia -e 'using Pkg; Pkg.add("BenchmarkTools"); Pkg.add("ArrayFire");Pkg.clone(pwd()); cd(joinpath(dirname(pathof(FinancialMonteCarlo)), "..","benchmark","af"));
+      include("bench_black_af.jl");'
 
 # Name a test and select an appropriate image.
 build:1.1:
@@ -149,16 +112,19 @@ coverage:1.1:
 #  image: julia:windowsservercore-1709
 #  <<: *test_definition
 
-## Maybe you would like to test your package against the development branch:
-
-    
-        
 build:1.1_af:
   stage: build
   image: julia:1.1
   allow_failure: true
   <<: *install_af
   <<: *build_definition_af
+  
+test:1.1_af:
+  stage: test
+  image: julia:1.1
+  allow_failure: true
+  <<: *install_af
+  <<: *test_definition_af
   
 benchmark:1.1_af:
   stage: benchmark
@@ -173,19 +139,12 @@ pages:
   script:
     - julia --project=docs -e 'using Pkg; Pkg.instantiate(); Pkg.develop(PackageSpec(path=pwd()))'
     - julia --project=docs --color=yes docs/make.jl
-    - mv docs/build public # move to the directory picked up by Gitlab pages
+    - mv docs/build public
   artifacts:
     paths:
       - public
   only:
   - master
-  
-#test:dev-Windows:
-#  image: julia:0.6.3-windowsservercore-1709
-#  # ... allowing for failures, since we are testing against the development
-#  # branch:
-#  allow_failure: true
-#  <<: *test_definition
 
 # REMARK: Do not forget to enable the coverage feature for your project, if you
 # are using code coverage reporting above. This can be done by
