@@ -83,22 +83,25 @@ mc2=MonteCarloConfiguration(Nsim+1,Nstep);
 @test_throws(ErrorException,pricer(Model,spotData1,mc2,AsianFixedStrikeData,FinancialMonteCarlo.antithetic,FinancialMonteCarlo.AFMode()));
 
 
-
-@test variance(Model,spotData1,mc,EUDataPut,FinancialMonteCarlo.standard,FinancialMonteCarlo.AFMode())>variance(Model,spotData1,mc,EUDataPut,FinancialMonteCarlo.antithetic,FinancialMonteCarlo.AFMode());
-@test prod(variance(Model,spotData1,mc,[EUDataPut,AMDataPut],FinancialMonteCarlo.standard,FinancialMonteCarlo.AFMode()).>=variance(Model,spotData1,mc,[EUDataPut,AMDataPut],FinancialMonteCarlo.antithetic,FinancialMonteCarlo.AFMode()));
+@show_ var_std_=variance(Model,spotData1,mc,EUDataPut,FinancialMonteCarlo.standard,FinancialMonteCarlo.AFMode())
+@show_ var_ant_=variance(Model,spotData1,mc,EUDataPut,FinancialMonteCarlo.antithetic,FinancialMonteCarlo.AFMode());
+@test var_std_>var_ant_
+@show_ var_std_=variance(Model,spotData1,mc,[EUDataPut,AMDataPut],FinancialMonteCarlo.standard,FinancialMonteCarlo.AFMode())
+@show_ var_ant_=variance(Model,spotData1,mc,[EUDataPut,AMDataPut],FinancialMonteCarlo.antithetic,FinancialMonteCarlo.AFMode())
+@test prod(var_std_.>=var_ant_);
 
 
 
 ##############################################################
 
-IC1=confinter(Model,spotData1,mc,EUDataPut,0.99,FinancialMonteCarlo.standard,FinancialMonteCarlo.AFMode());
-IC2=confinter(Model,spotData1,mc,EUDataPut,0.99,FinancialMonteCarlo.antithetic,FinancialMonteCarlo.AFMode());
+@show_ IC1=confinter(Model,spotData1,mc,EUDataPut,0.99,FinancialMonteCarlo.standard,FinancialMonteCarlo.AFMode());
+@show_ IC2=confinter(Model,spotData1,mc,EUDataPut,0.99,FinancialMonteCarlo.antithetic,FinancialMonteCarlo.AFMode());
 L1=IC1[2]-IC1[1]
 L2=IC2[2]-IC2[1]
 @test L1>L2
 
-IC1=confinter(Model,spotData1,mc,[EUDataPut,AMDataPut],0.99,FinancialMonteCarlo.standard,FinancialMonteCarlo.AFMode());
-IC2=confinter(Model,spotData1,mc,[EUDataPut,AMDataPut],0.99,FinancialMonteCarlo.antithetic,FinancialMonteCarlo.AFMode());
+@show_ IC1=confinter(Model,spotData1,mc,[EUDataPut,AMDataPut],0.99,FinancialMonteCarlo.standard,FinancialMonteCarlo.AFMode());
+@show_ IC2=confinter(Model,spotData1,mc,[EUDataPut,AMDataPut],0.99,FinancialMonteCarlo.antithetic,FinancialMonteCarlo.AFMode());
 L1=IC1[2][2]-IC1[2][1]
 L2=IC2[2][2]-IC2[2][1]
 @test L1>L2
