@@ -15,6 +15,16 @@ before_script:
     - apt-get update && apt-get -y install bzip2
 
 # Below is the template to run your tests in Julia
+
+.test_template: &build_definition
+  script:
+    - /usr/local/julia/bin/julia -e 'using InteractiveUtils; versioninfo(); using Pkg; Pkg.clone(pwd()); using FinancialMonteCarlo'
+  artifacts:
+    when: on_success
+    paths:
+      - .julia/
+    expire_in: '1 hour'
+
 .test_template: &test_definition
   script:
     - /usr/local/julia/bin/julia -e 'using InteractiveUtils; versioninfo(); using FinancialMonteCarlo'
@@ -28,14 +38,6 @@ before_script:
       - src/*/*/*.cov
     expire_in: '1 hour'
 
-.test_template: &build_definition
-  script:
-    - /usr/local/julia/bin/julia -e 'using InteractiveUtils; versioninfo(); using Pkg; Pkg.clone(pwd()); using FinancialMonteCarlo'
-  artifacts:
-    when: on_success
-    paths:
-      - .julia/
-    expire_in: '1 hour'
 
 .test_template: &cov_definition
   script:
@@ -49,6 +51,8 @@ before_script:
       - .julia/
     expire_in: '1 hour'
       
+      
+
 .test_template: &bench_definition
   script:
     - julia --project=benchmark -e 'using Pkg; Pkg.instantiate(); Pkg.develop(PackageSpec(path=pwd()))'

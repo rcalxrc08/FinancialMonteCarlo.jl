@@ -23,14 +23,17 @@ AsianFloatingStrikeData=AsianFloatingStrikeOption(T)
 AsianFixedStrikeData=AsianFixedStrikeOption(T,K)
 Model=BlackScholesProcess(sigma);
 
-f(x) = pricer(BlackScholesProcess(x[1]),equitySpotData(x[2],x[3],x[4]),mc,EuropeanOption(x[5],K));
-x=Float64[sigma,S0,r,d,T]
+#f(x) = pricer(BlackScholesProcess(x[1]),equitySpotData(x[2],x[3],x[4]),mc,EuropeanOption(x[5],K));
+f(x) = pricer(BlackScholesProcess(x[1]),equitySpotData(x[2],r,d),mc,EuropeanOption(T,K));
+#x=Float64[sigma,S0,r,d,T]
+x=Float64[sigma,S0]
 g = x -> ReverseDiff.gradient(f, x);
 y0=g(x);
 @btime f(x);
 @btime g(x);
 
-f_(x) = pricer(BlackScholesProcess(x[1]),equitySpotData(x[2],x[3],x[4]),mc,AmericanOption(x[5],K));
+#f_(x) = pricer(BlackScholesProcess(x[1]),equitySpotData(x[2],x[3],x[4]),mc,AmericanOption(x[5],K));
+f_(x) = pricer(BlackScholesProcess(x[1]),equitySpotData(x[2],r,d),mc,AmericanOption(T,K));
 g_ = x -> ReverseDiff.gradient(f_, x);
 y0=g(x);
 @btime f_(x);
