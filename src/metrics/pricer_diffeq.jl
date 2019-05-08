@@ -1,2 +1,0 @@
-pricer_macro(MonteCarloProblem)
-pricer_macro_array(MonteCarloProblem)

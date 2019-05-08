@@ -27,8 +27,9 @@ function confinter_macro(num1)
 		Payoff=payoff(S,abstractPayoff,spotData);
 		mean1=mean(Payoff);
 		var1=var(Payoff);
+		alpha_=1-alpha;
 		dist1=Distributions.TDist(Nsim);
-		tstar=quantile(dist1,1-alpha/2.0)
+		tstar=quantile(dist1,1-alpha_/2.0)
 		IC=(mean1-tstar*sqrt(var1)/Nsim,mean1+tstar*sqrt(var1)/Nsim)
 		return IC;
 		
@@ -47,8 +48,9 @@ function confinter_macro_array(num1)
 		S=simulate(mcProcess,spotData,mcConfig,maxT,mode1,parallelMode)
 		Means=[mean(payoff(S,abstractPayoff,spotData,maxT)) for abstractPayoff in abstractPayoffs  ]
 		Vars=[var(payoff(S,abstractPayoff,spotData,maxT)) for abstractPayoff in abstractPayoffs  ]
+		alpha_=1-alpha;
 		dist1=Distributions.TDist(Nsim);
-		tstar=quantile(dist1,1-alpha/2.0)
+		tstar=quantile(dist1,1-alpha_/2.0)
 		IC=[(mean1-tstar*sqrt(var1)/Nsim,mean1+tstar*sqrt(var1)/Nsim) for (mean1,var1) in zip(Means,Vars)]
 		return IC;
 	end

@@ -1,2 +1,0 @@
-confinter_macro(MonteCarloProblem)
-confinter_macro_array(MonteCarloProblem)

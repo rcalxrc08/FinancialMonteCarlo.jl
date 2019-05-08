@@ -1,2 +1,0 @@
-variance_macro(MonteCarloProblem)
-variance_macro_array(MonteCarloProblem)
