@@ -35,6 +35,6 @@ y0=g(x);
 #f1_(x) = pricer(BlackScholesProcess(x[1]),equitySpotData(x[2],x[3],x[4]),mc,AmericanOption(x[5],K));
 f1_(x) = pricer(BlackScholesProcess(x[1]),equitySpotData(x[2],r,d),mc,AmericanOption(T,K));
 g_ = x -> ReverseDiff.gradient(f1_, x);
-y0=g(x);
+#y0=g(x);
 @btime f1_(x);
-@btime g_(x);
+#@btime g_(x);
