@@ -35,7 +35,7 @@ function payoff(S::AbstractMatrix{num},euPayoff::EuropeanOption,spotData::equity
 	index1=round(Int,T/T1 * NStep)+1;
 	ST=S[:,index1];
 	K=euPayoff.K;
-	f(ST::numtype_) where {numtype_<:Number}=(iscall*(ST-K)>0.0) ? iscall*(ST-K) : 0.0;
+	f(ST::num__) where {num__<:Number}=max(iscall*(ST-K),0.0);
 	payoff2=f.(ST);
 	
 	return payoff2*exp(-r*T);
