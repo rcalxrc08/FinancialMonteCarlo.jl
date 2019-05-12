@@ -15,19 +15,13 @@ toll=0.8
 
 spotData1=equitySpotData(S0,r,d);
 
-FwdData=Forward(T)
-EUData=EuropeanOption(T,K)
-AMData=AmericanOption(T,K)
-BarrierData=BarrierOptionDownOut(T,K,D)
-AsianFloatingStrikeData=AsianFloatingStrikeOption(T)
-AsianFixedStrikeData=AsianFixedStrikeOption(T,K)
 Model=BlackScholesProcess(sigma);
 
-x=Float64[sigma,S0,r,d]
+x=Float64[sigma,S0,r,d,T]
 
-@show ReverseDiff.gradient(x->pricer(BlackScholesProcess(x[1]),equitySpotData(x[2],x[3],x[4]),mc,FwdData), x)
-@show ReverseDiff.gradient(x->pricer(BlackScholesProcess(x[1]),equitySpotData(x[2],x[3],x[4]),mc,EUData), x)
-@show ReverseDiff.gradient(x->pricer(BlackScholesProcess(x[1]),equitySpotData(x[2],x[3],x[4]),mc,AMData), x)
-@show ReverseDiff.gradient(x->pricer(BlackScholesProcess(x[1]),equitySpotData(x[2],x[3],x[4]),mc,BarrierData), x)
-@show ReverseDiff.gradient(x->pricer(BlackScholesProcess(x[1]),equitySpotData(x[2],x[3],x[4]),mc,AsianFloatingStrikeData), x)
-@show ReverseDiff.gradient(x->pricer(BlackScholesProcess(x[1]),equitySpotData(x[2],x[3],x[4]),mc,AsianFixedStrikeData), x)
+@show ReverseDiff.gradient(x->pricer(BlackScholesProcess(x[1]),equitySpotData(x[2],x[3],x[4]),mc,Forward(x[5])), x)
+@show ReverseDiff.gradient(x->pricer(BlackScholesProcess(x[1]),equitySpotData(x[2],x[3],x[4]),mc,EuropeanOption(x[5],K)), x)
+@show ReverseDiff.gradient(x->pricer(BlackScholesProcess(x[1]),equitySpotData(x[2],x[3],x[4]),mc,AmericanOption(x[5],K)), x)
+@show ReverseDiff.gradient(x->pricer(BlackScholesProcess(x[1]),equitySpotData(x[2],x[3],x[4]),mc,BarrierOptionDownOut(x[5],K,D)), x)
+@show ReverseDiff.gradient(x->pricer(BlackScholesProcess(x[1]),equitySpotData(x[2],x[3],x[4]),mc,AsianFloatingStrikeOption(x[5])), x)
+@show ReverseDiff.gradient(x->pricer(BlackScholesProcess(x[1]),equitySpotData(x[2],x[3],x[4]),mc,AsianFixedStrikeOption(x[5],K)), x)
