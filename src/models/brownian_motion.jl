@@ -49,7 +49,7 @@ function simulate(mcProcess::BrownianMotion,spotData::equitySpotData,mcBaseData:
 	else
 		for i=1:Nsim
 			for j=1:Nstep
-				X[i,j+1]=X[i,j].+mean_bm.+stddev_bm.*randn();
+				X[i,j+1]=X[i,j]+mean_bm+stddev_bm*randn();
 			end
 		end
 	end
