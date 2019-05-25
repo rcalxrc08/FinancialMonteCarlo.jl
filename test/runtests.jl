@@ -1,7 +1,7 @@
 using FinancialMonteCarlo
 path1=joinpath(dirname(pathof(FinancialMonteCarlo)),"..","test")
 test_listTmp=readdir(path1);
-BlackList=["REQUIRE","runtests.jl","runner.jl","test_black_cuda.jl","cuda","af"]
+BlackList=["REQUIRE","runtests.jl","runner.jl","test_black_cuda.jl","cuda","af","wip"]
 test_list=[test_element for test_element in test_listTmp if !Bool(sum(test_element.==BlackList))]
 println("Running tests:\n")
 for (current_test,i) in zip(test_list,1:length(test_list))
