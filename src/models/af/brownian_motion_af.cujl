@@ -14,7 +14,7 @@ function simulate(mcProcess::BrownianMotion,spotData::equitySpotData,mcBaseData:
 	mean_bm_f=Float32(mean_bm);
 	stddev_bm_f=Float32(stddev_bm);
 	isDualZero=mean_bm_f*stddev_bm_f*zero(Float32);
-	X_cu= zeros(AFArray{typeof(isDualZero)}, Nsim, Nstep+1)
+	X= zeros(AFArray{typeof(isDualZero)}, Nsim, Nstep+1)
 	if monteCarloMode==antithetic
 		Nsim_2=Int(floor(Nsim/2))
 		if Nsim_2*2!=Nsim
@@ -24,15 +24,15 @@ function simulate(mcProcess::BrownianMotion,spotData::equitySpotData,mcBaseData:
 		for i=1:Nstep
 			Z=randn(AFArray{Float32},Nsim_2);
 			Z=[Z;-Z];
-			X_cu[:,i+1]=X_cu[:,i]+(mean_bm_f+stddev_bm_f*Z);
+			X[:,i+1]=X[:,i]+(mean_bm_f+stddev_bm_f*Z);
 		end
 	else
 		for i=1:Nstep
-			X_cu[:,i+1]=X_cu[:,i]+(mean_bm_f+(stddev_bm_f*randn(AFArray{Float32},Nsim)));
+			X[:,i+1]=X[:,i]+(mean_bm_f+(stddev_bm_f*randn(AFArray{Float32},Nsim)));
 		end
 		
 	end
 	
-	return Array(X_cu);
-	#return X_cu;
+	return Array(X);
+	#return X;
 end
