@@ -22,13 +22,13 @@ function simulate(mcProcess::BrownianMotion,spotData::equitySpotData,mcBaseData:
 		end
 		
 		for i=1:Nstep
-			Z=CuArrays.CURAND.curandn(Float32,Nsim_2);
+			Z=CuArrays.CURAND.randn(Float32,Nsim_2);
 			Z=[Z;-Z];
 			X_cu[:,i+1]=X_cu[:,i]+(mean_bm_f.+stddev_bm_f.*Z);
 		end
 	else
 		for i=1:Nstep
-			X_cu[:,i+1]=X_cu[:,i]+(mean_bm_f.+stddev_bm_f.*CuArrays.CURAND.curandn(Float32,Nsim));
+			X_cu[:,i+1]=X_cu[:,i]+(mean_bm_f.+stddev_bm_f.*CuArrays.CURAND.randn(Float32,Nsim));
 		end
 		
 	end

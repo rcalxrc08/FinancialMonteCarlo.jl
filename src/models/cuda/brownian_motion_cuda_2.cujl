@@ -19,14 +19,14 @@ function simulate(mcProcess::BrownianMotion,spotData::equitySpotData,mcBaseData:
 			error("Antithetic support only odd number of simulations")
 		end
 		for i=1:Nstep
-			Z=CuArrays.CURAND.curandn(Float32,Nsim_2);
+			Z=CuArrays.CURAND.randn(Float32,Nsim_2);
 			Z=[Z;-Z];
 			X_cu[:,i+1]=X_cu[:,i]+(mean_bm.+stddev_bm.*Z);
 		end
 		
 	else
 		for i=1:Nstep
-			X_cu[:,i+1]=X_cu[:,i]+(mean_bm.+stddev_bm.*CuArrays.CURAND.curandn(Float32,Nsim));
+			X_cu[:,i+1]=X_cu[:,i]+(mean_bm.+stddev_bm.*CuArrays.CURAND.randn(Float32,Nsim));
 		end
 	end
 	isdual(p)=false
