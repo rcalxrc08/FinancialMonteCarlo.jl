@@ -7,10 +7,10 @@ Where:\n
 		σ	=	volatility of the process.
 		μ	=	drift of the process.
 """
-mutable struct GeometricBrownianMotion{num,num1<:Number}<:ItoProcess
+mutable struct GeometricBrownianMotion{num <: Number, num1 <: Number}<:ItoProcess
 	σ::num
 	μ::num1
-	function GeometricBrownianMotion(σ::num,μ::num1) where {num,num1 <: Number}
+	function GeometricBrownianMotion(σ::num,μ::num1) where {num <: Number , num1 <: Number}
         if σ <= 0.0
             error("Volatility must be positive")
         else
@@ -21,7 +21,7 @@ end
 
 export GeometricBrownianMotion;
 
-function simulate(mcProcess::GeometricBrownianMotion,spotData::equitySpotData,mcBaseData::MonteCarloConfiguration,T::numb,monteCarloMode::MonteCarloMode=standard,parallelMode::BaseMode=SerialMode()) where {numb<:Number}
+function simulate(mcProcess::GeometricBrownianMotion,spotData::equitySpotData,mcBaseData::MonteCarloConfiguration{type1,type2,type3},T::numb,monteCarloMode::MonteCarloMode=standard,parallelMode::BaseMode=SerialMode()) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AbstractMonteCarloMethod}
 	if T<=0.0
 		error("Final time must be positive");
 	end

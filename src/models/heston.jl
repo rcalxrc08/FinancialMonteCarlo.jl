@@ -35,7 +35,7 @@ end
 
 export HestonProcess;
 
-function simulate(mcProcess::HestonProcess,spotData::equitySpotData,mcBaseData::MonteCarloConfiguration,T::numb,monteCarloMode::MonteCarloMode=standard,parallelMode::SerialMode=SerialMode()) where {numb<:Number}
+function simulate(mcProcess::HestonProcess,spotData::equitySpotData,mcBaseData::MonteCarloConfiguration{type1,type2,type3},T::numb,monteCarloMode::MonteCarloMode=standard,parallelMode::SerialMode=SerialMode()) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: StandardMC}
 	r=spotData.r;
 	S0=spotData.S0;
 	d=spotData.d;
@@ -60,31 +60,60 @@ function simulate(mcProcess::HestonProcess,spotData::equitySpotData,mcBaseData::
 	isDualZero=S0*T*r*σ_zero*κ*θ*λ1*σ*ρ*0.0;
 	X=Matrix{typeof(isDualZero)}(undef,Nsim,Nstep+1);
 	X[:,1].=isDualZero;
-	if monteCarloMode==antithetic
-		v_m=[σ_zero+isDualZero for _ in 1:Nsim];
-		Nsim_2=Int(floor(Nsim/2))
-		if Nsim_2*2!=Nsim
-			error("Antithetic support only odd number of simulations")
-		end
-		for j in 1:Nstep
-			e1=randn(Nsim_2);
-			e2=randn(Nsim_2);
-			e1=[e1;-e1];
-			e2=[e2;-e2];
-			e2=e1.*ρ.+e2.*sqrt(1-ρ*ρ);
-			X[:,j+1]=X[:,j]+((r-d).-0.5.*max.(v_m,0)).*dt+sqrt.(max.(v_m,0)).*sqrt(dt).*e1;
-			v_m+=κ_s.*(θ_s.-max.(v_m,0)).*dt+(σ*sqrt(dt)).*sqrt.(max.(v_m,0)).*e2;
-		end
-	else
-		v_m=[σ_zero+isDualZero for _ in 1:Nsim];
-		for j in 1:Nstep
-			e1=randn(Nsim);
-			e2=randn(Nsim);
-			e2=e1.*ρ.+e2.*sqrt(1-ρ*ρ);
-			X[:,j+1]=X[:,j]+((r-d).-0.5.*max.(v_m,0)).*dt+sqrt.(max.(v_m,0)).*sqrt(dt).*e1;
-			v_m+=κ_s.*(θ_s.-max.(v_m,0)).*dt+σ.*sqrt.(max.(v_m,0)).*sqrt(dt).*e2;
-		end
+	v_m=[σ_zero+isDualZero for _ in 1:Nsim];
+	for j in 1:Nstep
+		e1=randn(Nsim);
+		e2=randn(Nsim);
+		e2=e1.*ρ.+e2.*sqrt(1-ρ*ρ);
+		X[:,j+1]=X[:,j]+((r-d).-0.5.*max.(v_m,0)).*dt+sqrt.(max.(v_m,0)).*sqrt(dt).*e1;
+		v_m+=κ_s.*(θ_s.-max.(v_m,0)).*dt+σ.*sqrt.(max.(v_m,0)).*sqrt(dt).*e2;
 	end
+	## Conclude
+	S=S0.*exp.(X);
+	return S;
+
+end
+
+function simulate(mcProcess::HestonProcess,spotData::equitySpotData,mcBaseData::MonteCarloConfiguration{type1,type2,type3},T::numb,monteCarloMode::MonteCarloMode=standard,parallelMode::SerialMode=SerialMode()) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AntitheticMC}
+	r=spotData.r;
+	S0=spotData.S0;
+	d=spotData.d;
+	Nsim=mcBaseData.Nsim;
+	Nstep=mcBaseData.Nstep;
+	σ=mcProcess.σ;
+	σ_zero=mcProcess.σ_zero;
+	λ1=mcProcess.λ;
+	κ=mcProcess.κ;
+	ρ=mcProcess.ρ;
+	θ=mcProcess.θ;
+	if T<=0.0
+		error("Final time must be positive");
+	end
+
+	####Simulation
+	## Simulate
+	κ_s=κ+λ1;
+	θ_s=κ*θ/(κ+λ1);
+
+	dt=T/Nstep
+	isDualZero=S0*T*r*σ_zero*κ*θ*λ1*σ*ρ*0.0;
+	X=Matrix{typeof(isDualZero)}(undef,Nsim,Nstep+1);
+	X[:,1].=isDualZero;
+	v_m=[σ_zero+isDualZero for _ in 1:Nsim];
+	Nsim_2=Int(floor(Nsim/2))
+	if Nsim_2*2!=Nsim
+		error("Antithetic support only odd number of simulations")
+	end
+	for j in 1:Nstep
+		e1=randn(Nsim_2);
+		e2=randn(Nsim_2);
+		e1=[e1;-e1];
+		e2=[e2;-e2];
+		e2=e1.*ρ.+e2.*sqrt(1-ρ*ρ);
+		X[:,j+1]=X[:,j]+((r-d).-0.5.*max.(v_m,0)).*dt+sqrt.(max.(v_m,0)).*sqrt(dt).*e1;
+		v_m+=κ_s.*(θ_s.-max.(v_m,0)).*dt+(σ*sqrt(dt)).*sqrt.(max.(v_m,0)).*e2;
+	end
+	
 	## Conclude
 	S=S0.*exp.(X);
 	return S;
