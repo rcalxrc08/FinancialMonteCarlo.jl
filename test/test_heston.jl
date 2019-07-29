@@ -16,6 +16,7 @@ theta=0.03;
 lambda=0.01;
 rho=0.0;
 mc=MonteCarloConfiguration(Nsim,Nstep);
+mc1=MonteCarloConfiguration(Nsim,Nstep,FinancialMonteCarlo.AntitheticMC());
 toll=0.8;
 
 spotData1=equitySpotData(S0,r,d);
@@ -40,12 +41,12 @@ Model=HestonProcess(sigma,sigma_zero,lambda,kappa,rho,theta);
 @test abs(BarrierPrice-11.38748933756886)<toll
 @test abs(AsianPrice1-9.762160560168732)<toll
 
-@show FwdPrice=pricer(Model,spotData1,mc,FwdData,FinancialMonteCarlo.antithetic);
-@show EuPrice=pricer(Model,spotData1,mc,EUData,FinancialMonteCarlo.antithetic);
-@show AmPrice=pricer(Model,spotData1,mc,AMData,FinancialMonteCarlo.antithetic);
-@show BarrierPrice=pricer(Model,spotData1,mc,BarrierData,FinancialMonteCarlo.antithetic);
-@show AsianPrice1=pricer(Model,spotData1,mc,AsianData1,FinancialMonteCarlo.antithetic);
-@show AsianPrice2=pricer(Model,spotData1,mc,AsianData2,FinancialMonteCarlo.antithetic);
+@show FwdPrice=pricer(Model,spotData1,mc1,FwdData);
+@show EuPrice=pricer(Model,spotData1,mc1,EUData);
+@show AmPrice=pricer(Model,spotData1,mc1,AMData);
+@show BarrierPrice=pricer(Model,spotData1,mc1,BarrierData);
+@show AsianPrice1=pricer(Model,spotData1,mc1,AsianData1);
+@show AsianPrice2=pricer(Model,spotData1,mc1,AsianData2);
 tollanti=0.8
 @test abs(FwdPrice-98.72567723404445)<tollanti
 @test abs(EuPrice-17.62536090688433)<tollanti

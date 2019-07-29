@@ -60,12 +60,11 @@ Where:\n
 		mcProcess          = Process to be simulated.
 		spotData  = Datas of the Spot.
 		mcBaseData = Basic properties of MonteCarlo simulation
-		monteCarloMode [Optional, default to standard]= standard or antitethic
 		parallelMode  [Optional, default to SerialMode()] = SerialMode(), CudaMode(), AFMode()
 
 		S      = Matrix with path of underlying.
 
 """
-function simulate(mcProcess::BaseProcess,spotData::equitySpotData,mcBaseData::MonteCarloConfiguration,T::numb,monteCarloMode::MonteCarloMode=standard,parallelMode::BaseMode=SerialMode()) where {numb<:Number}
+function simulate(mcProcess::BaseProcess,spotData::equitySpotData,mcBaseData::MonteCarloConfiguration{type1,type2,type3},T::numb,parallelMode::BaseMode=SerialMode()) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AbstractMonteCarloMethod}
 	error("Function used just for documentation")
 end

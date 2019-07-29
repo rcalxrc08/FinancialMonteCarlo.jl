@@ -17,22 +17,23 @@ abstract type BaseMode end
 struct SerialMode <: BaseMode end
 abstract type ParallelMode <: BaseMode end
 
-
-@enum MonteCarloMode standard=1 antithetic=2
-
+abstract type AbstractMonteCarloMethod end
+struct StandardMC <: AbstractMonteCarloMethod end
+struct AntitheticMC <: AbstractMonteCarloMethod end
 
 export equitySpotData,MonteCarloMode;
 
-struct MonteCarloConfiguration{num1,num2<:Integer}
+struct MonteCarloConfiguration{num1 <: Integer , num2 <: Integer , abstractMonteCarloMethod <: AbstractMonteCarloMethod }
 	Nsim::num1
 	Nstep::num2
-	function MonteCarloConfiguration(Nsim::num1,Nstep::num2) where {num1,num2<:Integer}
+	monteCarloMethod::abstractMonteCarloMethod
+	function MonteCarloConfiguration(Nsim::num1,Nstep::num2,monteCarloMethod::abstractMonteCarloMethod=StandardMC()) where {num1 <: Integer, num2 <: Integer, abstractMonteCarloMethod <: AbstractMonteCarloMethod}
         if Nsim <= zero(num1)
             error("Number of Simulations must be positive")
         elseif Nstep <= zero(num2)
             error("Number of Steps must be positive")
 		else
-            return new{num1,num2}(Nsim,Nstep)
+            return new{num1,num2,abstractMonteCarloMethod}(Nsim,Nstep,monteCarloMethod)
         end
     end
 end

@@ -23,14 +23,14 @@ AsianFloatingStrikeData=AsianFloatingStrikeOption(T)
 AsianFixedStrikeData=AsianFixedStrikeOption(T,K)
 Model=BlackScholesProcess(sigma);
 
-f(x::Vector) = pricer(BlackScholesProcess(x[1]),equitySpotData(x[2],x[3],x[4]),mc,EuropeanOption(x[5],K),FinancialMonteCarlo.standard,FinancialMonteCarlo.CudaMode_2());
+f(x::Vector) = pricer(BlackScholesProcess(x[1]),equitySpotData(x[2],x[3],x[4]),mc,EuropeanOption(x[5],K),FinancialMonteCarlo.CudaMode_2());
 x=Float64[sigma,S0,r,d,T]
 g = x -> ForwardDiff.gradient(f, x);
 y0=g(x);
 @btime f(x);
 @btime g(x);
 
-f_(x::Vector) = pricer(BlackScholesProcess(x[1]),equitySpotData(x[2],x[3],x[4]),mc,AmericanOption(x[5],K),FinancialMonteCarlo.standard,FinancialMonteCarlo.CudaMode_2());
+f_(x::Vector) = pricer(BlackScholesProcess(x[1]),equitySpotData(x[2],x[3],x[4]),mc,AmericanOption(x[5],K),FinancialMonteCarlo.CudaMode_2());
 g_ = x -> ForwardDiff.gradient(f_, x);
 y0=g_(x);
 @btime f_(x);

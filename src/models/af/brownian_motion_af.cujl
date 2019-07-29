@@ -1,5 +1,5 @@
 
-function simulate(mcProcess::BrownianMotion,spotData::equitySpotData,mcBaseData::MonteCarloConfiguration,T::numb,monteCarloMode::MonteCarloMode,parallelMode::AFMode) where {numb<:Number}
+function simulate(mcProcess::BrownianMotion,spotData::equitySpotData,mcBaseData::MonteCarloConfiguration{type1,type2,type3},T::numb,parallelMode::AFMode) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: StandardMC}
 	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;
 
@@ -15,22 +15,43 @@ function simulate(mcProcess::BrownianMotion,spotData::equitySpotData,mcBaseData:
 	stddev_bm_f=Float32(stddev_bm);
 	isDualZero=mean_bm_f*stddev_bm_f*zero(Float32);
 	X= zeros(AFArray{typeof(isDualZero)}, Nsim, Nstep+1)
-	if monteCarloMode==antithetic
-		Nsim_2=Int(floor(Nsim/2))
-		if Nsim_2*2!=Nsim
-			error("Antithetic support only odd number of simulations")
-		end
-		
-		for i=1:Nstep
-			Z=randn(AFArray{Float32},Nsim_2);
-			Z=[Z;-Z];
-			X[:,i+1]=X[:,i]+(mean_bm_f+stddev_bm_f*Z);
-		end
-	else
-		for i=1:Nstep
-			X[:,i+1]=X[:,i]+(mean_bm_f+(stddev_bm_f*randn(AFArray{Float32},Nsim)));
-		end
-		
+
+	for i=1:Nstep
+		X[:,i+1]=X[:,i]+(mean_bm_f+(stddev_bm_f*randn(AFArray{Float32},Nsim)));
+	end
+	
+	return Array(X);
+	#return X;
+end
+
+
+
+
+function simulate(mcProcess::BrownianMotion,spotData::equitySpotData,mcBaseData::MonteCarloConfiguration{type1,type2,type3},T::numb,parallelMode::AFMode) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AntitheticMC}
+	Nsim=mcBaseData.Nsim;
+	Nstep=mcBaseData.Nstep;
+
+	σ=mcProcess.σ;
+	μ=mcProcess.μ;
+	if T<=0.0
+		error("Final time must be positive");
+	end
+	dt=T/Nstep
+	mean_bm=μ*dt
+	stddev_bm=σ*sqrt(dt)
+	mean_bm_f=Float32(mean_bm);
+	stddev_bm_f=Float32(stddev_bm);
+	isDualZero=mean_bm_f*stddev_bm_f*zero(Float32);
+	X= zeros(AFArray{typeof(isDualZero)}, Nsim, Nstep+1)
+	Nsim_2=Int(floor(Nsim/2))
+	if Nsim_2*2!=Nsim
+		error("Antithetic support only odd number of simulations")
+	end
+	
+	for i=1:Nstep
+		Z=randn(AFArray{Float32},Nsim_2);
+		Z=[Z;-Z];
+		X[:,i+1]=X[:,i]+(mean_bm_f+stddev_bm_f*Z);
 	end
 	
 	return Array(X);

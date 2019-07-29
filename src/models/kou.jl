@@ -35,7 +35,7 @@ end
 
 export KouProcess;
 
-function simulate(mcProcess::KouProcess,spotData::equitySpotData,mcBaseData::MonteCarloConfiguration,T::numb,monteCarloMode::MonteCarloMode=standard,parallelMode::BaseMode=SerialMode()) where {numb<:Number}
+function simulate(mcProcess::KouProcess,spotData::equitySpotData,mcBaseData::MonteCarloConfiguration{type1,type2,type3},T::numb,parallelMode::BaseMode=SerialMode()) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AbstractMonteCarloMethod}
 	r=spotData.r;
 	S0=spotData.S0;
 	d=spotData.d;
@@ -54,7 +54,7 @@ function simulate(mcProcess::KouProcess,spotData::equitySpotData,mcBaseData::Mon
 	## Simulate
 	# r-d-psi(-i)
 	drift_RN=r-d-σ^2/2-λ1*(p/(λp-1)-(1-p)/(λm+1));
-	X=Matrix(simulate(BrownianMotion(σ,drift_RN),spotData,mcBaseData,T,monteCarloMode,parallelMode))
+	X=Matrix(simulate(BrownianMotion(σ,drift_RN),spotData,mcBaseData,T,parallelMode))
 
 	t=range(0.0, stop=T, length=Nstep+1);
 	PoissonRV=Poisson(λ1*T);

@@ -1,5 +1,5 @@
 
-function simulate(mcProcess::HestonProcess,spotData::equitySpotData,mcBaseData::MonteCarloConfiguration,T::numb,monteCarloMode::MonteCarloMode,parallelMode::CudaMode) where {numb<:Number}
+function simulate(mcProcess::HestonProcess,spotData::equitySpotData,mcBaseData::MonteCarloConfiguration{type1,type2,type3},T::numb,parallelMode::CudaMode) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: StandardMC}
 	r=spotData.r;
 	S0=spotData.S0;
 	d=spotData.d;
@@ -31,31 +31,63 @@ function simulate(mcProcess::HestonProcess,spotData::equitySpotData,mcBaseData::
 	X=CuMatrix{typeof(Float32(isDualZero))}(undef,Nsim,Nstep+1);
 	X[:,1].=Float32(isDualZero);
 	v_m=zeros(CuArray{typeof(Float32(isDualZero))},Nsim).+σ_zero;
-	if monteCarloMode==antithetic
-		Nsim_2=Int(floor(Nsim/2))
-		if Nsim_2*2!=Nsim
-			error("Antithetic support only odd number of simulations")
-		end
-		
-		for j in 1:Nstep
-			e1=CuArrays.CURAND.curandn(Float32,Nsim_2);
-			e2=CuArrays.CURAND.curandn(Float32,Nsim_2);
-			e1=[e1;-e1];
-			e2=[e2;-e2];
-			e2=e1.*ρ_f.+e2.*sqrt(1-ρ_f*ρ_f);
-			X[:,j+1]=X[:,j]+((r_d_f).-0.5.*max.(v_m,0)).*dt_f+sqrt.(max.(v_m,0)).*sqrt(dt_f).*e1;
-			v_m+=κ_s_f.*(θ_s_f.-max.(v_m,0)).*dt_f+σ_f.*sqrt.(max.(v_m,0)).*sqrt(dt_f).*e2;
-		end
-		
-	else
-		for j in 1:Nstep
-			e1=CuArrays.CURAND.curandn(Float32,Nsim);
-			e2=CuArrays.CURAND.curandn(Float32,Nsim);
-			e2=e1.*ρ_f.+e2.*sqrt(1-ρ_f*ρ_f);
-			@inbounds X[:,j+1].=X[:,j]+((r_d_f).-0.5.*max.(v_m,0)).*dt_f+sqrt.(max.(v_m,0)).*sqrt(dt_f).*e1;
-			v_m+=κ_s_f.*(θ_s_f.-max.(v_m,0)).*dt_f+σ_f.*sqrt.(max.(v_m,0)).*sqrt(dt_f).*e2;
-		end
-		
+
+	for j in 1:Nstep
+		e1=CuArrays.CURAND.curandn(Float32,Nsim);
+		e2=CuArrays.CURAND.curandn(Float32,Nsim);
+		e2=e1.*ρ_f.+e2.*sqrt(1-ρ_f*ρ_f);
+		@inbounds X[:,j+1].=X[:,j]+((r_d_f).-0.5.*max.(v_m,0)).*dt_f+sqrt.(max.(v_m,0)).*sqrt(dt_f).*e1;
+		v_m+=κ_s_f.*(θ_s_f.-max.(v_m,0)).*dt_f+σ_f.*sqrt.(max.(v_m,0)).*sqrt(dt_f).*e2;
+	end
+
+## Conclude
+	S=S0.*exp.(Matrix(X));
+	return S;
+end
+
+
+
+
+function simulate(mcProcess::HestonProcess,spotData::equitySpotData,mcBaseData::MonteCarloConfiguration{type1,type2,type3},T::numb,parallelMode::CudaMode) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AntitheticMC}
+	r=spotData.r;
+	S0=spotData.S0;
+	d=spotData.d;
+	Nsim=mcBaseData.Nsim;
+	Nstep=mcBaseData.Nstep;
+	σ=mcProcess.σ;
+	σ_zero=mcProcess.σ_zero;
+	λ1=mcProcess.λ;
+	κ=mcProcess.κ;
+	ρ=mcProcess.ρ;
+	θ=mcProcess.θ;
+	if T<=0.0
+		error("Final time must be positive");
+	end
+
+	####Simulation
+	## Simulate
+	κ_s=κ+λ1;
+	θ_s=κ*θ/(κ+λ1);
+
+	dt=T/Nstep
+	isDualZero=zero(S0*T*r*σ_zero*κ*θ*λ1*σ*ρ);
+	ρ_f=Float32(ρ);
+	κ_s_f=Float32(κ_s);
+	θ_s_f=Float32(θ_s);
+	r_d_f=Float32(r-d)
+	dt_f=Float32(dt)
+	σ_f=Float32(σ)
+	X=CuMatrix{typeof(Float32(isDualZero))}(undef,Nsim,Nstep+1);
+	X[:,1].=Float32(isDualZero);
+	v_m=zeros(CuArray{typeof(Float32(isDualZero))},Nsim).+σ_zero;
+	for j in 1:Nstep
+		e1=CuArrays.CURAND.curandn(Float32,Nsim_2);
+		e2=CuArrays.CURAND.curandn(Float32,Nsim_2);
+		e1=[e1;-e1];
+		e2=[e2;-e2];
+		e2=e1.*ρ_f.+e2.*sqrt(1-ρ_f*ρ_f);
+		X[:,j+1]=X[:,j]+((r_d_f).-0.5.*max.(v_m,0)).*dt_f+sqrt.(max.(v_m,0)).*sqrt(dt_f).*e1;
+		v_m+=κ_s_f.*(θ_s_f.-max.(v_m,0)).*dt_f+σ_f.*sqrt.(max.(v_m,0)).*sqrt(dt_f).*e2;
 	end
 ## Conclude
 	S=S0.*exp.(Matrix(X));

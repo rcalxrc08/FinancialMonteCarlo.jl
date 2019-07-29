@@ -21,10 +21,9 @@ end
 
 export BrownianMotion;
 
-function simulate(mcProcess::BrownianMotion,spotData::equitySpotData,mcBaseData::MonteCarloConfiguration,T::numb,monteCarloMode::MonteCarloMode=standard,parallelMode::SerialMode=SerialMode()) where {numb<:Number}
+function simulate(mcProcess::BrownianMotion,spotData::equitySpotData,mcBaseData::MonteCarloConfiguration{type1,type2,type3},T::numb,parallelMode::SerialMode=SerialMode()) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: StandardMC}
 	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;
-
 	σ=mcProcess.σ;
 	μ=mcProcess.μ;
 	if T<=0.0
@@ -36,22 +35,39 @@ function simulate(mcProcess::BrownianMotion,spotData::equitySpotData,mcBaseData:
 	isDualZero=mean_bm*stddev_bm*0.0;
 	X=Matrix{typeof(isDualZero)}(undef,Nsim,Nstep+1);
 	X[:,1].=isDualZero;
-	if monteCarloMode==antithetic
-		Nsim_2=Int(floor(Nsim/2))
-		if Nsim_2*2!=Nsim
-			error("Antithetic support only odd number of simulations")
+	for i=1:Nsim
+		for j=1:Nstep
+			X[i,j+1]=X[i,j]+mean_bm+stddev_bm*randn();
 		end
-		for j in 1:Nstep
-			Z=randn(Nsim_2);
-			Z=[Z;-Z];
-			X[:,j+1]=X[:,j].+mean_bm.+stddev_bm.*Z;
-		end
-	else
-		for i=1:Nsim
-			for j=1:Nstep
-				X[i,j+1]=X[i,j]+mean_bm+stddev_bm*randn();
-			end
-		end
+	end
+
+	return X;
+
+end
+
+
+function simulate(mcProcess::BrownianMotion,spotData::equitySpotData,mcBaseData::MonteCarloConfiguration{type1,type2,type3},T::numb,parallelMode::SerialMode=SerialMode()) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AntitheticMC}
+	Nsim=mcBaseData.Nsim;
+	Nstep=mcBaseData.Nstep;
+	σ=mcProcess.σ;
+	μ=mcProcess.μ;
+	if T<=0.0
+		error("Final time must be positive");
+	end
+	dt=T/Nstep
+	mean_bm=μ*dt
+	stddev_bm=σ*sqrt(dt)
+	isDualZero=mean_bm*stddev_bm*0.0;
+	X=Matrix{typeof(isDualZero)}(undef,Nsim,Nstep+1);
+	X[:,1].=isDualZero;
+	Nsim_2=Int(floor(Nsim/2))
+	if Nsim_2*2!=Nsim
+		error("Antithetic support only odd number of simulations")
+	end
+	for j in 1:Nstep
+		Z=randn(Nsim_2);
+		Z=[Z;-Z];
+		X[:,j+1]=X[:,j].+mean_bm.+stddev_bm.*Z;
 	end
 
 	return X;

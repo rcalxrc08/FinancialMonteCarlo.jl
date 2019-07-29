@@ -13,6 +13,7 @@ sigma=0.2;
 theta1=0.01; 
 k1=0.03; 
 mc=MonteCarloConfiguration(Nsim,Nstep);
+mc1=MonteCarloConfiguration(Nsim,Nstep,FinancialMonteCarlo.AntitheticMC());
 toll=0.8;
 
 spotData1=equitySpotData(S0,r,d);
@@ -38,11 +39,11 @@ Model=NormalInverseGaussianProcess(sigma,theta1,k1);
 
 
 
-@show FwdPrice=pricer(Model,spotData1,mc,FwdData,FinancialMonteCarlo.antithetic);
-@show EuPrice=pricer(Model,spotData1,mc,EUData,FinancialMonteCarlo.antithetic);
-@show AmPrice=pricer(Model,spotData1,mc,AMData,FinancialMonteCarlo.antithetic);
-@show BarrierPrice=pricer(Model,spotData1,mc,BarrierData,FinancialMonteCarlo.antithetic);
-@show AsianPrice=pricer(Model,spotData1,mc,AsianData,FinancialMonteCarlo.antithetic);
+@show FwdPrice=pricer(Model,spotData1,mc1,FwdData);
+@show EuPrice=pricer(Model,spotData1,mc1,EUData);
+@show AmPrice=pricer(Model,spotData1,mc1,AMData);
+@show BarrierPrice=pricer(Model,spotData1,mc1,BarrierData);
+@show AsianPrice=pricer(Model,spotData1,mc1,AsianData);
 tollanti=0.8;
 @test abs(FwdPrice-97.95852227697686)<tollanti
 @test abs(EuPrice-7.738298817933206)<tollanti
