@@ -1,5 +1,5 @@
 
-function simulate(mcProcess::SubordinatedBrownianMotion,spotData::equitySpotData,mcBaseData::MonteCarloConfiguration{type1,type2,type3},T::numb,dt_s::Array{num1,2},monteCarloMode::MonteCarloMode,parallelMode::CudaMode) where {numb,num1<:Number}
+function simulate(mcProcess::SubordinatedBrownianMotion,spotData::equitySpotData,mcBaseData::MonteCarloConfiguration{type1,type2,type3},T::numb,dt_s::Array{num1,2},parallelMode::CudaMode) where {numb <: Number , num1 <: Number, type1 <: Number, type2<: Number, type3 <: StandardMC}
 	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;
 	if(size(dt_s)!=(Nsim,Nstep))
@@ -14,20 +14,37 @@ function simulate(mcProcess::SubordinatedBrownianMotion,spotData::equitySpotData
 	isDualZero=drift*sigma*zero(eltype(dt_s))*zero(Float32);
 	X_cu=CuMatrix{typeof(isDualZero)}(undef,Nsim,Nstep+1);
 	X_cu[:,1].=isDualZero;
-	if monteCarloMode==antithetic
-		for i=1:Nstep
-			NsimAnti=Int(floor(Nsim/2))
-			Z=CuArrays.CURAND.curandn(Float32,NsimAnti);
-			Z=[Z;-Z];
-			# SUBORDINATED BROWNIAN MOTION (dt_s=time change)
-			X_cu[:,i+1]=X_cu[:,i].+drift.*dt_s[:,i].+sigma.*sqrt.(dt_s[:,i]).*Z;
-		end
-	else
-		Z=Array{Float64}(undef,Nsim)
-		for i=1:Nstep
-			# SUBORDINATED BROWNIAN MOTION (dt_s=time change)
-			X_cu[:,i+1]=X_cu[:,i].+drift.*dt_s[:,i].+sigma.*sqrt.(dt_s[:,i]).*CuArrays.CURAND.curandn(Float32,Nsim);
-		end
+	Z=Array{Float64}(undef,Nsim)
+	for i=1:Nstep
+		# SUBORDINATED BROWNIAN MOTION (dt_s=time change)
+		X_cu[:,i+1]=X_cu[:,i].+drift.*dt_s[:,i].+sigma.*sqrt.(dt_s[:,i]).*CuArrays.CURAND.curandn(Float32,Nsim);
+	end
+	return X_cu;
+end
+
+
+
+function simulate(mcProcess::SubordinatedBrownianMotion,spotData::equitySpotData,mcBaseData::MonteCarloConfiguration{type1,type2,type3},T::numb,dt_s::Array{num1,2},parallelMode::CudaMode) where {numb <: Number, num1 <: Number, type1 <: Number, type2<: Number, type3 <: AntitheticMC}
+	Nsim=mcBaseData.Nsim;
+	Nstep=mcBaseData.Nstep;
+	if(size(dt_s)!=(Nsim,Nstep))
+		error("Inconsistent Time Matrix")
+	end
+	drift=mcProcess.drift;
+	sigma=mcProcess.sigma;
+	if T<=0.0
+		error("Final time must be positive");
+	end
+	dt_s=cu(dt_s)
+	isDualZero=drift*sigma*zero(eltype(dt_s))*zero(Float32);
+	X_cu=CuMatrix{typeof(isDualZero)}(undef,Nsim,Nstep+1);
+	X_cu[:,1].=isDualZero;
+	for i=1:Nstep
+		NsimAnti=Int(floor(Nsim/2))
+		Z=CuArrays.CURAND.curandn(Float32,NsimAnti);
+		Z=[Z;-Z];
+		# SUBORDINATED BROWNIAN MOTION (dt_s=time change)
+		X_cu[:,i+1]=X_cu[:,i].+drift.*dt_s[:,i].+sigma.*sqrt.(dt_s[:,i]).*Z;
 	end
 	return X_cu;
 end
