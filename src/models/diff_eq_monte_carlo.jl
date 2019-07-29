@@ -9,7 +9,7 @@ function simulate(mcProcess::MonteCarloProblem,spotData::equitySpotData,mcBaseDa
 	if T<=0.0
 		error("Final time must be positive");
 	end
-	sol = solve(mcProcess,SOSRI(),num_monte=Nsim,parallel_type=:threads,dt=Dt,adaptive=false)
+	sol = solve(mcProcess,SOSRI(),trajectories=Nsim,parallel_type=:threads,dt=Dt,adaptive=false)
 	X0=sol.u[1].u[1];
 	if(!(typeof(mcProcess.prob)<:JumpProblem))
 		if isapprox(X0,0.0)

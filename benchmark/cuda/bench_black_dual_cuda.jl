@@ -23,14 +23,14 @@ AsianFloatingStrikeData=AsianFloatingStrikeOption(T)
 AsianFixedStrikeData=AsianFixedStrikeOption(T,K)
 Model=BlackScholesProcess(sigma);
 
-@btime FwdPrice=pricer(Model,spotData1,mc,FwdData,FinancialMonteCarlo.standard,FinancialMonteCarlo.CudaMode());
+@btime FwdPrice=pricer(Model,spotData1,mc,FwdData,FinancialMonteCarlo.CudaMode());
 
 @btime FwdPrice=pricer(Model,spotData1,mc,FwdData);
-@btime FwdPrice=pricer(Model,spotData1,mc,FwdData,FinancialMonteCarlo.standard,FinancialMonteCarlo.CudaMode());
-#@btime FwdPrice=pricer(Model,spotData1,mc,FwdData,FinancialMonteCarlo.standard,FinancialMonteCarlo.CudaMode_2());
+@btime FwdPrice=pricer(Model,spotData1,mc,FwdData,FinancialMonteCarlo.CudaMode());
+#@btime FwdPrice=pricer(Model,spotData1,mc,FwdData,FinancialMonteCarlo.CudaMode_2());
 @btime EuPrice=pricer(Model,spotData1,mc,EUData);
-@btime EuPrice=pricer(Model,spotData1,mc,EUData,FinancialMonteCarlo.standard,FinancialMonteCarlo.CudaMode());
-#@btime EuPrice=pricer(Model,spotData1,mc,EUData,FinancialMonteCarlo.standard,FinancialMonteCarlo.CudaMode_2());
+@btime EuPrice=pricer(Model,spotData1,mc,EUData,FinancialMonteCarlo.CudaMode());
+#@btime EuPrice=pricer(Model,spotData1,mc,EUData,FinancialMonteCarlo.CudaMode_2());
 @btime AmPrice=pricer(Model,spotData1,mc,AMData);
-@btime AmPrice=pricer(Model,spotData1,mc,AMData,FinancialMonteCarlo.standard,FinancialMonteCarlo.CudaMode());
-#@btime AmPrice=pricer(Model,spotData1,mc,AMData,FinancialMonteCarlo.standard,FinancialMonteCarlo.CudaMode_2());
+@btime AmPrice=pricer(Model,spotData1,mc,AMData,FinancialMonteCarlo.CudaMode());
+#@btime AmPrice=pricer(Model,spotData1,mc,AMData,FinancialMonteCarlo.CudaMode_2());

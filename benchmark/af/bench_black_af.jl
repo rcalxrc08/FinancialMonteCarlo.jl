@@ -23,15 +23,15 @@ AsianFloatingStrikeData=AsianFloatingStrikeOption(T)
 AsianFixedStrikeData=AsianFixedStrikeOption(T,K)
 Model=BlackScholesProcess(sigma);
 @show "Fwd"
-@btime FwdPrice=pricer(Model,spotData1,mc,FwdData,FinancialMonteCarlo.standard,FinancialMonteCarlo.AFMode());
+@btime FwdPrice=pricer(Model,spotData1,mc,FwdData,FinancialMonteCarlo.AFMode());
 
 @show "STD fwd"
 @btime FwdPrice=pricer(Model,spotData1,mc,FwdData);
-@btime FwdPrice=pricer(Model,spotData1,mc,FwdData,FinancialMonteCarlo.standard,FinancialMonteCarlo.AFMode());
+@btime FwdPrice=pricer(Model,spotData1,mc,FwdData,FinancialMonteCarlo.AFMode());
 @show "std eu"
 @btime EuPrice=pricer(Model,spotData1,mc,EUData);
-@btime EuPrice=pricer(Model,spotData1,mc,EUData,FinancialMonteCarlo.standard,FinancialMonteCarlo.AFMode());
+@btime EuPrice=pricer(Model,spotData1,mc,EUData,FinancialMonteCarlo.AFMode());
 @show "std am"
 @btime AmPrice=pricer(Model,spotData1,mc,AMData);
-@btime AmPrice=pricer(Model,spotData1,mc,AMData,FinancialMonteCarlo.standard,FinancialMonteCarlo.AFMode());
+@btime AmPrice=pricer(Model,spotData1,mc,AMData,FinancialMonteCarlo.AFMode());
 
