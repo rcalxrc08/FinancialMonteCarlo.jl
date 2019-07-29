@@ -17,9 +17,6 @@ abstract type BaseMode end
 struct SerialMode <: BaseMode end
 abstract type ParallelMode <: BaseMode end
 
-
-@enum MonteCarloMode standard=1 antithetic=2
-
 abstract type AbstractMonteCarloMethod end
 struct StandardMC <: AbstractMonteCarloMethod end
 struct AntitheticMC <: AbstractMonteCarloMethod end
