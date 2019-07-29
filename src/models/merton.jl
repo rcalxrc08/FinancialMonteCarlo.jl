@@ -29,7 +29,7 @@ end
 
 export MertonProcess;
 
-function simulate(mcProcess::MertonProcess,spotData::equitySpotData,mcBaseData::MonteCarloConfiguration{type1,type2,type3},T::numb,monteCarloMode::MonteCarloMode=standard,parallelMode::BaseMode=SerialMode()) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AbstractMonteCarloMethod}
+function simulate(mcProcess::MertonProcess,spotData::equitySpotData,mcBaseData::MonteCarloConfiguration{type1,type2,type3},T::numb,parallelMode::BaseMode=SerialMode()) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AbstractMonteCarloMethod}
 	r=spotData.r;
 	S0=spotData.S0;
 	d=spotData.d;
@@ -49,7 +49,7 @@ function simulate(mcProcess::MertonProcess,spotData::equitySpotData,mcBaseData::
 	## Simulate
 	# -psi(-i)
 	drift_RN=r-d-σ^2/2-λ1*(exp(μ+σ1*σ1/2.0)-1.0); 
-	X=Matrix(simulate(BrownianMotion(σ,drift_RN),spotData,mcBaseData,T,monteCarloMode,parallelMode))
+	X=Matrix(simulate(BrownianMotion(σ,drift_RN),spotData,mcBaseData,T,parallelMode))
 	D1=Poisson(λ1*T);
 	NJumps=Int.(quantile.([D1],rand(Nsim)));
 	for ii in 1:Nsim

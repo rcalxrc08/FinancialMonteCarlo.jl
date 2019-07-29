@@ -11,6 +11,7 @@ Nsim=10000;
 Nstep=30;
 sigma=dual(0.2,1.0);
 mc=MonteCarloConfiguration(Nsim,Nstep);
+mc1=MonteCarloConfiguration(Nsim,Nstep,FinancialMonteCarlo.AntitheticMC());
 toll=0.8
 
 spotData1=equitySpotData(S0,r,d);
@@ -36,12 +37,12 @@ Model=BlackScholesProcess(sigma);
 @test abs(BarrierPrice-7.5008664470880735)<toll
 @test abs(AsianPrice1-4.774451704549382)<toll
 
-@show FwdPrice=pricer(Model,spotData1,mc,FwdData,FinancialMonteCarlo.antithetic);
-@show EuPrice=pricer(Model,spotData1,mc,EUData,FinancialMonteCarlo.antithetic);
-@show AmPrice=pricer(Model,spotData1,mc,AMData,FinancialMonteCarlo.antithetic);
-@show BarrierPrice=pricer(Model,spotData1,mc,BarrierData,FinancialMonteCarlo.antithetic);
-@show AsianPrice1=pricer(Model,spotData1,mc,AsianFloatingStrikeData,FinancialMonteCarlo.antithetic);
-@show AsianPrice2=pricer(Model,spotData1,mc,AsianFixedStrikeData,FinancialMonteCarlo.antithetic);
+@show FwdPrice=pricer(Model,spotData1,mc1,FwdData);
+@show EuPrice=pricer(Model,spotData1,mc1,EUData);
+@show AmPrice=pricer(Model,spotData1,mc1,AMData);
+@show BarrierPrice=pricer(Model,spotData1,mc1,BarrierData);
+@show AsianPrice1=pricer(Model,spotData1,mc1,AsianFloatingStrikeData);
+@show AsianPrice2=pricer(Model,spotData1,mc1,AsianFixedStrikeData);
 tollanti=0.6;
 @test abs(FwdPrice-99.1078451563562)<tollanti
 @test abs(EuPrice-8.43005524824866)<tollanti

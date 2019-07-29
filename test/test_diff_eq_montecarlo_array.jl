@@ -4,6 +4,7 @@ Nsim=10000;
 Nstep=30;
 
 mc=MonteCarloConfiguration(Nsim,Nstep);
+mc1=MonteCarloConfiguration(Nsim,Nstep,FinancialMonteCarlo.AntitheticMC());
 S0=100.0
 K=100.0;
 D=90.0;

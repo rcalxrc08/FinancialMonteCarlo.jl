@@ -11,6 +11,7 @@ Nsim=10000;
 Nstep=30;
 sigma=0.2
 mc=MonteCarloConfiguration(Nsim,Nstep);
+mc1=MonteCarloConfiguration(Nsim,Nstep,FinancialMonteCarlo.AntitheticMC());
 toll=0.8
 
 spotData1=equitySpotData(S0,r,d);

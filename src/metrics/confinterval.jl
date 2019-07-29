@@ -20,12 +20,12 @@ function confinter_macro(num1)
 				Price     = Price of the derivative
 
 		"""	
-		function confinter(mcProcess::$num1,spotData::equitySpotData,mcConfig::MonteCarloConfiguration,abstractPayoff::AbstractPayoff,alpha::Real=0.99,mode1::MonteCarloMode=standard,parallelMode::BaseMode=SerialMode())
+		function confinter(mcProcess::$num1,spotData::equitySpotData,mcConfig::MonteCarloConfiguration,abstractPayoff::AbstractPayoff,alpha::Real=0.99,parallelMode::BaseMode=SerialMode())
 
 			Random.seed!(0)
 			T=abstractPayoff.T;
 			Nsim=mcConfig.Nsim;
-			S=simulate(mcProcess,spotData,mcConfig,T,mode1,parallelMode)
+			S=simulate(mcProcess,spotData,mcConfig,T,parallelMode)
 			Payoff=payoff(S,abstractPayoff,spotData);
 			mean1=mean(Payoff);
 			var1=var(Payoff);
@@ -43,12 +43,12 @@ confinter_macro(BaseProcess)
 
 
 function confinter_macro_array(num1)
-	@eval function confinter(mcProcess::$num1,spotData::equitySpotData,mcConfig::MonteCarloConfiguration,abstractPayoffs::Array{AbstractPayoff},alpha::Real=0.99,mode1::MonteCarloMode=standard,parallelMode::BaseMode=SerialMode())
+	@eval function confinter(mcProcess::$num1,spotData::equitySpotData,mcConfig::MonteCarloConfiguration,abstractPayoffs::Array{AbstractPayoff},alpha::Real=0.99,parallelMode::BaseMode=SerialMode())
 
 		Random.seed!(0)
 		maxT=maximum([abstractPayoff.T for abstractPayoff in abstractPayoffs])
 		Nsim=mcConfig.Nsim;
-		S=simulate(mcProcess,spotData,mcConfig,maxT,mode1,parallelMode)
+		S=simulate(mcProcess,spotData,mcConfig,maxT,parallelMode)
 		Means=[mean(payoff(S,abstractPayoff,spotData,maxT)) for abstractPayoff in abstractPayoffs  ]
 		Vars=[var(payoff(S,abstractPayoff,spotData,maxT)) for abstractPayoff in abstractPayoffs  ]
 		alpha_=1-alpha;

@@ -11,6 +11,7 @@ Nsim=10000;
 Nstep=30;
 sigma=0.2;
 mc=MonteCarloConfiguration(Nsim,Nstep);
+mc1=MonteCarloConfiguration(Nsim,Nstep,FinancialMonteCarlo.AntitheticMC());
 toll=0.8
 
 spotData1=equitySpotData(S0,r,d);
@@ -39,12 +40,12 @@ display(Model)
 @test abs(AsianPrice1-4.774451704549382)<toll
 
 
-@show FwdPrice=pricer(Model,spotData1,mc,FwdData,FinancialMonteCarlo.antithetic);
-@show EuPrice=pricer(Model,spotData1,mc,EUData,FinancialMonteCarlo.antithetic);
-@show AmPrice=pricer(Model,spotData1,mc,AMData,FinancialMonteCarlo.antithetic);
-@show BarrierPrice=pricer(Model,spotData1,mc,BarrierData,FinancialMonteCarlo.antithetic);
-@show AsianPrice1=pricer(Model,spotData1,mc,AsianFloatingStrikeData,FinancialMonteCarlo.antithetic);
-@show AsianPrice2=pricer(Model,spotData1,mc,AsianFixedStrikeData,FinancialMonteCarlo.antithetic);
+@show FwdPrice=pricer(Model,spotData1,mc1,FwdData);
+@show EuPrice=pricer(Model,spotData1,mc1,EUData);
+@show AmPrice=pricer(Model,spotData1,mc1,AMData);
+@show BarrierPrice=pricer(Model,spotData1,mc1,BarrierData);
+@show AsianPrice1=pricer(Model,spotData1,mc1,AsianFloatingStrikeData);
+@show AsianPrice2=pricer(Model,spotData1,mc1,AsianFixedStrikeData);
 tollanti=0.6;
 @test abs(FwdPrice-99.1078451563562)<tollanti
 @test abs(EuPrice-8.43005524824866)<tollanti
@@ -73,20 +74,21 @@ tollPut=0.6;
 @test abs(AsianPrice1-4.230547012372306)<tollPut
 @test abs(AsianPrice2-4.236220218194027)<tollPut
 
-mc2=MonteCarloConfiguration(Nsim+1,Nstep);
-@test_throws(ErrorException,pricer(Model,spotData1,mc2,AsianFixedStrikeData,FinancialMonteCarlo.antithetic));
+mc2=MonteCarloConfiguration(Nsim+1,Nstep,FinancialMonteCarlo.AntitheticMC());
+@test_throws(ErrorException,pricer(Model,spotData1,mc2,AsianFixedStrikeData));
 
-@test variance(Model,spotData1,mc,EUDataPut)>variance(Model,spotData1,mc,EUDataPut,FinancialMonteCarlo.antithetic);
-@test prod(variance(Model,spotData1,mc,[EUDataPut,AMDataPut]).>=variance(Model,spotData1,mc,[EUDataPut,AMDataPut],FinancialMonteCarlo.antithetic));
+mc1=MonteCarloConfiguration(Nsim*5,Nstep*2,FinancialMonteCarlo.AntitheticMC());
+@test variance(Model,spotData1,mc1,EUDataPut)>variance(Model,spotData1,mc,EUDataPut);
+@test prod(variance(Model,spotData1,mc1,[EUDataPut,AMDataPut]).>=variance(Model,spotData1,mc,[EUDataPut,AMDataPut]));
 
 IC1=confinter(Model,spotData1,mc,EUDataPut);
-IC2=confinter(Model,spotData1,mc,EUDataPut,0.99,FinancialMonteCarlo.antithetic);
+IC2=confinter(Model,spotData1,mc1,EUDataPut,0.99);
 L1=IC1[2]-IC1[1]
 L2=IC2[2]-IC2[1]
 @test L1>L2
 
 IC1=confinter(Model,spotData1,mc,[EUDataPut,AMDataPut]);
-IC2=confinter(Model,spotData1,mc,[EUDataPut,AMDataPut],0.99,FinancialMonteCarlo.antithetic);
+IC2=confinter(Model,spotData1,mc1,[EUDataPut,AMDataPut],0.99);
 L1=IC1[2][2]-IC1[2][1]
 L2=IC2[2][2]-IC2[2][1]
 @test L1>L2
