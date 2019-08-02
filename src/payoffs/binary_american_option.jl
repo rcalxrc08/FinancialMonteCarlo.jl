@@ -1,18 +1,18 @@
 """
 Struct for Binary American Option
 
-		binAmOption=BinaryAmericanOption(T::num1,K::num2,isCall::Bool=true) where {num1,num2<:Number}
+		binAmOption=BinaryAmericanOption(T::num1,K::num2,isCall::Bool=true) where {num1 <: Number,num2 <: Number}
 	
 Where:\n
 		T	=	Time to maturity of the Option.
 		K	=	Strike Price of the Option.
 		isCall  = true for CALL, false for PUT.
 """
-struct BinaryAmericanOption{num1,num2<:Number}<:AmericanPayoff
+struct BinaryAmericanOption{num1 <: Number,num2 <: Number}<:AmericanPayoff
 	T::num1
 	K::num2
 	isCall::Bool
-	function BinaryAmericanOption(T::num1,K::num2,isCall::Bool=true) where {num1,num2<:Number}
+	function BinaryAmericanOption(T::num1,K::num2,isCall::Bool=true) where {num1 <: Number,num2 <: Number}
         if T <= 0.0
             error("Time to Maturity must be positive")
         elseif K <= 0.0
@@ -26,7 +26,7 @@ end
 export BinaryAmericanOption;
 
 
-function payoff(S::AbstractMatrix{num},amPayoff::BinaryAmericanOption,spotData::equitySpotData,T1::num2=amPayoff.T) where{num,num2<:Number}
+function payoff(S::AbstractMatrix{num},amPayoff::BinaryAmericanOption,spotData::equitySpotData,T1::num2=amPayoff.T) where{num <: Number,num2 <: Number}
 	iscall=amPayoff.isCall ? 1 : -1
 	K=amPayoff.K;
 	T=amPayoff.T;

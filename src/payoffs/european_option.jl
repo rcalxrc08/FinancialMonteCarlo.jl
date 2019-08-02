@@ -1,7 +1,7 @@
 """
 Struct for European Option
 
-		euOption=EuropeanOption(T::num1,K::num2,isCall::Bool=true) where {num1,num2<:Number}
+		euOption=EuropeanOption(T::num1,K::num2,isCall::Bool=true) where {num1 <: Number,num2 <: Number}
 	
 Where:\n
 		T	=	Time to maturity of the Option.

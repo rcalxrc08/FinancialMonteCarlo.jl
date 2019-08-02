@@ -1,7 +1,7 @@
 """
 Struct for Asian Fixed Strike Option
 
-		asOption=AsianFixedStrikeOption(T::num1,K::num2,isCall::Bool=true) where {num1,num2<:Number}
+		asOption=AsianFixedStrikeOption(T::num1,K::num2,isCall::Bool=true) where {num1 <: Number,num2 <: Number}
 	
 Where:\n
 		T	=	Time to maturity of the Option.
@@ -28,7 +28,7 @@ end
 export AsianFixedStrikeOption;
 
 
-function payoff(S::AbstractMatrix{num},asianFixedStrikePayoff::AsianFixedStrikeOption,spotData::equitySpotData,T1::num2=asianFixedStrikePayoff.T) where{num,num2<:Number}
+function payoff(S::AbstractMatrix{num},asianFixedStrikePayoff::AsianFixedStrikeOption,spotData::equitySpotData,T1::num2=asianFixedStrikePayoff.T) where{num <: Number,num2 <: Number}
 	iscall=asianFixedStrikePayoff.isCall ? 1 : -1
 	r=spotData.r;
 	T=asianFixedStrikePayoff.T;

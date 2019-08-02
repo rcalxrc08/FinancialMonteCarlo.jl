@@ -1,7 +1,7 @@
 """
 Struct for Double Barrier Option
 
-		dbOption=DoubleBarrierOption(T::num1,K::num2,D::num3,U::num4,isCall::Bool=true) where {num1,num2,num3,num4<:Number}
+		dbOption=DoubleBarrierOption(T::num1,K::num2,D::num3,U::num4,isCall::Bool=true) where {num1 <: Number,num2 <: Number,num3 <: Number,num4 <: Number}
 	
 Where:\n
 		T	=	Time to maturity of the Option.
@@ -10,13 +10,13 @@ Where:\n
 		U	=	Up Barrier of the Option.
 		isCall  = true for CALL, false for PUT.
 """
-struct DoubleBarrierOption{num1,num2,num3,num4<:Number}<:BarrierPayoff
+struct DoubleBarrierOption{num1 <: Number,num2 <: Number,num3 <: Number,num4 <: Number}<:BarrierPayoff
 	T::num1
 	K::num2
 	D::num3
 	U::num4
 	isCall::Bool
-	function DoubleBarrierOption(T::num1,K::num2,D::num3,U::num4,isCall::Bool=true) where {num1,num2,num3,num4<:Number}
+	function DoubleBarrierOption(T::num1,K::num2,D::num3,U::num4,isCall::Bool=true) where {num1 <: Number,num2 <: Number,num3 <: Number,num4 <: Number}
         if T <= 0.0
             error("Time to Maturity must be positive")
         elseif K <= 0.0
@@ -34,7 +34,7 @@ end
 export DoubleBarrierOption;
 
 
-function payoff(S::AbstractMatrix{num},doubleBarrierPayoff::DoubleBarrierOption,spotData::equitySpotData,T1::num2=doubleBarrierPayoff.T) where{num,num2<:Number}
+function payoff(S::AbstractMatrix{num},doubleBarrierPayoff::DoubleBarrierOption,spotData::equitySpotData,T1::num2=doubleBarrierPayoff.T) where{num <: Number,num2 <: Number}
 	r=spotData.r;
 	T=doubleBarrierPayoff.T;
 	iscall=doubleBarrierPayoff.isCall ? 1 : -1
