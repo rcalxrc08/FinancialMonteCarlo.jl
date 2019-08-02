@@ -7,10 +7,10 @@ Where:\n
 		η  =	Array of volatilities.
 		λ  = 	Array of weights.
 """
-mutable struct LogNormalMixture{num,num2<:Number}<:ItoProcess
+mutable struct LogNormalMixture{num <: Number,num2 <: Number}<:ItoProcess
 	η::Array{num,1}
 	λ::Array{num2,1}
-	function LogNormalMixture(η::Array{num,1},λ::Array{num2,1}) where {num,num2 <: Number}
+	function LogNormalMixture(η::Array{num,1},λ::Array{num2,1}) where {num <: Number,num2 <: Number}
         if minimum(η) <= 0.0
             error("Volatilities must be positive")
         elseif minimum(λ) <= 0.0

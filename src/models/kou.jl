@@ -10,13 +10,13 @@ Where:\n
 		λp =	positive jump size.
 		λm =	negative jump size.
 """
-mutable struct KouProcess{num,num1,num2,num3,num4<:Number}<:FiniteActivityProcess
+mutable struct KouProcess{num <: Number, num1 <: Number,num2 <: Number,num3 <: Number,num4 <: Number}<:FiniteActivityProcess
 	σ::num
 	λ::num1
 	p::num2
 	λp::num3
 	λm::num4
-	function KouProcess(σ::num,λ::num1,p::num2,λp::num3,λm::num4) where {num,num1,num2,num3,num4 <: Number}
+	function KouProcess(σ::num,λ::num1,p::num2,λp::num3,λm::num4) where {num <: Number, num1 <: Number,num2 <: Number,num3 <: Number,num4 <: Number}
         if σ<=0.0
 			error("volatility must be positive");
 		elseif λ<=0.0

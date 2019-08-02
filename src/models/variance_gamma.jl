@@ -8,11 +8,11 @@ Where:\n
 		θ = variance of volatility.
 		κ =	skewness of volatility.
 """
-mutable struct VarianceGammaProcess{num,num1,num2<:Number}<:InfiniteActivityProcess
+mutable struct VarianceGammaProcess{num <: Number, num1 <: Number,num2<:Number}<:InfiniteActivityProcess
 	σ::num
 	θ::num1
 	κ::num2
-	function VarianceGammaProcess(σ::num,θ::num1,κ::num2) where {num,num1,num2 <: Number}
+	function VarianceGammaProcess(σ::num,θ::num1,κ::num2) where {num <: Number, num1 <: Number,num2 <: Number}
         if σ<=0.0
 			error("volatility must be positive");
 		elseif κ<=0.0

@@ -8,11 +8,11 @@ Where:\n
 		θ = variance of volatility.
 		κ =	skewness of volatility.
 """
-mutable struct NormalInverseGaussianProcess{num,num1,num2<:Number}<:InfiniteActivityProcess
+mutable struct NormalInverseGaussianProcess{num <: Number, num1 <: Number,num2<:Number}<:InfiniteActivityProcess
 	σ::num
 	θ::num1
 	κ::num2
-	function NormalInverseGaussianProcess(σ::num,θ::num1,κ::num2) where {num,num1,num2 <: Number}
+	function NormalInverseGaussianProcess(σ::num,θ::num1,κ::num2) where {num <: Number, num1 <: Number,num2 <: Number}
         if σ<=0.0
 			error("volatility must be positive");
 		elseif κ<=0.0

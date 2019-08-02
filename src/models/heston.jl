@@ -11,14 +11,14 @@ Where:\n
 		ρ	=	??volatility of the process.
 		θ	=	??drift of the process.
 """
-mutable struct HestonProcess{num,num1,num2,num3,num4,num5<:Number}<:ItoProcess
+mutable struct HestonProcess{num <: Number, num1 <: Number , num2 <: Number , num3 <: Number , num4 <: Number, num5 <:Number}<:ItoProcess
 	σ::num
 	σ_zero::num1
 	λ::num2
 	κ::num3
 	ρ::num4
 	θ::num5
-	function HestonProcess(σ::num,σ_zero::num1,λ::num2,	κ::num3,ρ::num4,θ::num5) where {num,num1,num2,num3,num4,num5 <: Number}
+	function HestonProcess(σ::num,σ_zero::num1,λ::num2,	κ::num3,ρ::num4,θ::num5) where {num <: Number, num1 <: Number,num2 <: Number,num3 <: Number,num4 <: Number,num5 <: Number}
         if σ_zero<=0.0
 			error("initial volatility must be positive");
 		elseif σ<=0.0
