@@ -26,7 +26,7 @@ end
 export AmericanOption;
 
 
-function payoff(S::AbstractMatrix{numtype},amPayoff::AmericanOption,spotData::equitySpotData,T1::num2=amPayoff.T) where{numtype,num2<:Number}
+function payoff(S::AbstractMatrix{numtype},amPayoff::AmericanOption,spotData::equitySpotData,T1::num2=amPayoff.T) where{numtype <: Number,num2 <: Number}
 	iscall=amPayoff.isCall ? 1 : -1
 	K=amPayoff.K;
 	T=amPayoff.T;
