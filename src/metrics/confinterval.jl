@@ -1,7 +1,7 @@
 using Distributions
 
 
-function confinter_macro(num1)
+function confinter_macro(model_type)
 	@eval begin
 		"""
 		General Interface for Computation of confidence interval of price
@@ -19,7 +19,7 @@ function confinter_macro(num1)
 				Price     = Price of the derivative
 
 		"""	
-		function confinter(mcProcess::$num1,spotData::equitySpotData,mcConfig::MonteCarloConfiguration,abstractPayoff::AbstractPayoff,alpha::Real=0.99,parallelMode::BaseMode=SerialMode())
+		function confinter(mcProcess::$model_type,spotData::equitySpotData,mcConfig::MonteCarloConfiguration,abstractPayoff::AbstractPayoff,alpha::Real=0.99,parallelMode::BaseMode=SerialMode())
 
 			Random.seed!(0)
 			T=abstractPayoff.T;
@@ -41,8 +41,8 @@ end
 confinter_macro(BaseProcess)
 
 
-function confinter_macro_array(num1)
-	@eval function confinter(mcProcess::$num1,spotData::equitySpotData,mcConfig::MonteCarloConfiguration,abstractPayoffs::Array{AbstractPayoff},alpha::Real=0.99,parallelMode::BaseMode=SerialMode())
+function confinter_macro_array(model_type)
+	@eval function confinter(mcProcess::$model_type,spotData::equitySpotData,mcConfig::MonteCarloConfiguration,abstractPayoffs::Array{AbstractPayoff},alpha::Real=0.99,parallelMode::BaseMode=SerialMode())
 
 		Random.seed!(0)
 		maxT=maximum([abstractPayoff.T for abstractPayoff in abstractPayoffs])

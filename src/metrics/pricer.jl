@@ -1,5 +1,5 @@
 
-function pricer_macro(num1)
+function pricer_macro(model_type)
 	@eval begin
 		"""
 		General Interface for Pricing
@@ -16,7 +16,7 @@ function pricer_macro(num1)
 				Price     = Price of the derivative
 
 		"""	
-		function pricer(mcProcess::$num1,spotData::equitySpotData,mcConfig::MonteCarloConfiguration,abstractPayoff::AbstractPayoff,parallelMode::BaseMode=SerialMode())
+		function pricer(mcProcess::$model_type,spotData::equitySpotData,mcConfig::MonteCarloConfiguration,abstractPayoff::AbstractPayoff,parallelMode::BaseMode=SerialMode())
 
 			Random.seed!(0)
 			T=abstractPayoff.T;
@@ -30,8 +30,8 @@ end
 
 pricer_macro(BaseProcess)
 
-function pricer_macro_array(num1)
-	@eval function pricer(mcProcess::$num1,spotData::equitySpotData,mcConfig::MonteCarloConfiguration,abstractPayoffs::Array{AbstractPayoff},parallelMode::BaseMode=SerialMode())
+function pricer_macro_array(model_type)
+	@eval function pricer(mcProcess::$model_type,spotData::equitySpotData,mcConfig::MonteCarloConfiguration,abstractPayoffs::Array{AbstractPayoff},parallelMode::BaseMode=SerialMode())
 		Random.seed!(0)
 		maxT=maximum([abstractPayoff.T for abstractPayoff in abstractPayoffs])
 		S=simulate(mcProcess,spotData,mcConfig,maxT,parallelMode)

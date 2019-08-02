@@ -1,5 +1,5 @@
 
-function variance_macro(num1)
+function variance_macro(model_type)
 	@eval begin
 		"""
 		General Interface for Computation of variance interval of price
@@ -16,7 +16,7 @@ function variance_macro(num1)
 				variance_     = variance of the payoff of the derivative
 
 		"""
-		function variance(mcProcess::$num1,spotData::equitySpotData,mcConfig::MonteCarloConfiguration,abstractPayoff::AbstractPayoff,parallelMode::BaseMode=SerialMode())
+		function variance(mcProcess::$model_type,spotData::equitySpotData,mcConfig::MonteCarloConfiguration,abstractPayoff::AbstractPayoff,parallelMode::BaseMode=SerialMode())
 			Random.seed!(1)
 			T=abstractPayoff.T;
 			S=simulate(mcProcess,spotData,mcConfig,T,parallelMode)
@@ -30,8 +30,8 @@ end
 variance_macro(BaseProcess)
 
 
-function variance_macro_array(num1)
-	@eval function variance(mcProcess::$num1,spotData::equitySpotData,mcConfig::MonteCarloConfiguration,abstractPayoffs::Array{AbstractPayoff},parallelMode::BaseMode=SerialMode())
+function variance_macro_array(model_type)
+	@eval function variance(mcProcess::$model_type,spotData::equitySpotData,mcConfig::MonteCarloConfiguration,abstractPayoffs::Array{AbstractPayoff},parallelMode::BaseMode=SerialMode())
 		Random.seed!(1)
 		maxT=maximum([abstractPayoff.T for abstractPayoff in abstractPayoffs])
 		S=simulate(mcProcess,spotData,mcConfig,maxT,parallelMode)
