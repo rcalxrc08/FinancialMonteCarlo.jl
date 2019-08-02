@@ -21,7 +21,7 @@ A single method is implemented for each process, which provide the simulation ou
 Each process behave in its own different way but returning the same kind of object after simulation,
 the generic interface for simulating is the following:
 ```@docs
-simulate(mcProcess::FinancialMonteCarlo.BaseProcess,spotData::equitySpotData,mcBaseData::MonteCarloConfiguration,T::numb,monteCarloMode::MonteCarloMode=standard,parallelMode::FinancialMonteCarlo.BaseMode=SerialMode()) where {numb<:Number}
+function simulate(mcProcess::BaseProcess,spotData::equitySpotData,mcBaseData::MonteCarloConfiguration{type1,type2,type3},T::numb,parallelMode::BaseMode=SerialMode()) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AbstractMonteCarloMethod}
 ```
 
 The following option structs are provided:
