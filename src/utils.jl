@@ -22,7 +22,7 @@ abstract type AbstractMonteCarloMethod <: AbstractMethod end
 struct StandardMC <: AbstractMonteCarloMethod end
 struct AntitheticMC <: AbstractMonteCarloMethod end
 
-export equitySpotData,MonteCarloMode;
+export equitySpotData;
 
 struct MonteCarloConfiguration{num1 <: Integer , num2 <: Integer , abstractMonteCarloMethod <: AbstractMonteCarloMethod }
 	Nsim::num1

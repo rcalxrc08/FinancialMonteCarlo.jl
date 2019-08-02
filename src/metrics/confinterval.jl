@@ -6,7 +6,7 @@ function confinter_macro(num1)
 		"""
 		General Interface for Computation of confidence interval of price
 
-				IC=confinter(mcProcess,spotData,mcBaseData,payoff_,,alpha,monteCarloMode=standard,parallelMode=SerialMode())
+				IC=confinter(mcProcess,spotData,mcBaseData,payoff_,alpha,parallelMode=SerialMode())
 			
 		Where:\n
 				mcProcess          = Process to be simulated.
@@ -14,7 +14,6 @@ function confinter_macro(num1)
 				mcBaseData = Basic properties of MonteCarlo simulation
 				payoff_ = Payoff(s) to be priced
 				alpha [Optional, default to 99%] = confidence level
-				monteCarloMode [Optional, default to standard]= standard or antitethic
 				parallelMode  [Optional, default to SerialMode()] = SerialMode(), CudaMode(), AFMode()
 
 				Price     = Price of the derivative

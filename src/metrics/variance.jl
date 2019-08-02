@@ -4,14 +4,13 @@ function variance_macro(num1)
 		"""
 		General Interface for Computation of variance interval of price
 
-				variance_=variance(mcProcess,spotData,mcBaseData,payoff_,,monteCarloMode=standard,parallelMode=SerialMode())
+				variance_=variance(mcProcess,spotData,mcBaseData,payoff_,,parallelMode=SerialMode())
 			
 		Where:\n
 				mcProcess          = Process to be simulated.
 				spotData  = Datas of the Spot.
 				mcBaseData = Basic properties of MonteCarlo simulation
 				payoff_ = Payoff(s) to be priced
-				monteCarloMode [Optional, default to standard]= standard or antitethic
 				parallelMode  [Optional, default to SerialMode()] = SerialMode(), CudaMode(), AFMode()
 
 				variance_     = variance of the payoff of the derivative

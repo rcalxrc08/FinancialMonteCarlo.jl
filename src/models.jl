@@ -54,7 +54,7 @@ end
 """
 General Interface for Stochastic Process simulation
 
-		S=simulate(mcProcess,spotData,mcBaseData,T,monteCarloMode=standard,parallelMode=SerialMode())
+		S=simulate(mcProcess,spotData,mcBaseData,T,parallelMode=SerialMode())
 	
 Where:\n
 		mcProcess          = Process to be simulated.

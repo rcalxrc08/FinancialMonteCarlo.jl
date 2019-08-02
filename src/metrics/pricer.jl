@@ -4,14 +4,13 @@ function pricer_macro(num1)
 		"""
 		General Interface for Pricing
 
-				Price=pricer(mcProcess,spotData,mcBaseData,payoff_,monteCarloMode=standard,parallelMode=SerialMode())
+				Price=pricer(mcProcess,spotData,mcBaseData,payoff_,parallelMode=SerialMode())
 			
 		Where:\n
 				mcProcess          = Process to be simulated.
 				spotData  = Datas of the Spot.
 				mcBaseData = Basic properties of MonteCarlo simulation
 				payoff_ = Payoff(s) to be priced
-				monteCarloMode [Optional, default to standard]= standard or antitethic
 				parallelMode  [Optional, default to SerialMode()] = SerialMode(), CudaMode(), AFMode()
 
 				Price     = Price of the derivative
