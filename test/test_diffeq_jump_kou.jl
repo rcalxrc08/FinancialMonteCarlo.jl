@@ -52,4 +52,4 @@ AsianFixedStrikeData=AsianFixedStrikeOption(T,K)
 @test abs(FwdPrice-99.41332633109904)<toll
 @test abs(EuPrice-10.347332240535199)<toll
 @test abs(BarrierPrice-8.860123655599818)<toll
-@test abs(AsianFloatingStrikeData-5.81798437145069)<toll
+@test abs(AsianPrice1-5.81798437145069)<toll
