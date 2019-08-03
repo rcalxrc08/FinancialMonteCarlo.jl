@@ -45,6 +45,7 @@ The following example shows how to price a european call option with underlying 
 ```julia
 #Import the Package
 using FinancialMonteCarlo;
+
 #Define Spot Datas
 S0=100.0;
 K=100.0;
