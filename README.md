@@ -33,12 +33,12 @@ Additionally, there has been added support for GPU Parallel execution using [CuA
 ## How to Install
 To install the package simply type on the Julia REPL the following:
 ```julia
-Pkg.clone("https://gitlab.com/rcalxrc08/FinancialMonteCarlo.jl.git")
+] add https://gitlab.com/rcalxrc08/FinancialMonteCarlo.jl
 ```
 ## How to Test
 After the installation, to test the package type on the Julia REPL the following:
 ```julia
-Pkg.test("FinancialMonteCarlo")
+] test FinancialMonteCarlo
 ```
 ## Hello World: Pricing European Call Option in Black Scholes Model
 The following example shows how to price a european call option with underlying varying according to the Black Scholes Model, given the volatility:
