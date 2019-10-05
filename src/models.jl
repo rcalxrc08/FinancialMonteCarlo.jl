@@ -26,6 +26,7 @@ include("models/geometric_brownian_motion.jl")
 include("models/black_scholes.jl")
 include("models/heston.jl")
 include("models/log_normal_mixture.jl")
+include("models/shifted_log_normal_mixture.jl")
 
 ### Finite Activity Levy Processes
 include("models/kou.jl")

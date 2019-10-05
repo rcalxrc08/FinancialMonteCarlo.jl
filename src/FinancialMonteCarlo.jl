@@ -17,6 +17,7 @@ module FinancialMonteCarlo
 	    pricer,
 	    variance,
 		confinter,
+		delta,
 		simulate,
 		payoff
 
