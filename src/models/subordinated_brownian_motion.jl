@@ -1,5 +1,5 @@
 
-mutable struct SubordinatedBrownianMotion{num <: Number, num1 <: Number,}<:AbstractMonteCarloProcess
+mutable struct SubordinatedBrownianMotion{num <: Number, num1 <: Number}<:AbstractMonteCarloProcess
 	sigma::num
 	drift::num1
 	function SubordinatedBrownianMotion(sigma::num,drift::num1) where {num <: Number,num1 <: Number}

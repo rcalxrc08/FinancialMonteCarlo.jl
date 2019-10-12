@@ -7,7 +7,7 @@ Where:\n
 		σ	=	volatility of the process.
 		μ	=	drift of the process.
 """
-mutable struct BrownianMotion{num <: Number, num1 <: Number,}<:ItoProcess
+mutable struct BrownianMotion{num <: Number, num1 <: Number} <: ItoProcess
 	σ::num
 	μ::num1
 	function BrownianMotion(σ::num,μ::num1) where {num <: Number,num1 <: Number}
