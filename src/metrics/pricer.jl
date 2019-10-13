@@ -4,7 +4,7 @@ function pricer_macro(model_type)
 		"""
 		General Interface for Pricing
 
-				Price=pricer(mcProcess,spotData,mcBaseData,payoff_,parallelMode=SerialMode())
+				Price=pricer(mcProcess,spotData,mcBaseData,payoff_)
 			
 		Where:\n
 				mcProcess          = Process to be simulated.

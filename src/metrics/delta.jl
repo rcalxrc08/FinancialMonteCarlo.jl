@@ -4,7 +4,7 @@ function delta_macro(model_type)
 		"""
 		General Interface for Pricing
 
-				Delta=delta(mcProcess,spotData,mcBaseData,payoff_,parallelMode=SerialMode())
+				Delta=delta(mcProcess,spotData,mcBaseData,payoff_)
 			
 		Where:\n
 				mcProcess          = Process to be simulated.

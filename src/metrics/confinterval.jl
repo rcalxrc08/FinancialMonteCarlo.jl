@@ -6,7 +6,7 @@ function confinter_macro(model_type)
 		"""
 		General Interface for Computation of confidence interval of price
 
-				IC=confinter(mcProcess,spotData,mcBaseData,payoff_,alpha,parallelMode=SerialMode())
+				IC=confinter(mcProcess,spotData,mcBaseData,payoff_,alpha)
 			
 		Where:\n
 				mcProcess          = Process to be simulated.

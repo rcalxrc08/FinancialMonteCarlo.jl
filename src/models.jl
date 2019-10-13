@@ -108,13 +108,13 @@ end
 """
 General Interface for Stochastic Process simulation
 
-		S=simulate(mcProcess,spotData,mcBaseData,T,parallelMode=SerialMode())
+		S=simulate(mcProcess,spotData,mcBaseData,T)
 	
 Where:\n
 		mcProcess          = Process to be simulated.
 		spotData  = Datas of the Spot.
 		mcBaseData = Basic properties of MonteCarlo simulation
-		parallelMode  [Optional, default to SerialMode()] = SerialMode(), CudaMode(), AFMode()
+		T = Final time of the process
 
 		S      = Matrix with path of underlying.
 

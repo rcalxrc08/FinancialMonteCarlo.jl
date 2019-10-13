@@ -4,7 +4,7 @@ function variance_macro(model_type)
 		"""
 		General Interface for Computation of variance interval of price
 
-				variance_=variance(mcProcess,spotData,mcBaseData,payoff_,,parallelMode=SerialMode())
+				variance_=variance(mcProcess,spotData,mcBaseData,payoff_,)
 			
 		Where:\n
 				mcProcess          = Process to be simulated.
