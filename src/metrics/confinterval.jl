@@ -21,7 +21,7 @@ function confinter_macro(model_type)
 		"""	
 		function confinter(mcProcess::$model_type,spotData::equitySpotData,mcConfig::MonteCarloConfiguration,abstractPayoff::AbstractPayoff,alpha::Real=0.99)
 
-			Random.seed!(0)
+			set_seed(mcConfig)
 			T=abstractPayoff.T;
 			Nsim=mcConfig.Nsim;
 			S=simulate(mcProcess,spotData,mcConfig,T)
@@ -44,7 +44,7 @@ confinter_macro(BaseProcess)
 function confinter_macro_array(model_type)
 	@eval function confinter(mcProcess::$model_type,spotData::equitySpotData,mcConfig::MonteCarloConfiguration,abstractPayoffs::Array{AbstractPayoff},alpha::Real=0.99)
 
-		Random.seed!(0)
+		set_seed(mcConfig)
 		maxT=maximum([abstractPayoff.T for abstractPayoff in abstractPayoffs])
 		Nsim=mcConfig.Nsim;
 		S=simulate(mcProcess,spotData,mcConfig,maxT)

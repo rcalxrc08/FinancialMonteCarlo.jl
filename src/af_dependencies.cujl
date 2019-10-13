@@ -6,3 +6,12 @@ include("models/af/heston_af.cujl")
 #include("models/af/brownian_motion_cuda_2.cujl")
 #include("models/af/heston_cuda_2.cujl")
 #include("models/af/subordinated_brownian_motion_cuda.cujl")
+
+
+function set_seed(mcConfig::MonteCarloConfiguration{type1,type2,type3,type4})  where {type1 <: Number, type2<: Number, type3 <: AbstractMonteCarloMethod, type4 <: AFMode}
+
+	ArrayFire.set_seed(UInt64(mcConfig.seed));
+	
+	return;
+	
+end

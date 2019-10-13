@@ -50,7 +50,7 @@ function simulate(mcProcess::VarianceGammaProcess,spotData::equitySpotData,mcBas
 	gammaRandomVariable=Gamma(dt/κ1);
 	dt_s=κ1.*quantile.([gammaRandomVariable],rand(Nsim,Nstep));
 	
-	X=simulate(SubordinatedBrownianMotion(σ,drift),spotData,mcBaseData,T,dt_s,parallelMode);
+	X=simulate(SubordinatedBrownianMotion(σ,drift),spotData,mcBaseData,T,dt_s);
 
 	S=S0.*exp.(X);
 	

@@ -77,9 +77,9 @@ tollPut=0.6;
 mc2=MonteCarloConfiguration(Nsim+1,Nstep,FinancialMonteCarlo.AntitheticMC());
 @test_throws(ErrorException,pricer(Model,spotData1,mc2,AsianFixedStrikeData));
 
-mc1=MonteCarloConfiguration(Nsim*5,Nstep*2,FinancialMonteCarlo.AntitheticMC());
-@test variance(Model,spotData1,mc1,EUDataPut)>variance(Model,spotData1,mc,EUDataPut);
-@test prod(variance(Model,spotData1,mc1,[EUDataPut,AMDataPut]).>=variance(Model,spotData1,mc,[EUDataPut,AMDataPut]));
+mc1=MonteCarloConfiguration(Nsim,Nstep,FinancialMonteCarlo.AntitheticMC());
+@test variance(Model,spotData1,mc,EUDataPut)>variance(Model,spotData1,mc1,EUDataPut);
+@test prod(variance(Model,spotData1,mc,[EUDataPut,AMDataPut]).>=variance(Model,spotData1,mc1,[EUDataPut,AMDataPut]));
 
 IC1=confinter(Model,spotData1,mc,EUDataPut);
 IC2=confinter(Model,spotData1,mc1,EUDataPut,0.99);

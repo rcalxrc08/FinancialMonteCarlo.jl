@@ -50,7 +50,7 @@ function simulate(mcProcess::NormalInverseGaussianProcess,spotData::equitySpotDa
 	IGRandomVariable=InverseGaussian(dt,dt*dt/κ1);
 	dt_s=quantile.([IGRandomVariable],rand(Nsim,Nstep));
 	
-	X=simulate(SubordinatedBrownianMotion(σ,drift),spotData,mcBaseData,T,dt_s,parallelMode);
+	X=simulate(SubordinatedBrownianMotion(σ,drift),spotData,mcBaseData,T,dt_s);
 
 	S=S0.*exp.(X);
 	

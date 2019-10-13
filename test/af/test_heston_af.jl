@@ -16,7 +16,8 @@ kappa=0.01;
 theta=0.03;
 lambda=0.01;
 rho=0.0;
-mc=MonteCarloConfiguration(Nsim,Nstep);
+mc=MonteCarloConfiguration(Nsim,Nstep,FinancialMonteCarlo.AFMode());
+mc1=MonteCarloConfiguration(Nsim,Nstep,FinancialMonteCarlo.antithetic,FinancialMonteCarlo.AFMode());
 toll=0.8;
 
 spotData1=equitySpotData(S0,r,d);
@@ -29,24 +30,24 @@ AsianData1=AsianFloatingStrikeOption(T)
 AsianData2=AsianFixedStrikeOption(T,K)
 Model=HestonProcess(sigma,sigma_zero,lambda,kappa,rho,theta);
 
-@show FwdPrice=pricer(Model,spotData1,mc,FwdData,FinancialMonteCarlo.standard,FinancialMonteCarlo.AFMode());
-@show EuPrice=pricer(Model,spotData1,mc,EUData,FinancialMonteCarlo.standard,FinancialMonteCarlo.AFMode());
-@show AmPrice=pricer(Model,spotData1,mc,AMData,FinancialMonteCarlo.standard,FinancialMonteCarlo.AFMode());
-@show BarrierPrice=pricer(Model,spotData1,mc,BarrierData,FinancialMonteCarlo.standard,FinancialMonteCarlo.AFMode());
-@show AsianPrice1=pricer(Model,spotData1,mc,AsianData1,FinancialMonteCarlo.standard,FinancialMonteCarlo.AFMode());
-@show AsianPrice2=pricer(Model,spotData1,mc,AsianData2,FinancialMonteCarlo.standard,FinancialMonteCarlo.AFMode());
+@show FwdPrice=pricer(Model,spotData1,mc,FwdData);
+@show EuPrice=pricer(Model,spotData1,mc,EUData);
+@show AmPrice=pricer(Model,spotData1,mc,AMData);
+@show BarrierPrice=pricer(Model,spotData1,mc,BarrierData);
+@show AsianPrice1=pricer(Model,spotData1,mc,AsianData1);
+@show AsianPrice2=pricer(Model,spotData1,mc,AsianData2);
 
 @test abs(FwdPrice-98.72567723404445)<toll
 @test abs(EuPrice-17.62536090688433)<toll
 @test abs(BarrierPrice-11.38748933756886)<toll
 @test abs(AsianPrice1-9.762160560168732)<toll
 
-@show FwdPrice=pricer(Model,spotData1,mc,FwdData,FinancialMonteCarlo.antithetic,FinancialMonteCarlo.AFMode());
-@show EuPrice=pricer(Model,spotData1,mc,EUData,FinancialMonteCarlo.antithetic,FinancialMonteCarlo.AFMode());
-@show AmPrice=pricer(Model,spotData1,mc,AMData,FinancialMonteCarlo.antithetic,FinancialMonteCarlo.AFMode());
-@show BarrierPrice=pricer(Model,spotData1,mc,BarrierData,FinancialMonteCarlo.antithetic,FinancialMonteCarlo.AFMode());
-@show AsianPrice1=pricer(Model,spotData1,mc,AsianData1,FinancialMonteCarlo.antithetic,FinancialMonteCarlo.AFMode());
-@show AsianPrice2=pricer(Model,spotData1,mc,AsianData2,FinancialMonteCarlo.antithetic,FinancialMonteCarlo.AFMode());
+@show FwdPrice=pricer(Model,spotData1,mc,FwdData);
+@show EuPrice=pricer(Model,spotData1,mc,EUData);
+@show AmPrice=pricer(Model,spotData1,mc,AMData);
+@show BarrierPrice=pricer(Model,spotData1,mc,BarrierData);
+@show AsianPrice1=pricer(Model,spotData1,mc,AsianData1);
+@show AsianPrice2=pricer(Model,spotData1,mc,AsianData2);
 tollanti=0.8
 @test abs(FwdPrice-98.72567723404445)<tollanti
 @test abs(EuPrice-17.62536090688433)<tollanti

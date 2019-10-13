@@ -44,9 +44,9 @@ function simulate(mcProcess::ShiftedLogNormalMixture,spotData::equitySpotData,mc
 	mu_gbm=r-d;
 	dt=T/Nstep
 	A0=S0*(1-mcProcess.α)
-	S=(λ_gmb[1]*A0).*simulate(GeometricBrownianMotion(η_gbm[1],mu_gbm),equitySpotData(A0,r,d),mcBaseData,T,parallelMode);
+	S=(λ_gmb[1]*A0).*simulate(GeometricBrownianMotion(η_gbm[1],mu_gbm),equitySpotData(A0,r,d),mcBaseData,T);
 	for (η_gbm_,λ_gmb_) in zip(η_gbm[2:end],λ_gmb[2:end])
-		S+=(λ_gmb_*A0).*simulate(GeometricBrownianMotion(η_gbm_,mu_gbm),equitySpotData(A0,r,d),mcBaseData,T,parallelMode)
+		S+=(λ_gmb_*A0).*simulate(GeometricBrownianMotion(η_gbm_,mu_gbm),equitySpotData(A0,r,d),mcBaseData,T)
 	end
 	return S.+mcProcess.α.*S0.*exp.(mu_gbm.*(0.0:dt:T))';
 	
