@@ -29,7 +29,7 @@ end
 
 export MertonProcess;
 
-function simulate(mcProcess::MertonProcess,spotData::equitySpotData,mcBaseData::MonteCarloConfiguration{type1,type2,type3},T::numb,parallelMode::BaseMode=SerialMode()) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AbstractMonteCarloMethod}
+function simulate(mcProcess::MertonProcess,spotData::equitySpotData,mcBaseData::MonteCarloConfiguration{type1,type2,type3,type4},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AbstractMonteCarloMethod, type4 <: BaseMode}
 	r=spotData.r;
 	S0=spotData.S0;
 	d=spotData.d;

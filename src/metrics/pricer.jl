@@ -11,16 +11,16 @@ function pricer_macro(model_type)
 				spotData  = Datas of the Spot.
 				mcBaseData = Basic properties of MonteCarlo simulation
 				payoff_ = Payoff(s) to be priced
-				parallelMode  [Optional, default to SerialMode()] = SerialMode(), CudaMode(), AFMode()
+				
 
 				Price     = Price of the derivative
 
 		"""	
-		function pricer(mcProcess::$model_type,spotData::equitySpotData,mcConfig::MonteCarloConfiguration,abstractPayoff::AbstractPayoff,parallelMode::BaseMode=SerialMode())
+		function pricer(mcProcess::$model_type,spotData::equitySpotData,mcConfig::MonteCarloConfiguration,abstractPayoff::AbstractPayoff)
 
 			Random.seed!(0)
 			T=abstractPayoff.T;
-			S=simulate(mcProcess,spotData,mcConfig,T,parallelMode)
+			S=simulate(mcProcess,spotData,mcConfig,T)
 			Payoff=payoff(S,abstractPayoff,spotData);
 			Price=mean(Payoff);
 			return Price;
@@ -31,10 +31,10 @@ end
 pricer_macro(BaseProcess)
 
 function pricer_macro_array(model_type)
-	@eval function pricer(mcProcess::$model_type,spotData::equitySpotData,mcConfig::MonteCarloConfiguration,abstractPayoffs::Array{AbstractPayoff},parallelMode::BaseMode=SerialMode())
+	@eval function pricer(mcProcess::$model_type,spotData::equitySpotData,mcConfig::MonteCarloConfiguration,abstractPayoffs::Array{AbstractPayoff})
 		Random.seed!(0)
 		maxT=maximum([abstractPayoff.T for abstractPayoff in abstractPayoffs])
-		S=simulate(mcProcess,spotData,mcConfig,maxT,parallelMode)
+		S=simulate(mcProcess,spotData,mcConfig,maxT)
 		Prices=[mean(payoff(S,abstractPayoff,spotData,maxT)) for abstractPayoff in abstractPayoffs  ]
 		
 		return Prices;

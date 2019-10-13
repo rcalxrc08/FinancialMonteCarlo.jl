@@ -10,7 +10,7 @@ D=90.0;
 Nsim=10000;
 Nstep=30;
 sigma=0.2;
-mc=MonteCarloConfiguration(Nsim,Nstep);
+mc=MonteCarloConfiguration(Nsim,Nstep,FinancialMonteCarlo.CudaMode());
 toll=0.8
 
 spotData1=equitySpotData(S0,r,d);
@@ -25,12 +25,12 @@ Model=BlackScholesProcess(sigma);
 
 display(Model)
 
-@show FwdPrice=pricer(Model,spotData1,mc,FwdData,FinancialMonteCarlo.standard,FinancialMonteCarlo.CudaMode());
-@show EuPrice=pricer(Model,spotData1,mc,EUData,FinancialMonteCarlo.standard,FinancialMonteCarlo.CudaMode());
-@show AmPrice=pricer(Model,spotData1,mc,AMData,FinancialMonteCarlo.standard,FinancialMonteCarlo.CudaMode());
-@show BarrierPrice=pricer(Model,spotData1,mc,BarrierData,FinancialMonteCarlo.standard,FinancialMonteCarlo.CudaMode());
-@show AsianPrice1=pricer(Model,spotData1,mc,AsianFloatingStrikeData,FinancialMonteCarlo.standard,FinancialMonteCarlo.CudaMode());
-@show AsianPrice2=pricer(Model,spotData1,mc,AsianFixedStrikeData,FinancialMonteCarlo.standard,FinancialMonteCarlo.CudaMode());
+@show FwdPrice=pricer(Model,spotData1,mc,FwdData);
+@show EuPrice=pricer(Model,spotData1,mc,EUData);
+@show AmPrice=pricer(Model,spotData1,mc,AMData);
+@show BarrierPrice=pricer(Model,spotData1,mc,BarrierData);
+@show AsianPrice1=pricer(Model,spotData1,mc,AsianFloatingStrikeData);
+@show AsianPrice2=pricer(Model,spotData1,mc,AsianFixedStrikeData);
 
 @test abs(FwdPrice-99.1078451563562)<toll
 @test abs(EuPrice-8.43005524824866)<toll
@@ -41,12 +41,12 @@ display(Model)
 
 
 
-@show FwdPrice=pricer(Model,spotData1,mc,FwdData,FinancialMonteCarlo.antithetic,FinancialMonteCarlo.CudaMode());
-@show EuPrice=pricer(Model,spotData1,mc,EUData,FinancialMonteCarlo.antithetic,FinancialMonteCarlo.CudaMode());
-@show AmPrice=pricer(Model,spotData1,mc,AMData,FinancialMonteCarlo.antithetic);
-@show BarrierPrice=pricer(Model,spotData1,mc,BarrierData,FinancialMonteCarlo.antithetic);
-@show AsianPrice1=pricer(Model,spotData1,mc,AsianFloatingStrikeData,FinancialMonteCarlo.antithetic);
-@show AsianPrice2=pricer(Model,spotData1,mc,AsianFixedStrikeData,FinancialMonteCarlo.antithetic);
+@show FwdPrice=pricer(Model,spotData1,mc1,FwdData);
+@show EuPrice=pricer(Model,spotData1,mc1,EUData);
+@show AmPrice=pricer(Model,spotData1,mc1,AMData);
+@show BarrierPrice=pricer(Model,spotData1,mc1,BarrierData);
+@show AsianPrice1=pricer(Model,spotData1,mc1,AsianFloatingStrikeData);
+@show AsianPrice2=pricer(Model,spotData1,mc1,AsianFixedStrikeData);
 tollanti=0.6;
 @test abs(FwdPrice-99.1078451563562)<tollanti
 @test abs(EuPrice-8.43005524824866)<tollanti
@@ -63,11 +63,11 @@ BarrierDataPut=BarrierOptionDownOut(T,K,D,false)
 AsianFloatingStrikeDataPut=AsianFloatingStrikeOption(T,false)
 AsianFixedStrikeDataPut=AsianFixedStrikeOption(T,K,false)
 
-@show EuPrice=pricer(Model,spotData1,mc,EUDataPut,FinancialMonteCarlo.standard,FinancialMonteCarlo.CudaMode());
-@show AmPrice=pricer(Model,spotData1,mc,AMDataPut,FinancialMonteCarlo.standard,FinancialMonteCarlo.CudaMode());
-@show BarrierPrice=pricer(Model,spotData1,mc,BarrierDataPut,FinancialMonteCarlo.standard,FinancialMonteCarlo.CudaMode());
-@show AsianPrice1=pricer(Model,spotData1,mc,AsianFloatingStrikeDataPut,FinancialMonteCarlo.standard,FinancialMonteCarlo.CudaMode());
-@show AsianPrice2=pricer(Model,spotData1,mc,AsianFixedStrikeDataPut,FinancialMonteCarlo.standard,FinancialMonteCarlo.CudaMode());
+@show EuPrice=pricer(Model,spotData1,mc,EUDataPut);
+@show AmPrice=pricer(Model,spotData1,mc,AMDataPut);
+@show BarrierPrice=pricer(Model,spotData1,mc,BarrierDataPut);
+@show AsianPrice1=pricer(Model,spotData1,mc,AsianFloatingStrikeDataPut);
+@show AsianPrice2=pricer(Model,spotData1,mc,AsianFixedStrikeDataPut);
 tollPut=0.6;
 @test abs(FwdPrice-99.1078451563562)<tollPut
 @test abs(EuPrice-7.342077422567968)<tollPut
@@ -78,25 +78,25 @@ tollPut=0.6;
 
 #Check Nsim even for antithetic
 mc2=MonteCarloConfiguration(Nsim+1,Nstep);
-@test_throws(ErrorException,pricer(Model,spotData1,mc2,AsianFixedStrikeData,FinancialMonteCarlo.antithetic,FinancialMonteCarlo.CudaMode()));
+@test_throws(ErrorException,pricer(Model,spotData1,mc2,AsianFixedStrikeData));
 
 
 
-@test variance(Model,spotData1,mc,EUDataPut,FinancialMonteCarlo.standard,FinancialMonteCarlo.CudaMode())>variance(Model,spotData1,mc,EUDataPut,FinancialMonteCarlo.antithetic,FinancialMonteCarlo.CudaMode());
-@test prod(variance(Model,spotData1,mc,[EUDataPut,AMDataPut],FinancialMonteCarlo.standard,FinancialMonteCarlo.CudaMode()).>=variance(Model,spotData1,mc,[EUDataPut,AMDataPut],FinancialMonteCarlo.antithetic,FinancialMonteCarlo.CudaMode()));
+@test variance(Model,spotData1,mc,EUDataPut)>variance(Model,spotData1,mc1,EUDataPut);
+@test prod(variance(Model,spotData1,mc,[EUDataPut,AMDataPut]).>=variance(Model,spotData1,mc1,[EUDataPut,AMDataPut]));
 
 
 
 ##############################################################
 
-IC1=confinter(Model,spotData1,mc,EUDataPut,0.99,FinancialMonteCarlo.standard,FinancialMonteCarlo.CudaMode());
-IC2=confinter(Model,spotData1,mc,EUDataPut,0.99,FinancialMonteCarlo.antithetic,FinancialMonteCarlo.CudaMode());
+IC1=confinter(Model,spotData1,mc,EUDataPut,0.99);
+IC2=confinter(Model,spotData1,mc1,EUDataPut,0.99);
 L1=IC1[2]-IC1[1]
 L2=IC2[2]-IC2[1]
 @test L1>L2
 
-IC1=confinter(Model,spotData1,mc,[EUDataPut,AMDataPut],0.99,FinancialMonteCarlo.standard,FinancialMonteCarlo.CudaMode());
-IC2=confinter(Model,spotData1,mc,[EUDataPut,AMDataPut],0.99,FinancialMonteCarlo.antithetic,FinancialMonteCarlo.CudaMode());
+IC1=confinter(Model,spotData1,mc,[EUDataPut,AMDataPut],0.99);
+IC2=confinter(Model,spotData1,mc1,[EUDataPut,AMDataPut],0.99);
 L1=IC1[2][2]-IC1[2][1]
 L2=IC2[2][2]-IC2[2][1]
 @test L1>L2

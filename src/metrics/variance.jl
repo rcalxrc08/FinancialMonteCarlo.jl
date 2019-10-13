@@ -11,15 +11,15 @@ function variance_macro(model_type)
 				spotData  = Datas of the Spot.
 				mcBaseData = Basic properties of MonteCarlo simulation
 				payoff_ = Payoff(s) to be priced
-				parallelMode  [Optional, default to SerialMode()] = SerialMode(), CudaMode(), AFMode()
+				
 
 				variance_     = variance of the payoff of the derivative
 
 		"""
-		function variance(mcProcess::$model_type,spotData::equitySpotData,mcConfig::MonteCarloConfiguration,abstractPayoff::AbstractPayoff,parallelMode::BaseMode=SerialMode())
+		function variance(mcProcess::$model_type,spotData::equitySpotData,mcConfig::MonteCarloConfiguration,abstractPayoff::AbstractPayoff)
 			Random.seed!(1)
 			T=abstractPayoff.T;
-			S=simulate(mcProcess,spotData,mcConfig,T,parallelMode)
+			S=simulate(mcProcess,spotData,mcConfig,T)
 			Payoff=payoff(S,abstractPayoff,spotData);
 			variance_=var(Payoff);
 			return variance_;
@@ -31,10 +31,10 @@ variance_macro(BaseProcess)
 
 
 function variance_macro_array(model_type)
-	@eval function variance(mcProcess::$model_type,spotData::equitySpotData,mcConfig::MonteCarloConfiguration,abstractPayoffs::Array{AbstractPayoff},parallelMode::BaseMode=SerialMode())
+	@eval function variance(mcProcess::$model_type,spotData::equitySpotData,mcConfig::MonteCarloConfiguration,abstractPayoffs::Array{AbstractPayoff})
 		Random.seed!(1)
 		maxT=maximum([abstractPayoff.T for abstractPayoff in abstractPayoffs])
-		S=simulate(mcProcess,spotData,mcConfig,maxT,parallelMode)
+		S=simulate(mcProcess,spotData,mcConfig,maxT)
 		variance_=[var(payoff(S,abstractPayoff,spotData,maxT)) for abstractPayoff in abstractPayoffs  ]
 		
 		return variance_;

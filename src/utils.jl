@@ -24,17 +24,36 @@ struct AntitheticMC <: AbstractMonteCarloMethod end
 
 export equitySpotData;
 
-struct MonteCarloConfiguration{num1 <: Integer , num2 <: Integer , abstractMonteCarloMethod <: AbstractMonteCarloMethod }
+struct MonteCarloConfiguration{num1 <: Integer , num2 <: Integer , abstractMonteCarloMethod <: AbstractMonteCarloMethod , baseMode <: BaseMode}
 	Nsim::num1
 	Nstep::num2
 	monteCarloMethod::abstractMonteCarloMethod
+	parallelMode::baseMode
 	function MonteCarloConfiguration(Nsim::num1,Nstep::num2,monteCarloMethod::abstractMonteCarloMethod=StandardMC()) where {num1 <: Integer, num2 <: Integer, abstractMonteCarloMethod <: AbstractMonteCarloMethod}
         if Nsim <= zero(num1)
             error("Number of Simulations must be positive")
         elseif Nstep <= zero(num2)
             error("Number of Steps must be positive")
 		else
-            return new{num1,num2,abstractMonteCarloMethod}(Nsim,Nstep,monteCarloMethod)
+            return new{num1,num2,abstractMonteCarloMethod,SerialMode}(Nsim,Nstep,monteCarloMethod,SerialMode())
+        end
+    end
+	function MonteCarloConfiguration(Nsim::num1,Nstep::num2,parallelMethod::baseMode) where {num1 <: Integer, num2 <: Integer, baseMode <: BaseMode}
+        if Nsim <= zero(num1)
+            error("Number of Simulations must be positive")
+        elseif Nstep <= zero(num2)
+            error("Number of Steps must be positive")
+		else
+            return new{num1,num2,StandardMC,baseMode}(Nsim,Nstep,StandardMC(),parallelMethod)
+        end
+    end
+	function MonteCarloConfiguration(Nsim::num1,Nstep::num2,monteCarloMethod::abstractMonteCarloMethod,parallelMethod::baseMode) where {num1 <: Integer, num2 <: Integer, abstractMonteCarloMethod <: AbstractMonteCarloMethod, baseMode <: BaseMode}
+        if Nsim <= zero(num1)
+            error("Number of Simulations must be positive")
+        elseif Nstep <= zero(num2)
+            error("Number of Steps must be positive")
+		else
+            return new{num1,num2,abstractMonteCarloMethod,baseMode}(Nsim,Nstep,monteCarloMethod,parallelMethod)
         end
     end
 end

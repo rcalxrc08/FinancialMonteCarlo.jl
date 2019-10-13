@@ -14,17 +14,17 @@ function confinter_macro(model_type)
 				mcBaseData = Basic properties of MonteCarlo simulation
 				payoff_ = Payoff(s) to be priced
 				alpha [Optional, default to 99%] = confidence level
-				parallelMode  [Optional, default to SerialMode()] = SerialMode(), CudaMode(), AFMode()
+				
 
 				Price     = Price of the derivative
 
 		"""	
-		function confinter(mcProcess::$model_type,spotData::equitySpotData,mcConfig::MonteCarloConfiguration,abstractPayoff::AbstractPayoff,alpha::Real=0.99,parallelMode::BaseMode=SerialMode())
+		function confinter(mcProcess::$model_type,spotData::equitySpotData,mcConfig::MonteCarloConfiguration,abstractPayoff::AbstractPayoff,alpha::Real=0.99)
 
 			Random.seed!(0)
 			T=abstractPayoff.T;
 			Nsim=mcConfig.Nsim;
-			S=simulate(mcProcess,spotData,mcConfig,T,parallelMode)
+			S=simulate(mcProcess,spotData,mcConfig,T)
 			Payoff=payoff(S,abstractPayoff,spotData);
 			mean1=mean(Payoff);
 			var1=var(Payoff);
@@ -42,12 +42,12 @@ confinter_macro(BaseProcess)
 
 
 function confinter_macro_array(model_type)
-	@eval function confinter(mcProcess::$model_type,spotData::equitySpotData,mcConfig::MonteCarloConfiguration,abstractPayoffs::Array{AbstractPayoff},alpha::Real=0.99,parallelMode::BaseMode=SerialMode())
+	@eval function confinter(mcProcess::$model_type,spotData::equitySpotData,mcConfig::MonteCarloConfiguration,abstractPayoffs::Array{AbstractPayoff},alpha::Real=0.99)
 
 		Random.seed!(0)
 		maxT=maximum([abstractPayoff.T for abstractPayoff in abstractPayoffs])
 		Nsim=mcConfig.Nsim;
-		S=simulate(mcProcess,spotData,mcConfig,maxT,parallelMode)
+		S=simulate(mcProcess,spotData,mcConfig,maxT)
 		Means=[mean(payoff(S,abstractPayoff,spotData,maxT)) for abstractPayoff in abstractPayoffs  ]
 		Vars=[var(payoff(S,abstractPayoff,spotData,maxT)) for abstractPayoff in abstractPayoffs  ]
 		alpha_=1-alpha;

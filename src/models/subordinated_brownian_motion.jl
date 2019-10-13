@@ -13,7 +13,7 @@ end
 
 export SubordinatedBrownianMotion;
 
-function simulate(mcProcess::SubordinatedBrownianMotion,spotData::equitySpotData,mcBaseData::MonteCarloConfiguration{type1,type2,type3},T::numb,dt_s::Array{num1,2},parallelMode::SerialMode=SerialMode()) where {numb <: Number, num1<:Number , type1 <: Number, type2<: Number, type3 <: StandardMC}
+function simulate(mcProcess::SubordinatedBrownianMotion,spotData::equitySpotData,mcBaseData::MonteCarloConfiguration{type1,type2,type3,SerialMode},T::numb,dt_s::Array{num1,2}) where {numb <: Number, num1<:Number , type1 <: Number, type2<: Number, type3 <: StandardMC}
 	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;
 	if(size(dt_s)!=(Nsim,Nstep))
@@ -39,7 +39,7 @@ function simulate(mcProcess::SubordinatedBrownianMotion,spotData::equitySpotData
 end
 
 
-function simulate(mcProcess::SubordinatedBrownianMotion,spotData::equitySpotData,mcBaseData::MonteCarloConfiguration{type1,type2,type3},T::numb,dt_s::Array{num1,2},parallelMode::SerialMode=SerialMode()) where {numb <: Number, num1<:Number , type1 <: Number, type2<: Number, type3 <: AntitheticMC}
+function simulate(mcProcess::SubordinatedBrownianMotion,spotData::equitySpotData,mcBaseData::MonteCarloConfiguration{type1,type2,type3,SerialMode},T::numb,dt_s::Array{num1,2}) where {numb <: Number, num1<:Number , type1 <: Number, type2<: Number, type3 <: AntitheticMC}
 	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;
 	if(size(dt_s)!=(Nsim,Nstep))
