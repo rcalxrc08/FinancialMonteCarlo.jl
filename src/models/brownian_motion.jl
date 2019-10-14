@@ -35,8 +35,8 @@ function simulate(mcProcess::BrownianMotion,spotData::equitySpotData,mcBaseData:
 	isDualZero=mean_bm*stddev_bm*0.0;
 	X=Matrix{typeof(isDualZero)}(undef,Nsim,Nstep+1);
 	X[:,1].=isDualZero;
-	for i=1:Nsim
-		for j=1:Nstep
+	@inbounds for i=1:Nsim
+		@inbounds for j=1:Nstep
 			X[i,j+1]=X[i,j]+mean_bm+stddev_bm*randn();
 		end
 	end
@@ -60,14 +60,14 @@ function simulate(mcProcess::BrownianMotion,spotData::equitySpotData,mcBaseData:
 	isDualZero=mean_bm*stddev_bm*0.0;
 	X=Matrix{typeof(isDualZero)}(undef,Nsim,Nstep+1);
 	X[:,1].=isDualZero;
-	Nsim_2=Int(floor(Nsim/2))
-	if Nsim_2*2!=Nsim
-		error("Antithetic support only odd number of simulations")
-	end
-	for j in 1:Nstep
-		Z=randn(Nsim_2);
-		Z=[Z;-Z];
-		X[:,j+1]=X[:,j].+mean_bm.+stddev_bm.*Z;
+	Nsim_2=div(Nsim,2)
+
+	@inbounds for j in 1:Nstep
+		@inbounds for i in 1:Nsim_2
+			Z=stddev_bm.*randn();
+			X[2*i-1,j+1]=X[2*i-1,j].+mean_bm.+Z;
+			X[2*i,j+1]  =X[2*i,j]  .+mean_bm.-Z;
+		end
 	end
 
 	return X;

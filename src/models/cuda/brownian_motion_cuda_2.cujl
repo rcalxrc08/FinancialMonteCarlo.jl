@@ -40,9 +40,7 @@ function simulate(mcProcess::BrownianMotion,spotData::equitySpotData,mcBaseData:
 	isDualZero=mean_bm*stddev_bm*zero(Float32);
 	X_cu=zeros(CuMatrix{typeof(isDualZero)},Nsim,Nstep+1);
 	Nsim_2=Int(floor(Nsim/2))
-	if Nsim_2*2!=Nsim
-		error("Antithetic support only odd number of simulations")
-	end
+
 	for i=1:Nstep
 		Z=CuArrays.CURAND.randn(Float32,Nsim_2);
 		Z=[Z;-Z];

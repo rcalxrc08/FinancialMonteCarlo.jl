@@ -74,8 +74,7 @@ tollPut=0.6;
 @test abs(AsianPrice1-4.230547012372306)<tollPut
 @test abs(AsianPrice2-4.236220218194027)<tollPut
 
-mc2=MonteCarloConfiguration(Nsim+1,Nstep,FinancialMonteCarlo.AntitheticMC());
-@test_throws(ErrorException,pricer(Model,spotData1,mc2,AsianFixedStrikeData));
+@test_throws(ErrorException,MonteCarloConfiguration(Nsim+1,Nstep,FinancialMonteCarlo.AntitheticMC()));
 
 mc1=MonteCarloConfiguration(Nsim,Nstep,FinancialMonteCarlo.AntitheticMC());
 @test variance(Model,spotData1,mc,EUDataPut)>variance(Model,spotData1,mc1,EUDataPut);

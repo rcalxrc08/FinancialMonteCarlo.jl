@@ -44,9 +44,7 @@ function simulate(mcProcess::BrownianMotion,spotData::equitySpotData,mcBaseData:
 	isDualZero=mean_bm_f*stddev_bm_f*zero(Float32);
 	X= zeros(AFArray{typeof(isDualZero)}, Nsim, Nstep+1)
 	Nsim_2=Int(floor(Nsim/2))
-	if Nsim_2*2!=Nsim
-		error("Antithetic support only odd number of simulations")
-	end
+
 	
 	for i=1:Nstep
 		Z=randn(AFArray{Float32},Nsim_2);

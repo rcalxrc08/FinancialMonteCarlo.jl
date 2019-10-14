@@ -44,6 +44,8 @@ struct MonteCarloConfiguration{num1 <: Integer , num2 <: Integer , abstractMonte
             error("Number of Simulations must be positive")
         elseif Nstep <= zero(num2)
             error("Number of Steps must be positive")
+		elseif (abstractMonteCarloMethod <: AntitheticMC) & ( div(Nsim,2)*2!=Nsim )
+			error("Antithetic support only even number of simulations")
 		else
             return new{num1,num2,abstractMonteCarloMethod,SerialMode}(Nsim,Nstep,monteCarloMethod,SerialMode(),seed)
         end
@@ -62,6 +64,8 @@ struct MonteCarloConfiguration{num1 <: Integer , num2 <: Integer , abstractMonte
             error("Number of Simulations must be positive")
         elseif Nstep <= zero(num2)
             error("Number of Steps must be positive")
+		elseif (abstractMonteCarloMethod <: AntitheticMC) & ( div(Nsim,2)*2!=Nsim )
+			error("Antithetic support only even number of simulations")
 		else
             return new{num1,num2,abstractMonteCarloMethod,baseMode}(Nsim,Nstep,monteCarloMethod,parallelMethod,seed)
         end

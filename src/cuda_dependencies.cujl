@@ -16,3 +16,11 @@ function set_seed(mcConfig::MonteCarloConfiguration{type1,type2,type3,type4})  w
 	return;
 	
 end
+
+#function set_seed(mcConfig::MonteCarloConfiguration{type1,type2,type3,type4})  where {type1 <: Number, type2<: Number, type3 <: AbstractMonteCarloMethod, type4 <: CudaMode_2}
+#
+#	#CuArrays.CURAND.seed!(mcConfig.seed)
+#	
+#	return;
+#	
+#end

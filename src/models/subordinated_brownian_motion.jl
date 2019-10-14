@@ -54,7 +54,7 @@ function simulate(mcProcess::SubordinatedBrownianMotion,spotData::equitySpotData
 	X=Matrix{typeof(isDualZero)}(undef,Nsim,Nstep+1);
 	X[:,1].=isDualZero;
 	for i=1:Nstep
-		NsimAnti=Int(floor(Nsim/2))
+		NsimAnti=div(Nsim,2)
 		Z=randn(NsimAnti);
 		Z=[Z;-Z];
 		# SUBORDINATED BROWNIAN MOTION (dt_s=time change)

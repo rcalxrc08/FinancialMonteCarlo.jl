@@ -100,10 +100,8 @@ function simulate(mcProcess::HestonProcess,spotData::equitySpotData,mcBaseData::
 	X=Matrix{typeof(isDualZero)}(undef,Nsim,Nstep+1);
 	X[:,1].=isDualZero;
 	v_m=[σ_zero+isDualZero for _ in 1:Nsim];
-	Nsim_2=Int(floor(Nsim/2))
-	if Nsim_2*2!=Nsim
-		error("Antithetic support only odd number of simulations")
-	end
+	Nsim_2=div(Nsim,2)
+
 	for j in 1:Nstep
 		e1=randn(Nsim_2);
 		e2=randn(Nsim_2);

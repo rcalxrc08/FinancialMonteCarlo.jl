@@ -78,9 +78,7 @@ function simulate(mcProcess::HestonProcess,spotData::equitySpotData,mcBaseData::
 	X= zeros(AFArray{typeof(isDualZero)}, Nsim, Nstep+1)
 	v_m= zeros(AFArray{typeof(isDualZero)}, Nsim).+σ_zero
 	Nsim_2=Int(floor(Nsim/2))
-	if Nsim_2*2!=Nsim
-		error("Antithetic support only odd number of simulations")
-	end
+
 	for j in 1:Nstep
 		e1=randn(AFArray{Float32},Nsim_2);
 		e2=randn(AFArray{Float32},Nsim_2);

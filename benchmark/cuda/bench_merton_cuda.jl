@@ -16,6 +16,8 @@ lam=5.0;
 mu1=0.03; 
 sigma1=0.02;
 mc=MonteCarloConfiguration(Nsim,Nstep);
+mc_1=MonteCarloConfiguration(Nsim,Nstep,FinancialMonteCarlo.CudaMode());
+mc_2=MonteCarloConfiguration(Nsim,Nstep,FinancialMonteCarlo.CudaMode_2());
 toll=0.8;
 
 spotData1=equitySpotData(S0,r,d);
@@ -29,11 +31,23 @@ AsianFixedStrikeData=AsianFixedStrikeOption(T,K)
 Model=MertonProcess(sigma,lam,mu1,sigma1);
 
 
+@show "CUDA_1 fwd"
+@btime FwdPrice=pricer(Model,spotData1,mc_1,FwdData);
+@show "STD fwd"
 @btime FwdPrice=pricer(Model,spotData1,mc,FwdData);
-@btime FwdPrice=pricer(Model,spotData1,mc,FwdData,FinancialMonteCarlo.CudaMode());
-@btime FwdPrice=pricer(Model,spotData1,mc,FwdData,FinancialMonteCarlo.CudaMode_2());
+@show "CUDA_1 fwd"
+@btime FwdPrice=pricer(Model,spotData1,mc_1,FwdData);
+@show "CUDA_2 fwd"
+@btime FwdPrice=pricer(Model,spotData1,mc_2,FwdData);
+@show "std eu"
 @btime EuPrice=pricer(Model,spotData1,mc,EUData);
-@btime EuPrice=pricer(Model,spotData1,mc,EUData,FinancialMonteCarlo.CudaMode());
-@btime EuPrice=pricer(Model,spotData1,mc,EUData,FinancialMonteCarlo.CudaMode_2());
+@show "CUDA_1 eu"
+@btime EuPrice=pricer(Model,spotData1,mc_1,EUData);
+@show "CUDA_2 eu"
+@btime EuPrice=pricer(Model,spotData1,mc_2,EUData);
+@show "std am"
 @btime AmPrice=pricer(Model,spotData1,mc,AMData);
-@btime AmPrice=pricer(Model,spotData1,mc,AMData,FinancialMonteCarlo.CudaMode());
+@show "CUDA_1 am"
+@btime AmPrice=pricer(Model,spotData1,mc_1,AMData);
+@show "CUDA_2 am"
+@btime AmPrice=pricer(Model,spotData1,mc_2,AMData);

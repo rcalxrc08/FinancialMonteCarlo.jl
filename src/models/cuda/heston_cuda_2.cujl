@@ -77,9 +77,7 @@ function simulate(mcProcess::HestonProcess,spotData::equitySpotData,mcBaseData::
 	X[:,1].=Float32(isDualZero);
 	v_m=zeros(CuArray{typeof(Float32(isDualZero))},Nsim).+σ_zero;
 	Nsim_2=Int(floor(Nsim/2))
-	if Nsim_2*2!=Nsim
-		error("Antithetic support only odd number of simulations")
-	end
+
 	for j in 1:Nstep
 		e1=CuArrays.CURAND.curandn(Float32,Nsim_2);
 		e2=CuArrays.CURAND.curandn(Float32,Nsim_2);

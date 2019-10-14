@@ -39,8 +39,8 @@ function simulate(mcProcess::SubordinatedBrownianMotion,spotData::equitySpotData
 	isDualZero=drift*sigma*zero(eltype(dt_s))*zero(Float32);
 	X_cu=CuMatrix{typeof(isDualZero)}(undef,Nsim,Nstep+1);
 	X_cu[:,1].=isDualZero;
+	NsimAnti=div(Nsim,2)
 	for i=1:Nstep
-		NsimAnti=Int(floor(Nsim/2))
 		Z=CuArrays.CURAND.curandn(Float32,NsimAnti);
 		Z=[Z;-Z];
 		# SUBORDINATED BROWNIAN MOTION (dt_s=time change)
