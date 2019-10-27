@@ -40,6 +40,18 @@ include("models/normal_inverse_gaussian.jl")
 ############### Display Function
 
 import Base.Multimedia.display;
+import Base.Multimedia.print;
+
+function print(p::Union{AbstractMonteCarloProcess,AbstractPayoff})
+	fldnames=collect(fieldnames(typeof(p)));
+	print(typeof(p),"(");
+	print(fldnames[1],"=",getfield(p,fldnames[1]))
+	popfirst!(fldnames)
+	for name in fldnames
+		print(",",name,"=",getfield(p,name))
+	end
+	print(")");
+end
 
 function display(p::Union{AbstractMonteCarloProcess,AbstractPayoff})
 	fldnames=collect(fieldnames(typeof(p)));
