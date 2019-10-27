@@ -45,7 +45,6 @@ function pricer_macro_dict(model_type)
 	@eval function pricer(mcProcess::$model_type,spotData::equitySpotData,mcConfig::MonteCarloConfiguration,dict_::Dict{FinancialMonteCarlo.AbstractPayoff,Number})
 		set_seed(mcConfig)
 		abstractPayoffs=keys(dict_);
-		weights_=values(dict_);
 		maxT=maximum([maturity(abstractPayoff) for abstractPayoff in abstractPayoffs])
 		S=simulate(mcProcess,spotData,mcConfig,maxT)
 		price=sum(weight_*mean(payoff(S,abstractPayoff,spotData,maxT)) for (abstractPayoff,weight_) in dict_);

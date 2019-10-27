@@ -25,7 +25,6 @@ function simulate(mcProcess::GeometricBrownianMotion,spotData::equitySpotData,mc
 	if T<=0.0
 		error("Final time must be positive");
 	end
-	d=spotData.d;
 	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;
 	σ_gbm=mcProcess.σ;
