@@ -45,10 +45,12 @@ import Base.Multimedia.print;
 function print(p::Union{AbstractMonteCarloProcess,AbstractPayoff})
 	fldnames=collect(fieldnames(typeof(p)));
 	print(typeof(p),"(");
-	print(fldnames[1],"=",getfield(p,fldnames[1]))
-	popfirst!(fldnames)
-	for name in fldnames
-		print(",",name,"=",getfield(p,name))
+	if(length(fldnames)>0)
+		print(fldnames[1],"=",getfield(p,fldnames[1]))
+		popfirst!(fldnames)
+		for name in fldnames
+			print(",",name,"=",getfield(p,name))
+		end
 	end
 	print(")");
 end

@@ -41,4 +41,16 @@ function delta_macro_array(model_type)
 	end
 end
 
+function delta_macro_dict(model_type)
+	@eval function delta(mcProcess::$model_type,spotData::equitySpotData,mcConfig::MonteCarloConfiguration,abstractPayoffs::Dict{FinancialMonteCarlo.AbstractPayoff,Number},dS0::Real=1e-7)
+			Prices=pricer(mcProcess,spotData,mcConfig,abstractPayoffs);
+			spotData_1=equitySpotData(spotData.S0+dS0,spotData.r,spotData.d);
+			PricesUp=pricer(mcProcess,spotData_1,mcConfig,abstractPayoffs);
+			Delta=(PricesUp.-Prices)./dS0;
+		
+		return Delta;
+	end
+end
+
 delta_macro_array(BaseProcess)
+delta_macro_dict(BaseProcess)

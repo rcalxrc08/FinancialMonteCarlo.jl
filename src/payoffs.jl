@@ -18,6 +18,7 @@ abstract type AsianPayoff<:AbstractPayoff end
 ####### Payoffs definition
 
 ### European Payoffs
+include("payoffs/spot.jl")
 include("payoffs/forward.jl")
 include("payoffs/european_option.jl")
 include("payoffs/binary_european_option.jl")
