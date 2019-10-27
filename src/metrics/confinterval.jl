@@ -22,7 +22,7 @@ function confinter_macro(model_type)
 		function confinter(mcProcess::$model_type,spotData::equitySpotData,mcConfig::MonteCarloConfiguration,abstractPayoff::AbstractPayoff,alpha::Real=0.99)
 
 			set_seed(mcConfig)
-			T=abstractPayoff.T;
+			T=maturity(abstractPayoff);
 			Nsim=mcConfig.Nsim;
 			S=simulate(mcProcess,spotData,mcConfig,T)
 			Payoff=payoff(S,abstractPayoff,spotData);
@@ -45,7 +45,7 @@ function confinter_macro_array(model_type)
 	@eval function confinter(mcProcess::$model_type,spotData::equitySpotData,mcConfig::MonteCarloConfiguration,abstractPayoffs::Array{AbstractPayoff},alpha::Real=0.99)
 
 		set_seed(mcConfig)
-		maxT=maximum([abstractPayoff.T for abstractPayoff in abstractPayoffs])
+		maxT=maximum([maturity(abstractPayoff) for abstractPayoff in abstractPayoffs])
 		Nsim=mcConfig.Nsim;
 		S=simulate(mcProcess,spotData,mcConfig,maxT)
 		Means=[mean(payoff(S,abstractPayoff,spotData,maxT)) for abstractPayoff in abstractPayoffs  ]

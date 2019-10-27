@@ -7,9 +7,8 @@ Where:\n
 		T	=	Time to maturity of the Spot.
 """
 struct Spot <: EuropeanPayoff
-	T::Float64
 	function Spot()
-            return new(0.0)
+            return new()
     end
 end
 

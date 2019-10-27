@@ -18,7 +18,7 @@ function variance_macro(model_type)
 		"""
 		function variance(mcProcess::$model_type,spotData::equitySpotData,mcConfig::MonteCarloConfiguration,abstractPayoff::AbstractPayoff)
 			set_seed(mcConfig)
-			T=abstractPayoff.T;
+			T=maturity(abstractPayoff);
 			S=simulate(mcProcess,spotData,mcConfig,T)
 			Payoff=payoff(S,abstractPayoff,spotData);
 			variance_=var(Payoff);
@@ -33,7 +33,7 @@ variance_macro(BaseProcess)
 function variance_macro_array(model_type)
 	@eval function variance(mcProcess::$model_type,spotData::equitySpotData,mcConfig::MonteCarloConfiguration,abstractPayoffs::Array{AbstractPayoff})
 		set_seed(mcConfig)
-		maxT=maximum([abstractPayoff.T for abstractPayoff in abstractPayoffs])
+		maxT=maximum([maturity(abstractPayoff) for abstractPayoff in abstractPayoffs])
 		S=simulate(mcProcess,spotData,mcConfig,maxT)
 		variance_=[var(payoff(S,abstractPayoff,spotData,maxT)) for abstractPayoff in abstractPayoffs  ]
 		

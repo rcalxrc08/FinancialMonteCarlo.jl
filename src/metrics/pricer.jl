@@ -19,7 +19,7 @@ function pricer_macro(model_type)
 		function pricer(mcProcess::$model_type,spotData::equitySpotData,mcConfig::MonteCarloConfiguration,abstractPayoff::AbstractPayoff)
 
 			set_seed(mcConfig)
-			T=abstractPayoff.T;
+			T=maturity(abstractPayoff);
 			S=simulate(mcProcess,spotData,mcConfig,T)
 			Payoff=payoff(S,abstractPayoff,spotData);
 			Price=mean(Payoff);
@@ -33,7 +33,7 @@ pricer_macro(BaseProcess)
 function pricer_macro_array(model_type)
 	@eval function pricer(mcProcess::$model_type,spotData::equitySpotData,mcConfig::MonteCarloConfiguration,abstractPayoffs::Array{abstractPayoff}) where {abstractPayoff <: AbstractPayoff}
 		set_seed(mcConfig)
-		maxT=maximum([abstractPayoff.T for abstractPayoff in abstractPayoffs])
+		maxT=maximum([maturity(abstractPayoff) for abstractPayoff in abstractPayoffs])
 		S=simulate(mcProcess,spotData,mcConfig,maxT)
 		Prices=[mean(payoff(S,abstractPayoff,spotData,maxT)) for abstractPayoff in abstractPayoffs  ]
 		
@@ -46,7 +46,7 @@ function pricer_macro_dict(model_type)
 		set_seed(mcConfig)
 		abstractPayoffs=keys(dict_);
 		weights_=values(dict_);
-		maxT=maximum([abstractPayoff.T for abstractPayoff in abstractPayoffs])
+		maxT=maximum([maturity(abstractPayoff) for abstractPayoff in abstractPayoffs])
 		S=simulate(mcProcess,spotData,mcConfig,maxT)
 		price=sum(weight_*mean(payoff(S,abstractPayoff,spotData,maxT)) for (abstractPayoff,weight_) in dict_);
 		

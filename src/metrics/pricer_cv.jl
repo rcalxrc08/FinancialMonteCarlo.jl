@@ -6,8 +6,8 @@ function pricer_macro_2(model_type)
 			variate_handl=mcConfig.monteCarloMethod
 			variate_conf=variate_handl.conf_variate;
 			variate_payoff=variate_handl.variate;
-			@assert abstractPayoff.T==variate_payoff.T
-			T=abstractPayoff.T;
+			@assert maturity(abstractPayoff)==variate_payoff.T
+			T=maturity(abstractPayoff);
 			S_var=simulate(mcProcess,spotData,variate_conf,T)
 			Payoff_var=payoff(S_var,variate_payoff,spotData);
 			Payoff_opt_var=payoff(S_var,abstractPayoff,spotData);
@@ -32,8 +32,8 @@ function pricer_macro_3(model_type)
 			variate_handl=mcConfig.monteCarloMethod
 			variate_conf=variate_handl.conf_variate;
 			variate_payoff=variate_handl.variate;
-			@assert abstractPayoff.T==variate_payoff.T
-			T=abstractPayoff.T;
+			@assert maturity(abstractPayoff)==variate_payoff.T
+			T=maturity(abstractPayoff);
 			eps_1=0.01
 			r=spotData.r;
 			S_var=simulate(mcProcess,spotData,variate_conf,T)

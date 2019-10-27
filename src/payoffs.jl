@@ -42,6 +42,17 @@ include("payoffs/asian_floating_strike_option.jl")
 ### Operations and Strategies
 include("payoffs/operations.jl")
 
+##Support
+
+function maturity(x::abstractPayoff) where { abstractPayoff <: AbstractPayoff}
+	return x.T;
+end
+
+function maturity(x::Spot)
+	return 0.0;
+end
+
+
 """
 General Interface for Payoff computation from MonteCarlo paths
 
