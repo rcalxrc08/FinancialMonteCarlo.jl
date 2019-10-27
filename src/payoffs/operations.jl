@@ -75,7 +75,7 @@ function display(p::Dict{FinancialMonteCarlo.AbstractPayoff,Number})
 				val_ > 0.0 ? print(+) : print(-);
 			end
 			if(abs(val_)!=1.0)
-				print(abs(val_));
+				flag!=0 ? print(abs(val_)) : print(val_);
 				print(*);
 				print(key_);
 			else

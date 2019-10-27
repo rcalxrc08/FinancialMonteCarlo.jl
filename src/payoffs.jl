@@ -38,6 +38,8 @@ include("payoffs/binary_american_option.jl")
 include("payoffs/asian_fixed_strike_option.jl")
 include("payoffs/asian_floating_strike_option.jl")
 
+### Operations and Strategies
+include("payoffs/operations.jl")
 
 """
 General Interface for Payoff computation from MonteCarlo paths
