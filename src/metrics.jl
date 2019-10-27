@@ -8,6 +8,7 @@ end
 
 
 include("metrics/pricer.jl")
+include("metrics/pricer_cv.jl")
 include("metrics/delta.jl")
 include("metrics/confinterval.jl")
 include("metrics/variance.jl")

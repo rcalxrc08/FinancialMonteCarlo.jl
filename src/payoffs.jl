@@ -1,6 +1,15 @@
 ## Payoffs
 abstract type AbstractPayoff end
 
+struct ControlVariates{abstractPayoff <: AbstractPayoff} <: AbstractMonteCarloMethod
+	variate::AbstractPayoff
+	conf_variate::MonteCarloConfiguration{<: Integer , <: Integer , <: AbstractMonteCarloMethod ,  <: BaseMode}
+	function ControlVariates(variate::T1,conf_variate::MonteCarloConfiguration) where { T1 <: AbstractPayoff}
+		return new{T1}(variate,conf_variate)
+    end
+
+end
+
 abstract type EuropeanPayoff<:AbstractPayoff end
 abstract type AmericanPayoff<:AbstractPayoff end
 abstract type BarrierPayoff<:AbstractPayoff end
