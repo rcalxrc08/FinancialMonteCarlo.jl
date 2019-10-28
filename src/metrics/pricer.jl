@@ -60,8 +60,8 @@ function pricer(mcProcess::Dict{String,FinancialMonteCarlo.AbstractMonteCarloPro
 		price=0.0;
 		for under_ in underlyings_payoff
 			options=dict_[under_]
-			model=underlyings_models[under_]
-			price=price+ pricer(model,spotData,mcConfig,options);
+			model=mcProcess[under_]
+			price=price+pricer(model,spotData,mcConfig,options);
 		end
 		
 		return price;
