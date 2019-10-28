@@ -2,7 +2,7 @@ using EmpiricalCDFs, DatagenCopulaBased
 """
 Struct for Kou Process
 
-		kouProcess=GaussianCopulaBivariateProcess(σ::num1,λ::num2,p::num3,λ₊::num4,λ₋::num5) where {num1,num2,num3,num4,num5 <: Number}
+		kouProcess=GaussianCopulaBivariateLogProcess(σ::num1,λ::num2,p::num3,λ₊::num4,λ₋::num5) where {num1,num2,num3,num4,num5 <: Number}
 	
 Where:\n
 		σ  =	volatility of the process.
@@ -11,18 +11,18 @@ Where:\n
 		λ₊ =	positive jump size.
 		λ₋ =	negative jump size.
 """
-mutable struct GaussianCopulaBivariateProcess{Model_1 <: BaseProcess, Model_2 <: BaseProcess, num3 <: Number}<:VectorialMonteCarloProcess
+mutable struct GaussianCopulaBivariateLogProcess{Model_1 <: BaseProcess, Model_2 <: BaseProcess, num3 <: Number}<:VectorialMonteCarloProcess
 	model1::Model_1
 	model2::Model_2
 	rho::num3
-	function GaussianCopulaBivariateProcess(σ::num,λ::num1,rho::num2) where {num <: BaseProcess, num1 <: BaseProcess, num2 <: Number}
+	function GaussianCopulaBivariateLogProcess(σ::num,λ::num1,rho::num2) where {num <: BaseProcess, num1 <: BaseProcess, num2 <: Number}
 		return new{num,num1,num2}(σ,λ,rho)
     end
 end
 
-export GaussianCopulaBivariateProcess;
+export GaussianCopulaBivariateLogProcess;
 
-function simulate(mcProcess::GaussianCopulaBivariateProcess,spotData::equitySpotData,mcBaseData::MonteCarloConfiguration{type1,type2,type3,type4},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AbstractMonteCarloMethod, type4 <: BaseMode}
+function simulate(mcProcess::GaussianCopulaBivariateLogProcess,spotData::equitySpotData,mcBaseData::MonteCarloConfiguration{type1,type2,type3,type4},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AbstractMonteCarloMethod, type4 <: BaseMode}
 	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;
 	if T<=0.0

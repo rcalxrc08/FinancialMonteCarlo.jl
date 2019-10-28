@@ -53,5 +53,19 @@ function pricer_macro_dict(model_type)
 	end
 end
 
+function pricer(mcProcess::Dict{String,FinancialMonteCarlo.AbstractMonteCarloProcess},spotData::equitySpotData,mcConfig::MonteCarloConfiguration,dict_::Dict{String,Dict{FinancialMonteCarlo.AbstractPayoff,Number}})
+		set_seed(mcConfig)
+		underlyings_models=keys(mcProcess)
+		underlyings_payoff=keys(dict_)
+		price=0.0;
+		for under_ in underlyings_payoff
+			options=dict_[under_]
+			model=underlyings_models[under_]
+			price=price+ pricer(model,spotData,mcConfig,options);
+		end
+		
+		return price;
+	end
+
 pricer_macro_array(BaseProcess)
 pricer_macro_dict(BaseProcess)

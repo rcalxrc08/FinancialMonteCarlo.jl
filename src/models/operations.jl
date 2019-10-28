@@ -1,29 +1,28 @@
+import Base.|>;
 import Base.+;
-import Base.*;
-import Base.-;
 
 #Strategies Implementation
 
-function +(x::FinancialMonteCarlo.AbstractMonteCarloProcess,y::FinancialMonteCarlo.AbstractMonteCarloProcess)
-	#out=Dict{String,FinancialMonteCarlo.AbstractMonteCarloProcess}( x => 1.0 );
-	out=Dict{String,FinancialMonteCarlo.AbstractMonteCarloProcess}( x.underlying.name => x );
-	if haskey(out,y.underlying.name)
-		error("check keys")
-	else
-		out[y.underlying.name]=y;
-	end
+function |>(x::String,y::FinancialMonteCarlo.AbstractMonteCarloProcess)
+	out=Dict{String,FinancialMonteCarlo.AbstractMonteCarloProcess}( x => y );
+
 	return out;
 end
 
-function +(x::Dict{String,FinancialMonteCarlo.AbstractMonteCarloProcess},y::FinancialMonteCarlo.AbstractMonteCarloProcess)
-	out=copy(x);
-	if haskey(out,y.underlying.name)
-		error("check keys")
-	else
-		out[y.underlying.name]=y;
+function |>(x::String,y::FinancialMonteCarlo.GaussianCopulaBivariateProcess)
+	sep=findfirst("_",x)[1];
+	if(isnothing(sep))
+		error("Bivariate process must follow the format: INDEX1_INDEX2");
 	end
+	idx_1=x[1:(sep-1)]
+	idx_2=x[(sep+1):end]
+	out=Dict{String,FinancialMonteCarlo.AbstractMonteCarloProcess}( x => y );
+	out[idx_1]=y.model1
+	out[idx_2]=y.model2
+
 	return out;
 end
+
 
 function +(x::Dict{String,FinancialMonteCarlo.AbstractMonteCarloProcess},y::Dict{String,FinancialMonteCarlo.AbstractMonteCarloProcess})
 	out=copy(x);
@@ -37,5 +36,3 @@ function +(x::Dict{String,FinancialMonteCarlo.AbstractMonteCarloProcess},y::Dict
 	end
 	return out;
 end
-
-+(y::FinancialMonteCarlo.AbstractMonteCarloProcess,out::Dict{String,FinancialMonteCarlo.AbstractMonteCarloProcess})= out+y;

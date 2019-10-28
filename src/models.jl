@@ -53,6 +53,9 @@ include("models/normal_inverse_gaussian.jl")
 
 
 include("models/bivariate.jl")
+include("models/nvariate.jl")
+include("models/bivariate_log.jl")
+include("models/nvariate_log.jl")
 
 ############### Display Function
 
@@ -153,3 +156,5 @@ Where:\n
 function simulate(mcProcess::BaseProcess,spotData::equitySpotData,mcBaseData::MonteCarloConfiguration{type1,type2,type3,type4},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AbstractMonteCarloMethod, type4 <: BaseMode}
 	error("Function used just for documentation")
 end
+
+include("models/operations.jl")
