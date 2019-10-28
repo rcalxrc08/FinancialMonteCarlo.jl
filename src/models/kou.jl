@@ -70,7 +70,7 @@ function simulate(mcProcess::KouProcess,spotData::equitySpotData,mcBaseData::Mon
 	## Simulate
 	# r-d-psi(-i)
 	drift_RN=r-d-σ^2/2-λ1*(p/(λ₊-1)-(1-p)/(λ₋+1));
-	X=Matrix(simulate(BrownianMotion(σ,drift_RN,Underlying(0.0,mcProcess.underlying.name)),spotData,mcBaseData,T))
+	X=Matrix(simulate(BrownianMotion(σ,drift_RN,Underlying(0.0)),spotData,mcBaseData,T))
 
 	t=range(0.0, stop=T, length=Nstep+1);
 	PoissonRV=Poisson(λ1*T);
