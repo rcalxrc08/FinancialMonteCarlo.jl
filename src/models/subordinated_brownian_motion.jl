@@ -2,11 +2,19 @@
 mutable struct SubordinatedBrownianMotion{num <: Number, num1 <: Number}<:AbstractMonteCarloProcess
 	sigma::num
 	drift::num1
-	function SubordinatedBrownianMotion(sigma::num,drift::num1) where {num <: Number,num1 <: Number}
+	underlying::Underlying
+	function SubordinatedBrownianMotion(sigma::num,drift::num1,underlying::Underlying) where {num <: Number,num1 <: Number}
         if sigma<=0.0
 			error("volatility must be positive");
 		else
-            return new{num,num1}(sigma,drift)
+            return new{num,num1}(sigma,drift,underlying)
+        end
+    end
+	function SubordinatedBrownianMotion(sigma::num,drift::num1,S0::num2) where {num <: Number,num1 <: Number, num2 <: Number}
+        if sigma<=0.0
+			error("volatility must be positive");
+		else
+            return new{num,num1}(sigma,drift,Underlying(S0))
         end
     end
 end
@@ -50,7 +58,7 @@ function simulate(mcProcess::SubordinatedBrownianMotion,spotData::equitySpotData
 	if T<=0.0
 		error("Final time must be positive");
 	end
-	isDualZero=drift*sigma*dt_s[1,1]*0.0;
+	isDualZero=drift*sigma*dt_s[1,1]*0.0+mcProcess.underlying.S0;
 	X=Matrix{typeof(isDualZero)}(undef,Nsim,Nstep+1);
 	X[:,1].=isDualZero;
 	for i=1:Nstep

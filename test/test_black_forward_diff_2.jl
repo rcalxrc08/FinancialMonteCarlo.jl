@@ -14,7 +14,7 @@ mc=MonteCarloConfiguration(Nsim,Nstep);
 mc1=MonteCarloConfiguration(Nsim,Nstep,FinancialMonteCarlo.AntitheticMC());
 toll=0.8
 
-spotData1=equitySpotData(S0,r,d);
+spotData1=equitySpotData(r,d);
 
 FwdData=Forward(T)
 EUData=EuropeanOption(T,K)
@@ -22,10 +22,10 @@ AMData=AmericanOption(T,K)
 BarrierData=BarrierOptionDownOut(T,K,D)
 AsianFloatingStrikeData=AsianFloatingStrikeOption(T)
 AsianFixedStrikeData=AsianFixedStrikeOption(T,K)
-Model=BlackScholesProcess(sigma);
+Model=BlackScholesProcess(sigma,S0);
 
 
-f(x::Vector) = pricer(BlackScholesProcess(x[1]),equitySpotData(x[2],r,d),mc,EUData);
+f(x::Vector) = pricer(BlackScholesProcess(x[1],x[2]),equitySpotData(r,d),mc,EUData);
 
 x=Float64[sigma,S0]
 

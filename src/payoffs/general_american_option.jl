@@ -1,6 +1,6 @@
 
 function payoff(S::AbstractMatrix{num},spotData::equitySpotData,phi::Function,T::num2) where{num <: Number,num2 <: Number}
-	S0=spotData.S0;
+	S0=first(S);
 	(Nsim,Nstep)=size(S)
 	Nstep-=1;
 	r=spotData.r;

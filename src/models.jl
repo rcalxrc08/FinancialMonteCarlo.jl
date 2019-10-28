@@ -1,8 +1,20 @@
 abstract type BaseProcess end
 
+struct Underlying{num <: Number}
+	S0::num
+	#name::String
+	function Underlying(S0::num_) where {num_ <: Number}
+		return new{num_}(S0)
+	end
+end
+	
 abstract type AbstractMonteCarloProcess <: BaseProcess end
 
-abstract type LevyProcess<:AbstractMonteCarloProcess end
+abstract type ScalarMonteCarloProcess <: AbstractMonteCarloProcess end
+
+abstract type VectorialMonteCarloProcess <: AbstractMonteCarloProcess end
+
+abstract type LevyProcess<:ScalarMonteCarloProcess end
 
 abstract type ItoProcess<:LevyProcess end
 
@@ -11,6 +23,8 @@ abstract type FiniteActivityProcess<:LevyProcess end
 abstract type InfiniteActivityProcess<:LevyProcess end
 
 export AbstractMonteCarloProcess
+export ScalarMonteCarloProcess
+export VectorialMonteCarloProcess
 export ItoProcess
 export LevyProcess
 export FiniteActivityProcess
@@ -36,6 +50,9 @@ include("models/merton.jl")
 include("models/subordinated_brownian_motion.jl")
 include("models/variance_gamma.jl")
 include("models/normal_inverse_gaussian.jl")
+
+
+include("models/bivariate.jl")
 
 ############### Display Function
 

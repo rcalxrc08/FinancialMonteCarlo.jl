@@ -10,11 +10,19 @@ Where:\n
 mutable struct GeometricBrownianMotion{num <: Number, num1 <: Number}<:ItoProcess
 	σ::num
 	μ::num1
-	function GeometricBrownianMotion(σ::num,μ::num1) where {num <: Number , num1 <: Number}
+	underlying::Underlying
+	function GeometricBrownianMotion(σ::num,μ::num1,underlying::Underlying) where {num <: Number , num1 <: Number}
         if σ <= 0.0
             error("Volatility must be positive")
         else
-            return new{num,num1}(σ,μ)
+            return new{num,num1}(σ,μ,underlying)
+        end
+    end
+	function GeometricBrownianMotion(σ::num,μ::num1,S0::num2) where {num <: Number , num1 <: Number, num2 <: Number}
+        if σ <= 0.0
+            error("Volatility must be positive")
+        else
+            return new{num,num1}(σ,μ,Underlying(S0))
         end
     end
 end
@@ -30,7 +38,7 @@ function simulate(mcProcess::GeometricBrownianMotion,spotData::equitySpotData,mc
 	σ_gbm=mcProcess.σ;
 	mu_gbm=mcProcess.μ;
 	μ_bm=mu_gbm-σ_gbm^2/2;
-	X=simulate(BrownianMotion(σ_gbm,μ_bm),spotData,mcBaseData,T)
-	S=exp.(X);
+	X=simulate(BrownianMotion(σ_gbm,μ_bm,Underlying(0.0,mcProcess.underlying.name)),spotData,mcBaseData,T)
+	S=(mcProcess.underlying.S0).*exp.(X);
 	return S;
 end

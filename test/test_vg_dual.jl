@@ -17,14 +17,14 @@ mc=MonteCarloConfiguration(Nsim,Nstep);
 mc1=MonteCarloConfiguration(Nsim,Nstep,FinancialMonteCarlo.AntitheticMC());
 toll=0.8;
 
-spotData1=equitySpotData(S0,r,d);
+spotData1=equitySpotData(r,d);
 
 FwdData=Forward(T)
 EUData=EuropeanOption(T,K)
 AMData=AmericanOption(T,K)
 BarrierData=BarrierOptionDownOut(T,K,D)
 AsianData=AsianFloatingStrikeOption(T)
-Model=VarianceGammaProcess(sigma,theta1,k1);
+Model=VarianceGammaProcess(sigma,theta1,k1,S0);
 
 @show FwdPrice=pricer(Model,spotData1,mc,FwdData);
 @show EuPrice=pricer(Model,spotData1,mc,EUData);

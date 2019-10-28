@@ -10,11 +10,19 @@ Where:\n
 mutable struct BrownianMotion{num <: Number, num1 <: Number} <: ItoProcess
 	σ::num
 	μ::num1
-	function BrownianMotion(σ::num,μ::num1) where {num <: Number,num1 <: Number}
+	underlying::Underlying
+	function BrownianMotion(σ::num,μ::num1,underlying::Underlying) where {num <: Number,num1 <: Number}
         if σ <= 0.0
             error("Volatility must be positive")
         else
-            return new{num,num1}(σ,μ)
+            return new{num,num1}(σ,μ,underlying)
+        end
+    end
+	function BrownianMotion(σ::num,μ::num1,S0::num2) where {num <: Number,num1 <: Number, num2 <: Number}
+        if σ <= 0.0
+            error("Volatility must be positive")
+        else
+            return new{num,num1}(σ,μ,Underlying(S0))
         end
     end
 end
@@ -32,7 +40,7 @@ function simulate(mcProcess::BrownianMotion,spotData::equitySpotData,mcBaseData:
 	dt=T/Nstep
 	mean_bm=μ*dt
 	stddev_bm=σ*sqrt(dt)
-	isDualZero=mean_bm*stddev_bm*0.0;
+	isDualZero=mean_bm*stddev_bm*0.0+mcProcess.underlying.S0;
 	X=Matrix{typeof(isDualZero)}(undef,Nsim,Nstep+1);
 	X[:,1].=isDualZero;
 	@inbounds for i=1:Nsim
@@ -57,7 +65,7 @@ function simulate(mcProcess::BrownianMotion,spotData::equitySpotData,mcBaseData:
 	dt=T/Nstep
 	mean_bm=μ*dt
 	stddev_bm=σ*sqrt(dt)
-	isDualZero=mean_bm*stddev_bm*0.0;
+	isDualZero=mean_bm*stddev_bm*0.0+mcProcess.underlying.S0;
 	X=Matrix{typeof(isDualZero)}(undef,Nsim,Nstep+1);
 	X[:,1].=isDualZero;
 	Nsim_2=div(Nsim,2)

@@ -10,7 +10,8 @@ Where:\n
 mutable struct LogNormalMixture{num <: Number,num2 <: Number}<:ItoProcess
 	η::Array{num,1}
 	λ::Array{num2,1}
-	function LogNormalMixture(η::Array{num,1},λ::Array{num2,1}) where {num <: Number,num2 <: Number}
+	underlying::Underlying
+	function LogNormalMixture(η::Array{num,1},λ::Array{num2,1},underlying::Underlying) where {num <: Number,num2 <: Number}
         if minimum(η) <= 0.0
             error("Volatilities must be positive")
         elseif minimum(λ) <= 0.0
@@ -20,7 +21,20 @@ mutable struct LogNormalMixture{num <: Number,num2 <: Number}<:ItoProcess
         elseif length(λ) != length(η)-1
             error("Check vector lengths")
         else
-            return new{num,num2}(η,λ)
+            return new{num,num2}(η,λ,underlying)
+        end
+    end
+	function LogNormalMixture(η::Array{num,1},λ::Array{num2,1},S0::num3) where {num <: Number,num2 <: Number, num3 <:Number}
+        if minimum(η) <= 0.0
+            error("Volatilities must be positive")
+        elseif minimum(λ) <= 0.0
+            error("weights must be positive")
+        elseif sum(λ) > 1.0
+            error("λs must be weights")
+        elseif length(λ) != length(η)-1
+            error("Check vector lengths")
+        else
+            return new{num,num2}(η,λ,Underlying(S0))
         end
     end
 end
@@ -32,7 +46,7 @@ function simulate(mcProcess::LogNormalMixture,spotData::equitySpotData,mcBaseDat
 		error("Final time must be positive");
 	end
 	r=spotData.r;
-	S0=spotData.S0;
+	S0=mcProcess.underlying.S0;
 	d=spotData.d;
 	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;
@@ -40,9 +54,9 @@ function simulate(mcProcess::LogNormalMixture,spotData::equitySpotData,mcBaseDat
 	λ_gmb=mcProcess.λ
 	push!(λ_gmb,1.0-sum(mcProcess.λ))
 	mu_gbm=r-d;
-	S=λ_gmb[1]*S0.*simulate(GeometricBrownianMotion(η_gbm[1],mu_gbm),spotData,mcBaseData,T);
+	S=λ_gmb[1].*simulate(GeometricBrownianMotion(η_gbm[1],mu_gbm,Underlying(S0,mcProcess.Underlying.name)),spotData,mcBaseData,T);
 	for (η_gbm_,λ_gmb_) in zip(η_gbm[2:end],λ_gmb[2:end])
-		S+=λ_gmb_*S0.*simulate(GeometricBrownianMotion(η_gbm_,mu_gbm),spotData,mcBaseData,T)
+		S+=λ_gmb_.*simulate(GeometricBrownianMotion(η_gbm_,mu_gbm,Underlying(S0,mcProcess.Underlying.name)),spotData,mcBaseData,T)
 	end
 	return S;
 	

@@ -18,7 +18,8 @@ mutable struct HestonProcess{num <: Number, num1 <: Number , num2 <: Number , nu
 	κ::num3
 	ρ::num4
 	θ::num5
-	function HestonProcess(σ::num,σ_zero::num1,λ::num2,	κ::num3,ρ::num4,θ::num5) where {num <: Number, num1 <: Number,num2 <: Number,num3 <: Number,num4 <: Number,num5 <: Number}
+	underlying::Underlying
+	function HestonProcess(σ::num,σ_zero::num1,λ::num2,	κ::num3,ρ::num4,θ::num5,underlying::Underlying) where {num <: Number, num1 <: Number,num2 <: Number,num3 <: Number,num4 <: Number,num5 <: Number}
         if σ_zero<=0.0
 			error("initial volatility must be positive");
 		elseif σ<=0.0
@@ -28,7 +29,20 @@ mutable struct HestonProcess{num <: Number, num1 <: Number , num2 <: Number , nu
 		elseif !(-1.0<=ρ<=1.0)
 			error("ρ must be a correlation");
         else
-            return new{num,num1,num2,num3,num4,num5}(σ,σ_zero,λ,κ,ρ,θ)
+            return new{num,num1,num2,num3,num4,num5}(σ,σ_zero,λ,κ,ρ,θ,underlying)
+        end
+    end
+	function HestonProcess(σ::num,σ_zero::num1,λ::num2,	κ::num3,ρ::num4,θ::num5,S0::num6) where {num <: Number, num1 <: Number,num2 <: Number,num3 <: Number,num4 <: Number,num5 <: Number, num6 <: Number}
+        if σ_zero<=0.0
+			error("initial volatility must be positive");
+		elseif σ<=0.0
+			error("volatility of volatility must be positive");
+		elseif abs(κ+λ)<=1e-14
+			error("unfeasible parameters");
+		elseif !(-1.0<=ρ<=1.0)
+			error("ρ must be a correlation");
+        else
+            return new{num,num1,num2,num3,num4,num5}(σ,σ_zero,λ,κ,ρ,θ,Underlying(S0))
         end
     end
 end
@@ -37,7 +51,7 @@ export HestonProcess;
 
 function simulate(mcProcess::HestonProcess,spotData::equitySpotData,mcBaseData::MonteCarloConfiguration{type1,type2,type3,SerialMode},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: StandardMC}
 	r=spotData.r;
-	S0=spotData.S0;
+	S0=mcProcess.underlying.S0;
 	d=spotData.d;
 	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;
@@ -76,7 +90,7 @@ end
 
 function simulate(mcProcess::HestonProcess,spotData::equitySpotData,mcBaseData::MonteCarloConfiguration{type1,type2,type3,SerialMode},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AntitheticMC}
 	r=spotData.r;
-	S0=spotData.S0;
+	S0=mcProcess.underlying.S0;
 	d=spotData.d;
 	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;

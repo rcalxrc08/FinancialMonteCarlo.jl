@@ -71,6 +71,12 @@ Model=BlackScholesProcess(σ);
 @show EuPrice=pricer(Model,spotData,mcConfig,EU_payoff);
 ```
 
+## Contracts Algebra
+TBC
+
+## Multivariate Support
+TBC
+
 ## Keep in mind
 There are few things that you should keep in mind when using this library:
 - First Order Automatic Differentiation is enabled for any kind of option, also for such that there is no sense (e.g. Binary, Barriers).
