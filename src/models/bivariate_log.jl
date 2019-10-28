@@ -37,21 +37,21 @@ function simulate(mcProcess::GaussianCopulaBivariateLogProcess,spotData::equityS
 	X=[1.0 rho;rho 1.0]
 	for j in 1:Nstep
 		#model 1
-		S_t_1_=S_1[:,j+1];
+		S_t_1_=log.(S_1[:,j+1]./mcProcess.model1.underlying.S0);
 		cdf_1 = EmpiricalCDF()
 		append!(cdf_1,S_t_1_)
 		sort!(cdf_1)
 		icdf_1 = finv(cdf_1)
 		#model 2
-		S_t_2_=S_2[:,j+1];
+		S_t_2_=log.(S_2[:,j+1]./mcProcess.model2.underlying.S0);
 		cdf_2 = EmpiricalCDF()
 		append!(cdf_2,S_t_2_)
 		sort!(cdf_2)
 		icdf_2 = finv(cdf_2)
 		#Computation
 		U_joint=gausscopulagen(Nsim,X);
-		S_1[:,j+1]=icdf_1.(U_joint[:,1])
-		S_2[:,j+1]=icdf_2.(U_joint[:,2])
+		S_1[:,j+1]=mcProcess.model1.underlying.S0.*exp.(icdf_1.(U_joint[:,1]))
+		S_2[:,j+1]=mcProcess.model2.underlying.S0.*exp.(icdf_2.(U_joint[:,2]))
 	end
 	
 	## Conclude

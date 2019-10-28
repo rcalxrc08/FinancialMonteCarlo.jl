@@ -42,6 +42,8 @@ include("payoffs/asian_floating_strike_option.jl")
 ### Operations and Strategies
 include("payoffs/operations.jl")
 include("payoffs/operations2.jl")
+include("payoffs/bi_european_option.jl")
+include("payoffs/n_european_option.jl")
 
 ##Support
 
