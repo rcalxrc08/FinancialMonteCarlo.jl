@@ -74,7 +74,7 @@ Model=BlackScholesProcess(σ);
 ## Contracts Algebra
 TBC
 
-## Multivariate Support
+## Market Data and Multivariate Support
 TBC
 
 ## Keep in mind
