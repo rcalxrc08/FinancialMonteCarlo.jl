@@ -95,3 +95,36 @@ function display(p::Dict{FinancialMonteCarlo.AbstractPayoff,Number})
 	end
 	println("")
 end
+
+import Base.Multimedia.print;
+
+function print(p::Dict{FinancialMonteCarlo.AbstractPayoff,Number})
+	keys_=keys(p);
+	flag=0;
+	for key_ in keys_
+		val_=p[key_]
+		if typeof(val_) <: Real 
+			if(flag!=0)
+				val_ > 0.0 ? print(+) : print(-);
+			end
+			if(abs(val_)!=1.0)
+				flag!=0 ? print(abs(val_)) : print(val_);
+				print(*);
+				print(key_);
+			else
+				print(key_);
+			end
+		else
+			if(flag!=0)
+				print(+)
+			end
+			print("(");
+			print(val_);
+			print(")");
+			print(*);
+			print(key_);
+		end
+		flag+=1;
+	end
+	println("")
+end

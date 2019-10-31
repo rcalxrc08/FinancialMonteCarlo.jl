@@ -27,3 +27,15 @@ function +(x::Dict{String,Dict{FinancialMonteCarlo.AbstractPayoff,Number}},y::Di
 	end
 	return out;
 end
+
+import Base.Multimedia.display;
+
+function display(p::Dict{String,Dict{FinancialMonteCarlo.AbstractPayoff,Number}})
+	keys_=keys(p);
+	for key_ in keys_
+		print(key_);
+		print(" => ")
+		print(p[key_])
+	end
+	println("")
+end
