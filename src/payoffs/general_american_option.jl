@@ -7,10 +7,9 @@ function payoff(S::AbstractMatrix{num},spotData::equitySpotData,phi::Function,T:
 	dt=T/Nstep
 	# initialize 
 	exerciseTimes=Nstep.*ones(Nsim);
-	#V=max.(0.0,iscall.*(S[:,end].-K)); #payoff
 	V=phi.(S[:,end]); #payoff
 	# Backward Procedure 
-	for j in Nstep-1:-1:1
+	for j in Nstep:-1:2
 		inMoneyIndexes=findall(phi.(S[:,j]).>0.0);
 		if !isempty(inMoneyIndexes)
 			S_I=S[inMoneyIndexes,j];
@@ -27,16 +26,17 @@ function payoff(S::AbstractMatrix{num},spotData::equitySpotData,phi::Function,T:
 			#alpha=A\b;
 			#Continuation Value
 			CV=A*alpha;
+			#@show size(CV)
 			#----------
 			# Find premature exercise times
 			Index=findall(IV.>CV);
 			exercisePositions=inMoneyIndexes[Index];
 			# Update the outputs
 			V[exercisePositions]=IV[Index];
-			exerciseTimes[exercisePositions].=j;
+			exerciseTimes[exercisePositions].=j-1;
 		end
 	end
-	price=max.(phi(S0),V.*exp.(-r*dt.*exerciseTimes))
+	price=V.*exp.(-r*dt.*exerciseTimes)
 	
 	return price;
 end
