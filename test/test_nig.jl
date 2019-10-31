@@ -16,14 +16,14 @@ mc=MonteCarloConfiguration(Nsim,Nstep);
 mc1=MonteCarloConfiguration(Nsim,Nstep,FinancialMonteCarlo.AntitheticMC());
 toll=0.8;
 
-spotData1=equitySpotData(r,d);
+spotData1=equitySpotData(r);
 
 FwdData=Forward(T)
 EUData=EuropeanOption(T,K)
 AMData=AmericanOption(T,K)
 BarrierData=BarrierOptionDownOut(T,K,D)
 AsianData=AsianFloatingStrikeOption(T)
-Model=NormalInverseGaussianProcess(sigma,theta1,k1,S0);
+Model=NormalInverseGaussianProcess(sigma,theta1,k1,Underlying(S0,d));
 
 @show FwdPrice=pricer(Model,spotData1,mc,FwdData);
 @show EuPrice=pricer(Model,spotData1,mc,EUData);
@@ -53,7 +53,7 @@ tollanti=0.8;
 
 @show "Test NIG Parameters"
 
-@test_throws(ErrorException,simulate(NormalInverseGaussianProcess(sigma,theta1,k1,S0),spotData1,mc,-T));
-@test_throws(ErrorException,NormalInverseGaussianProcess(-sigma,theta1,k1,S0))
-@test_throws(ErrorException,NormalInverseGaussianProcess(sigma,theta1,-k1,S0))
-@test_throws(ErrorException,NormalInverseGaussianProcess(sigma,10000.0,k1,S0))
+@test_throws(ErrorException,simulate(NormalInverseGaussianProcess(sigma,theta1,k1,Underlying(S0,d)),spotData1,mc,-T));
+@test_throws(ErrorException,NormalInverseGaussianProcess(-sigma,theta1,k1,Underlying(S0,d)))
+@test_throws(ErrorException,NormalInverseGaussianProcess(sigma,theta1,-k1,Underlying(S0,d)))
+@test_throws(ErrorException,NormalInverseGaussianProcess(sigma,10000.0,k1,Underlying(S0,d)))

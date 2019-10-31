@@ -7,6 +7,8 @@ struct Underlying{num <: Number, num2 <: Number}
 		return new{num_,num_2}(S0,d)
 	end
 end
+
+export Underlying;
 	
 abstract type AbstractMonteCarloProcess <: BaseProcess end
 
@@ -22,7 +24,7 @@ abstract type FiniteActivityProcess<:LevyProcess end
 
 abstract type InfiniteActivityProcess<:LevyProcess end
 
-dividend(x::mc) where {mc <: ScalarMonteCarloProcess} = mc.underlying.d;
+dividend(x::mc) where {mc <: ScalarMonteCarloProcess} = x.underlying.d;
 
 export AbstractMonteCarloProcess
 export ScalarMonteCarloProcess

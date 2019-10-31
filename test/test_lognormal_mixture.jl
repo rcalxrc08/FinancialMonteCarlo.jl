@@ -15,7 +15,7 @@ mc=MonteCarloConfiguration(Nsim,Nstep);
 mc1=MonteCarloConfiguration(Nsim,Nstep,FinancialMonteCarlo.AntitheticMC());
 toll=0.8
 
-spotData1=equitySpotData(r,d);
+spotData1=equitySpotData(r);
 
 FwdData=Forward(T)
 EUData=EuropeanOption(T,K)
@@ -23,7 +23,7 @@ AMData=AmericanOption(T,K)
 BarrierData=BarrierOptionDownOut(T,K,D)
 AsianFloatingStrikeData=AsianFloatingStrikeOption(T)
 AsianFixedStrikeData=AsianFixedStrikeOption(T,K)
-Model=LogNormalMixture(sigma,lam,S0);
+Model=LogNormalMixture(sigma,lam,Underlying(S0,d));
 
 display(Model)
 
@@ -44,9 +44,9 @@ display(Model)
 @show "Test LogNormalMixture Parameters"
 eta=[0.2,0.2]
 lam11=[0.9999]
-@test_throws(ErrorException,LogNormalMixture(-0.2*ones(3),0.1*ones(2),S0))
-@test_throws(ErrorException,LogNormalMixture(0.2*ones(3),-0.1*ones(2),S0))
-@test_throws(ErrorException,LogNormalMixture(0.2*ones(3),ones(2),S0))
-@test_throws(ErrorException,LogNormalMixture(0.2*ones(3),0.2*ones(3),S0))
+@test_throws(ErrorException,LogNormalMixture(-0.2*ones(3),0.1*ones(2),Underlying(S0,d)))
+@test_throws(ErrorException,LogNormalMixture(0.2*ones(3),-0.1*ones(2),Underlying(S0,d)))
+@test_throws(ErrorException,LogNormalMixture(0.2*ones(3),ones(2),Underlying(S0,d)))
+@test_throws(ErrorException,LogNormalMixture(0.2*ones(3),0.2*ones(3),Underlying(S0,d)))
 
-@test_throws(ErrorException,simulate(LogNormalMixture(eta,lam11,S0),spotData1,mc,-T));
+@test_throws(ErrorException,simulate(LogNormalMixture(eta,lam11,Underlying(S0,d)),spotData1,mc,-T));

@@ -28,7 +28,7 @@ EUData=EuropeanOption(T,K)
 AMData=AmericanOption(T,K)
 BarrierData=BarrierOptionDownOut(T,K,D)
 AsianData=AsianFloatingStrikeOption(T)
-spotData1=equitySpotData(r,d);
+spotData1=equitySpotData(r);
 
 optionDatas=[FwdData,EUData,AMData,BarrierData,AsianData]
 
