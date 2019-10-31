@@ -33,7 +33,7 @@ function simulate(mcProcess::BlackScholesProcess,spotData::equitySpotData,mcBase
 	end
 	r=spotData.r;
 	S0=mcProcess.underlying.S0;
-	d=spotData.d;
+	d=dividend(mcProcess);
 	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;
 	σ_gbm=mcProcess.σ;

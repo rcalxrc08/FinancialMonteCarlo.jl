@@ -1,10 +1,10 @@
 abstract type BaseProcess end
 
-struct Underlying{num <: Number}
+struct Underlying{num <: Number, num2 <: Number}
 	S0::num
-	#name::String
-	function Underlying(S0::num_) where {num_ <: Number}
-		return new{num_}(S0)
+	d::num2
+	function Underlying(S0::num_,d::num_2=0.0) where {num_ <: Number, num_2 <: Number}
+		return new{num_,num_2}(S0,d)
 	end
 end
 	
@@ -21,6 +21,8 @@ abstract type ItoProcess<:LevyProcess end
 abstract type FiniteActivityProcess<:LevyProcess end
 
 abstract type InfiniteActivityProcess<:LevyProcess end
+
+dividend(x::mc) where {mc <: ScalarMonteCarloProcess} = mc.underlying.d;
 
 export AbstractMonteCarloProcess
 export ScalarMonteCarloProcess

@@ -1,8 +1,8 @@
 using EmpiricalCDFs, DatagenCopulaBased 
 """
-Struct for Kou Process
+Struct for Bidimensional Copula Processes
 
-		kouProcess=GaussianCopulaBivariateProcess(σ::num1,λ::num2,p::num3,λ₊::num4,λ₋::num5) where {num1,num2,num3,num4,num5 <: Number}
+		gaussianCopulaBivariateProcess=GaussianCopulaBivariateProcess(σ::num1,λ::num2,p::num3,λ₊::num4,λ₋::num5) where {num1,num2,num3,num4,num5 <: Number}
 	
 Where:\n
 		σ  =	volatility of the process.

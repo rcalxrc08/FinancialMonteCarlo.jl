@@ -49,7 +49,7 @@ function simulate(mcProcess::ShiftedLogNormalMixture,spotData::equitySpotData,mc
 	end
 	r=spotData.r;
 	S0=mcProcess.underlying.S0;
-	d=spotData.d;
+	d=dividend(mcProcess);
 	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;
 	η_gbm=copy(mcProcess.η);
