@@ -17,7 +17,7 @@ sigma1=0.02;
 mc=MonteCarloConfiguration(Nsim,Nstep);
 toll=0.8;
 
-spotData1=equitySpotData(S0,r,d);
+spotData1=equitySpotData(r);
 
 FwdData=Forward(T)
 EUData=EuropeanOption(T,K)
@@ -25,7 +25,7 @@ AMData=AmericanOption(T,K)
 BarrierData=BarrierOptionDownOut(T,K,D)
 AsianFloatingStrikeData=AsianFloatingStrikeOption(T)
 AsianFixedStrikeData=AsianFixedStrikeOption(T,K)
-Model=VarianceGammaProcess(sigma,theta1,k1);
+Model=VarianceGammaProcess(sigma,theta1,k1,Underlying(S0,d));
 
 @btime FwdPrice=pricer(Model,spotData1,mc,FwdData);
 @btime EuPrice=pricer(Model,spotData1,mc,EUData);
