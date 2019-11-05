@@ -14,7 +14,7 @@ sigma=0.2;
 mc=MonteCarloConfiguration(Nsim,Nstep,FinancialMonteCarlo.AntitheticMC());
 toll=1e-3;
 
-spotData1=equitySpotData(r);
+spotData1=ZeroRateCurve(r);
 
 FwdData=Forward(T)
 EUData=EuropeanOption(T,K)

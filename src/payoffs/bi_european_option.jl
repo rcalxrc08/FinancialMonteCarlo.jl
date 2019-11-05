@@ -26,7 +26,7 @@ end
 export EuropeanOption2D;
 
 
-function payoff(S::Tuple{abstractMatrix,abstractMatrix},euPayoff::EuropeanOption2D,spotData::equitySpotData,T1::num2=euPayoff.T) where { abstractMatrix <: AbstractMatrix{num}, num2 <: Number} where { num <: Number}
+function payoff(S::Tuple{abstractMatrix,abstractMatrix},euPayoff::EuropeanOption2D,spotData::ZeroRateCurve,T1::num2=euPayoff.T) where { abstractMatrix <: AbstractMatrix{num}, num2 <: Number} where { num <: Number}
 	r=spotData.r;
 	T=euPayoff.T;
 	iscall=euPayoff.isCall ? 1 : -1

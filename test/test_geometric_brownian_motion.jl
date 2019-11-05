@@ -12,7 +12,7 @@ sigma=0.2;
 McConfig=MonteCarloConfiguration(Nsim,Nstep);
 toll=0.8;
 
-spotData1=equitySpotData(r);
+spotData1=ZeroRateCurve(r);
 
 @show "Test Geometric Brownian Motion Parameters"
 drift=0.0

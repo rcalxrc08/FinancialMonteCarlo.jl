@@ -22,7 +22,7 @@ end
 
 export GaussianCopulaBivariateLogProcess;
 
-function simulate(mcProcess::GaussianCopulaBivariateLogProcess,spotData::equitySpotData,mcBaseData::MonteCarloConfiguration{type1,type2,type3,type4},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AbstractMonteCarloMethod, type4 <: BaseMode}
+function simulate(mcProcess::GaussianCopulaBivariateLogProcess,spotData::ZeroRateCurve,mcBaseData::MonteCarloConfiguration{type1,type2,type3,type4},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AbstractMonteCarloMethod, type4 <: BaseMode}
 	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;
 	if T<=0.0

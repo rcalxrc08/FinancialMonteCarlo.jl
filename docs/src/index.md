@@ -55,7 +55,7 @@ Nstep=30;
 σ=0.2;
 #Build the Structs
 mcConfig=MonteCarloConfiguration(Nsim,Nstep);
-spotData1=equitySpotData(S0,r,d);
+spotData1=ZeroRateCurve(S0,r,d);
 
 #Define The Options
 Fwd_payoff=Forward(T)

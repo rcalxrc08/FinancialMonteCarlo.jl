@@ -19,7 +19,7 @@ toll=0.8;
 mc=MonteCarloConfiguration(Nsim,Nstep);
 mc_1=MonteCarloConfiguration(Nsim,Nstep,FinancialMonteCarlo.CudaMode());
 mc_2=MonteCarloConfiguration(Nsim,Nstep,FinancialMonteCarlo.CudaMode_2());
-spotData1=equitySpotData(r);
+spotData1=ZeroRateCurve(r);
 
 FwdData=Forward(T)
 EUData=EuropeanOption(T,K)

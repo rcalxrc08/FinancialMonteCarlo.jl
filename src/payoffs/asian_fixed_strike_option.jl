@@ -28,7 +28,7 @@ end
 export AsianFixedStrikeOption;
 
 
-function payoff(S::AbstractMatrix{num},asianFixedStrikePayoff::AsianFixedStrikeOption,spotData::equitySpotData,T1::num2=asianFixedStrikePayoff.T) where{num <: Number,num2 <: Number}
+function payoff(S::AbstractMatrix{num},asianFixedStrikePayoff::AsianFixedStrikeOption,spotData::ZeroRateCurve,T1::num2=asianFixedStrikePayoff.T) where{num <: Number,num2 <: Number}
 	iscall=asianFixedStrikePayoff.isCall ? 1 : -1
 	r=spotData.r;
 	T=asianFixedStrikePayoff.T;

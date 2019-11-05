@@ -70,6 +70,6 @@ Where:\n
 		Payoff      = payoff of the Option.
 
 """
-function payoff(S::AbstractMatrix{num},optionData::AbstractPayoff,spotData::equitySpotData,T1::num2=optionData.T) where{num <: Number,num2 <: Number}
+function payoff(S::AbstractMatrix{num},optionData::AbstractPayoff,spotData::ZeroRateCurve,T1::num2=optionData.T) where{num <: Number,num2 <: Number}
 	error("Function used just for documentation")
 end

@@ -22,7 +22,7 @@ end
 export AsianFloatingStrikeOption;
 
 
-function payoff(S::AbstractMatrix{num},asianFloatingStrikePayoff::AsianFloatingStrikeOption,spotData::equitySpotData,T1::num2=asianFloatingStrikePayoff.T) where{num <: Number,num2 <: Number}
+function payoff(S::AbstractMatrix{num},asianFloatingStrikePayoff::AsianFloatingStrikeOption,spotData::ZeroRateCurve,T1::num2=asianFloatingStrikePayoff.T) where{num <: Number,num2 <: Number}
 	iscall=asianFloatingStrikePayoff.isCall ? 1 : -1
 	r=spotData.r;
 	T=asianFloatingStrikePayoff.T;

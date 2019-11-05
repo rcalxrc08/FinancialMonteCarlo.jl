@@ -49,7 +49,7 @@ end
 
 export HestonProcess;
 
-function simulate(mcProcess::HestonProcess,spotData::equitySpotData,mcBaseData::MonteCarloConfiguration{type1,type2,type3,SerialMode},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: StandardMC}
+function simulate(mcProcess::HestonProcess,spotData::ZeroRateCurve,mcBaseData::MonteCarloConfiguration{type1,type2,type3,SerialMode},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: StandardMC}
 	r=spotData.r;
 	S0=mcProcess.underlying.S0;
 	d=dividend(mcProcess);
@@ -88,7 +88,7 @@ function simulate(mcProcess::HestonProcess,spotData::equitySpotData,mcBaseData::
 
 end
 
-function simulate(mcProcess::HestonProcess,spotData::equitySpotData,mcBaseData::MonteCarloConfiguration{type1,type2,type3,SerialMode},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AntitheticMC}
+function simulate(mcProcess::HestonProcess,spotData::ZeroRateCurve,mcBaseData::MonteCarloConfiguration{type1,type2,type3,SerialMode},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AntitheticMC}
 	r=spotData.r;
 	S0=mcProcess.underlying.S0;
 	d=dividend(mcProcess);

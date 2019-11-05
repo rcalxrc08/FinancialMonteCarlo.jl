@@ -12,7 +12,7 @@ Nstep=30;
 sigma=0.2; 
 
 McConfig=MonteCarloConfiguration(Nsim,Nstep);
-spotData1=equitySpotData(r);
+spotData1=ZeroRateCurve(r);
 
 @show "Test Subordinated Brownian Motion Parameters"
 drift=0.0;

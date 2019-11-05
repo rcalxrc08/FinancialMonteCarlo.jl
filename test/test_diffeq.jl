@@ -22,7 +22,7 @@ tspan = (0.0,T)
 #Definition of the SDE
 prob = SDEProblem(dr_,g_1,u0,tspan)
 monte_prob = MonteCarloProblem(prob)
-spotData1=equitySpotData(r);
+spotData1=ZeroRateCurve(r);
 
 
 FwdData=Forward(T)
