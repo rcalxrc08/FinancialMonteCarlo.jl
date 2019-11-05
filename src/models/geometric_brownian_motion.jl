@@ -7,22 +7,22 @@ Where:\n
 		σ	=	volatility of the process.
 		μ	=	drift of the process.
 """
-mutable struct GeometricBrownianMotion{num <: Number, num1 <: Number}<:ItoProcess
+mutable struct GeometricBrownianMotion{num <: Number, num1 <: Number, num2 <: Number , num3 <: Number}<:ItoProcess
 	σ::num
 	μ::num1
-	underlying::Underlying
-	function GeometricBrownianMotion(σ::num,μ::num1,underlying::Underlying) where {num <: Number , num1 <: Number}
+	underlying::Underlying{num2,num3}
+	function GeometricBrownianMotion(σ::num,μ::num1,underlying::Underlying{num2,num3}) where {num <: Number , num1 <: Number, num2 <: Number, num3 <: Number}
         if σ <= 0.0
             error("Volatility must be positive")
         else
-            return new{num,num1}(σ,μ,underlying)
+            return new{num,num1,num2,num3}(σ,μ,underlying)
         end
     end
 	function GeometricBrownianMotion(σ::num,μ::num1,S0::num2) where {num <: Number , num1 <: Number, num2 <: Number}
         if σ <= 0.0
             error("Volatility must be positive")
         else
-            return new{num,num1}(σ,μ,Underlying(S0))
+            return new{num,num1,num2,Float64}(σ,μ,Underlying(S0))
         end
     end
 end

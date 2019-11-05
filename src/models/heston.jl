@@ -11,15 +11,15 @@ Where:\n
 		ρ	=	??volatility of the process.
 		θ	=	??drift of the process.
 """
-mutable struct HestonProcess{num <: Number, num1 <: Number , num2 <: Number , num3 <: Number , num4 <: Number, num5 <:Number}<:ItoProcess
+mutable struct HestonProcess{num <: Number, num1 <: Number , num2 <: Number , num3 <: Number , num4 <: Number, num5 <:Number, nums0 <: Number, numd <: Number}<:ItoProcess
 	σ::num
 	σ_zero::num1
 	λ::num2
 	κ::num3
 	ρ::num4
 	θ::num5
-	underlying::Underlying
-	function HestonProcess(σ::num,σ_zero::num1,λ::num2,	κ::num3,ρ::num4,θ::num5,underlying::Underlying) where {num <: Number, num1 <: Number,num2 <: Number,num3 <: Number,num4 <: Number,num5 <: Number}
+	underlying::Underlying{nums0,numd}
+	function HestonProcess(σ::num,σ_zero::num1,λ::num2,	κ::num3,ρ::num4,θ::num5,underlying::Underlying{nums0,numd}) where {num <: Number, num1 <: Number,num2 <: Number,num3 <: Number,num4 <: Number,num5 <: Number, nums0 <: Number, numd <: Number}
         if σ_zero<=0.0
 			error("initial volatility must be positive");
 		elseif σ<=0.0
@@ -29,7 +29,7 @@ mutable struct HestonProcess{num <: Number, num1 <: Number , num2 <: Number , nu
 		elseif !(-1.0<=ρ<=1.0)
 			error("ρ must be a correlation");
         else
-            return new{num,num1,num2,num3,num4,num5}(σ,σ_zero,λ,κ,ρ,θ,underlying)
+            return new{num,num1,num2,num3,num4,num5,nums0,numd}(σ,σ_zero,λ,κ,ρ,θ,underlying)
         end
     end
 	function HestonProcess(σ::num,σ_zero::num1,λ::num2,	κ::num3,ρ::num4,θ::num5,S0::num6) where {num <: Number, num1 <: Number,num2 <: Number,num3 <: Number,num4 <: Number,num5 <: Number, num6 <: Number}
@@ -42,7 +42,7 @@ mutable struct HestonProcess{num <: Number, num1 <: Number , num2 <: Number , nu
 		elseif !(-1.0<=ρ<=1.0)
 			error("ρ must be a correlation");
         else
-            return new{num,num1,num2,num3,num4,num5}(σ,σ_zero,λ,κ,ρ,θ,Underlying(S0))
+            return new{num,num1,num2,num3,num4,num5,num6,Float64}(σ,σ_zero,λ,κ,ρ,θ,Underlying(S0))
         end
     end
 end

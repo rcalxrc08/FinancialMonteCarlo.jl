@@ -7,11 +7,11 @@ Where:\n
 		η  =	Array of volatilities.
 		λ  = 	Array of weights.
 """
-mutable struct LogNormalMixture{num <: Number,num2 <: Number}<:ItoProcess
+mutable struct LogNormalMixture{num <: Number,num2 <: Number, nums0 <: Number, numd <: Number}<:ItoProcess
 	η::Array{num,1}
 	λ::Array{num2,1}
-	underlying::Underlying
-	function LogNormalMixture(η::Array{num,1},λ::Array{num2,1},underlying::Underlying) where {num <: Number,num2 <: Number}
+	underlying::Underlying{nums0,numd}
+	function LogNormalMixture(η::Array{num,1},λ::Array{num2,1},underlying::Underlying{nums0,numd}) where {num <: Number,num2 <: Number, nums0 <: Number, numd <: Number}
         if minimum(η) <= 0.0
             error("Volatilities must be positive")
         elseif minimum(λ) <= 0.0
@@ -21,7 +21,7 @@ mutable struct LogNormalMixture{num <: Number,num2 <: Number}<:ItoProcess
         elseif length(λ) != length(η)-1
             error("Check vector lengths")
         else
-            return new{num,num2}(η,λ,underlying)
+            return new{num,num2,nums0,numd}(η,λ,underlying)
         end
     end
 	function LogNormalMixture(η::Array{num,1},λ::Array{num2,1},S0::num3) where {num <: Number,num2 <: Number, num3 <:Number}
@@ -34,7 +34,7 @@ mutable struct LogNormalMixture{num <: Number,num2 <: Number}<:ItoProcess
         elseif length(λ) != length(η)-1
             error("Check vector lengths")
         else
-            return new{num,num2}(η,λ,Underlying(S0))
+            return new{num,num2,num3,Float64}(η,λ,Underlying(S0))
         end
     end
 end

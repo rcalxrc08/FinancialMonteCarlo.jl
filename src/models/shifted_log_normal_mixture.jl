@@ -8,12 +8,12 @@ Where:\n
 		λ  = 	Array of weights.
 		α  = 	shift.
 """
-mutable struct ShiftedLogNormalMixture{num <: Number,num2 <: Number, num3 <: Number}<:ItoProcess
+mutable struct ShiftedLogNormalMixture{num <: Number,num2 <: Number, num3 <: Number, nums0 <: Number, numd <: Number}<:ItoProcess
 	η::Array{num,1}
 	λ::Array{num2,1}
 	α::num3
-	underlying::Underlying
-	function ShiftedLogNormalMixture(η::Array{num,1},λ::Array{num2,1},α::num3,underlying::Underlying) where {num <: Number,num2 <: Number, num3 <: Number}
+	underlying::Underlying{nums0,numd}
+	function ShiftedLogNormalMixture(η::Array{num,1},λ::Array{num2,1},α::num3,underlying::Underlying{nums0,numd}) where {num <: Number,num2 <: Number, num3 <: Number, nums0 <: Number, numd <: Number}
         if minimum(η) <= 0.0
             error("Volatilities must be positive")
         elseif minimum(λ) <= 0.0
@@ -23,7 +23,7 @@ mutable struct ShiftedLogNormalMixture{num <: Number,num2 <: Number, num3 <: Num
         elseif length(λ) != length(η)-1
             error("Check vector lengths")
         else
-            return new{num,num2,num3}(η,λ,α,underlying)
+            return new{num,num2,num3,nums0,numd}(η,λ,α,underlying)
         end
     end
 	function ShiftedLogNormalMixture(η::Array{num,1},λ::Array{num2,1},α::num3,S0::num4) where {num <: Number,num2 <: Number, num3 <: Number, num4 <: Number}
@@ -36,7 +36,7 @@ mutable struct ShiftedLogNormalMixture{num <: Number,num2 <: Number, num3 <: Num
         elseif length(λ) != length(η)-1
             error("Check vector lengths")
         else
-            return new{num,num2,num3}(η,λ,α,Underlying(S0))
+            return new{num,num2,num3,num4,Float64}(η,λ,α,Underlying(S0))
         end
     end
 end

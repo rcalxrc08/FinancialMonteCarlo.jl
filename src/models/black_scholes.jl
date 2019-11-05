@@ -6,21 +6,21 @@ Struct for Black Scholes Process
 Where:\n
 		σ	=	volatility of the process.
 """
-mutable struct BlackScholesProcess{num<:Number}<:ItoProcess
+mutable struct BlackScholesProcess{num <: Number, num1 <: Number, num2 <: Number}<:ItoProcess
 	σ::num
-	underlying::Underlying
+	underlying::Underlying{num1,num2}
 	function BlackScholesProcess(σ::num, S0::num1) where {num <: Number, num1 <: Number}
         if σ <= 0.0
             error("Volatility must be positive")
         else
-            return new{num}(σ,Underlying(S0))
+            return new{num,num1,Float64}(σ,Underlying(S0))
         end
     end
-	function BlackScholesProcess(σ::num,underlying::Underlying) where {num <: Number}
+	function BlackScholesProcess(σ::num,underlying::Underlying{num1,num2}) where {num <: Number, num1 <: Number, num2 <: Number}
         if σ <= 0.0
             error("Volatility must be positive")
         else
-            return new{num}(σ,underlying)
+            return new{num,num1,num2}(σ,underlying)
         end
     end
 end

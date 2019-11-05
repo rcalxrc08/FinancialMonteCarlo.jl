@@ -10,14 +10,14 @@ Where:\n
 		λ₊ =	positive jump size.
 		λ₋ =	negative jump size.
 """
-mutable struct KouProcess{num <: Number, num1 <: Number,num2 <: Number,num3 <: Number,num4 <: Number}<:FiniteActivityProcess
+mutable struct KouProcess{num <: Number, num1 <: Number,num2 <: Number,num3 <: Number,num4 <: Number, nums0 <: Number, numd <: Number}<:FiniteActivityProcess
 	σ::num
 	λ::num1
 	p::num2
 	λ₊::num3
 	λ₋::num4
-	underlying::Underlying
-	function KouProcess(σ::num,λ::num1,p::num2,λ₊::num3,λ₋::num4,underlying::Underlying) where {num <: Number, num1 <: Number,num2 <: Number,num3 <: Number,num4 <: Number}
+	underlying::Underlying{nums0,numd}
+	function KouProcess(σ::num,λ::num1,p::num2,λ₊::num3,λ₋::num4,underlying::Underlying{nums0,numd}) where {num <: Number, num1 <: Number,num2 <: Number,num3 <: Number,num4 <: Number, nums0 <: Number, numd <: Number}
         if σ<=0.0
 			error("volatility must be positive");
 		elseif λ<=0.0
@@ -29,7 +29,7 @@ mutable struct KouProcess{num <: Number, num1 <: Number,num2 <: Number,num3 <: N
 		elseif !(0<=p<=1)
 			error("p must be a probability")
         else
-            return new{num,num1,num2,num3,num4}(σ,λ,p,λ₊,λ₋,underlying)
+            return new{num,num1,num2,num3,num4,nums0,numd}(σ,λ,p,λ₊,λ₋,underlying)
         end
     end
 	function KouProcess(σ::num,λ::num1,p::num2,λ₊::num3,λ₋::num4,S0::num5) where {num <: Number, num1 <: Number,num2 <: Number,num3 <: Number,num4 <: Number, num5 <: Number}
@@ -44,7 +44,7 @@ mutable struct KouProcess{num <: Number, num1 <: Number,num2 <: Number,num3 <: N
 		elseif !(0<=p<=1)
 			error("p must be a probability")
         else
-            return new{num,num1,num2,num3,num4}(σ,λ,p,λ₊,λ₋,Underlying(S0))
+            return new{num,num1,num2,num3,num4,num5,Float64}(σ,λ,p,λ₊,λ₋,Underlying(S0))
         end
     end
 end

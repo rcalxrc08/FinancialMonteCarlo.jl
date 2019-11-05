@@ -8,12 +8,12 @@ Where:\n
 		θ = variance of volatility.
 		κ =	skewness of volatility.
 """
-mutable struct VarianceGammaProcess{num <: Number, num1 <: Number,num2<:Number}<:InfiniteActivityProcess
+mutable struct VarianceGammaProcess{num <: Number, num1 <: Number, num2 <: Number, nums0 <: Number, numd <: Number}<:InfiniteActivityProcess
 	σ::num
 	θ::num1
 	κ::num2
-	underlying::Underlying
-	function VarianceGammaProcess(σ::num,θ::num1,κ::num2,underlying::Underlying) where {num <: Number, num1 <: Number,num2 <: Number}
+	underlying::Underlying{nums0,numd}
+	function VarianceGammaProcess(σ::num,θ::num1,κ::num2,underlying::Underlying) where {num <: Number, num1 <: Number, num2 <: Number, nums0 <: Number, numd <: Number}
         if σ<=0.0
 			error("volatility must be positive");
 		elseif κ<=0.0
@@ -21,10 +21,10 @@ mutable struct VarianceGammaProcess{num <: Number, num1 <: Number,num2<:Number}<
 		elseif 1-σ*σ*κ/2.0-θ*κ<0.0
 			error("Parameters with unfeasible values")
 		else
-            return new{num,num1,num2}(σ,θ,κ,underlying)
+            return new{num,num1,num2,nums0,numd}(σ,θ,κ,underlying)
         end
     end
-	function VarianceGammaProcess(σ::num,θ::num1,κ::num2,S0::num3) where {num <: Number, num1 <: Number,num2 <: Number, num3 <: Number}
+	function VarianceGammaProcess(σ::num,θ::num1,κ::num2,S0::num3) where {num <: Number, num1 <: Number, num2 <: Number, num3 <: Number}
         if σ<=0.0
 			error("volatility must be positive");
 		elseif κ<=0.0
@@ -32,7 +32,7 @@ mutable struct VarianceGammaProcess{num <: Number, num1 <: Number,num2<:Number}<
 		elseif 1-σ*σ*κ/2.0-θ*κ<0.0
 			error("Parameters with unfeasible values")
 		else
-            return new{num,num1,num2}(σ,θ,κ,Underlying(S0))
+            return new{num,num1,num2,num3,Float64}(σ,θ,κ,Underlying(S0))
         end
     end
 end
