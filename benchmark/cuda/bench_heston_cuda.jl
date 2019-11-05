@@ -20,7 +20,7 @@ mc_1=MonteCarloConfiguration(Nsim,Nstep,FinancialMonteCarlo.CudaMode());
 mc_2=MonteCarloConfiguration(Nsim,Nstep,FinancialMonteCarlo.CudaMode_2());
 toll=0.8;
 
-spotData1=equitySpotData(S0,r,d);
+spotData1=ZeroRateCurve(r);
 
 FwdData=Forward(T)
 EUData=EuropeanOption(T,K)
@@ -28,7 +28,7 @@ AMData=AmericanOption(T,K)
 BarrierData=BarrierOptionDownOut(T,K,D)
 AsianFloatingStrikeData=AsianFloatingStrikeOption(T)
 AsianFixedStrikeData=AsianFixedStrikeOption(T,K)
-Model=HestonProcess(sigma,sigma_zero,lambda,kappa,rho,theta);
+Model=HestonProcess(sigma,sigma_zero,lambda,kappa,rho,theta,Underlying(S0,d));
 
 @show "CUDA_1 fwd"
 @btime FwdPrice=pricer(Model,spotData1,mc_1,FwdData);

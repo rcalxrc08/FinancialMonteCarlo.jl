@@ -16,7 +16,7 @@ function pricer_macro(model_type)
 				Price     = Price of the derivative
 
 		"""	
-		function pricer(mcProcess::$model_type,spotData::equitySpotData,mcConfig::MonteCarloConfiguration,abstractPayoff::AbstractPayoff)
+		function pricer(mcProcess::$model_type,spotData::ZeroRateCurve,mcConfig::MonteCarloConfiguration,abstractPayoff::AbstractPayoff)
 
 			set_seed(mcConfig)
 			T=maturity(abstractPayoff);
@@ -31,7 +31,7 @@ end
 pricer_macro(BaseProcess)
 
 function pricer_macro_array(model_type)
-	@eval function pricer(mcProcess::$model_type,spotData::equitySpotData,mcConfig::MonteCarloConfiguration,abstractPayoffs::Array{abstractPayoff}) where {abstractPayoff <: AbstractPayoff}
+	@eval function pricer(mcProcess::$model_type,spotData::ZeroRateCurve,mcConfig::MonteCarloConfiguration,abstractPayoffs::Array{abstractPayoff}) where {abstractPayoff <: AbstractPayoff}
 		set_seed(mcConfig)
 		maxT=maximum([maturity(abstractPayoff) for abstractPayoff in abstractPayoffs])
 		S=simulate(mcProcess,spotData,mcConfig,maxT)
@@ -42,7 +42,7 @@ function pricer_macro_array(model_type)
 end
 
 function pricer_macro_dict(model_type)
-	@eval function pricer(mcProcess::$model_type,spotData::equitySpotData,mcConfig::MonteCarloConfiguration,dict_::Dict{FinancialMonteCarlo.AbstractPayoff,Number})
+	@eval function pricer(mcProcess::$model_type,spotData::ZeroRateCurve,mcConfig::MonteCarloConfiguration,dict_::Dict{FinancialMonteCarlo.AbstractPayoff,Number})
 		set_seed(mcConfig)
 		abstractPayoffs=keys(dict_);
 		maxT=maximum([maturity(abstractPayoff) for abstractPayoff in abstractPayoffs])
@@ -52,6 +52,20 @@ function pricer_macro_dict(model_type)
 		return price;
 	end
 end
+
+function pricer(mcProcess::Dict{String,FinancialMonteCarlo.AbstractMonteCarloProcess},spotData::ZeroRateCurve,mcConfig::MonteCarloConfiguration,dict_::Dict{String,Dict{FinancialMonteCarlo.AbstractPayoff,Number}})
+		set_seed(mcConfig)
+		underlyings_models=keys(mcProcess)
+		underlyings_payoff=keys(dict_)
+		price=0.0;
+		for under_ in underlyings_payoff
+			options=dict_[under_]
+			model=mcProcess[under_]
+			price=price+pricer(model,spotData,mcConfig,options);
+		end
+		
+		return price;
+	end
 
 pricer_macro_array(BaseProcess)
 pricer_macro_dict(BaseProcess)

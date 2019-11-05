@@ -10,13 +10,14 @@ Where:\n
 		λ₊ =	positive jump size.
 		λ₋ =	negative jump size.
 """
-mutable struct KouProcess{num <: Number, num1 <: Number,num2 <: Number,num3 <: Number,num4 <: Number}<:FiniteActivityProcess
+mutable struct KouProcess{num <: Number, num1 <: Number,num2 <: Number,num3 <: Number,num4 <: Number, nums0 <: Number, numd <: Number}<:FiniteActivityProcess
 	σ::num
 	λ::num1
 	p::num2
 	λ₊::num3
 	λ₋::num4
-	function KouProcess(σ::num,λ::num1,p::num2,λ₊::num3,λ₋::num4) where {num <: Number, num1 <: Number,num2 <: Number,num3 <: Number,num4 <: Number}
+	underlying::Underlying{nums0,numd}
+	function KouProcess(σ::num,λ::num1,p::num2,λ₊::num3,λ₋::num4,underlying::Underlying{nums0,numd}) where {num <: Number, num1 <: Number,num2 <: Number,num3 <: Number,num4 <: Number, nums0 <: Number, numd <: Number}
         if σ<=0.0
 			error("volatility must be positive");
 		elseif λ<=0.0
@@ -28,17 +29,32 @@ mutable struct KouProcess{num <: Number, num1 <: Number,num2 <: Number,num3 <: N
 		elseif !(0<=p<=1)
 			error("p must be a probability")
         else
-            return new{num,num1,num2,num3,num4}(σ,λ,p,λ₊,λ₋)
+            return new{num,num1,num2,num3,num4,nums0,numd}(σ,λ,p,λ₊,λ₋,underlying)
+        end
+    end
+	function KouProcess(σ::num,λ::num1,p::num2,λ₊::num3,λ₋::num4,S0::num5) where {num <: Number, num1 <: Number,num2 <: Number,num3 <: Number,num4 <: Number, num5 <: Number}
+        if σ<=0.0
+			error("volatility must be positive");
+		elseif λ<=0.0
+			error("jump intensity must be positive");
+		elseif λ₊<=0.0
+			error("positive λ must be positive");
+		elseif λ₋<=0.0
+			error("negative λ must be positive");
+		elseif !(0<=p<=1)
+			error("p must be a probability")
+        else
+            return new{num,num1,num2,num3,num4,num5,Float64}(σ,λ,p,λ₊,λ₋,Underlying(S0))
         end
     end
 end
 
 export KouProcess;
 
-function simulate(mcProcess::KouProcess,spotData::equitySpotData,mcBaseData::MonteCarloConfiguration{type1,type2,type3,type4},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AbstractMonteCarloMethod, type4 <: BaseMode}
+function simulate(mcProcess::KouProcess,spotData::ZeroRateCurve,mcBaseData::MonteCarloConfiguration{type1,type2,type3,type4},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AbstractMonteCarloMethod, type4 <: BaseMode}
 	r=spotData.r;
-	S0=spotData.S0;
-	d=spotData.d;
+	S0=mcProcess.underlying.S0;
+	d=dividend(mcProcess);
 	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;
 	σ=mcProcess.σ;
@@ -54,7 +70,7 @@ function simulate(mcProcess::KouProcess,spotData::equitySpotData,mcBaseData::Mon
 	## Simulate
 	# r-d-psi(-i)
 	drift_RN=r-d-σ^2/2-λ1*(p/(λ₊-1)-(1-p)/(λ₋+1));
-	X=Matrix(simulate(BrownianMotion(σ,drift_RN),spotData,mcBaseData,T))
+	X=Matrix(simulate(BrownianMotion(σ,drift_RN,Underlying(0.0)),spotData,mcBaseData,T))
 
 	t=range(0.0, stop=T, length=Nstep+1);
 	PoissonRV=Poisson(λ1*T);

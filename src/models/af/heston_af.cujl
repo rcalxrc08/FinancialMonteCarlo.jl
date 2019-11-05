@@ -1,5 +1,5 @@
 
-function simulate(mcProcess::HestonProcess,spotData::equitySpotData,mcBaseData::MonteCarloConfiguration{type1,type2,type3,AFMode},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: StandardMC}
+function simulate(mcProcess::HestonProcess,spotData::ZeroRateCurve,mcBaseData::MonteCarloConfiguration{type1,type2,type3,AFMode},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: StandardMC}
 	@show "arrafire"
 	r=spotData.r;
 	S0=spotData.S0;
@@ -45,7 +45,7 @@ function simulate(mcProcess::HestonProcess,spotData::equitySpotData,mcBaseData::
 end
 
 
-function simulate(mcProcess::HestonProcess,spotData::equitySpotData,mcBaseData::MonteCarloConfiguration{type1,type2,type3,AFMode},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AntitheticMC}
+function simulate(mcProcess::HestonProcess,spotData::ZeroRateCurve,mcBaseData::MonteCarloConfiguration{type1,type2,type3,AFMode},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AntitheticMC}
 	@show "arrafire"
 	r=spotData.r;
 	S0=spotData.S0;

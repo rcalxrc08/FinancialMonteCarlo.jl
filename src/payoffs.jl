@@ -41,6 +41,9 @@ include("payoffs/asian_floating_strike_option.jl")
 
 ### Operations and Strategies
 include("payoffs/operations.jl")
+include("payoffs/operations2.jl")
+include("payoffs/bi_european_option.jl")
+include("payoffs/n_european_option.jl")
 
 ##Support
 
@@ -67,6 +70,6 @@ Where:\n
 		Payoff      = payoff of the Option.
 
 """
-function payoff(S::AbstractMatrix{num},optionData::AbstractPayoff,spotData::equitySpotData,T1::num2=optionData.T) where{num <: Number,num2 <: Number}
+function payoff(S::AbstractMatrix{num},optionData::AbstractPayoff,spotData::ZeroRateCurve,T1::num2=optionData.T) where{num <: Number,num2 <: Number}
 	error("Function used just for documentation")
 end

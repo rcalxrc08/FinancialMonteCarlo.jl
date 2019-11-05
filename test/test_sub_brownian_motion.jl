@@ -12,17 +12,17 @@ Nstep=30;
 sigma=0.2; 
 
 McConfig=MonteCarloConfiguration(Nsim,Nstep);
-spotData1=equitySpotData(S0,r,d);
+spotData1=ZeroRateCurve(r);
 
 @show "Test Subordinated Brownian Motion Parameters"
 drift=0.0;
 dt=T/Nstep;
 sub=dt*ones(Nsim,Nstep)
 
-@test_throws(ErrorException,simulate(SubordinatedBrownianMotion(sigma,drift),spotData1,McConfig,-T,sub));
-@test_throws(ErrorException,SubordinatedBrownianMotion(-sigma,drift))
+@test_throws(ErrorException,simulate(SubordinatedBrownianMotion(sigma,drift,Underlying(S0,d)),spotData1,McConfig,-T,sub));
+@test_throws(ErrorException,SubordinatedBrownianMotion(-sigma,drift,Underlying(S0,d)))
 
 
-@test_throws(ErrorException,SubordinatedBrownianMotion(-sigma,drift))
+@test_throws(ErrorException,SubordinatedBrownianMotion(-sigma,drift,Underlying(S0,d)))
 subw=dt*ones(1,1);
-@test_throws(ErrorException,simulate(SubordinatedBrownianMotion(sigma,drift),spotData1,McConfig,T,subw));
+@test_throws(ErrorException,simulate(SubordinatedBrownianMotion(sigma,drift,Underlying(S0,d)),spotData1,McConfig,T,subw));

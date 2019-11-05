@@ -19,7 +19,7 @@ lamm=20.0;
 mc=MonteCarloConfiguration(Nsim,Nstep);
 toll=0.8;
 
-spotData1=equitySpotData(S0,r,d);
+spotData1=ZeroRateCurve(r);
 
 FwdData=Forward(T)
 EUData=EuropeanOption(T,K)
@@ -27,7 +27,7 @@ AMData=AmericanOption(T,K)
 BarrierData=BarrierOptionDownOut(T,K,D)
 AsianFloatingStrikeData=AsianFloatingStrikeOption(T)
 AsianFixedStrikeData=AsianFixedStrikeOption(T,K)
-Model=KouProcess(sigma,lam,p,lamp,lamm);
+Model=KouProcess(sigma,lam,p,lamp,lamm,Underlying(S0,d));
 
 @btime FwdPrice=pricer(Model,spotData1,mc,FwdData);
 @btime EuPrice=pricer(Model,spotData1,mc,EUData);

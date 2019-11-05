@@ -1,8 +1,22 @@
 abstract type BaseProcess end
 
+struct Underlying{num <: Number, num2 <: Number}
+	S0::num
+	d::num2
+	function Underlying(S0::num_,d::num_2=0.0) where {num_ <: Number, num_2 <: Number}
+		return new{num_,num_2}(S0,d)
+	end
+end
+
+export Underlying;
+	
 abstract type AbstractMonteCarloProcess <: BaseProcess end
 
-abstract type LevyProcess<:AbstractMonteCarloProcess end
+abstract type ScalarMonteCarloProcess <: AbstractMonteCarloProcess end
+
+abstract type VectorialMonteCarloProcess <: AbstractMonteCarloProcess end
+
+abstract type LevyProcess<:ScalarMonteCarloProcess end
 
 abstract type ItoProcess<:LevyProcess end
 
@@ -10,7 +24,11 @@ abstract type FiniteActivityProcess<:LevyProcess end
 
 abstract type InfiniteActivityProcess<:LevyProcess end
 
+dividend(x::mc) where {mc <: ScalarMonteCarloProcess} = x.underlying.d;
+
 export AbstractMonteCarloProcess
+export ScalarMonteCarloProcess
+export VectorialMonteCarloProcess
 export ItoProcess
 export LevyProcess
 export FiniteActivityProcess
@@ -36,6 +54,12 @@ include("models/merton.jl")
 include("models/subordinated_brownian_motion.jl")
 include("models/variance_gamma.jl")
 include("models/normal_inverse_gaussian.jl")
+
+
+include("models/bivariate.jl")
+include("models/nvariate.jl")
+include("models/bivariate_log.jl")
+include("models/nvariate_log.jl")
 
 ############### Display Function
 
@@ -133,6 +157,8 @@ Where:\n
 		S      = Matrix with path of underlying.
 
 """
-function simulate(mcProcess::BaseProcess,spotData::equitySpotData,mcBaseData::MonteCarloConfiguration{type1,type2,type3,type4},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AbstractMonteCarloMethod, type4 <: BaseMode}
+function simulate(mcProcess::BaseProcess,spotData::ZeroRateCurve,mcBaseData::MonteCarloConfiguration{type1,type2,type3,type4},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AbstractMonteCarloMethod, type4 <: BaseMode}
 	error("Function used just for documentation")
 end
+
+include("models/operations.jl")

@@ -19,10 +19,10 @@ mc=MonteCarloConfiguration(Nsim,Nstep);
 mc1=MonteCarloConfiguration(Nsim,Nstep,FinancialMonteCarlo.AntitheticMC());
 toll=0.8;
 
-spotData1=equitySpotData(S0,r,d);
+spotData1=ZeroRateCurve(r);
 @test_throws(ErrorException,MonteCarloConfiguration(-Nsim,Nstep))
 @test_throws(ErrorException,MonteCarloConfiguration(Nsim,-Nstep))
-@test_throws(ErrorException,equitySpotData(-S0,r,d));
+@test_throws(ErrorException,ZeroRateCurve(-S0,r,d));
 #####################################################################
 #Payoff Structs Test: Negative TTM
 @test_throws(ErrorException,Forward(Tneg));

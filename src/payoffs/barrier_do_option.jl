@@ -30,7 +30,7 @@ end
 export BarrierOptionDownOut;
 
 
-function payoff(S::AbstractMatrix{num},barrierPayoff::BarrierOptionDownOut,spotData::equitySpotData,T1::num2=barrierPayoff.T) where{num <: Number,num2 <: Number}
+function payoff(S::AbstractMatrix{num},barrierPayoff::BarrierOptionDownOut,spotData::ZeroRateCurve,T1::num2=barrierPayoff.T) where{num <: Number,num2 <: Number}
 	iscall=barrierPayoff.isCall ? 1 : -1
 	r=spotData.r;
 	T=barrierPayoff.T;

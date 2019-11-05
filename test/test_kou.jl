@@ -18,7 +18,7 @@ mc=MonteCarloConfiguration(Nsim,Nstep);
 mc1=MonteCarloConfiguration(Nsim,Nstep,FinancialMonteCarlo.AntitheticMC());
 toll=0.8;
 
-spotData1=equitySpotData(S0,r,d);
+spotData1=ZeroRateCurve(r);
 
 FwdData=Forward(T)
 EUData=EuropeanOption(T,K)
@@ -26,7 +26,7 @@ AMData=AmericanOption(T,K)
 BarrierData=BarrierOptionDownOut(T,K,D)
 AsianData1=AsianFloatingStrikeOption(T)
 AsianData2=AsianFixedStrikeOption(T,K)
-Model=KouProcess(sigma,lam,p,lamp,lamm);
+Model=KouProcess(sigma,lam,p,lamp,lamm,Underlying(S0,d));
 
 @show FwdPrice=pricer(Model,spotData1,mc,FwdData);
 @show EuPrice=pricer(Model,spotData1,mc,EUData);
@@ -58,9 +58,9 @@ tollanti=0.6
 
 @show "Test Kou Parameters"
 
-@test_throws(ErrorException,simulate(KouProcess(sigma, lam, p,  lamp,  lamm),spotData1,mc,-T));
-@test_throws(ErrorException,KouProcess(-sigma,lam, p,  lamp,  lamm))
-@test_throws(ErrorException,KouProcess( sigma, -lam, p,  lamp,  lamm))
-@test_throws(ErrorException,KouProcess( sigma, lam,-p,  lamp,  lamm))
-@test_throws(ErrorException,KouProcess( sigma, lam, p, -lamp,  lamm))
-@test_throws(ErrorException,KouProcess( sigma, lam, p,  lamp, -lamm))
+@test_throws(ErrorException,simulate(KouProcess(sigma, lam, p,  lamp,  lamm,Underlying(S0,d)),spotData1,mc,-T));
+@test_throws(ErrorException,KouProcess(-sigma,lam, p,  lamp,  lamm,Underlying(S0,d)))
+@test_throws(ErrorException,KouProcess( sigma, -lam, p,  lamp,  lamm,Underlying(S0,d)))
+@test_throws(ErrorException,KouProcess( sigma, lam,-p,  lamp,  lamm,Underlying(S0,d)))
+@test_throws(ErrorException,KouProcess( sigma, lam, p, -lamp,  lamm,Underlying(S0,d)))
+@test_throws(ErrorException,KouProcess( sigma, lam, p,  lamp, -lamm,Underlying(S0,d)))

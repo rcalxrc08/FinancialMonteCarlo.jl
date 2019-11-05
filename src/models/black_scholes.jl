@@ -6,32 +6,40 @@ Struct for Black Scholes Process
 Where:\n
 		σ	=	volatility of the process.
 """
-mutable struct BlackScholesProcess{num<:Number}<:ItoProcess
+mutable struct BlackScholesProcess{num <: Number, num1 <: Number, num2 <: Number}<:ItoProcess
 	σ::num
-	function BlackScholesProcess(σ::num) where {num <: Number}
+	underlying::Underlying{num1,num2}
+	function BlackScholesProcess(σ::num, S0::num1) where {num <: Number, num1 <: Number}
         if σ <= 0.0
             error("Volatility must be positive")
         else
-            return new{num}(σ)
+            return new{num,num1,Float64}(σ,Underlying(S0))
+        end
+    end
+	function BlackScholesProcess(σ::num,underlying::Underlying{num1,num2}) where {num <: Number, num1 <: Number, num2 <: Number}
+        if σ <= 0.0
+            error("Volatility must be positive")
+        else
+            return new{num,num1,num2}(σ,underlying)
         end
     end
 end
 
 export BlackScholesProcess;
 
-function simulate(mcProcess::BlackScholesProcess,spotData::equitySpotData,mcBaseData::MonteCarloConfiguration{type1,type2,type3,type4},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AbstractMonteCarloMethod, type4 <: BaseMode}
+function simulate(mcProcess::BlackScholesProcess,spotData::ZeroRateCurve,mcBaseData::MonteCarloConfiguration{type1,type2,type3,type4},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AbstractMonteCarloMethod, type4 <: BaseMode}
 	if T<=0.0
 		error("Final time must be positive");
 	end
 	r=spotData.r;
-	S0=spotData.S0;
-	d=spotData.d;
+	S0=mcProcess.underlying.S0;
+	d=dividend(mcProcess);
 	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;
 	σ_gbm=mcProcess.σ;
 	mu_gbm=r-d;
 	
-	S=S0.*simulate(GeometricBrownianMotion(σ_gbm,mu_gbm),spotData,mcBaseData,T)
+	S=simulate(GeometricBrownianMotion(σ_gbm,mu_gbm,mcProcess.underlying),spotData,mcBaseData,T)
 	
 	return S;
 	

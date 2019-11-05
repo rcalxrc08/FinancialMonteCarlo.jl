@@ -14,15 +14,15 @@ mc=MonteCarloConfiguration(Nsim,Nstep);
 mc1=MonteCarloConfiguration(Nsim,Nstep,FinancialMonteCarlo.AntitheticMC());
 toll=0.8
 
-spotData1=equitySpotData(S0,r,d);
+spotData1=ZeroRateCurve(r);
 
-Model=BlackScholesProcess(sigma);
+Model=BlackScholesProcess(sigma,Underlying(S0,d));
 
 x=Float64[sigma,S0,r,d,T]
 
-@show ReverseDiff.gradient(x->pricer(BlackScholesProcess(x[1]),equitySpotData(x[2],x[3],x[4]),mc,Forward(x[5])), x)
-@show ReverseDiff.gradient(x->pricer(BlackScholesProcess(x[1]),equitySpotData(x[2],x[3],x[4]),mc,EuropeanOption(x[5],K)), x)
-@show ReverseDiff.gradient(x->pricer(BlackScholesProcess(x[1]),equitySpotData(x[2],x[3],x[4]),mc,AmericanOption(x[5],K)), x)
-@show ReverseDiff.gradient(x->pricer(BlackScholesProcess(x[1]),equitySpotData(x[2],x[3],x[4]),mc,BarrierOptionDownOut(x[5],K,D)), x)
-@show ReverseDiff.gradient(x->pricer(BlackScholesProcess(x[1]),equitySpotData(x[2],x[3],x[4]),mc,AsianFloatingStrikeOption(x[5])), x)
-@show ReverseDiff.gradient(x->pricer(BlackScholesProcess(x[1]),equitySpotData(x[2],x[3],x[4]),mc,AsianFixedStrikeOption(x[5],K)), x)
+@show ReverseDiff.gradient(x->pricer(BlackScholesProcess(x[1]),ZeroRateCurve(x[2],x[3],x[4]),mc,Forward(x[5])), x)
+@show ReverseDiff.gradient(x->pricer(BlackScholesProcess(x[1]),ZeroRateCurve(x[2],x[3],x[4]),mc,EuropeanOption(x[5],K)), x)
+@show ReverseDiff.gradient(x->pricer(BlackScholesProcess(x[1]),ZeroRateCurve(x[2],x[3],x[4]),mc,AmericanOption(x[5],K)), x)
+@show ReverseDiff.gradient(x->pricer(BlackScholesProcess(x[1]),ZeroRateCurve(x[2],x[3],x[4]),mc,BarrierOptionDownOut(x[5],K,D)), x)
+@show ReverseDiff.gradient(x->pricer(BlackScholesProcess(x[1]),ZeroRateCurve(x[2],x[3],x[4]),mc,AsianFloatingStrikeOption(x[5])), x)
+@show ReverseDiff.gradient(x->pricer(BlackScholesProcess(x[1]),ZeroRateCurve(x[2],x[3],x[4]),mc,AsianFixedStrikeOption(x[5],K)), x)

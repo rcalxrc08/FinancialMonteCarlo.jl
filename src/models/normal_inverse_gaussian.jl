@@ -8,11 +8,12 @@ Where:\n
 		θ = variance of volatility.
 		κ =	skewness of volatility.
 """
-mutable struct NormalInverseGaussianProcess{num <: Number, num1 <: Number,num2<:Number}<:InfiniteActivityProcess
+mutable struct NormalInverseGaussianProcess{num <: Number, num1 <: Number,num2<:Number, nums0 <: Number, numd <: Number}<:InfiniteActivityProcess
 	σ::num
 	θ::num1
 	κ::num2
-	function NormalInverseGaussianProcess(σ::num,θ::num1,κ::num2) where {num <: Number, num1 <: Number,num2 <: Number}
+	underlying::Underlying{nums0,numd}
+	function NormalInverseGaussianProcess(σ::num,θ::num1,κ::num2,underlying::Underlying{nums0,numd}) where {num <: Number, num1 <: Number,num2 <: Number, nums0 <: Number, numd <: Number}
         if σ<=0.0
 			error("volatility must be positive");
 		elseif κ<=0.0
@@ -20,17 +21,28 @@ mutable struct NormalInverseGaussianProcess{num <: Number, num1 <: Number,num2<:
 		elseif 1.0-(σ^2+2.0*θ)*κ<0.0
 			error("Parameters with unfeasible values")
 		else
-            return new{num,num1,num2}(σ,θ,κ)
+            return new{num,num1,num2,nums0,numd}(σ,θ,κ,underlying)
+        end
+    end
+	function NormalInverseGaussianProcess(σ::num,θ::num1,κ::num2,S0::num3) where {num <: Number, num1 <: Number,num2 <: Number, num3 <: Number}
+        if σ<=0.0
+			error("volatility must be positive");
+		elseif κ<=0.0
+			error("κappa must be positive");
+		elseif 1.0-(σ^2+2.0*θ)*κ<0.0
+			error("Parameters with unfeasible values")
+		else
+            return new{num,num1,num2,num3,Float64}(σ,θ,κ,Underlying(S0))
         end
     end
 end
 
 export NormalInverseGaussianProcess;
 
-function simulate(mcProcess::NormalInverseGaussianProcess,spotData::equitySpotData,mcBaseData::MonteCarloConfiguration{type1,type2,type3,type4},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AbstractMonteCarloMethod, type4 <: BaseMode}
+function simulate(mcProcess::NormalInverseGaussianProcess,spotData::ZeroRateCurve,mcBaseData::MonteCarloConfiguration{type1,type2,type3,type4},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AbstractMonteCarloMethod, type4 <: BaseMode}
 	r=spotData.r;
-	S0=spotData.S0;
-	d=spotData.d;
+	S0=mcProcess.underlying.S0;
+	d=dividend(mcProcess);
 	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;
 
@@ -50,7 +62,7 @@ function simulate(mcProcess::NormalInverseGaussianProcess,spotData::equitySpotDa
 	IGRandomVariable=InverseGaussian(dt,dt*dt/κ1);
 	dt_s=quantile.([IGRandomVariable],rand(Nsim,Nstep));
 	
-	X=simulate(SubordinatedBrownianMotion(σ,drift),spotData,mcBaseData,T,dt_s);
+	X=simulate(SubordinatedBrownianMotion(σ,drift,Underlying(0.0)),spotData,mcBaseData,T,dt_s);
 
 	S=S0.*exp.(X);
 	

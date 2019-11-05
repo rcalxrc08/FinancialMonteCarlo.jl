@@ -1,14 +1,15 @@
 
-struct equitySpotData{T1 <: Number ,T2 <: Number ,T3 <: Number}
-    S0::T1
+struct ZeroRateCurve{T2 <: Number}
+    #S0::T1
     r::T2
-    d::T3
-    function equitySpotData(S0::T1,r::T2,d::T3) where {T1 <: Number, T2 <: Number, T3 <: Number}
-        if S0 <= 0.0
-            error("Spot price must be positive")
-        else
-            return new{T1,T2,T3}(S0,r,d)
-        end
+    #d::T3
+    function ZeroRateCurve(r::T2) where {T2 <: Number}
+        #if S0 <= 0.0
+        #    error("Spot price must be positive")
+        #else
+            #return new{T1,T2,T3}(S0,r,d)
+            return new{T2}(r)
+        #end
     end
 end 
 
@@ -22,7 +23,7 @@ abstract type AbstractMonteCarloMethod <: AbstractMethod end
 struct StandardMC <: AbstractMonteCarloMethod end
 struct AntitheticMC <: AbstractMonteCarloMethod end
 
-export equitySpotData;
+export ZeroRateCurve;
 
 struct MonteCarloConfiguration{num1 <: Integer , num2 <: Integer , abstractMonteCarloMethod <: AbstractMonteCarloMethod , baseMode <: BaseMode}
 	Nsim::num1

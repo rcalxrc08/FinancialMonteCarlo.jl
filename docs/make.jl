@@ -13,6 +13,7 @@ makedocs(
 				"stochproc.md",
 				"parallel_vr.md",
 				"payoffs.md",
+				"multivariate.md",
 				"intdiffeq.md",
 				"extends.md",
 			])
