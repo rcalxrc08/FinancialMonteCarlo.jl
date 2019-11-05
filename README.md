@@ -60,12 +60,13 @@ Nstep=30;
 σ=0.2;
 #Build the Structs
 mcConfig=MonteCarloConfiguration(Nsim,Nstep);
-spotData=equitySpotData(S0,r,d);
+spotData=ZeroRateCurve(r);
+underlying=Underlying(S0,d);
 
 #Define The Options
 EU_payoff=EuropeanOption(T,K)
 #Define the Model
-Model=BlackScholesProcess(σ);
+Model=BlackScholesProcess(σ,underlying);
 
 #Price
 @show EuPrice=pricer(Model,spotData,mcConfig,EU_payoff);
