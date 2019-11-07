@@ -13,7 +13,7 @@ mutable struct VarianceGammaProcess{num <: Number, num1 <: Number, num2 <: Numbe
 	θ::num1
 	κ::num2
 	underlying::Underlying{nums0,numd}
-	function VarianceGammaProcess(σ::num,θ::num1,κ::num2,underlying::Underlying) where {num <: Number, num1 <: Number, num2 <: Number, nums0 <: Number, numd <: Number}
+	function VarianceGammaProcess(σ::num,θ::num1,κ::num2,underlying::Underlying{nums0,numd}) where {num <: Number, num1 <: Number, num2 <: Number, nums0 <: Number, numd <: Number}
         if σ<=0.0
 			error("volatility must be positive");
 		elseif κ<=0.0

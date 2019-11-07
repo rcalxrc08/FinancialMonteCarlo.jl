@@ -44,8 +44,8 @@ end
 function delta_macro_dict(model_type)
 	@eval function delta(mcProcess::$model_type,spotData::ZeroRateCurve,mcConfig::MonteCarloConfiguration,abstractPayoffs::Dict{FinancialMonteCarlo.AbstractPayoff,Number},dS0::Real=1e-7)
 			Prices=pricer(mcProcess,spotData,mcConfig,abstractPayoffs);
-			spotData_1=ZeroRateCurve(spotData.S0+dS0,spotData.r,spotData.d);
-			PricesUp=pricer(mcProcess,spotData_1,mcConfig,abstractPayoffs);
+			mcProcess.underlying.S0+=dS0;
+			PricesUp=pricer(mcProcess,spotData,mcConfig,abstractPayoffs);
 			Delta=(PricesUp.-Prices)./dS0;
 		
 		return Delta;
