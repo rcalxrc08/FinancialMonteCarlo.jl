@@ -10,11 +10,12 @@ function payoff(S::AbstractMatrix{num},spotData::ZeroRateCurve,phi::Function,T::
 	V=phi.(S[:,end]); #payoff
 	# Backward Procedure 
 	for j in Nstep:-1:2
-		inMoneyIndexes=findall(phi.(S[:,j]).>0.0);
+		Tmp=phi.(S[:,j]);
+		inMoneyIndexes=findall(Tmp.>0.0);
 		if !isempty(inMoneyIndexes)
 			S_I=S[inMoneyIndexes,j];
 			#-- Intrinsic Value
-			IV=phi.(S_I);
+			IV=Tmp[inMoneyIndexes];
 			#-- Continuation Value 
 			#- Linear Regression on Quadratic Form
 			A=[ones(length(S_I)) S_I S_I.^2];
@@ -26,7 +27,6 @@ function payoff(S::AbstractMatrix{num},spotData::ZeroRateCurve,phi::Function,T::
 			#alpha=A\b;
 			#Continuation Value
 			CV=A*alpha;
-			#@show size(CV)
 			#----------
 			# Find premature exercise times
 			Index=findall(IV.>CV);
@@ -36,7 +36,7 @@ function payoff(S::AbstractMatrix{num},spotData::ZeroRateCurve,phi::Function,T::
 			exerciseTimes[exercisePositions].=j-1;
 		end
 	end
-	price=V.*exp.(-r*dt.*exerciseTimes)
+	Out=V.*exp.(-r*dt.*exerciseTimes)
 	
-	return price;
+	return Out;
 end

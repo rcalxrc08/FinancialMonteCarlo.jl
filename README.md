@@ -6,7 +6,7 @@
 
 It currently contains the following capabilities:
 
-- Support for the following Models:
+- Support for the following Single Name Models:
     - Black Scholes
     - Kou
     - Merton
@@ -14,6 +14,7 @@ It currently contains the following capabilities:
     - Variance Gamma
     - Heston
     - LogNormal Mixture
+- Support for Multivariate process through Gaussian Copula
 - Support for the following Option families:
     - European Options 
     - American Options
