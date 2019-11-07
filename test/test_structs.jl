@@ -22,7 +22,6 @@ toll=0.8;
 spotData1=ZeroRateCurve(r);
 @test_throws(ErrorException,MonteCarloConfiguration(-Nsim,Nstep))
 @test_throws(ErrorException,MonteCarloConfiguration(Nsim,-Nstep))
-@test_throws(ErrorException,ZeroRateCurve(-S0,r,d));
 #####################################################################
 #Payoff Structs Test: Negative TTM
 @test_throws(ErrorException,Forward(Tneg));
