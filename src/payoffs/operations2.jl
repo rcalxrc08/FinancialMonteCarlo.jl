@@ -3,8 +3,10 @@ import Base.+;
 
 #Strategies Implementation
 
-function |>(x::String,y::Dict{FinancialMonteCarlo.AbstractPayoff,Number})
-	out=Dict{String,Dict{FinancialMonteCarlo.AbstractPayoff,Number}}( x => y );
+const Portfolio=Dict{String,Position};
+
+function |>(x::String,y::Position)
+	out=Portfolio( x => y );
 
 	return out;
 end
@@ -23,7 +25,7 @@ function |>(x::String,y::FinancialMonteCarlo.BasketPayoff)
 end
 
 
-function +(x::Dict{String,Dict{FinancialMonteCarlo.AbstractPayoff,Number}},y::Dict{String,Dict{FinancialMonteCarlo.AbstractPayoff,Number}})
+function +(x::Portfolio,y::Portfolio)
 	out=copy(x);
 	y_keys=keys(y);
 	for y_key in y_keys
@@ -38,7 +40,7 @@ end
 
 import Base.Multimedia.display;
 
-function display(p::Dict{String,Dict{FinancialMonteCarlo.AbstractPayoff,Number}})
+function display(p::Portfolio)
 	keys_=keys(p);
 	for key_ in keys_
 		print(key_);

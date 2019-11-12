@@ -2,10 +2,11 @@ import Base.+;
 import Base.*;
 import Base.-;
 
-#Strategies Implementation
+const Position=Dict{FinancialMonteCarlo.AbstractPayoff,Number};
 
+#Strategies Implementation
 function +(x::FinancialMonteCarlo.AbstractPayoff,y::FinancialMonteCarlo.AbstractPayoff)
-	out=Dict{FinancialMonteCarlo.AbstractPayoff,Number}( x => 1.0 );
+	out=Position( x => 1.0 );
 	if haskey(out,y)
 		out[x]=2.0;
 	else
@@ -14,7 +15,7 @@ function +(x::FinancialMonteCarlo.AbstractPayoff,y::FinancialMonteCarlo.Abstract
 	return out;
 end
 
-function +(x::Dict{FinancialMonteCarlo.AbstractPayoff,Number},y::FinancialMonteCarlo.AbstractPayoff)
+function +(x::Position,y::FinancialMonteCarlo.AbstractPayoff)
 	out=copy(x);
 	if haskey(out,y)
 		out[y]+=1.0;
@@ -24,7 +25,7 @@ function +(x::Dict{FinancialMonteCarlo.AbstractPayoff,Number},y::FinancialMonteC
 	return out;
 end
 
-function +(x::Dict{FinancialMonteCarlo.AbstractPayoff,Number},y::Dict{FinancialMonteCarlo.AbstractPayoff,Number})
+function +(x::Position,y::Position)
 	out=copy(x);
 	y_keys=keys(y);
 	for y_key in y_keys
@@ -37,7 +38,7 @@ function +(x::Dict{FinancialMonteCarlo.AbstractPayoff,Number},y::Dict{FinancialM
 	return out;
 end
 
-function *(x::Dict{FinancialMonteCarlo.AbstractPayoff,Number},y::Number)
+function *(x::Position,y::Number)
 	out=copy(x);
 	for a in keys(out)
 		out[a]*=y;
@@ -46,26 +47,26 @@ function *(x::Dict{FinancialMonteCarlo.AbstractPayoff,Number},y::Number)
 end
 
 function *(x::FinancialMonteCarlo.AbstractPayoff,y::Number)
-	return Dict{FinancialMonteCarlo.AbstractPayoff,Number}( x => y );
+	return Position( x => y );
 end
 *(y::Number,out::FinancialMonteCarlo.AbstractPayoff)=out*y;
-*(y::Number,out::Dict{FinancialMonteCarlo.AbstractPayoff,Number})=out*y;
-+(y::FinancialMonteCarlo.AbstractPayoff,out::Dict{FinancialMonteCarlo.AbstractPayoff,Number})= out+y;
+*(y::Number,out::Position)=out*y;
++(y::FinancialMonteCarlo.AbstractPayoff,out::Position)= out+y;
 -(x::FinancialMonteCarlo.AbstractPayoff)=return -1*x;
--(x::Dict{FinancialMonteCarlo.AbstractPayoff,Number})=return -1*x;
+-(x::Position)=return -1*x;
 -(y::FinancialMonteCarlo.AbstractPayoff,out::FinancialMonteCarlo.AbstractPayoff)= y+(-1*out);
--(y::FinancialMonteCarlo.AbstractPayoff,out::Dict{FinancialMonteCarlo.AbstractPayoff,Number})= y+(-1*out);
--(y::Dict{FinancialMonteCarlo.AbstractPayoff,Number},out::FinancialMonteCarlo.AbstractPayoff)= y+(-1*out);
--(y::Dict{FinancialMonteCarlo.AbstractPayoff,Number},out::Dict{FinancialMonteCarlo.AbstractPayoff,Number})= y+(-1*out);
+-(y::FinancialMonteCarlo.AbstractPayoff,out::Position)= y+(-1*out);
+-(y::Position,out::FinancialMonteCarlo.AbstractPayoff)= y+(-1*out);
+-(y::Position,out::Position)= y+(-1*out);
 
 #+(x::FinancialMonteCarlo.AbstractPayoff,y::Tuple{FinancialMonteCarlo.AbstractPayoff,FinancialMonteCarlo.AbstractPayoff,typeof(+)})=(x,y,+)
 
-#+(x::Dict{FinancialMonteCarlo.AbstractPayoff,Number},FinancialMonteCarlo.AbstractPayoff)
+#+(x::Position,FinancialMonteCarlo.AbstractPayoff)
 
 
 import Base.Multimedia.display;
 
-function display(p::Dict{FinancialMonteCarlo.AbstractPayoff,Number})
+function display(p::Position)
 	keys_=keys(p);
 	flag=0;
 	for key_ in keys_
@@ -98,7 +99,7 @@ end
 
 import Base.Multimedia.print;
 
-function print(p::Dict{FinancialMonteCarlo.AbstractPayoff,Number})
+function print(p::Position)
 	keys_=keys(p);
 	flag=0;
 	for key_ in keys_

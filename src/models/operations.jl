@@ -1,10 +1,13 @@
 import Base.|>;
 import Base.+;
 
+const MarketDataSet=Dict{String,FinancialMonteCarlo.AbstractMonteCarloProcess};
+export MarketDataSet;
+
 #Strategies Implementation
 
 function |>(x::String,y::FinancialMonteCarlo.AbstractMonteCarloProcess)
-	out=Dict{String,FinancialMonteCarlo.AbstractMonteCarloProcess}( x => y );
+	out=MarketDataSet( x => y );
 
 	return out;
 end
@@ -16,7 +19,7 @@ function |>(x::String,y::FinancialMonteCarlo.GaussianCopulaBivariateProcess)
 	end
 	idx_1=x[1:(sep-1)]
 	idx_2=x[(sep+1):end]
-	out=Dict{String,FinancialMonteCarlo.AbstractMonteCarloProcess}( x => y );
+	out=MarketDataSet( x => y );
 	out[idx_1]=y.model1
 	out[idx_2]=y.model2
 
@@ -24,7 +27,7 @@ function |>(x::String,y::FinancialMonteCarlo.GaussianCopulaBivariateProcess)
 end
 
 
-function +(x::Dict{String,FinancialMonteCarlo.AbstractMonteCarloProcess},y::Dict{String,FinancialMonteCarlo.AbstractMonteCarloProcess})
+function +(x::MarketDataSet,y::MarketDataSet)
 	out=copy(x);
 	y_keys=keys(y);
 	for y_key in y_keys
