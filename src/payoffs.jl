@@ -10,10 +10,20 @@ struct ControlVariates{abstractPayoff <: AbstractPayoff} <: AbstractMonteCarloMe
 
 end
 
-abstract type EuropeanPayoff<:AbstractPayoff end
-abstract type AmericanPayoff<:AbstractPayoff end
-abstract type BarrierPayoff<:AbstractPayoff end
-abstract type AsianPayoff<:AbstractPayoff end
+
+
+abstract type SingleNamePayoff<:AbstractPayoff end
+abstract type EuropeanPayoff<:SingleNamePayoff end
+abstract type AmericanPayoff<:SingleNamePayoff end
+abstract type BarrierPayoff<:SingleNamePayoff end
+abstract type AsianPayoff<:SingleNamePayoff end
+
+#No multiple inheritance, sigh
+abstract type BasketPayoff<:AbstractPayoff end
+abstract type EuropeanBasketPayoff<:BasketPayoff end
+abstract type AmericanBasketPayoff<:BasketPayoff end
+abstract type BarrierBasketPayoff<:BasketPayoff end
+abstract type AsianBasketPayoff<:BasketPayoff end
 
 ####### Payoffs definition
 
@@ -39,9 +49,9 @@ include("payoffs/binary_american_option.jl")
 include("payoffs/asian_fixed_strike_option.jl")
 include("payoffs/asian_floating_strike_option.jl")
 
-### Basket Options
-include("payoffs/bi_european_option.jl")
-include("payoffs/n_european_option.jl")
+### Basket Payoffs
+include("payoffs/basket/bi_european_option.jl")
+include("payoffs/basket/n_european_option.jl")
 
 ### Operations and Strategies
 include("payoffs/operations.jl")
