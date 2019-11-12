@@ -20,6 +20,7 @@ mc1=MonteCarloConfiguration(Nsim,Nstep,FinancialMonteCarlo.AntitheticMC());
 toll=0.8;
 
 spotData1=ZeroRateCurve(r);
+@test_throws(ErrorException,Underlying(-Nsim))
 @test_throws(ErrorException,MonteCarloConfiguration(-Nsim,Nstep))
 @test_throws(ErrorException,MonteCarloConfiguration(Nsim,-Nstep))
 #####################################################################

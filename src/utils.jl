@@ -1,15 +1,8 @@
 
 struct ZeroRateCurve{T2 <: Number}
-    #S0::T1
     r::T2
-    #d::T3
     function ZeroRateCurve(r::T2) where {T2 <: Number}
-        #if S0 <= 0.0
-        #    error("Spot price must be positive")
-        #else
-            #return new{T1,T2,T3}(S0,r,d)
-            return new{T2}(r)
-        #end
+       return new{T2}(r)
     end
 end 
 

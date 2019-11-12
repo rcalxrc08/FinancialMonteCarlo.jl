@@ -4,7 +4,11 @@ struct Underlying{num <: Number, num2 <: Number}
 	S0::num
 	d::num2
 	function Underlying(S0::num_,d::num_2=0.0) where {num_ <: Number, num_2 <: Number}
-		return new{num_,num_2}(S0,d)
+		if(S0<=num_(0))
+			error("Underlying starting value must be positive");
+		else
+			return new{num_,num_2}(S0,d)
+		end
 	end
 end
 
