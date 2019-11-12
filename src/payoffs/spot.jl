@@ -3,7 +3,7 @@ Class for Dispatching Spot Payoff
 
 		spot=Spot()
 """
-struct Spot <: EuropeanPayoff
+mutable struct Spot <: EuropeanPayoff
 	function Spot()
             return new()
     end

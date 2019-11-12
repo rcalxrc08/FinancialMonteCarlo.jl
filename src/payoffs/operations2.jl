@@ -14,6 +14,14 @@ function |>(x::String,y::FinancialMonteCarlo.AbstractPayoff)
 	return x|>(1.0*y);
 end
 
+function |>(x::String,y::FinancialMonteCarlo.EuropeanOption2D)
+	sep=findfirst("_",x)[1];
+	if(isnothing(sep))
+		error("Bivariate payoff underlying must follow the format: INDEX1_INDEX2");
+	end
+	return x|>(1.0*y);
+end
+
 
 function +(x::Dict{String,Dict{FinancialMonteCarlo.AbstractPayoff,Number}},y::Dict{String,Dict{FinancialMonteCarlo.AbstractPayoff,Number}})
 	out=copy(x);

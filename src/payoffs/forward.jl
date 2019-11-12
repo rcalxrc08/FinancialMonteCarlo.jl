@@ -6,7 +6,7 @@ Class for Dispatching Forward Payoff
 Where:\n
 		T	=	Time to maturity of the Forward.
 """
-struct Forward{num<:Number}<:EuropeanPayoff
+mutable struct Forward{num<:Number}<:EuropeanPayoff
 	T::num
 	function Forward(T::num) where {num<:Number}
         if T <= 0.0

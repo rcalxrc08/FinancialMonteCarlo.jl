@@ -7,7 +7,7 @@ Where:\n
 		T	=	Time to maturity of the Option.
 		isCall  = true for CALL, false for PUT.
 """
-struct AsianFloatingStrikeOption{num<:Number}<:AsianPayoff
+mutable struct AsianFloatingStrikeOption{num<:Number}<:AsianPayoff
 	T::num
 	isCall::Bool
 	function AsianFloatingStrikeOption(T::num,isCall::Bool=true) where {num<:Number}

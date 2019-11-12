@@ -9,7 +9,7 @@ Where:\n
 		barrier	=	Up Barrier of the Option.
 		isCall  = true for CALL, false for PUT.
 """
-struct BarrierOptionUpIn{num1 <: Number,num2 <: Number,num3 <: Number}<:BarrierPayoff
+mutable struct BarrierOptionUpIn{num1 <: Number,num2 <: Number,num3 <: Number}<:BarrierPayoff
 	T::num1
 	K::num2
 	barrier::num3
