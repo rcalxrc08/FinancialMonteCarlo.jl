@@ -42,7 +42,7 @@ confinter_macro(BaseProcess)
 
 
 function confinter_macro_array(model_type)
-	@eval function confinter(mcProcess::$model_type,spotData::ZeroRateCurve,mcConfig::MonteCarloConfiguration,abstractPayoffs::Array{AbstractPayoff},alpha::Real=0.99)
+	@eval function confinter(mcProcess::$model_type,spotData::ZeroRateCurve,mcConfig::MonteCarloConfiguration,abstractPayoffs::Array{abstractPayoff_},alpha::Real=0.99) where {abstractPayoff_ <: AbstractPayoff}
 
 		set_seed(mcConfig)
 		maxT=maximum([maturity(abstractPayoff) for abstractPayoff in abstractPayoffs])

@@ -31,7 +31,7 @@ end
 pricer_macro(BaseProcess)
 
 function pricer_macro_array(model_type)
-	@eval function pricer(mcProcess::$model_type,spotData::ZeroRateCurve,mcConfig::MonteCarloConfiguration,abstractPayoffs::Array{abstractPayoff}) where {abstractPayoff <: AbstractPayoff}
+	@eval function pricer(mcProcess::$model_type,spotData::ZeroRateCurve,mcConfig::MonteCarloConfiguration,abstractPayoffs::Array{abstractPayoff_}) where {abstractPayoff_ <: AbstractPayoff}
 		set_seed(mcConfig)
 		maxT=maximum([maturity(abstractPayoff) for abstractPayoff in abstractPayoffs])
 		S=simulate(mcProcess,spotData,mcConfig,maxT)
