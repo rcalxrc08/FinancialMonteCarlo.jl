@@ -30,7 +30,7 @@ AsianFixedStrikeData=AsianFixedStrikeOption(T,K)
 Model_enj=BlackScholesProcess(sigma,Underlying(S0,d));
 Model_abpl=BlackScholesProcess(sigma,Underlying(S0,d));
 
-Model=GaussianCopulaBivariateProcess(Model_enj,Model_enj,0.0,)
+Model=GaussianCopulaBivariateProcess(Model_enj,Model_abpl,0.4)
 
 display(Model)
 

@@ -14,7 +14,7 @@ function |>(x::String,y::FinancialMonteCarlo.AbstractPayoff)
 	return x|>(1.0*y);
 end
 
-function |>(x::String,y::FinancialMonteCarlo.EuropeanOption2D)
+function |>(x::String,y::FinancialMonteCarlo.BasketPayoff)
 	sep=findfirst("_",x)[1];
 	if(isnothing(sep))
 		error("Bivariate payoff underlying must follow the format: INDEX1_INDEX2");

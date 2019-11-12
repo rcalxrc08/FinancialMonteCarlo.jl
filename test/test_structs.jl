@@ -15,11 +15,17 @@ sigma=0.2;
 theta1=0.01;
 k1=0.03;
 sigma1=0.02;
+underlying_name="ENJ"
 mc=MonteCarloConfiguration(Nsim,Nstep);
 mc1=MonteCarloConfiguration(Nsim,Nstep,FinancialMonteCarlo.AntitheticMC());
 toll=0.8;
+Model_enj=BlackScholesProcess(sigma,Underlying(S0,d));
+Model_abpl=BlackScholesProcess(sigma,Underlying(S0,d));
+
+Model=GaussianCopulaBivariateProcess(Model_enj,Model_abpl,0.0)
 
 spotData1=ZeroRateCurve(r);
+@test_throws(ErrorException,underlying_name|>Model)
 @test_throws(ErrorException,Underlying(-Nsim))
 @test_throws(ErrorException,MonteCarloConfiguration(-Nsim,Nstep))
 @test_throws(ErrorException,MonteCarloConfiguration(Nsim,-Nstep))
