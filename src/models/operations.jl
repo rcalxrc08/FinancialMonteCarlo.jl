@@ -13,10 +13,11 @@ function |>(x::String,y::FinancialMonteCarlo.AbstractMonteCarloProcess)
 end
 
 function |>(x::String,y::FinancialMonteCarlo.GaussianCopulaBivariateProcess)
-	sep=findfirst("_",x)[1];
+	sep=findfirst("_",x);
 	if(isnothing(sep))
 		error("Bivariate process must follow the format: INDEX1_INDEX2");
 	end
+	sep=sep[1];
 	idx_1=x[1:(sep-1)]
 	idx_2=x[(sep+1):end]
 	out=MarketDataSet( x => y );

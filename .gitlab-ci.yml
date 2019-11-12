@@ -92,24 +92,24 @@ before_script:
       include("bench_black_af.jl");'
 
 # Name a test and select an appropriate image.
-build:1.1:
+build:1.2:
   stage: build
-  image: julia:1.1
+  image: julia:1.2
   <<: *build_definition
   
-test:1.1:
+test:1.2:
   stage: test
-  image: julia:1.1
+  image: julia:1.2
   <<: *test_definition
 
-benchmark:1.1:
+benchmark:1.2:
   stage: benchmark
-  image: julia:1.1
+  image: julia:1.2
   <<: *bench_definition
   
-coverage:1.1:
+coverage:1.2:
   stage: coverage
-  image: julia:1.1
+  image: julia:1.2
   <<: *cov_definition
 # Windows
 #test:0.6.3-Windows:
@@ -139,7 +139,7 @@ benchmark:1.1_af:
 
 pages:
   stage: deploy
-  image: julia:1.1
+  image: julia:1.2
   script:
     - julia --project=docs -e 'using Pkg; Pkg.instantiate(); Pkg.develop(PackageSpec(path=pwd()))'
     - julia --project=docs --color=yes docs/make.jl
