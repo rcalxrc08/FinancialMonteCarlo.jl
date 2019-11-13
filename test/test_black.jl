@@ -18,7 +18,9 @@ spotData1=ZeroRateCurve(r);
 
 FwdData=Forward(T)
 EUData=EuropeanOption(T,K)
+EUBin=BinaryEuropeanOption(T,K)
 AMData=AmericanOption(T,K)
+AmBin=BinaryEuropeanOption(T,K)
 BarrierData=BarrierOptionDownOut(T,K,D)
 AsianFloatingStrikeData=AsianFloatingStrikeOption(T)
 AsianFixedStrikeData=AsianFixedStrikeOption(T,K)
@@ -28,7 +30,9 @@ display(Model)
 
 @show FwdPrice=pricer(Model,spotData1,mc,FwdData);
 @show EuPrice=pricer(Model,spotData1,mc,EUData);
+@show EuBinPrice=pricer(Model,spotData1,mc,EUBin);
 @show AmPrice=pricer(Model,spotData1,mc,AMData);
+@show AmBinPrice=pricer(Model,spotData1,mc,AmBin);
 @show BarrierPrice=pricer(Model,spotData1,mc,BarrierData);
 @show AsianPrice1=pricer(Model,spotData1,mc,AsianFloatingStrikeData);
 @show AsianPrice2=pricer(Model,spotData1,mc,AsianFixedStrikeData);
