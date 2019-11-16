@@ -8,7 +8,7 @@ Where:\n
 		K	=	Strike Price of the Option.
 		isCall  = true for CALL, false for PUT.
 """
-mutable struct EuropeanOption{num1 <: Number ,num2<:Number}<:EuropeanPayoff
+struct EuropeanOption{num1 <: Number ,num2<:Number}<:EuropeanPayoff
 	T::num1
 	K::num2
 	isCall::Bool

@@ -10,7 +10,7 @@ Where:\n
 		U	=	Up Barrier of the Option.
 		isCall  = true for CALL, false for PUT.
 """
-mutable struct DoubleBarrierOption{num1 <: Number,num2 <: Number,num3 <: Number,num4 <: Number}<:BarrierPayoff
+struct DoubleBarrierOption{num1 <: Number,num2 <: Number,num3 <: Number,num4 <: Number}<:BarrierPayoff
 	T::num1
 	K::num2
 	D::num3
@@ -36,5 +36,5 @@ export DoubleBarrierOption;
 function payout(S::abstractArray,barrierPayoff::DoubleBarrierOption) where {abstractArray<:AbstractArray{num_}} where {num_<:Number}
 	iscall=barrierPayoff.isCall ? 1 : -1
 	zero_typed=zero(eltype(S))*barrierPayoff.K*barrierPayoff.U*barrierPayoff.D;
-	return max(iscall*(S[end]-K),zero_typed)*(minimum(S)>barrierPayoff.D)*(maximum(S)<barrierPayoff.U);
+	return max(iscall*(S[end]-barrierPayoff.K),zero_typed)*(minimum(S)>barrierPayoff.D)*(maximum(S)<barrierPayoff.U);
 end

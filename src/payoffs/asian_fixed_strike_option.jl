@@ -8,7 +8,7 @@ Where:\n
 		K	=	Strike Price of the Option.
 		isCall  = true for CALL, false for PUT.
 """
-mutable struct AsianFixedStrikeOption{T1,T2<:Number}<:AsianPayoff
+struct AsianFixedStrikeOption{T1,T2<:Number}<:AsianPayoff
 	T::T1
 	K::T2
 	isCall::Bool
