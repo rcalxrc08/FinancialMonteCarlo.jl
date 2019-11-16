@@ -35,7 +35,8 @@ function payoff(S::AbstractMatrix{num},euPayoff::EuropeanOption,spotData::ZeroRa
 	index1=round(UInt,T/T1 * NStep)+1;
 	@views ST=S[:,index1];
 	K=euPayoff.K;
-	payoff2=max.(iscall*(ST.-K),0.0);
+	zero_typed=zero(eltype(ST))*K;
+	payoff2=max.(iscall*(ST.-K),zero_typed);
 	
 	return payoff2*exp(-r*T);
 end

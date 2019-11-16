@@ -39,7 +39,8 @@ function payoff(S::AbstractMatrix{num},barrierPayoff::BarrierOptionUpIn,spotData
 	K=barrierPayoff.K;
 	D=barrierPayoff.barrier;
 	index1=round(Int,T/T1 * NStep)+1;
-	@inbounds f(S::abstractArray) where {abstractArray<:AbstractArray{num_}} where {num_<:Number}=max(iscall*(S[end]-K),0.0)*(maximum(S)>D)
+	zero_typed=zero(eltype(S))*K*D;
+	@inbounds f(S::abstractArray) where {abstractArray<:AbstractArray{num_}} where {num_<:Number}=max(iscall*(S[end]-K),zero_typed)*(maximum(S)>D)
 	@inbounds payoff2=[f(view(S,i,1:index1)) for i in 1:Nsim];
 	
 	return payoff2*exp(-r*T);

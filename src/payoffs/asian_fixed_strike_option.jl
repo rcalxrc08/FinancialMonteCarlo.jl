@@ -36,7 +36,8 @@ function payoff(S::AbstractMatrix{num},asianFixedStrikePayoff::AsianFixedStrikeO
 	(Nsim,NStep)=size(S)
 	NStep-=1;
 	index1=round(Int,T/T1 * NStep)+1;
-	@inbounds f(S::abstractArray) where {abstractArray<:AbstractArray{num_}} where {num_<:Number}=max(iscall*(mean(S)-K),0.0)
+	zero_typed=zero(eltype(S))*K;
+	@inbounds f(S::abstractArray) where {abstractArray<:AbstractArray{num_}} where {num_<:Number}=max(iscall*(mean(S)-K),zero_typed)
 	@inbounds payoff2=[f(view(S,i,1:index1)) for i in 1:Nsim];
 	
 	return payoff2*exp(-r*T);
