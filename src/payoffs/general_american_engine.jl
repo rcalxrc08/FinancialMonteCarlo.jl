@@ -1,12 +1,10 @@
-mutable struct GeneralAmericanOption{amPayoff <: AmericanPayoff}<:AmericanPayoff
-	option::amPayoff
-	function GeneralAmericanOption(option::amPayoff) where {amPayoff <: AmericanPayoff}
-		return new{amPayoff}(option)
-    end
-end
 
-
-function payoff(S::abstractMatrix,amPayoff::GeneralAmericanOption,spotData::ZeroRateCurve,T::num2) where{abstractMatrix <: AbstractMatrix{num}} where{num <: Number, num2 <: Number}
+function payoff(S1::abstractMatrix,amPayoff::AmericanPayoff,spotData::ZeroRateCurve,T1::num2=amPayoff.T) where{abstractMatrix <: AbstractMatrix{num}} where{num <: Number, num2 <: Number}
+	T=amPayoff.T;	
+	(Nsim,NStep)=size(S1)
+	NStep-=1;
+	index1=round(Int,T/T1 * NStep)+1;
+	S=collect(S1[:,1:index1])
 	S0=first(S);
 	(Nsim,Nstep)=size(S)
 	Nstep-=1;
@@ -14,7 +12,7 @@ function payoff(S::abstractMatrix,amPayoff::GeneralAmericanOption,spotData::Zero
 	dt=T/Nstep
 	# initialize 
 	exerciseTimes=Nstep.*ones(Nsim);
-	phi(Sti::numtype_) where {numtype_<:Number}=payout(Sti,amPayoff.option);
+	phi(Sti::numtype_) where {numtype_<:Number}=payout(Sti,amPayoff);
 	V=phi.(S[:,end]); #payoff
 	# Backward Procedure 
 	for j in Nstep:-1:2

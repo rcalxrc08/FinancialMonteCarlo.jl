@@ -33,20 +33,8 @@ end
 
 export DoubleBarrierOption;
 
-
-function payoff(S::AbstractMatrix{num},doubleBarrierPayoff::DoubleBarrierOption,spotData::ZeroRateCurve,T1::num2=doubleBarrierPayoff.T) where{num <: Number,num2 <: Number}
-	r=spotData.r;
-	T=doubleBarrierPayoff.T;
-	iscall=doubleBarrierPayoff.isCall ? 1 : -1
-	(Nsim,NStep)=size(S)
-	NStep-=1;
-	K=doubleBarrierPayoff.K;
-	D=doubleBarrierPayoff.D;
-	U=doubleBarrierPayoff.U;
-	index1=round(Int,T/T1 * NStep)+1;
-	zero_typed=zero(eltype(S))*K*D*U;
-	@inbounds f(S::AbstractArray{num})::num=max(iscall*(S[end]-K),zero_typed)*(minimum(S)>D)*(maximum(S)<U);
-	@inbounds payoff2=[f(view(S,i,1:index1)) for i in 1:Nsim];
-	
-	return payoff2*exp(-r*T);
+function payout(S::abstractArray,barrierPayoff::DoubleBarrierOption) where {abstractArray<:AbstractArray{num_}} where {num_<:Number}
+	iscall=barrierPayoff.isCall ? 1 : -1
+	zero_typed=zero(eltype(S))*barrierPayoff.K*barrierPayoff.U*barrierPayoff.D;
+	return max(iscall*(S[end]-K),zero_typed)*(minimum(S)>barrierPayoff.D)*(maximum(S)<barrierPayoff.U);
 end

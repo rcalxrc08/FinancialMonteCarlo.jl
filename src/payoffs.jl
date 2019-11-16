@@ -15,8 +15,9 @@ end
 abstract type SingleNamePayoff<:AbstractPayoff end
 abstract type EuropeanPayoff<:SingleNamePayoff end
 abstract type AmericanPayoff<:SingleNamePayoff end
-abstract type BarrierPayoff<:SingleNamePayoff end
-abstract type AsianPayoff<:SingleNamePayoff end
+abstract type PathDependentPayoff<:SingleNamePayoff end
+abstract type BarrierPayoff<:PathDependentPayoff end
+abstract type AsianPayoff<:PathDependentPayoff end
 
 #No multiple inheritance, sigh
 abstract type BasketPayoff<:AbstractPayoff end
@@ -27,8 +28,11 @@ abstract type AsianBasketPayoff<:BasketPayoff end
 
 ####### Payoffs definition
 
-### European Payoffs
+### Spot
 include("payoffs/spot.jl")
+
+### European Payoffs
+include("payoffs/general_european_engine.jl")
 include("payoffs/forward.jl")
 include("payoffs/european_option.jl")
 include("payoffs/binary_european_option.jl")
@@ -41,9 +45,12 @@ include("payoffs/barrier_ui_option.jl")
 include("payoffs/double_barrier_option.jl")
 
 ### American Payoffs
-include("payoffs/general_american_option.jl")
+include("payoffs/general_american_engine.jl")
 include("payoffs/american_option.jl")
 include("payoffs/binary_american_option.jl")
+
+### Path Dependent Payoffs
+include("payoffs/general_path_dependent_engine.jl")
 
 ### Asian Payoffs
 include("payoffs/asian_fixed_strike_option.jl")

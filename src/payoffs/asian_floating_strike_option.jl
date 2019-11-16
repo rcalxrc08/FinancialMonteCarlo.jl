@@ -22,16 +22,8 @@ end
 export AsianFloatingStrikeOption;
 
 
-function payoff(S::AbstractMatrix{num},asianFloatingStrikePayoff::AsianFloatingStrikeOption,spotData::ZeroRateCurve,T1::num2=asianFloatingStrikePayoff.T) where{num <: Number,num2 <: Number}
-	iscall=asianFloatingStrikePayoff.isCall ? 1 : -1
-	r=spotData.r;
-	T=asianFloatingStrikePayoff.T;
-	(Nsim,NStep)=size(S)
-	NStep-=1;
-	index1=round(Int,T/T1 * NStep)+1;
+function payout(S::abstractArray,opt_::AsianFloatingStrikeOption) where {abstractArray<:AbstractArray{num_}} where {num_<:Number}
+	iscall=opt_.isCall ? 1 : -1
 	zero_typed=zero(eltype(S));
-	@inbounds f(S::abstractArray) where {abstractArray<:AbstractArray{num_}} where {num_<:Number}=max(iscall*(S[end]-mean(S)),zero_typed)
-	@inbounds payoff2=[f(view(S,i,1:index1)) for i in 1:Nsim];
-
-	return payoff2*exp(-r*T);
+	return max(iscall*(S[end]-mean(S)),zero_typed)
 end

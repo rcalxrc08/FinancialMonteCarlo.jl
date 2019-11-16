@@ -25,18 +25,7 @@ end
 
 export BinaryEuropeanOption;
 
-
-function payoff(S::AbstractMatrix{num},euPayoff::BinaryEuropeanOption,spotData::ZeroRateCurve,T1::num2=euPayoff.T) where{num <: Number,num2 <: Number}
-	r=spotData.r;
-	T=euPayoff.T;
+function payout(ST::numtype_,euPayoff::BinaryEuropeanOption) where {numtype_<:Number}
 	iscall=euPayoff.isCall ? 1 : -1
-	K=euPayoff.K;
-	(Nsim,NStep)=size(S)
-	NStep-=1;
-	index1=round(Int,T/T1 * NStep)+1;
-	ST=S[:,index1];
-	f(ST::num)::num=iscall*(ST-K)>0.0;
-	payoff2=f.(ST);
-
-	return payoff2*exp(-r*T);
+	return ((ST-euPayoff.K)*iscall>0.0) ? one(numtype_) : zero(numtype_);
 end

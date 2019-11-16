@@ -26,17 +26,8 @@ end
 export EuropeanOption;
 
 
-function payoff(S::AbstractMatrix{num},euPayoff::EuropeanOption,spotData::ZeroRateCurve,T1::num2=euPayoff.T) where{ num <: Number, num2 <: Number}
-	r=spotData.r;
-	T=euPayoff.T;
+function payout(ST::numtype_,euPayoff::EuropeanOption) where {numtype_<:Number}
 	iscall=euPayoff.isCall ? 1 : -1
-	(Nsim,NStep)=size(S)
-	NStep-=1;
-	index1=round(UInt,T/T1 * NStep)+1;
-	@views ST=S[:,index1];
-	K=euPayoff.K;
-	zero_typed=zero(eltype(ST))*K;
-	payoff2=max.(iscall*(ST.-K),zero_typed);
-	
-	return payoff2*exp(-r*T);
+	zero_typed=zero(ST)*euPayoff.K;
+	return max.(iscall*(ST.-euPayoff.K),zero_typed);
 end

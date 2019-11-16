@@ -18,7 +18,6 @@ mutable struct AsianFixedStrikeOption{T1,T2<:Number}<:AsianPayoff
         elseif K <= 0.0
             error("Strike Price must be positive")
         else
-		
             return new{T1,T2}(T,K,isCall)
         end
     end
@@ -27,18 +26,8 @@ end
 
 export AsianFixedStrikeOption;
 
-
-function payoff(S::AbstractMatrix{num},asianFixedStrikePayoff::AsianFixedStrikeOption,spotData::ZeroRateCurve,T1::num2=asianFixedStrikePayoff.T) where{num <: Number,num2 <: Number}
-	iscall=asianFixedStrikePayoff.isCall ? 1 : -1
-	r=spotData.r;
-	T=asianFixedStrikePayoff.T;
-	K=asianFixedStrikePayoff.K;
-	(Nsim,NStep)=size(S)
-	NStep-=1;
-	index1=round(Int,T/T1 * NStep)+1;
-	zero_typed=zero(eltype(S))*K;
-	@inbounds f(S::abstractArray) where {abstractArray<:AbstractArray{num_}} where {num_<:Number}=max(iscall*(mean(S)-K),zero_typed)
-	@inbounds payoff2=[f(view(S,i,1:index1)) for i in 1:Nsim];
-	
-	return payoff2*exp(-r*T);
+function payout(S::abstractArray,opt_::AsianFixedStrikeOption) where {abstractArray<:AbstractArray{num_}} where {num_<:Number}
+	iscall=opt_.isCall ? 1 : -1
+	zero_typed=zero(eltype(S))*opt_.K;
+	return max(iscall*(mean(S)-opt_.K),zero_typed)
 end
