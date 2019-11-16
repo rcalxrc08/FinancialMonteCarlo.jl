@@ -12,6 +12,8 @@ Requires = "ae029012-a4dd-5104-9daa-d747884805df"
 SpecialFunctions = "276daf66-3868-5448-9aa4-cd146d93841b"
 DatagenCopulaBased = "b9879e35-cdd4-53a9-a12a-bc41659e9769"
 EmpiricalCDFs = "0dcf7749-4f9f-5e13-9c57-506664207bbc"
+Sobol = "ed01d8cd-4d21-5b2a-85b4-cc3bdc58bad4"
+StatsFuns = "4c63d2b9-4356-54db-8cca-17b64c39e42c"
 
 [compat]
 julia = "≥ 1.1.0"

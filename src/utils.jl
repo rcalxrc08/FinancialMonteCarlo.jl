@@ -15,6 +15,7 @@ abstract type AbstractMethod end
 abstract type AbstractMonteCarloMethod <: AbstractMethod end
 struct StandardMC <: AbstractMonteCarloMethod end
 struct AntitheticMC <: AbstractMonteCarloMethod end
+struct SobolMode <: AbstractMonteCarloMethod end
 
 export ZeroRateCurve;
 
