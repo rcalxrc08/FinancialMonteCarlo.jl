@@ -61,3 +61,6 @@ spotData1=ZeroRateCurve(r);
 @test_throws(ErrorException,DoubleBarrierOption(T,K,K,Kneg));
 @test_throws(ErrorException,DoubleBarrierOption(T,Kneg,K,K));
 @test_throws(ErrorException,DoubleBarrierOption(T,K,Kneg,K));
+
+@test 2.0*EuropeanOption(T,K)==EuropeanOption(T,K)+1.0*EuropeanOption(T,K)
+@test 2.0*EuropeanOption(T,K)==EuropeanOption(T,K)+EuropeanOption(T,K)

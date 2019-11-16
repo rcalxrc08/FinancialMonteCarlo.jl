@@ -29,12 +29,14 @@ AsianFloatingStrikeData=AsianFloatingStrikeOption(T)
 AsianFixedStrikeData=AsianFixedStrikeOption(T,K)
 Model_enj=BlackScholesProcess(sigma,Underlying(S0,d));
 Model_abpl=BlackScholesProcess(sigma,Underlying(S0,d));
+Model_n=BlackScholesProcess(sigma,Underlying(S0,d));
 
 Model=GaussianCopulaBivariateLogProcess(Model_enj,Model_abpl,0.4)
 
 display(Model)
 
 mktdataset=underlying_|>Model
+mktdataset+="notneeded"|>Model_n
 
 portfolio_=[EUData];
 portfolio=underlying_|>EUData
