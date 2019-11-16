@@ -26,7 +26,7 @@ function payoff(S::AbstractMatrix{num},optionData::Forward,spotData::ZeroRateCur
 	(Nsim,NStep)=size(S)
 	NStep-=1;
 	index1=round(Int,T/T1 * NStep)+1;
-	ST=S[:,index1];
+	@views ST=S[:,index1];
 	
 	return ST*exp(-r*T);
 end
