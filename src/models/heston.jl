@@ -78,8 +78,8 @@ function simulate(mcProcess::HestonProcess,spotData::ZeroRateCurve,mcBaseData::M
 	for j in 1:Nstep
 		e1=randn(Nsim);
 		e2=randn(Nsim);
-		e2=e1.*ρ.+e2.*sqrt(1-ρ*ρ);
-		X[:,j+1]=X[:,j]+((r-d).-0.5.*max.(v_m,0)).*dt+sqrt.(max.(v_m,0)).*sqrt(dt).*e1;
+		e2=e1*ρ+e2*sqrt(1-ρ*ρ);
+		X[:,j+1]=X[:,j]+((r-d).-0.5*max.(v_m,0))*dt+sqrt.(max.(v_m,0))*sqrt(dt).*e1;
 		v_m+=κ_s.*(θ_s.-max.(v_m,0)).*dt+σ.*sqrt.(max.(v_m,0)).*sqrt(dt).*e2;
 	end
 	## Conclude

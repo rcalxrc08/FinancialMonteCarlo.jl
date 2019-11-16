@@ -27,7 +27,7 @@ export BinaryAmericanOption;
 
 function payout(Sti::numtype_,amPayoff::BinaryAmericanOption) where {numtype_<:Number}
 	iscall=amPayoff.isCall ? 1 : -1
-	return ((Sti-amPayoff.K)*iscall>0.0) ? one(numtype_): zero(numtype_);
+	return ((Sti-amPayoff.K)*iscall>0.0) ? one(numtype_) : zero(numtype_);
 end
 
 function payoff(S::AbstractMatrix{num},amPayoff::BinaryAmericanOption,spotData::ZeroRateCurve,T1::num2=amPayoff.T) where{num <: Number,num2 <: Number}

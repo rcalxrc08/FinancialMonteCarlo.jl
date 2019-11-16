@@ -20,6 +20,10 @@ abstract type ScalarMonteCarloProcess <: AbstractMonteCarloProcess end
 
 abstract type VectorialMonteCarloProcess <: AbstractMonteCarloProcess end
 
+abstract type BiDimensionalMonteCarloProcess <: VectorialMonteCarloProcess end
+
+abstract type NDimensionalMonteCarloProcess <: VectorialMonteCarloProcess end
+
 abstract type LevyProcess<:ScalarMonteCarloProcess end
 
 abstract type ItoProcess<:LevyProcess end
@@ -33,6 +37,8 @@ dividend(x::mc) where {mc <: ScalarMonteCarloProcess} = x.underlying.d;
 export AbstractMonteCarloProcess
 export ScalarMonteCarloProcess
 export VectorialMonteCarloProcess
+export BiDimensionalMonteCarloProcess
+export NDimensionalMonteCarloProcess
 export ItoProcess
 export LevyProcess
 export FiniteActivityProcess

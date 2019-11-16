@@ -11,7 +11,7 @@ Where:\n
 		λ₊ =	positive jump size.
 		λ₋ =	negative jump size.
 """
-mutable struct GaussianCopulaNVariateProcess{ num3 <: Number} <: VectorialMonteCarloProcess
+mutable struct GaussianCopulaNVariateProcess{ num3 <: Number} <: NDimensionalMonteCarloProcess
 	models::Tuple{Vararg{FinancialMonteCarlo.BaseProcess}}
 	rho::Matrix{num3}
 	function GaussianCopulaNVariateProcess(rho::Matrix{num3},models::FinancialMonteCarlo.BaseProcess...) where { num3 <: Number} 

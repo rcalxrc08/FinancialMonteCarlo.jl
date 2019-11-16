@@ -13,8 +13,11 @@ function simulate(mcProcess::BrownianMotion,spotData::ZeroRateCurve,mcBaseData::
 	stddev_bm=σ*sqrt(dt)
 	isDualZero=mean_bm*stddev_bm*zero(Float32);
 	X_cu=zeros(CuMatrix{typeof(isDualZero)},Nsim,Nstep+1);
+	Z=CuArrays.zeros(Nsim);
 	for i=1:Nstep
-		X_cu[:,i+1]=X_cu[:,i]+(mean_bm.+stddev_bm.*CuArrays.CURAND.randn(Float32,Nsim));
+		X_pr=view(X_cu,:,i);
+		randn!(Z);
+		@inbounds X_cu[:,i+1]=X_pr+(mean_bm.+stddev_bm*Z);
 	end
 	isdual(p)=false
 	if(isdual(isDualZero))

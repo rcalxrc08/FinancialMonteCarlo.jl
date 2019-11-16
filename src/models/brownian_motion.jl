@@ -42,10 +42,11 @@ function simulate(mcProcess::BrownianMotion,spotData::ZeroRateCurve,mcBaseData::
 	stddev_bm=σ*sqrt(dt)
 	isDualZero=mean_bm*stddev_bm*0.0+mcProcess.underlying.S0;
 	X=Matrix{typeof(isDualZero)}(undef,Nsim,Nstep+1);
-	X[:,1].=isDualZero;
+	view(X,:,1).=isDualZero;
 	@inbounds for i=1:Nsim
 		@inbounds for j=1:Nstep
-			X[i,j+1]=X[i,j]+mean_bm+stddev_bm*randn();
+			x_i_j=@views X[i,j];
+			X[i,j+1]=x_i_j+mean_bm+stddev_bm*randn();
 		end
 	end
 

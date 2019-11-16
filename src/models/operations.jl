@@ -12,17 +12,34 @@ function |>(x::String,y::FinancialMonteCarlo.AbstractMonteCarloProcess)
 	return out;
 end
 
-function |>(x::String,y::FinancialMonteCarlo.GaussianCopulaBivariateProcess)
+function |>(x::String,y::FinancialMonteCarlo.BiDimensionalMonteCarloProcess)
 	sep=findfirst("_",x);
 	if(isnothing(sep))
 		error("Bivariate process must follow the format: INDEX1_INDEX2");
 	end
-	sep=sep[1];
-	idx_1=x[1:(sep-1)]
-	idx_2=x[(sep+1):end]
+	sep=split(x,"_");
+	idx_1=string(sep[1])
+	idx_2=string(sep[2])
 	out=MarketDataSet( x => y );
 	out[idx_1]=y.model1
 	out[idx_2]=y.model2
+
+	return out;
+end
+
+function |>(x::String,y::FinancialMonteCarlo.NDimensionalMonteCarloProcess)
+	sep=findfirst("_",x);
+	if(isnothing(sep))
+		error("Nvariate process must follow the format: INDEX1_INDEX2");
+	end
+	len_=length(y.models);
+	
+	sep=split(x,"_");
+	@assert len_==length(sep)
+	out=MarketDataSet( x => y );
+	for (key_,model_) in zip(sep,y.models)
+		out[key_]=model_
+	end
 
 	return out;
 end

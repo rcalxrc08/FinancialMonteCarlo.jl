@@ -11,7 +11,7 @@ Where:\n
 		λ₊ =	positive jump size.
 		λ₋ =	negative jump size.
 """
-mutable struct GaussianCopulaBivariateProcess{Model_1 <: BaseProcess, Model_2 <: BaseProcess, num3 <: Number}<:VectorialMonteCarloProcess
+mutable struct GaussianCopulaBivariateProcess{Model_1 <: BaseProcess, Model_2 <: BaseProcess, num3 <: Number}<:BiDimensionalMonteCarloProcess
 	model1::Model_1
 	model2::Model_2
 	rho::num3
