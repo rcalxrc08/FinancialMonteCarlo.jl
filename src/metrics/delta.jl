@@ -54,3 +54,19 @@ end
 
 delta_macro_array(BaseProcess)
 delta_macro_dict(BaseProcess)
+
+
+function delta(mcProcess::Dict{String,FinancialMonteCarlo.AbstractMonteCarloProcess},spotData::ZeroRateCurve,mcConfig::MonteCarloConfiguration,dict_::Dict{String,Dict{FinancialMonteCarlo.AbstractPayoff,Number}})
+		set_seed(mcConfig)
+		underlyings_models=keys(mcProcess)
+		underlyings_payoff=keys(dict_)
+		price0=pricer(mcProcess,spotData,mcConfig,dict_);
+		#deltas=zeros(
+		for under_ in underlyings_payoff
+			options=dict_[under_]
+			model=mcProcess[under_]
+			price=price+pricer(model,spotData,mcConfig,options);
+		end
+		
+		return price;
+	end
