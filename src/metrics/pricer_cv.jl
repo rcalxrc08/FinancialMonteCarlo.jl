@@ -42,13 +42,13 @@ function pricer_macro_3(model_type)
 			c=cov(Payoff_var,Payoff_opt_var)/var(Payoff_var);
 			@show mean(Payoff_var)
 			@show c
-			price_var=spotData.S0;
+			price_var=mcProcess.underlying.S0;
 			mcConfig_mod=MonteCarloConfiguration(mcConfig.Nsim,mcConfig.Nstep,variate_conf.monteCarloMethod,mcConfig.parallelMode,mcConfig.seed+3)
 			#END OF VARIATE SECTION
 			Prices=pricer(mcProcess,spotData,mcConfig_mod,[abstractPayoff,variate_payoff]);
 			@show Prices[2]
-			Price=Prices[1]-eps_1*c*(Prices[2]-price_var);
-			@show Prices[1]+c*(Prices[2]-price_var);
+			Price=Prices[1]-c*(Prices[2]-price_var);
+			#@show Prices[1]+c*(Prices[2]-price_var);
 			return Price;
 		end
 	end

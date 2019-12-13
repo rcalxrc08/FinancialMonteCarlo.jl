@@ -13,19 +13,20 @@ function payoff(S1::abstractMatrix,amPayoff::AmericanPayoff,spotData::ZeroRateCu
 	# initialize 
 	exerciseTimes=Nstep.*ones(Nsim);
 	phi(Sti::numtype_) where {numtype_<:Number}=payout(Sti,amPayoff);
-	V=phi.(S[:,end]); #payoff
+	@views V=phi.(S[:,end]); #payoff
 	# Backward Procedure 
 	for j in Nstep:-1:2
-		Tmp=phi.(S[:,j]);
+		@views Tmp=phi.(S[:,j]);
 		inMoneyIndexes=findall(Tmp.>0.0);
 		if !isempty(inMoneyIndexes)
-			S_I=S[inMoneyIndexes,j];
+			#S_I=S[inMoneyIndexes,j];
+			S_I=view(S,inMoneyIndexes,j);
 			#-- Intrinsic Value
-			IV=Tmp[inMoneyIndexes];
+			@views IV=Tmp[inMoneyIndexes];
 			#-- Continuation Value 
 			#- Linear Regression on Quadratic Form
 			A=[ones(length(S_I)) S_I S_I.^2];
-			b=V[inMoneyIndexes].*exp.(-r*dt*(exerciseTimes[inMoneyIndexes].-j));
+			@views b=V[inMoneyIndexes].*exp.(-r*dt*(exerciseTimes[inMoneyIndexes].-j));
 			#MAT=A'*A;			
 			LuMat=lu(A'*A);
 			Btilde=A'*b;
@@ -36,10 +37,10 @@ function payoff(S1::abstractMatrix,amPayoff::AmericanPayoff,spotData::ZeroRateCu
 			#----------
 			# Find premature exercise times
 			Index=findall(IV.>CV);
-			exercisePositions=inMoneyIndexes[Index];
+			@views exercisePositions=inMoneyIndexes[Index];
 			# Update the outputs
-			V[exercisePositions]=IV[Index];
-			exerciseTimes[exercisePositions].=j-1;
+			@views V[exercisePositions]=IV[Index];
+			@views exerciseTimes[exercisePositions].=j-1;
 		end
 	end
 	Out=V.*exp.(-r*dt.*exerciseTimes)
