@@ -13,6 +13,8 @@ module FinancialMonteCarlo
 	include("payoffs.jl")
 	include("models.jl")
 	include("metrics.jl");
+	include("multi_threading.jl");
+	include("multi_process.jl");
 	export
 	    pricer,
 	    variance,
