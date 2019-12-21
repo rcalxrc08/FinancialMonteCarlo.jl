@@ -1,35 +1,6 @@
-"""
-Struct for Brownian Motion
+using DelimitedFiles
 
-		bmProcess=BrownianMotion(σ::num1,μ::num2) where {num1,num2 <: Number}
-	
-Where:\n
-		σ	=	volatility of the process.
-		μ	=	drift of the process.
-"""
-mutable struct BrownianMotion{num <: Number, num1 <: Number, num2 <: Number , num3 <: Number} <: ItoProcess
-	σ::num
-	μ::num1
-	underlying::Underlying{num2,num3}
-	function BrownianMotion(σ::num,μ::num1,underlying::Underlying{num2,num3}) where {num <: Number, num1 <: Number, num2 <: Number , num3 <: Number}
-        if σ <= 0.0
-            error("Volatility must be positive")
-        else
-            return new{num,num1,num2,num3}(σ,μ,underlying)
-        end
-    end
-	function BrownianMotion(σ::num,μ::num1,S0::num2) where {num <: Number,num1 <: Number, num2 <: Number}
-        if σ <= 0.0
-            error("Volatility must be positive")
-        else
-            return new{num,num1,num2,Float64}(σ,μ,Underlying(S0))
-        end
-    end
-end
-
-export BrownianMotion;
-
-function simulate(mcProcess::BrownianMotion,spotData::ZeroRateCurve,mcBaseData::MonteCarloConfiguration{type1,type2,type3,SerialMode},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: StandardMC}
+function simulate(mcProcess::BrownianMotion,spotData::ZeroRateCurve,mcBaseData::MonteCarloConfiguration{type1,type2,type3,SerialMode},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: PrescribedMC}
 	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;
 	σ=mcProcess.σ;
@@ -42,7 +13,7 @@ function simulate(mcProcess::BrownianMotion,spotData::ZeroRateCurve,mcBaseData::
 	stddev_bm=σ*sqrt(dt)
 	isDualZero=mean_bm*stddev_bm*0.0+mcProcess.underlying.S0;
 	X=Matrix{typeof(isDualZero)}(undef,Nsim,Nstep+1);
-	Z=DelimitedFiles.readdlm("matrix.jl")[Nsim,Nstep];
+	Z=DelimitedFiles.readdlm("C:\\Users\\Nicola\\.julia\\dev\\FinancialMonteCarlo\\src\\models\\matrix.txt")[1:Nsim,1:Nstep];
 	view(X,:,1).=isDualZero;
 	@inbounds for i=1:Nsim
 		@inbounds for j=1:Nstep

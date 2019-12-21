@@ -46,7 +46,7 @@ function simulate(mcProcess::BrownianMotion,spotData::ZeroRateCurve,mcBaseData::
 	@inbounds for i=1:Nsim
 		@inbounds for j=1:Nstep
 			x_i_j=@views X[i,j];
-			X[i,j+1]=x_i_j+mean_bm+stddev_bm*randn();
+			X[i,j+1]=x_i_j+mean_bm+stddev_bm*randn(mcBaseData.rng);
 		end
 	end
 
