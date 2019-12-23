@@ -26,7 +26,7 @@ function randjump_(rng,num)
 end	
 
 
-struct MonteCarloConfiguration{num1 <: Integer , num2 <: Integer , abstractMonteCarloMethod <: AbstractMonteCarloMethod , baseMode <: BaseMode}
+mutable struct MonteCarloConfiguration{num1 <: Integer , num2 <: Integer , abstractMonteCarloMethod <: AbstractMonteCarloMethod , baseMode <: BaseMode}
 	Nsim::num1
 	Nstep::num2
 	monteCarloMethod::abstractMonteCarloMethod

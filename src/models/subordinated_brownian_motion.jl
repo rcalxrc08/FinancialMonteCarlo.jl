@@ -38,7 +38,7 @@ function simulate(mcProcess::SubordinatedBrownianMotion,spotData::ZeroRateCurve,
 
 	Z=Array{Float64}(undef,Nsim)
 	for i=1:Nstep
-		randn!(Z)
+		randn!(mcBaseData.rng,Z)
 		# SUBORDINATED BROWNIAN MOTION (dt_s=time change)
 		X[:,i+1]=X[:,i].+drift.*dt_s[:,i].+sigma.*sqrt.(dt_s[:,i]).*Z;
 	end
@@ -63,7 +63,7 @@ function simulate(mcProcess::SubordinatedBrownianMotion,spotData::ZeroRateCurve,
 	X[:,1].=isDualZero;
 	for i=1:Nstep
 		NsimAnti=div(Nsim,2)
-		Z=randn(NsimAnti);
+		Z=randn(mcBaseData.rng,NsimAnti);
 		Z=[Z;-Z];
 		# SUBORDINATED BROWNIAN MOTION (dt_s=time change)
 		X[:,i+1]=X[:,i].+drift.*dt_s[:,i].+sigma.*sqrt.(dt_s[:,i]).*Z;

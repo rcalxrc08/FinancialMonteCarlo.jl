@@ -63,11 +63,11 @@ function simulate(mcProcess::MertonProcess,spotData::ZeroRateCurve,mcBaseData::M
 	drift_RN=r-d-σ^2/2-λ1*(exp(μ+σ1*σ1/2.0)-1.0); 
 	X=Matrix(simulate(BrownianMotion(σ,drift_RN,Underlying(0.0)),spotData,mcBaseData,T))
 	D1=Poisson(λ1*T);
-	NJumps=Int.(quantile.([D1],rand(Nsim)));
+	NJumps=Int.(quantile.([D1],rand(mcBaseData.rng,Nsim)));
 	for ii in 1:Nsim
 		Njumps_=NJumps[ii];
 		# Simulate the number of jumps (conditional simulation)
-		tjumps=sort(rand(Njumps_)*T);
+		tjumps=sort(rand(mcBaseData.rng,Njumps_)*T);
 		for tjump in tjumps
 			# Add the jump size
 			#i=findfirst(x->x>=tjump,t);
@@ -76,7 +76,7 @@ function simulate(mcProcess::MertonProcess,spotData::ZeroRateCurve,mcBaseData::M
 			
 			for i in 1:Nstep
 			   if tjump>t[i] && tjump<=t[i+1] #Look for where it is happening the jump
-				  jump_size=μ+σ1*randn() #Compute jump size
+				  jump_size=μ+σ1*randn(mcBaseData.rng) #Compute jump size
 				  X[ii,i+1:end].+=jump_size; #add jump component
 				  break;
 			   end

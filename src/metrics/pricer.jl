@@ -55,7 +55,6 @@ end
 
 function pricer(mcProcess::Dict{String,FinancialMonteCarlo.AbstractMonteCarloProcess},spotData::ZeroRateCurve,mcConfig::MonteCarloConfiguration,dict_::Dict{String,Dict{FinancialMonteCarlo.AbstractPayoff,Number}})
 		set_seed(mcConfig)
-		underlyings_models=keys(mcProcess)
 		underlyings_payoff=keys(dict_)
 		price=0.0;
 		for under_ in underlyings_payoff

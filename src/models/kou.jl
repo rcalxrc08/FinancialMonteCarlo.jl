@@ -74,24 +74,24 @@ function simulate(mcProcess::KouProcess,spotData::ZeroRateCurve,mcBaseData::Mont
 
 	t=range(0.0, stop=T, length=Nstep+1);
 	PoissonRV=Poisson(λ1*T);
-	NJumps=quantile.([PoissonRV],rand(Nsim));
+	NJumps=quantile.([PoissonRV],rand(mcBaseData.rng,Nsim));
 
 	for ii in 1:Nsim
 		Njumps_=NJumps[ii];
 		# Simulate the number of jumps (conditional simulation)
-		tjumps=sort(rand(Njumps_)*T);
+		tjumps=sort(rand(mcBaseData.rng,Njumps_)*T);
 		for tjump in tjumps
 			# Add the jump size
 			
 			idx1=findfirst(x->x>=tjump,t);
-			u=rand(); #simulate Uniform([0,1])
-			jump_size=u<p ? quantile_exp(λ₊,rand()) : -quantile_exp(λ₋,rand())
+			u=rand(mcBaseData.rng); #simulate Uniform([0,1])
+			jump_size=u<p ? quantile_exp(λ₊,rand(mcBaseData.rng)) : -quantile_exp(λ₋,rand(mcBaseData.rng))
 			X[ii,idx1:end].+=jump_size; #add jump component
 			
 			#for i in 1:Nstep
 			#   if tjump>t[i] && tjump<=t[i+1] #Look for where it is happening the jump
-			#	  u=rand(); #simulate Uniform([0,1])
-			#	  jump_size=(u<p) ? quantile(PosExpRV,rand()):-quantile(NegExpRV,rand()) #Compute jump size
+			#	  u=rand(mcBaseData.rng); #simulate Uniform([0,1])
+			#	  jump_size=(u<p) ? quantile(PosExpRV,rand(mcBaseData.rng)):-quantile(NegExpRV,rand(mcBaseData.rng)) #Compute jump size
 			#	  X[ii,i+1:end]+=jump_size; #add jump component
 			#	  break;
 			#   end

@@ -60,7 +60,7 @@ function simulate(mcProcess::VarianceGammaProcess,spotData::ZeroRateCurve,mcBase
 	drift=r-d-psi1;
 	
 	gammaRandomVariable=Gamma(dt/κ1);
-	dt_s=κ1.*quantile.([gammaRandomVariable],rand(Nsim,Nstep));
+	dt_s=κ1.*quantile.([gammaRandomVariable],rand(mcBaseData.rng,Nsim,Nstep));
 	
 	X=simulate(SubordinatedBrownianMotion(σ,drift,Underlying(0.0)),spotData,mcBaseData,T,dt_s);
 

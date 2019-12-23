@@ -73,7 +73,7 @@ function simulate(mcProcess::BrownianMotion,spotData::ZeroRateCurve,mcBaseData::
 
 	@inbounds for j in 1:Nstep
 		@inbounds for i in 1:Nsim_2
-			Z=stddev_bm.*randn();
+			Z=stddev_bm.*randn(mcBaseData.rng);
 			X[2*i-1,j+1]=X[2*i-1,j].+mean_bm.+Z;
 			X[2*i,j+1]  =X[2*i,j]  .+mean_bm.-Z;
 		end

@@ -60,7 +60,7 @@ function simulate(mcProcess::NormalInverseGaussianProcess,spotData::ZeroRateCurv
 	
 	#Simulate subordinator
 	IGRandomVariable=InverseGaussian(dt,dt*dt/κ1);
-	dt_s=quantile.([IGRandomVariable],rand(Nsim,Nstep));
+	dt_s=quantile.([IGRandomVariable],rand(mcBaseData.rng,Nsim,Nstep));
 	
 	X=simulate(SubordinatedBrownianMotion(σ,drift,Underlying(0.0)),spotData,mcBaseData,T,dt_s);
 

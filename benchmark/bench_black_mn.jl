@@ -1,5 +1,5 @@
-@everywhere using BenchmarkTools
-@everywhere using FinancialMonteCarlo
+using BenchmarkTools
+using FinancialMonteCarlo
 S0=100.0;
 K=100.0;
 r=0.02;
@@ -9,7 +9,7 @@ D=90.0;
 Nsim=10000;
 Nstep=30;
 sigma=0.2;
-mc=MonteCarloConfiguration(Nsim,Nstep,FinancialMonteCarlo.MultiProcess());
+mc=MonteCarloConfiguration(Nsim,Nstep);
 toll=1e-3;
 spotData1=ZeroRateCurve(r);
 FwdData=Forward(T)
