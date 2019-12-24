@@ -79,7 +79,7 @@ before_script:
 
 .test_template: &build_definition_af
   script:
-    - /usr/local/julia/bin/julia -e 'using InteractiveUtils; versioninfo(); using Pkg; Pkg.clone(pwd()); Pkg.add(PackageSpec(name="ArrayFire", rev="master")); using FinancialMonteCarlo,ArrayFire'
+    - /usr/local/julia/bin/julia -e 'using InteractiveUtils; versioninfo(); using Pkg; Pkg.clone(pwd()); Pkg.add("ArrayFire"); using FinancialMonteCarlo,ArrayFire'
     
 .test_template: &test_definition_af
   script:
@@ -92,54 +92,50 @@ before_script:
       include("bench_black_af.jl");'
 
 # Name a test and select an appropriate image.
-build:1.2:
+build:1.3:
   stage: build
-  image: julia:1.2
+  image: julia:1.3
   <<: *build_definition
   
-test:1.2:
+test:1.3:
   stage: test
-  image: julia:1.2
+  image: julia:1.3
   <<: *test_definition
 
-benchmark:1.2:
+benchmark:1.3:
   stage: benchmark
-  image: julia:1.2
+  image: julia:1.3
   <<: *bench_definition
   
-coverage:1.2:
+coverage:1.3:
   stage: coverage
-  image: julia:1.2
+  image: julia:1.3
   <<: *cov_definition
-# Windows
-#test:0.6.3-Windows:
-#  image: julia:windowsservercore-1709
-#  <<: *test_definition
 
-build:1.1_af:
+build:1.2_af:
   stage: build
-  image: julia:1.1
+  image: julia:1.2
   allow_failure: true
   <<: *install_af
   <<: *build_definition_af
   
-test:1.1_af:
+test:1.2_af:
   stage: test
-  image: julia:1.1
+  image: julia:1.2
   allow_failure: true
   <<: *install_af
   <<: *test_definition_af
   
-benchmark:1.1_af:
+benchmark:1.2_af:
   stage: benchmark
-  image: julia:1.1
+  image: julia:1.2
   allow_failure: true
   <<: *install_af
   <<: *bench_definition_af
 
 pages:
   stage: deploy
-  image: julia:1.2
+  image: julia:1.3
   script:
     - julia --project=docs -e 'using Pkg; Pkg.instantiate(); Pkg.develop(PackageSpec(path=pwd()))'
     - julia --project=docs --color=yes docs/make.jl
