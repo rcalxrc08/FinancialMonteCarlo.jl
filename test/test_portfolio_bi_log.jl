@@ -38,8 +38,10 @@ display(Model)
 mktdataset=underlying_|>Model
 mktdataset+="notneeded"|>Model_n
 
-portfolio_=[EUData];
-portfolio=underlying_|>EUData
+portfolio_=[EUData,AMData,BarrierData];
+portfolio=underlying_|>1.0*EUData
+portfolio+=underlying_|>1.0*AMData
+portfolio+=underlying_|>-1.0*(-1.0)*BarrierData
 
 price_mkt=pricer(mktdataset,spotData1,mc,portfolio)
 price_old= sum(pricer(Model,spotData1,mc,portfolio_))

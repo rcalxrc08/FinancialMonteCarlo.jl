@@ -23,13 +23,13 @@ It currently contains the following capabilities:
 - Partial Support for the following Parallelization:
     - CUDA using  [CuArrays.jl](https://github.com/JuliaGPU/CuArrays.jl)
     - ArrayFire using  [ArrayFire.jl](https://github.com/JuliaComputing/ArrayFire.jl)
+    - Thread based (Native julia)
+	- Process based (Native julia)
 
 It also supports the pricing directly from the definition of the Stochastic Differential Equation, using the package [DifferentiatialEquations.jl](https://github.com/JuliaDiffEq/DifferentialEquations.jl).
 
 Currently supports [Dual Numbers](https://github.com/JuliaDiff/DualNumbers.jl), [ForwardDiff](https://github.com/JuliaDiff/ForwardDiff.jl) and [ReverseDiff](https://github.com/JuliaDiff/ReverseDiff.jl)
 for Automatic Differentiation (where it makes sense).
-
-Additionally, there has been added support for GPU Parallel execution using [CuArrays](https://github.com/JuliaGPU/CuArrays.jl), you can find examples of this in the benchmark folder.
 
 ## How to Install
 To install the package simply type on the Julia REPL the following:
@@ -60,11 +60,11 @@ Nstep=30;
 #Define Model Parameters
 σ=0.2;
 #Build the Structs
-mcConfig=MonteCarloConfiguration(Nsim,Nstep);
-spotData=ZeroRateCurve(r);
-underlying=Underlying(S0,d);
+mcConfig=MonteCarloConfiguration(Nsim,Nstep); #Configurator
+spotData=ZeroRateCurve(r); #Zero rate curve, so far it is just a scalar
+underlying=Underlying(S0,d); #Underlying relative data
 
-#Define The Options
+#Define The Option
 EU_payoff=EuropeanOption(T,K)
 #Define the Model
 Model=BlackScholesProcess(σ,underlying);
@@ -74,10 +74,10 @@ Model=BlackScholesProcess(σ,underlying);
 ```
 
 ## Contracts Algebra
-TBC
+Lorem ipsum
 
 ## Market Data and Multivariate Support
-TBC
+Lorem ipsum
 
 ## Keep in mind
 There are few things that you should keep in mind when using this library:

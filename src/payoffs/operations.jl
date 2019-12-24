@@ -65,12 +65,18 @@ end
 
 
 import Base.Multimedia.display;
+import Base.hash;
+import Base.isequal;
+
+hash(x::Payoff) where { Payoff <: AbstractPayoff }=sum(hash(get_parameters(x)))+hash(string(Payoff))
+isequal(x::Payoff1,y::Payoff2) where { Payoff1 <: AbstractPayoff , Payoff2 <: AbstractPayoff }=hash(x)==hash(y)
 
 function display(p::Position)
 	keys_=keys(p);
 	flag=0;
 	for key_ in keys_
 		val_=p[key_]
+		iszero(val_) ? continue : nothing;
 		if typeof(val_) <: Real 
 			if(flag!=0)
 				val_ > 0.0 ? print(+) : print(-);
@@ -80,6 +86,7 @@ function display(p::Position)
 				print(*);
 				print(key_);
 			else
+				val_ > 0.0 ? nothing : print(-);
 				print(key_);
 			end
 		else

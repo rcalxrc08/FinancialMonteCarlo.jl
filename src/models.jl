@@ -101,6 +101,21 @@ function display(p::Union{AbstractMonteCarloProcess,AbstractPayoff})
 	println(")");
 end
 
+function get_parameters(model::XProcess) where {XProcess <: AbstractPayoff}
+	fields_=fieldnames(XProcess)
+	N1=length(fields_)
+	param_=[];
+	for i=1:N1
+		tmp_=getproperty(model,fields_[i]);
+		#typeof(tmp_) <: Bool ? continue : nothing;
+		append!(param_,tmp_)
+	end
+	typecheck_=typeof(sum(param_)+prod(param_))
+	param_=convert(Array{typecheck_},param_)
+	
+	return param_;
+end
+
 function get_parameters(model::XProcess) where {XProcess <: BaseProcess}
 	fields_=fieldnames(XProcess)
 	N1=length(fields_)

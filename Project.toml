@@ -23,8 +23,7 @@ julia = "≥ 1.1.0"
 DualNumbers = "fa6b7ba4-c1ee-5f82-b5fc-ecf0adba8f74"
 ForwardDiff = "f6369f11-7733-5829-9624-2563aa707210"
 ReverseDiff = "37e2e3b7-166d-5795-8a7a-e32c996b4267"
-DifferentialEquations = "0c46a032-eb83-5123-abaf-570d42b7fbaa"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
-test = ["ForwardDiff", "DifferentialEquations", "ReverseDiff", "DualNumbers", "Test"]
+test = ["ForwardDiff", "ReverseDiff", "DualNumbers", "Test"]
