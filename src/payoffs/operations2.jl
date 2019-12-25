@@ -12,7 +12,7 @@ function |>(x::String,y::Position)
 end
 
 function |>(x::String,y::FinancialMonteCarlo.SingleNamePayoff)
-	sep=findfirst("_",x)[1];
+	sep=findfirst("_",x);
 	if(!isnothing(sep))
 		error("NO UNDERSCORE ALLOWED IN SINGLE NAME OPTIONS");
 	end
