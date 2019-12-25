@@ -1,6 +1,6 @@
 using Test, FinancialMonteCarlo,ArrayFire;
 @show "HestonModel"
-#setafgcthreshold(2)
+
 S0=100.0;
 K=100.0;
 r=0.02;
@@ -17,10 +17,10 @@ theta=0.03;
 lambda=0.01;
 rho=0.0;
 mc=MonteCarloConfiguration(Nsim,Nstep,FinancialMonteCarlo.AFMode());
-mc1=MonteCarloConfiguration(Nsim,Nstep,FinancialMonteCarlo.antithetic,FinancialMonteCarlo.AFMode());
+mc1=MonteCarloConfiguration(Nsim,Nstep,FinancialMonteCarlo.AntitheticMC(),FinancialMonteCarlo.AFMode());
 toll=0.8;
 
-spotData1=ZeroRateCurve(S0,r,d);
+spotData1=ZeroRateCurve(r);
 
 FwdData=Forward(T)
 EUData=EuropeanOption(T,K)
@@ -28,7 +28,7 @@ AMData=AmericanOption(T,K)
 BarrierData=BarrierOptionDownOut(T,K,D)
 AsianData1=AsianFloatingStrikeOption(T)
 AsianData2=AsianFixedStrikeOption(T,K)
-Model=HestonProcess(sigma,sigma_zero,lambda,kappa,rho,theta);
+Model=HestonProcess(sigma,sigma_zero,lambda,kappa,rho,theta,Underlying(S0,d));
 
 @show FwdPrice=pricer(Model,spotData1,mc,FwdData);
 @show EuPrice=pricer(Model,spotData1,mc,EUData);
