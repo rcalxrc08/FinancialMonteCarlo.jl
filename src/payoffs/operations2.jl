@@ -11,8 +11,11 @@ function |>(x::String,y::Position)
 	return out;
 end
 
-function |>(x::String,y::FinancialMonteCarlo.AbstractPayoff)
-
+function |>(x::String,y::FinancialMonteCarlo.SingleNamePayoff)
+	sep=findfirst("_",x)[1];
+	if(!isnothing(sep))
+		error("NO UNDERSCORE ALLOWED IN SINGLE NAME OPTIONS");
+	end
 	return x|>(1.0*y);
 end
 

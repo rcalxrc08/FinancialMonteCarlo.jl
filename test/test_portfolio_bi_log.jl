@@ -22,7 +22,7 @@ toll=0.8
 spotData1=ZeroRateCurve(r);
 
 FwdData=Forward(T)
-EUData=EuropeanOption2D(T,K)
+EUData=EuropeanOption(T,K)
 AMData=AmericanOption(T,K)
 BarrierData=BarrierOptionDownOut(T,K,D)
 AsianFloatingStrikeData=AsianFloatingStrikeOption(T)
@@ -36,15 +36,15 @@ Model=GaussianCopulaBivariateLogProcess(Model_enj,Model_abpl,0.4)
 display(Model)
 
 mktdataset=underlying_|>Model
+mktdataset_2=underlying_name|>Model_enj
 mktdataset+="notneeded"|>Model_n
 
 portfolio_=[EUData,AMData,BarrierData];
-portfolio=underlying_|>1.0*EUData
-portfolio+=underlying_|>1.0*AMData
-portfolio+=underlying_|>-1.0*(-1.0)*BarrierData
+portfolio=underlying_name|>1.0*EUData
+portfolio+=underlying_name|>1.0*AMData
+portfolio+=underlying_name|>-1.0*(-1.0)*BarrierData
 
 price_mkt=pricer(mktdataset,spotData1,mc,portfolio)
-price_old= sum(pricer(Model,spotData1,mc,portfolio_))
-
+price_old=pricer(mktdataset_2,spotData1,mc,portfolio)
 
 @test abs(price_mkt-price_old)<1e-8
