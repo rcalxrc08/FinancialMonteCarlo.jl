@@ -11,6 +11,7 @@ Nsim=10000;
 Nstep=30;
 sigma=0.2;
 mc=MonteCarloConfiguration(Nsim,Nstep);
+mc_=MonteCarloConfiguration(Nsim,Nstep,FinancialMonteCarlo.AFMode());
 toll=1e-3;
 
 spotData1=ZeroRateCurve(r);
@@ -22,16 +23,16 @@ BarrierData=BarrierOptionDownOut(T,K,D)
 AsianFloatingStrikeData=AsianFloatingStrikeOption(T)
 AsianFixedStrikeData=AsianFixedStrikeOption(T,K)
 Model=BlackScholesProcess(sigma,Underlying(S0,d));
-@show "Fwd"
-@btime FwdPrice=pricer(Model,spotData1,mc,FwdData,FinancialMonteCarlo.AFMode());
+#@show "Fwd"
+FwdPrice=pricer(Model,spotData1,mc_,FwdData);
 
 @show "STD fwd"
 @btime FwdPrice=pricer(Model,spotData1,mc,FwdData);
-@btime FwdPrice=pricer(Model,spotData1,mc,FwdData,FinancialMonteCarlo.AFMode());
+@btime FwdPrice=pricer(Model,spotData1,mc_,FwdData);
 @show "std eu"
 @btime EuPrice=pricer(Model,spotData1,mc,EUData);
-@btime EuPrice=pricer(Model,spotData1,mc,EUData,FinancialMonteCarlo.AFMode());
+@btime EuPrice=pricer(Model,spotData1,mc_,EUData);
 @show "std am"
 @btime AmPrice=pricer(Model,spotData1,mc,AMData);
-@btime AmPrice=pricer(Model,spotData1,mc,AMData,FinancialMonteCarlo.AFMode());
+@btime AmPrice=pricer(Model,spotData1,mc_,AMData);
 
