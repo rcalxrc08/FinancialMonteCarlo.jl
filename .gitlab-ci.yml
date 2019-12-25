@@ -57,6 +57,9 @@ before_script:
   script:
     - julia --project=benchmark -e 'using Pkg; Pkg.instantiate(); Pkg.develop(PackageSpec(path=pwd()))'
     - /usr/local/julia/bin/julia --project=benchmark benchmark/benchmarks.jl
+    - /usr/local/julia/bin/julia --project=benchmark benchmark/bench_black_mn.jl
+    - /usr/local/julia/bin/julia -p4 --project=benchmark benchmark/bench_black_mp.jl
+    - export JULIA_NUM_THREADS=4 && /usr/local/julia/bin/julia --project=benchmark benchmark/bench_black_mt.jl
     
 ################################################################
 ################ AFArrays
