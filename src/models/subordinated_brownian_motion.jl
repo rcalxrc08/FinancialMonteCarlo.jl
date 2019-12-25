@@ -10,13 +10,6 @@ mutable struct SubordinatedBrownianMotion{num <: Number, num1 <: Number, nums0 <
             return new{num,num1,nums0,numd}(sigma,drift,underlying)
         end
     end
-	function SubordinatedBrownianMotion(sigma::num,drift::num1,S0::num2) where {num <: Number,num1 <: Number, num2 <: Number}
-        if sigma<=0.0
-			error("volatility must be positive");
-		else
-            return new{num,num1,num2,Float64}(sigma,drift,Underlying(S0))
-        end
-    end
 end
 
 export SubordinatedBrownianMotion;

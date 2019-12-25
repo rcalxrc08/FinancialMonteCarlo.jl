@@ -24,17 +24,6 @@ mutable struct VarianceGammaProcess{num <: Number, num1 <: Number, num2 <: Numbe
             return new{num,num1,num2,nums0,numd}(σ,θ,κ,underlying)
         end
     end
-	function VarianceGammaProcess(σ::num,θ::num1,κ::num2,S0::num3) where {num <: Number, num1 <: Number, num2 <: Number, num3 <: Number}
-        if σ<=0.0
-			error("volatility must be positive");
-		elseif κ<=0.0
-			error("κappa must be positive");
-		elseif 1-σ*σ*κ/2.0-θ*κ<0.0
-			error("Parameters with unfeasible values")
-		else
-            return new{num,num1,num2,num3,Float64}(σ,θ,κ,Underlying(S0))
-        end
-    end
 end
 
 

@@ -43,10 +43,10 @@ display(Model)
 
 @show FwdPrice=pricer(Model,spotData1,mc1,FwdData);
 @show EuPrice=pricer(Model,spotData1,mc1,EUData);
-@show AmPrice=pricer(Model,spotData1,mc1,AMData,FinancialMonteCarlo.antithetic);
-@show BarrierPrice=pricer(Model,spotData1,mc1,BarrierData,FinancialMonteCarlo.antithetic);
-@show AsianPrice1=pricer(Model,spotData1,mc1,AsianFloatingStrikeData,FinancialMonteCarlo.antithetic);
-@show AsianPrice2=pricer(Model,spotData1,mc1,AsianFixedStrikeData,FinancialMonteCarlo.antithetic);
+@show AmPrice=pricer(Model,spotData1,mc1,AMData);
+@show BarrierPrice=pricer(Model,spotData1,mc1,BarrierData);
+@show AsianPrice1=pricer(Model,spotData1,mc1,AsianFloatingStrikeData);
+@show AsianPrice2=pricer(Model,spotData1,mc1,AsianFixedStrikeData);
 tollanti=0.6;
 @test abs(FwdPrice-99.1078451563562)<tollanti
 @test abs(EuPrice-8.43005524824866)<tollanti

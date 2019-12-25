@@ -24,19 +24,6 @@ mutable struct LogNormalMixture{num <: Number,num2 <: Number, nums0 <: Number, n
             return new{num,num2,nums0,numd}(η,λ,underlying)
         end
     end
-	function LogNormalMixture(η::Array{num,1},λ::Array{num2,1},S0::num3) where {num <: Number,num2 <: Number, num3 <:Number}
-        if minimum(η) <= 0.0
-            error("Volatilities must be positive")
-        elseif minimum(λ) <= 0.0
-            error("weights must be positive")
-        elseif sum(λ) > 1.0
-            error("λs must be weights")
-        elseif length(λ) != length(η)-1
-            error("Check vector lengths")
-        else
-            return new{num,num2,num3,Float64}(η,λ,Underlying(S0))
-        end
-    end
 end
 
 export LogNormalMixture;

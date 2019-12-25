@@ -18,13 +18,6 @@ mutable struct BrownianMotion{num <: Number, num1 <: Number, num2 <: Number , nu
             return new{num,num1,num2,num3}(σ,μ,underlying)
         end
     end
-	function BrownianMotion(σ::num,μ::num1,S0::num2) where {num <: Number,num1 <: Number, num2 <: Number}
-        if σ <= 0.0
-            error("Volatility must be positive")
-        else
-            return new{num,num1,num2,Float64}(σ,μ,Underlying(S0))
-        end
-    end
 end
 
 export BrownianMotion;

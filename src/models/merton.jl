@@ -26,17 +26,6 @@ mutable struct MertonProcess{num <: Number, num1 <: Number,num2 <: Number,num3<:
             return new{num,num1,num2,num3,nums0,numd}(σ,λ,μJ,σJ,underlying)
         end
     end
-	function MertonProcess(σ::num,λ::num1,μJ::num2,σJ::num3,S0::num4) where {num <: Number, num1 <: Number,num2 <: Number,num3 <: Number, num4 <: Number}
-        if σ<=0.0
-			error("volatility must be positive");
-		elseif λ<=0.0
-			error("jump intensity must be positive");
-		elseif σJ<=0.0
-			error("positive λ must be positive");
-		else
-            return new{num,num1,num2,num3,num4,Float64}(σ,λ,μJ,σJ,Underlying(S0))
-        end
-    end
 end
 
 export MertonProcess;
