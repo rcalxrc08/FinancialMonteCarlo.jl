@@ -25,7 +25,7 @@ AsianFixedStrikeData=AsianFixedStrikeOption(T,K)
 Model=BlackScholesProcess(sigma,Underlying(S0,d));
 
 
-f(x::Vector) = pricer(BlackScholesProcess(x[1],x[2]),ZeroRateCurve(r),mc,EUData);
+f(x::Vector) = pricer(BlackScholesProcess(x[1],Underlying(x[2],d)),ZeroRateCurve(r),mc,EUData);
 
 x=Float64[sigma,S0]
 
