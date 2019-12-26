@@ -55,4 +55,4 @@ tollanti=0.8
 @test abs(AsianPrice1-9.762160560168732)<tollanti
 
 
-@test_throws(ErrorException,simulate(HestonProcess(sigma,sigma_zero,lambda,kappa,rho,theta),spotData1,McConfig,-T));
+@test_throws(ErrorException,simulate(Model,spotData1,McConfig,-T));

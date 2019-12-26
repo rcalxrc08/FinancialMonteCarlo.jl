@@ -58,7 +58,7 @@ before_script:
     - julia --project=benchmark -e 'using Pkg; Pkg.instantiate(); Pkg.develop(PackageSpec(path=pwd()))'
     - /usr/local/julia/bin/julia --project=benchmark -e 'using Pkg; Pkg.instantiate(); include("benchmark/benchmarks.jl");'
     - /usr/local/julia/bin/julia --project=benchmark -e 'using Pkg; Pkg.instantiate(); include("benchmark/bench_black_mn.jl");'
-    - /usr/local/julia/bin/julia -p4 --project=benchmark -e 'using Pkg; Pkg.instantiate(); include("benchmark/bench_black_mp.jl");'
+    - /usr/local/julia/bin/julia -p4 -e 'using Pkg; Pkg.add("BenchmarkTools"); Pkg.instantiate(); include("benchmark/bench_black_mp.jl");'
     - export JULIA_NUM_THREADS=4 && /usr/local/julia/bin/julia --project=benchmark -e 'using Pkg; Pkg.instantiate(); include("benchmark/bench_black_mt.jl");'
     
 ################################################################
