@@ -7,7 +7,7 @@ T=1.0;
 d=0.01;
 D=90.0;
 
-Nsim=10000;
+Nsim=40000;
 Nstep=30;
 sigma=0.2;
 mc=MonteCarloConfiguration(Nsim,Nstep,FinancialMonteCarlo.AFMode());
