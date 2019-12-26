@@ -8,27 +8,27 @@ Where:\n
 		drift       = 	drift.
 		underlying  = 	underlying.
 """
-mutable struct SubordinatedBrownianMotion{num <: Number, num1 <: Number, nums0 <: Number, numd <: Number}<:AbstractMonteCarloProcess
+mutable struct SubordinatedBrownianMotion{num <: Number, num1 <: Number, Distr <: Distribution{Univariate,Continuous}, nums0 <: Number, numd <: Number}<:AbstractMonteCarloProcess
 	sigma::num
 	drift::num1
+	subordinator_::Distr
 	underlying::Underlying{nums0,numd}
-	function SubordinatedBrownianMotion(sigma::num,drift::num1,underlying::Underlying{nums0,numd}) where {num <: Number,num1 <: Number, nums0 <: Number, numd <: Number}
+	function SubordinatedBrownianMotion(sigma::num,drift::num1,dist::Distr,underlying::Underlying{nums0,numd}) where {num <: Number,num1 <: Number, Distr <: Distribution{Univariate,Continuous}, nums0 <: Number, numd <: Number}
         if sigma<=0.0
 			error("volatility must be positive");
 		else
-            return new{num,num1,nums0,numd}(sigma,drift,underlying)
+            return new{num,num1,Distr,nums0,numd}(sigma,drift,dist,underlying)
         end
     end
 end
 
 export SubordinatedBrownianMotion;
 
-function simulate(mcProcess::SubordinatedBrownianMotion,spotData::ZeroRateCurve,mcBaseData::MonteCarloConfiguration{type1,type2,type3,SerialMode},T::numb,dt_s::Array{num1,2}) where {numb <: Number, num1<:Number , type1 <: Number, type2<: Number, type3 <: StandardMC}
+function simulate(mcProcess::SubordinatedBrownianMotion,spotData::ZeroRateCurve,mcBaseData::MonteCarloConfiguration{type1,type2,type3,SerialMode},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: StandardMC}
 	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;
-	if(size(dt_s)!=(Nsim,Nstep))
-		error("Inconsistent Time Matrix")
-	end
+	dt_s=quantile.(mcProcess.subordinator_,rand(mcBaseData.rng,Nsim,Nstep));
+	
 	drift=mcProcess.drift;
 	sigma=mcProcess.sigma;
 	if T<=0.0
@@ -49,12 +49,10 @@ function simulate(mcProcess::SubordinatedBrownianMotion,spotData::ZeroRateCurve,
 end
 
 
-function simulate(mcProcess::SubordinatedBrownianMotion,spotData::ZeroRateCurve,mcBaseData::MonteCarloConfiguration{type1,type2,type3,SerialMode},T::numb,dt_s::Array{num1,2}) where {numb <: Number, num1<:Number , type1 <: Number, type2<: Number, type3 <: AntitheticMC}
+function simulate(mcProcess::SubordinatedBrownianMotion,spotData::ZeroRateCurve,mcBaseData::MonteCarloConfiguration{type1,type2,type3,SerialMode},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AntitheticMC}
 	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;
-	if(size(dt_s)!=(Nsim,Nstep))
-		error("Inconsistent Time Matrix")
-	end
+	dt_s=quantile.(mcProcess.subordinator_,rand(mcBaseData.rng,Nsim,Nstep));
 	drift=mcProcess.drift;
 	sigma=mcProcess.sigma;
 	if T<=0.0

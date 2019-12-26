@@ -1,9 +1,7 @@
-using FinancialMonteCarlo, Test;
+using FinancialMonteCarlo, Distributions, Test;
 @show "Test Parameters"
 S0=100.0;
-K=100.0;
 r=0.02;
-Tneg=-1.0;
 d=0.01;
 
 Nsim=10000;
@@ -16,13 +14,6 @@ spotData1=ZeroRateCurve(r);
 
 @show "Test Subordinated Brownian Motion Parameters"
 drift=0.0;
-dt=T/Nstep;
-sub=dt*ones(Nsim,Nstep)
 
-@test_throws(ErrorException,simulate(SubordinatedBrownianMotion(sigma,drift,Underlying(S0,d)),spotData1,McConfig,-T,sub));
-@test_throws(ErrorException,SubordinatedBrownianMotion(-sigma,drift,Underlying(S0,d)))
-
-
-@test_throws(ErrorException,SubordinatedBrownianMotion(-sigma,drift,Underlying(S0,d)))
-subw=dt*ones(1,1);
-@test_throws(ErrorException,simulate(SubordinatedBrownianMotion(sigma,drift,Underlying(S0,d)),spotData1,McConfig,T,subw));
+@test_throws(ErrorException,simulate(SubordinatedBrownianMotion(sigma,drift,InverseGaussian(1.0,1.0),Underlying(S0,d)),spotData1,McConfig,-T));
+@test_throws(ErrorException,SubordinatedBrownianMotion(-sigma,drift,InverseGaussian(1.0,1.0),Underlying(S0,d)))
