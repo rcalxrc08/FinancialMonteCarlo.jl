@@ -3,7 +3,7 @@ using Documenter, FinancialMonteCarlo
 makedocs(
 		format = Documenter.HTML(
         prettyurls = get(ENV, "CI", nothing) == "true",
-		assets = ["assets/favicon.ico","assets/logo.png"]    ),
+		assets = ["assets/favicon.ico"]),
 		sitename="FinancialMonteCarlo.jl",
 		modules = [FinancialMonteCarlo],
 		pages = [
@@ -13,6 +13,7 @@ makedocs(
 				"stochproc.md",
 				"parallel_vr.md",
 				"payoffs.md",
+				"metrics.md",
 				"multivariate.md",
 				"intdiffeq.md",
 				"extends.md",

@@ -1,4 +1,13 @@
+"""
+Struct for SubordinatedBrownianMotion
 
+		subordinatedBrownianMotion=SubordinatedBrownianMotion(sigma::num,drift::num1,underlying::Underlying{nums0,numd})
+	
+Where:\n
+		sigma       =	Volatility.
+		drift       = 	drift.
+		underlying  = 	underlying.
+"""
 mutable struct SubordinatedBrownianMotion{num <: Number, num1 <: Number, nums0 <: Number, numd <: Number}<:AbstractMonteCarloProcess
 	sigma::num
 	drift::num1

@@ -27,4 +27,7 @@ EuropeanOption
 Forward
 BarrierOptionDownIn
 AmericanOption
+EuropeanOption2D
+Spot
+EuropeanOptionND
 ```
