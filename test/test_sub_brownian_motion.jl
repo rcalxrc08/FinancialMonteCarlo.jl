@@ -3,7 +3,7 @@ using FinancialMonteCarlo, Distributions, Test;
 S0=100.0;
 r=0.02;
 d=0.01;
-
+T=1.0;
 Nsim=10000;
 Nstep=30;
 
