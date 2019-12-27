@@ -27,13 +27,13 @@ export SubordinatedBrownianMotion;
 function simulate(mcProcess::SubordinatedBrownianMotion,spotData::ZeroRateCurve,mcBaseData::MonteCarloConfiguration{type1,type2,type3,SerialMode},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: StandardMC}
 	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;
-	dt_s=quantile.(mcProcess.subordinator_,rand(mcBaseData.rng,Nsim,Nstep));
 	
 	drift=mcProcess.drift;
 	sigma=mcProcess.sigma;
 	if T<=0.0
 		error("Final time must be positive");
 	end
+	dt_s=quantile.(mcProcess.subordinator_,rand(mcBaseData.rng,Nsim,Nstep));
 	isDualZero=drift*sigma*dt_s[1,1]*0.0+mcProcess.underlying.S0;
 	X=Matrix{typeof(isDualZero)}(undef,Nsim,Nstep+1);
 	X[:,1].=isDualZero;
