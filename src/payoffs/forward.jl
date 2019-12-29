@@ -20,8 +20,8 @@ end
 export Forward;
 
 
-function payoff(S::AbstractMatrix{num},optionData::Forward,spotData::ZeroRateCurve,T1::num2=optionData.T) where{num <: Number,num2 <: Number}
-	r=spotData.r;
+function payoff(S::AbstractMatrix{num},optionData::Forward,rfCurve::ZeroRateCurve,T1::num2=optionData.T) where{num <: Number,num2 <: Number}
+	r=rfCurve.r;
 	T=optionData.T;
 	(Nsim,NStep)=size(S)
 	NStep-=1;

@@ -24,7 +24,7 @@ end
 
 export GaussianCopulaNVariateLogProcess;
 
-function simulate(mcProcess::GaussianCopulaNVariateLogProcess,spotData::ZeroRateCurve,mcBaseData::MonteCarloConfiguration{type1,type2,type3,type4},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AbstractMonteCarloMethod, type4 <: BaseMode}
+function simulate(mcProcess::GaussianCopulaNVariateLogProcess,rfCurve::ZeroRateCurve,mcBaseData::MonteCarloConfiguration{type1,type2,type3,type4},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AbstractMonteCarloMethod, type4 <: BaseMode}
 	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;
 	if T<=0.0
@@ -33,13 +33,13 @@ function simulate(mcProcess::GaussianCopulaNVariateLogProcess,spotData::ZeroRate
 	
 	####Simulation
 	## Simulate
-	S_1=log.(simulate(mcProcess.models[1],spotData,mcBaseData,T)./mcProcess.models[1].underlying.S0);
+	S_1=log.(simulate(mcProcess.models[1],rfCurve,mcBaseData,T)./mcProcess.models[1].underlying.S0);
 	
 	#Preallocate in some way
 	S_Total=[S_1];
 	len_=length(mcProcess.models);
 	for i in 2:len_
-		S_tmp=log.(simulate(mcProcess.models[i],spotData,mcBaseData,T)./mcProcess.models[i].underlying.S0);
+		S_tmp=log.(simulate(mcProcess.models[i],rfCurve,mcBaseData,T)./mcProcess.models[i].underlying.S0);
 		push!(S_Total,S_tmp)
 	end
 	

@@ -17,7 +17,7 @@ mc=MonteCarloConfiguration(Nsim,Nstep);
 mc1=MonteCarloConfiguration(Nsim,Nstep,FinancialMonteCarlo.AntitheticMC());
 toll=0.8;
 
-spotData1=ZeroRateCurve(r);
+rfCurve=ZeroRateCurve(r);
 
 FwdData=Forward(T)
 EUData=EuropeanOption(T,K)
@@ -26,11 +26,11 @@ BarrierData=BarrierOptionDownOut(T,K,D)
 AsianData=AsianFloatingStrikeOption(T)
 Model=VarianceGammaProcess(sigma,theta1,k1,Underlying(S0,d));
 
-@show FwdPrice=pricer(Model,spotData1,mc,FwdData);
-@show EuPrice=pricer(Model,spotData1,mc,EUData);
-@show AmPrice=pricer(Model,spotData1,mc,AMData);
-@show BarrierPrice=pricer(Model,spotData1,mc,BarrierData);
-@show AsianPrice=pricer(Model,spotData1,mc,AsianData);
+@show FwdPrice=pricer(Model,rfCurve,mc,FwdData);
+@show EuPrice=pricer(Model,rfCurve,mc,EUData);
+@show AmPrice=pricer(Model,rfCurve,mc,AMData);
+@show BarrierPrice=pricer(Model,rfCurve,mc,BarrierData);
+@show AsianPrice=pricer(Model,rfCurve,mc,AsianData);
 
 @test abs(FwdPrice-97.94751460264095)<toll
 @test abs(EuPrice-7.738298817933206)<toll
@@ -41,11 +41,11 @@ Model=VarianceGammaProcess(sigma,theta1,k1,Underlying(S0,d));
 
 
 
-@show FwdPrice=pricer(Model,spotData1,mc1,FwdData);
-@show EuPrice=pricer(Model,spotData1,mc1,EUData);
-@show AmPrice=pricer(Model,spotData1,mc1,AMData);
-@show BarrierPrice=pricer(Model,spotData1,mc1,BarrierData);
-@show AsianPrice=pricer(Model,spotData1,mc1,AsianData);
+@show FwdPrice=pricer(Model,rfCurve,mc1,FwdData);
+@show EuPrice=pricer(Model,rfCurve,mc1,EUData);
+@show AmPrice=pricer(Model,rfCurve,mc1,AMData);
+@show BarrierPrice=pricer(Model,rfCurve,mc1,BarrierData);
+@show AsianPrice=pricer(Model,rfCurve,mc1,AsianData);
 
 @test abs(FwdPrice-97.94751460264095)<toll
 @test abs(EuPrice-7.738298817933206)<toll

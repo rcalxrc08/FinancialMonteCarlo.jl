@@ -29,8 +29,8 @@ end
 
 export VarianceGammaProcess;
 
-function simulate(mcProcess::VarianceGammaProcess,spotData::ZeroRateCurve,mcBaseData::MonteCarloConfiguration{type1,type2,type3,type4},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AbstractMonteCarloMethod, type4 <: BaseMode}
-	r=spotData.r;
+function simulate(mcProcess::VarianceGammaProcess,rfCurve::ZeroRateCurve,mcBaseData::MonteCarloConfiguration{type1,type2,type3,type4},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AbstractMonteCarloMethod, type4 <: BaseMode}
+	r=rfCurve.r;
 	S0=mcProcess.underlying.S0;
 	d=dividend(mcProcess);
 	Nsim=mcBaseData.Nsim;
@@ -50,7 +50,7 @@ function simulate(mcProcess::VarianceGammaProcess,spotData::ZeroRateCurve,mcBase
 	
 	gammaRandomVariable=Gamma(dt/κ1,κ1);
 		
-	X=simulate(SubordinatedBrownianMotion(σ,drift,gammaRandomVariable,Underlying(0.0)),spotData,mcBaseData,T);
+	X=simulate(SubordinatedBrownianMotion(σ,drift,gammaRandomVariable,Underlying(0.0)),rfCurve,mcBaseData,T);
 
 	S=S0.*exp.(X);
 	

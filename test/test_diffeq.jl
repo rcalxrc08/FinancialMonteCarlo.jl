@@ -22,7 +22,7 @@ tspan = (0.0,T)
 #Definition of the SDE
 prob = SDEProblem(dr_,g_1,u0,tspan)
 monte_prob = MonteCarloProblem(prob)
-spotData1=ZeroRateCurve(r);
+rfCurve=ZeroRateCurve(r);
 
 
 FwdData=Forward(T)
@@ -33,12 +33,12 @@ AsianFloatingStrikeData=AsianFloatingStrikeOption(T)
 AsianFixedStrikeData=AsianFixedStrikeOption(T,K)
 
 
-@show FwdPrice=pricer(monte_prob,spotData1,mc,FwdData);
-@show EuPrice=pricer(monte_prob,spotData1,mc,EUData);
-@show AmPrice=pricer(monte_prob,spotData1,mc,AMData);
-@show BarrierPrice=pricer(monte_prob,spotData1,mc,BarrierData);
-@show AsianPrice1=pricer(monte_prob,spotData1,mc,AsianFloatingStrikeData);
-@show AsianPrice2=pricer(monte_prob,spotData1,mc,AsianFixedStrikeData);
+@show FwdPrice=pricer(monte_prob,rfCurve,mc,FwdData);
+@show EuPrice=pricer(monte_prob,rfCurve,mc,EUData);
+@show AmPrice=pricer(monte_prob,rfCurve,mc,AMData);
+@show BarrierPrice=pricer(monte_prob,rfCurve,mc,BarrierData);
+@show AsianPrice1=pricer(monte_prob,rfCurve,mc,AsianFloatingStrikeData);
+@show AsianPrice2=pricer(monte_prob,rfCurve,mc,AsianFixedStrikeData);
 
 @test abs(FwdPrice-98.8436678850961)<toll
 @test abs(EuPrice-8.17917706833563)<toll
@@ -51,4 +51,4 @@ Tneg=-T;
 tspanNeg = (0.0,Tneg)
 probNeg = SDEProblem(f,g,u0,tspanNeg)
 monte_probNeg = MonteCarloProblem(probNeg)
-@test_throws(ErrorException,simulate(monte_probNeg,spotData1,mc,Tneg));
+@test_throws(ErrorException,simulate(monte_probNeg,rfCurve,mc,Tneg));

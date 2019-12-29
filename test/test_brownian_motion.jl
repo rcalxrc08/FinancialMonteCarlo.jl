@@ -12,9 +12,9 @@ Nstep=30;
 sigma=0.2; 
 
 McConfig=MonteCarloConfiguration(Nsim,Nstep);
-spotData1=ZeroRateCurve(r);
+rfCurve=ZeroRateCurve(r);
 
 @show "Test Brownian Motion Parameters"
 drift=0.0
 @test_throws(ErrorException,BrownianMotion(-sigma,drift,Underlying(S0,d)))
-@test_throws(ErrorException,simulate(BrownianMotion(sigma,drift,Underlying(S0,d)),spotData1,McConfig,Tneg));
+@test_throws(ErrorException,simulate(BrownianMotion(sigma,drift,Underlying(S0,d)),rfCurve,McConfig,Tneg));

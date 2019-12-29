@@ -15,7 +15,7 @@ mc=MonteCarloConfiguration(Nsim,Nstep);
 mc1=MonteCarloConfiguration(Nsim,Nstep,FinancialMonteCarlo.AntitheticMC());
 toll=0.8
 
-spotData1=ZeroRateCurve(r);
+rfCurve=ZeroRateCurve(r);
 
 FwdData=Forward(T)
 EUData=EuropeanOption(T,K)
@@ -27,12 +27,12 @@ Model=ShiftedLogNormalMixture(sigma,lam,0.0,Underlying(S0,d));
 
 display(Model)
 
-@show FwdPrice=pricer(Model,spotData1,mc,FwdData);
-@show EuPrice=pricer(Model,spotData1,mc,EUData);
-@show AmPrice=pricer(Model,spotData1,mc,AMData);
-@show BarrierPrice=pricer(Model,spotData1,mc,BarrierData);
-@show AsianPrice1=pricer(Model,spotData1,mc,AsianFloatingStrikeData);
-@show AsianPrice2=pricer(Model,spotData1,mc,AsianFixedStrikeData);
+@show FwdPrice=pricer(Model,rfCurve,mc,FwdData);
+@show EuPrice=pricer(Model,rfCurve,mc,EUData);
+@show AmPrice=pricer(Model,rfCurve,mc,AMData);
+@show BarrierPrice=pricer(Model,rfCurve,mc,BarrierData);
+@show AsianPrice1=pricer(Model,rfCurve,mc,AsianFloatingStrikeData);
+@show AsianPrice2=pricer(Model,rfCurve,mc,AsianFixedStrikeData);
 
 @test abs(FwdPrice-99.1078451563562)<toll
 @test abs(EuPrice-8.43005524824866)<toll
@@ -49,4 +49,4 @@ lam11=[0.9999]
 @test_throws(ErrorException,ShiftedLogNormalMixture(0.2*ones(3),ones(2),0.0,Underlying(S0,d)))
 @test_throws(ErrorException,ShiftedLogNormalMixture(0.2*ones(3),0.2*ones(3),0.0,Underlying(S0,d)))
 
-@test_throws(ErrorException,simulate(ShiftedLogNormalMixture(eta,lam11,0.0,Underlying(S0,d)),spotData1,mc,-T));
+@test_throws(ErrorException,simulate(ShiftedLogNormalMixture(eta,lam11,0.0,Underlying(S0,d)),rfCurve,mc,-T));

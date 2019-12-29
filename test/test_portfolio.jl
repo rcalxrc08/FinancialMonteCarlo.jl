@@ -16,7 +16,7 @@ mc=MonteCarloConfiguration(Nsim,Nstep);
 mc1=MonteCarloConfiguration(Nsim,Nstep,FinancialMonteCarlo.AntitheticMC());
 toll=0.8
 
-spotData1=ZeroRateCurve(r);
+rfCurve=ZeroRateCurve(r);
 
 FwdData=Forward(T)
 EUData=EuropeanOption(T,K)
@@ -38,8 +38,8 @@ portfolio+=underlying_name|>AsianFloatingStrikeData
 portfolio+=underlying_name|>AsianFixedStrikeData
 
 
-price_mkt=pricer(mktdataset,spotData1,mc,portfolio)
-price_old= sum(pricer(Model,spotData1,mc,portfolio_))
+price_mkt=pricer(mktdataset,rfCurve,mc,portfolio)
+price_old= sum(pricer(Model,rfCurve,mc,portfolio_))
 
 
 @test abs(price_mkt-price_old)<1e-8

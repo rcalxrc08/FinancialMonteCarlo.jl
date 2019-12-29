@@ -30,11 +30,11 @@ end
 
 export ShiftedLogNormalMixture;
 
-function simulate(mcProcess::ShiftedLogNormalMixture,spotData::ZeroRateCurve,mcBaseData::MonteCarloConfiguration{type1,type2,type3,type4},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AbstractMonteCarloMethod, type4 <: BaseMode}
+function simulate(mcProcess::ShiftedLogNormalMixture,rfCurve::ZeroRateCurve,mcBaseData::MonteCarloConfiguration{type1,type2,type3,type4},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AbstractMonteCarloMethod, type4 <: BaseMode}
 	if T<=0.0
 		error("Final time must be positive");
 	end
-	r=spotData.r;
+	r=rfCurve.r;
 	S0=mcProcess.underlying.S0;
 	d=dividend(mcProcess);
 	Nsim=mcBaseData.Nsim;
@@ -45,9 +45,9 @@ function simulate(mcProcess::ShiftedLogNormalMixture,spotData::ZeroRateCurve,mcB
 	mu_gbm=r-d;
 	dt=T/Nstep
 	A0=S0*(1-mcProcess.α)
-	S=λ_gmb[1].*simulate(GeometricBrownianMotion(η_gbm[1],mu_gbm,Underlying(A0)),spotData,mcBaseData,T);
+	S=λ_gmb[1].*simulate(GeometricBrownianMotion(η_gbm[1],mu_gbm,Underlying(A0)),rfCurve,mcBaseData,T);
 	for (η_gbm_,λ_gmb_) in zip(η_gbm[2:end],λ_gmb[2:end])
-		S+=λ_gmb_.*simulate(GeometricBrownianMotion(η_gbm_,mu_gbm,Underlying(A0)),spotData,mcBaseData,T)
+		S+=λ_gmb_.*simulate(GeometricBrownianMotion(η_gbm_,mu_gbm,Underlying(A0)),rfCurve,mcBaseData,T)
 	end
 	return S.+mcProcess.α.*S0.*exp.(mu_gbm.*(0.0:dt:T))';
 	

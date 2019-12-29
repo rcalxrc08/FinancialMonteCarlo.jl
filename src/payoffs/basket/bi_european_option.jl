@@ -26,8 +26,8 @@ end
 export EuropeanOption2D;
 
 
-function payoff(S::Tuple{abstractMatrix,abstractMatrix},euPayoff::EuropeanOption2D,spotData::ZeroRateCurve,T1::num2=euPayoff.T) where { abstractMatrix <: AbstractMatrix{num}, num2 <: Number} where { num <: Number}
-	r=spotData.r;
+function payoff(S::Tuple{abstractMatrix,abstractMatrix},euPayoff::EuropeanOption2D,rfCurve::ZeroRateCurve,T1::num2=euPayoff.T) where { abstractMatrix <: AbstractMatrix{num}, num2 <: Number} where { num <: Number}
+	r=rfCurve.r;
 	T=euPayoff.T;
 	iscall=euPayoff.isCall ? 1 : -1
 	(Nsim,NStep)=size(S[1])

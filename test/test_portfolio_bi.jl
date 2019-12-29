@@ -18,7 +18,7 @@ sigma=0.2;
 mc=MonteCarloConfiguration(Nsim,Nstep);
 toll=0.8
 
-spotData1=ZeroRateCurve(r);
+rfCurve=ZeroRateCurve(r);
 
 EUData=EuropeanOption2D(T,K)
 
@@ -34,8 +34,8 @@ mktdataset=underlying_|>Model
 portfolio_=[EUData];
 portfolio=underlying_|>EUData
 
-price_mkt=pricer(mktdataset,spotData1,mc,portfolio)
-price_old= pricer(Model,spotData1,mc,EUData)
+price_mkt=pricer(mktdataset,rfCurve,mc,portfolio)
+price_old= pricer(Model,rfCurve,mc,EUData)
 
 
 @test abs(price_mkt-price_old)<1e-8

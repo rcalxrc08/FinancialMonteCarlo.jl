@@ -14,7 +14,7 @@ mc=MonteCarloConfiguration(Nsim,Nstep);
 mc1=MonteCarloConfiguration(Nsim,Nstep,FinancialMonteCarlo.AntitheticMC());
 toll=0.8
 
-spotData1=ZeroRateCurve(r);
+rfCurve=ZeroRateCurve(r);
 
 FwdData=Forward(T)
 EUData=EuropeanOption(T,K)
@@ -24,12 +24,12 @@ AsianFloatingStrikeData=AsianFloatingStrikeOption(T)
 AsianFixedStrikeData=AsianFixedStrikeOption(T,K)
 Model=BlackScholesProcess(sigma,Underlying(S0,d));
 
-@show FwdPrice=pricer(Model,spotData1,mc,FwdData);
-@show EuPrice=pricer(Model,spotData1,mc,EUData);
-@show AmPrice=pricer(Model,spotData1,mc,AMData);
-@show BarrierPrice=pricer(Model,spotData1,mc,BarrierData);
-@show AsianPrice1=pricer(Model,spotData1,mc,AsianFloatingStrikeData);
-@show AsianPrice2=pricer(Model,spotData1,mc,AsianFixedStrikeData);
+@show FwdPrice=pricer(Model,rfCurve,mc,FwdData);
+@show EuPrice=pricer(Model,rfCurve,mc,EUData);
+@show AmPrice=pricer(Model,rfCurve,mc,AMData);
+@show BarrierPrice=pricer(Model,rfCurve,mc,BarrierData);
+@show AsianPrice1=pricer(Model,rfCurve,mc,AsianFloatingStrikeData);
+@show AsianPrice2=pricer(Model,rfCurve,mc,AsianFixedStrikeData);
 
 @test abs(FwdPrice-99.1078451563562)<toll
 @test abs(EuPrice-8.43005524824866)<toll
@@ -38,12 +38,12 @@ Model=BlackScholesProcess(sigma,Underlying(S0,d));
 
 
 
-@show FwdPrice=pricer(Model,spotData1,mc1,FwdData);
-@show EuPrice=pricer(Model,spotData1,mc1,EUData);
-@show AmPrice=pricer(Model,spotData1,mc1,AMData);
-@show BarrierPrice=pricer(Model,spotData1,mc1,BarrierData);
-@show AsianPrice1=pricer(Model,spotData1,mc1,AsianFloatingStrikeData);
-@show AsianPrice2=pricer(Model,spotData1,mc1,AsianFixedStrikeData);
+@show FwdPrice=pricer(Model,rfCurve,mc1,FwdData);
+@show EuPrice=pricer(Model,rfCurve,mc1,EUData);
+@show AmPrice=pricer(Model,rfCurve,mc1,AMData);
+@show BarrierPrice=pricer(Model,rfCurve,mc1,BarrierData);
+@show AsianPrice1=pricer(Model,rfCurve,mc1,AsianFloatingStrikeData);
+@show AsianPrice2=pricer(Model,rfCurve,mc1,AsianFixedStrikeData);
 tollanti=0.6;
 @test abs(FwdPrice-99.1078451563562)<tollanti
 @test abs(EuPrice-8.43005524824866)<tollanti

@@ -4,11 +4,11 @@ function rho_macro(model_type)
 		"""
 		General Interface for Pricing
 
-				Rho=rho(mcProcess,spotData,mcBaseData,payoff_)
+				Rho=rho(mcProcess,rfCurve,mcBaseData,payoff_)
 			
 		Where:\n
 				mcProcess          = Process to be simulated.
-				spotData  = Datas of the Spot.
+				rfCurve  = Datas of the Spot.
 				mcBaseData = Basic properties of MonteCarlo simulation
 				payoff_ = Payoff(s) to be priced
 				
@@ -16,10 +16,10 @@ function rho_macro(model_type)
 				Rho     = Rho of the derivative
 
 		"""	
-		function rho(mcProcess::$model_type,spotData::ZeroRateCurve,mcConfig::MonteCarloConfiguration,abstractPayoff::AbstractPayoff,dr::Real=1e-7)
+		function rho(mcProcess::$model_type,rfCurve::ZeroRateCurve,mcConfig::MonteCarloConfiguration,abstractPayoff::AbstractPayoff,dr::Real=1e-7)
 
-			Price=pricer(mcProcess,spotData,mcConfig,abstractPayoff);
-			spotData_1=ZeroRateCurve(spotData.S0,spotData.r+dr,spotData.d);
+			Price=pricer(mcProcess,rfCurve,mcConfig,abstractPayoff);
+			spotData_1=ZeroRateCurve(rfCurve.S0,rfCurve.r+dr,rfCurve.d);
 			PriceUp=pricer(mcProcess,spotData_1,mcConfig,abstractPayoff);
 			rho=(PriceUp-Price)/dr;
 
@@ -31,9 +31,9 @@ end
 rho_macro(BaseProcess)
 
 function rho_macro_array(model_type)
-	@eval function rho(mcProcess::$model_type,spotData::ZeroRateCurve,mcConfig::MonteCarloConfiguration,abstractPayoffs::Array{AbstractPayoff},dr::Real=1e-7)
-			Prices=pricer(mcProcess,spotData,mcConfig,abstractPayoffs);
-			spotData_1=ZeroRateCurve(spotData.S0,spotData.r+dr,spotData.d);
+	@eval function rho(mcProcess::$model_type,rfCurve::ZeroRateCurve,mcConfig::MonteCarloConfiguration,abstractPayoffs::Array{AbstractPayoff},dr::Real=1e-7)
+			Prices=pricer(mcProcess,rfCurve,mcConfig,abstractPayoffs);
+			spotData_1=ZeroRateCurve(rfCurve.S0,rfCurve.r+dr,rfCurve.d);
 			PricesUp=pricer(mcProcess,spotData_1,mcConfig,abstractPayoffs);
 			rho=(PricesUp.-Prices)./dr;
 		

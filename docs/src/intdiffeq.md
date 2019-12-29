@@ -19,7 +19,7 @@ Nstep=30;
 σ=0.2;
 #Build the Structs
 mcConfig=MonteCarloConfiguration(Nsim,Nstep);
-spotData1=ZeroRateCurve(S0,r,d);
+rfCurve=ZeroRateCurve(S0,r,d);
 
 #Define The Options
 Fwd_payoff=Forward(T)
@@ -40,12 +40,12 @@ tspan = (0.0,T)
 prob = SDEProblem(f,g,u0,tspan)
 Model = MonteCarloProblem(prob)
 #Price
-@show FwdPrice=pricer(Model,spotData1,mcConfig,Fwd_payoff);						
-@show EuPrice=pricer(Model,spotData1,mcConfig,EU_payoff);
-@show AmPrice=pricer(Model,spotData1,mcConfig,AM_payoff);
-@show BarrierPrice=pricer(Model,spotData1,mcConfig,Barrier_payoff);
-@show AsianPrice1=pricer(Model,spotData1,mcConfig,AsianFloatingStrike_payoff);
-@show AsianPrice2=pricer(Model,spotData1,mcConfig,AsianFixedStrike_payoff);
+@show FwdPrice=pricer(Model,rfCurve,mcConfig,Fwd_payoff);						
+@show EuPrice=pricer(Model,rfCurve,mcConfig,EU_payoff);
+@show AmPrice=pricer(Model,rfCurve,mcConfig,AM_payoff);
+@show BarrierPrice=pricer(Model,rfCurve,mcConfig,Barrier_payoff);
+@show AsianPrice1=pricer(Model,rfCurve,mcConfig,AsianFloatingStrike_payoff);
+@show AsianPrice2=pricer(Model,rfCurve,mcConfig,AsianFixedStrike_payoff);
 ```
 
 ## Remarks

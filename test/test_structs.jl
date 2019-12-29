@@ -24,7 +24,7 @@ Model_abpl=BlackScholesProcess(sigma,Underlying(S0,d));
 
 Model=GaussianCopulaBivariateProcess(Model_enj,Model_abpl,0.0)
 
-spotData1=ZeroRateCurve(r);
+rfCurve=ZeroRateCurve(r);
 @test_throws(ErrorException,underlying_name|>Model)
 @test_throws(ErrorException,Underlying(-Nsim))
 @test_throws(ErrorException,MonteCarloConfiguration(-Nsim,Nstep))

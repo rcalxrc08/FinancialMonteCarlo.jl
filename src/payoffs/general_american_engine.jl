@@ -1,5 +1,5 @@
 
-function payoff(S1::abstractMatrix,amPayoff::AmericanPayoff,spotData::ZeroRateCurve,T1::num2=amPayoff.T) where{abstractMatrix <: AbstractMatrix{num}} where{num <: Number, num2 <: Number}
+function payoff(S1::abstractMatrix,amPayoff::AmericanPayoff,rfCurve::ZeroRateCurve,T1::num2=amPayoff.T) where{abstractMatrix <: AbstractMatrix{num}} where{num <: Number, num2 <: Number}
 	T=amPayoff.T;	
 	(Nsim,NStep)=size(S1)
 	NStep-=1;
@@ -8,7 +8,7 @@ function payoff(S1::abstractMatrix,amPayoff::AmericanPayoff,spotData::ZeroRateCu
 	S0=first(S);
 	(Nsim,Nstep)=size(S)
 	Nstep-=1;
-	r=spotData.r;
+	r=rfCurve.r;
 	dt=T/Nstep
 	# initialize 
 	exerciseTimes=Nstep.*ones(Nsim);

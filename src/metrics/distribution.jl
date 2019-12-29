@@ -4,11 +4,11 @@ function distribution_macro(model_type)
 		"""
 		General Interface for Pricing
 
-				Price=pricer(mcProcess,spotData,mcBaseData,payoff_)
+				Price=pricer(mcProcess,rfCurve,mcBaseData,payoff_)
 			
 		Where:\n
 				mcProcess          = Process to be simulated.
-				spotData  = Datas of the Spot.
+				rfCurve  = Datas of the Spot.
 				mcBaseData = Basic properties of MonteCarlo simulation
 				payoff_ = Payoff(s) to be priced
 				
@@ -16,11 +16,10 @@ function distribution_macro(model_type)
 				Price     = Price of the derivative
 
 		"""	
-		function distribution(mcProcess::$model_type,spotData::ZeroRateCurve,mcConfig::MonteCarloConfiguration)
+		function distribution(mcProcess::$model_type,rfCurve::ZeroRateCurve,mcConfig::MonteCarloConfiguration,T::num_) where { num_ <: Number }
 
 			set_seed(mcConfig)
-			T=maturity(abstractPayoff);
-			S=simulate(mcProcess,spotData,mcConfig,T)
+			S=simulate(mcProcess,rfCurve,mcConfig,T)
 	
 			return S[:,end];
 		end

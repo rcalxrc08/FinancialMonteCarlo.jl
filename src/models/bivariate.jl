@@ -22,7 +22,7 @@ end
 
 export GaussianCopulaBivariateProcess;
 
-function simulate(mcProcess::GaussianCopulaBivariateProcess,spotData::ZeroRateCurve,mcBaseData::MonteCarloConfiguration{type1,type2,type3,type4},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AbstractMonteCarloMethod, type4 <: BaseMode}
+function simulate(mcProcess::GaussianCopulaBivariateProcess,rfCurve::ZeroRateCurve,mcBaseData::MonteCarloConfiguration{type1,type2,type3,type4},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AbstractMonteCarloMethod, type4 <: BaseMode}
 	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;
 	if T<=0.0
@@ -31,8 +31,8 @@ function simulate(mcProcess::GaussianCopulaBivariateProcess,spotData::ZeroRateCu
 	
 	####Simulation
 	## Simulate
-	S_1=simulate(mcProcess.model1,spotData,mcBaseData,T);
-	S_2=simulate(mcProcess.model2,spotData,mcBaseData,T);
+	S_1=simulate(mcProcess.model1,rfCurve,mcBaseData,T);
+	S_2=simulate(mcProcess.model2,rfCurve,mcBaseData,T);
 	rho=mcProcess.rho
 	X=[1.0 rho;rho 1.0]
 	for j in 1:Nstep

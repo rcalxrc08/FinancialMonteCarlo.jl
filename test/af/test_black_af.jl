@@ -14,7 +14,7 @@ mc=MonteCarloConfiguration(Nsim,Nstep,FinancialMonteCarlo.AFMode());
 mc1=MonteCarloConfiguration(Nsim,Nstep,FinancialMonteCarlo.AntitheticMC(),FinancialMonteCarlo.AFMode());
 toll=0.8
 
-spotData1=ZeroRateCurve(r);
+rfCurve=ZeroRateCurve(r);
 FwdData=Forward(T)
 EUData=EuropeanOption(T,K)
 AMData=AmericanOption(T,K)
@@ -25,12 +25,12 @@ Model=BlackScholesProcess(sigma,Underlying(S0,d));
 
 display(Model)
 
-@show FwdPrice=pricer(Model,spotData1,mc,FwdData);
-@show EuPrice=pricer(Model,spotData1,mc,EUData);
-@show AmPrice=pricer(Model,spotData1,mc,AMData);
-@show BarrierPrice=pricer(Model,spotData1,mc,BarrierData);
-@show AsianPrice1=pricer(Model,spotData1,mc,AsianFloatingStrikeData);
-@show AsianPrice2=pricer(Model,spotData1,mc,AsianFixedStrikeData);
+@show FwdPrice=pricer(Model,rfCurve,mc,FwdData);
+@show EuPrice=pricer(Model,rfCurve,mc,EUData);
+@show AmPrice=pricer(Model,rfCurve,mc,AMData);
+@show BarrierPrice=pricer(Model,rfCurve,mc,BarrierData);
+@show AsianPrice1=pricer(Model,rfCurve,mc,AsianFloatingStrikeData);
+@show AsianPrice2=pricer(Model,rfCurve,mc,AsianFixedStrikeData);
 
 @test abs(FwdPrice-99.1078451563562)<toll
 @test abs(EuPrice-8.43005524824866)<toll
@@ -41,12 +41,12 @@ display(Model)
 
 
 
-@show FwdPrice=pricer(Model,spotData1,mc1,FwdData);
-@show EuPrice=pricer(Model,spotData1,mc1,EUData);
-@show AmPrice=pricer(Model,spotData1,mc1,AMData);
-@show BarrierPrice=pricer(Model,spotData1,mc1,BarrierData);
-@show AsianPrice1=pricer(Model,spotData1,mc1,AsianFloatingStrikeData);
-@show AsianPrice2=pricer(Model,spotData1,mc1,AsianFixedStrikeData);
+@show FwdPrice=pricer(Model,rfCurve,mc1,FwdData);
+@show EuPrice=pricer(Model,rfCurve,mc1,EUData);
+@show AmPrice=pricer(Model,rfCurve,mc1,AMData);
+@show BarrierPrice=pricer(Model,rfCurve,mc1,BarrierData);
+@show AsianPrice1=pricer(Model,rfCurve,mc1,AsianFloatingStrikeData);
+@show AsianPrice2=pricer(Model,rfCurve,mc1,AsianFixedStrikeData);
 tollanti=0.6;
 @test abs(FwdPrice-99.1078451563562)<tollanti
 @test abs(EuPrice-8.43005524824866)<tollanti
@@ -63,11 +63,11 @@ BarrierDataPut=BarrierOptionDownOut(T,K,D,false)
 AsianFloatingStrikeDataPut=AsianFloatingStrikeOption(T,false)
 AsianFixedStrikeDataPut=AsianFixedStrikeOption(T,K,false)
 
-@show EuPrice=pricer(Model,spotData1,mc,EUDataPut);
-@show AmPrice=pricer(Model,spotData1,mc,AMDataPut);
-@show BarrierPrice=pricer(Model,spotData1,mc,BarrierDataPut);
-@show AsianPrice1=pricer(Model,spotData1,mc,AsianFloatingStrikeDataPut);
-@show AsianPrice2=pricer(Model,spotData1,mc,AsianFixedStrikeDataPut);
+@show EuPrice=pricer(Model,rfCurve,mc,EUDataPut);
+@show AmPrice=pricer(Model,rfCurve,mc,AMDataPut);
+@show BarrierPrice=pricer(Model,rfCurve,mc,BarrierDataPut);
+@show AsianPrice1=pricer(Model,rfCurve,mc,AsianFloatingStrikeDataPut);
+@show AsianPrice2=pricer(Model,rfCurve,mc,AsianFixedStrikeDataPut);
 tollPut=0.6;
 @test abs(FwdPrice-99.1078451563562)<tollPut
 @test abs(EuPrice-7.342077422567968)<tollPut
@@ -78,28 +78,28 @@ tollPut=0.6;
 
 #Check Nsim even for antithetic
 #mc2=MonteCarloConfiguration(Nsim+1,Nstep);
-#@test_throws(ErrorException,pricer(Model,spotData1,mc2,AsianFixedStrikeData));
+#@test_throws(ErrorException,pricer(Model,rfCurve,mc2,AsianFixedStrikeData));
 
 
-@show var_std_=variance(Model,spotData1,mc,EUDataPut)
-@show var_ant_=variance(Model,spotData1,mc1,EUDataPut);
+@show var_std_=variance(Model,rfCurve,mc,EUDataPut)
+@show var_ant_=variance(Model,rfCurve,mc1,EUDataPut);
 @test var_std_>var_ant_
-@show var_std_=variance(Model,spotData1,mc,[EUDataPut,AMDataPut])
-@show var_ant_=variance(Model,spotData1,mc1,[EUDataPut,AMDataPut])
+@show var_std_=variance(Model,rfCurve,mc,[EUDataPut,AMDataPut])
+@show var_ant_=variance(Model,rfCurve,mc1,[EUDataPut,AMDataPut])
 #@test prod(var_std_.>=var_ant_);
 
 
 
 ##############################################################
 
-@show IC1=confinter(Model,spotData1,mc,EUDataPut,0.99);
-@show IC2=confinter(Model,spotData1,mc1,EUDataPut,0.99);
+@show IC1=confinter(Model,rfCurve,mc,EUDataPut,0.99);
+@show IC2=confinter(Model,rfCurve,mc1,EUDataPut,0.99);
 L1=IC1[2]-IC1[1]
 L2=IC2[2]-IC2[1]
 @test L1>L2
 
-@show IC1=confinter(Model,spotData1,mc,[EUDataPut,AMDataPut],0.99);
-@show IC2=confinter(Model,spotData1,mc1,[EUDataPut,AMDataPut],0.99);
+@show IC1=confinter(Model,rfCurve,mc,[EUDataPut,AMDataPut],0.99);
+@show IC2=confinter(Model,rfCurve,mc1,[EUDataPut,AMDataPut],0.99);
 L1=IC1[2][2]-IC1[2][1]
 L2=IC2[2][2]-IC2[2][1]
 #@test L1>L2

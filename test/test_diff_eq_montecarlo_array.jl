@@ -28,10 +28,10 @@ EUData=EuropeanOption(T,K)
 AMData=AmericanOption(T,K)
 BarrierData=BarrierOptionDownOut(T,K,D)
 AsianData=AsianFloatingStrikeOption(T)
-spotData1=ZeroRateCurve(r);
+rfCurve=ZeroRateCurve(r);
 
 optionDatas=[FwdData,EUData,AMData,BarrierData,AsianData]
 
-optPrices=pricer(monte_prob,spotData1,mc,optionDatas);
+optPrices=pricer(monte_prob,rfCurve,mc,optionDatas);
 @show optPrices
 @test 0==0

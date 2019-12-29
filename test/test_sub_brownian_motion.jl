@@ -10,10 +10,10 @@ Nstep=30;
 sigma=0.2; 
 
 McConfig=MonteCarloConfiguration(Nsim,Nstep);
-spotData1=ZeroRateCurve(r);
+rfCurve=ZeroRateCurve(r);
 
 @show "Test Subordinated Brownian Motion Parameters"
 drift=0.0;
 model=SubordinatedBrownianMotion(sigma,drift,InverseGaussian(1.0,1.0),Underlying(S0,d))
-@test_throws(ErrorException,simulate(model,spotData1,McConfig,-T));
+@test_throws(ErrorException,simulate(model,rfCurve,McConfig,-T));
 @test_throws(ErrorException,SubordinatedBrownianMotion(-sigma,drift,InverseGaussian(1.0,1.0),Underlying(S0,d)))

@@ -17,7 +17,7 @@ lamm=20.0;
 mc=MonteCarloConfiguration(Nsim,Nstep);
 toll=1e-3;
 
-spotData1=ZeroRateCurve(r);
+rfCurve=ZeroRateCurve(r);
 
 FwdData=Forward(T)
 EUData=EuropeanOption(T,K)

@@ -19,7 +19,7 @@ mc=MonteCarloConfiguration(Nsim,Nstep);
 mc1=MonteCarloConfiguration(Nsim,Nstep,FinancialMonteCarlo.AntitheticMC());
 toll=0.8;
 
-spotData1=ZeroRateCurve(r);
+rfCurve=ZeroRateCurve(r);
 
 FwdData=Forward(T)
 EUData=EuropeanOption(T,K)
@@ -29,24 +29,24 @@ AsianData1=AsianFloatingStrikeOption(T)
 AsianData2=AsianFixedStrikeOption(T,K)
 Model=HestonProcess(sigma,sigma_zero,lambda,kappa,rho,theta,Underlying(S0,d));
 
-@show FwdPrice=pricer(Model,spotData1,mc,FwdData);
-@show EuPrice=pricer(Model,spotData1,mc,EUData);
-@show AmPrice=pricer(Model,spotData1,mc,AMData);
-@show BarrierPrice=pricer(Model,spotData1,mc,BarrierData);
-@show AsianPrice1=pricer(Model,spotData1,mc,AsianData1);
-@show AsianPrice2=pricer(Model,spotData1,mc,AsianData2);
+@show FwdPrice=pricer(Model,rfCurve,mc,FwdData);
+@show EuPrice=pricer(Model,rfCurve,mc,EUData);
+@show AmPrice=pricer(Model,rfCurve,mc,AMData);
+@show BarrierPrice=pricer(Model,rfCurve,mc,BarrierData);
+@show AsianPrice1=pricer(Model,rfCurve,mc,AsianData1);
+@show AsianPrice2=pricer(Model,rfCurve,mc,AsianData2);
 
 @test abs(FwdPrice-98.72567723404445)<toll
 @test abs(EuPrice-17.62536090688433)<toll
 @test abs(BarrierPrice-11.38748933756886)<toll
 @test abs(AsianPrice1-9.762160560168732)<toll
 
-@show FwdPrice=pricer(Model,spotData1,mc1,FwdData);
-@show EuPrice=pricer(Model,spotData1,mc1,EUData);
-@show AmPrice=pricer(Model,spotData1,mc1,AMData);
-@show BarrierPrice=pricer(Model,spotData1,mc1,BarrierData);
-@show AsianPrice1=pricer(Model,spotData1,mc1,AsianData1);
-@show AsianPrice2=pricer(Model,spotData1,mc1,AsianData2);
+@show FwdPrice=pricer(Model,rfCurve,mc1,FwdData);
+@show EuPrice=pricer(Model,rfCurve,mc1,EUData);
+@show AmPrice=pricer(Model,rfCurve,mc1,AMData);
+@show BarrierPrice=pricer(Model,rfCurve,mc1,BarrierData);
+@show AsianPrice1=pricer(Model,rfCurve,mc1,AsianData1);
+@show AsianPrice2=pricer(Model,rfCurve,mc1,AsianData2);
 tollanti=0.8
 @test abs(FwdPrice-98.72567723404445)<tollanti
 @test abs(EuPrice-17.62536090688433)<tollanti
@@ -54,7 +54,7 @@ tollanti=0.8
 @test abs(AsianPrice1-9.762160560168732)<tollanti
 
 
-@test_throws(ErrorException,simulate(HestonProcess(sigma,sigma_zero,lambda,kappa,rho,theta,Underlying(S0,d)),spotData1,McConfig,-T));
+@test_throws(ErrorException,simulate(HestonProcess(sigma,sigma_zero,lambda,kappa,rho,theta,Underlying(S0,d)),rfCurve,McConfig,-T));
 @test_throws(ErrorException,HestonProcess(-sigma,sigma_zero,lambda,kappa,rho,theta,Underlying(S0,d)))
 @test_throws(ErrorException,HestonProcess(sigma,-sigma_zero,lambda,kappa,rho,theta,Underlying(S0,d)))
 @test_throws(ErrorException,HestonProcess(sigma,sigma_zero,lambda,kappa,-5.0,theta,Underlying(S0,d)))

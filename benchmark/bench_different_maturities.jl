@@ -13,7 +13,7 @@ sigma=dual(0.2,1.0);
 mc=MonteCarloConfiguration(Nsim,Nstep);
 toll=1e-3;
 
-spotData1=ZeroRateCurve(r);
+rfCurve=ZeroRateCurve(r);
 
 FwdData=Forward(T*2.0)
 EUData=EuropeanOption(T*1.1,K)
@@ -23,17 +23,17 @@ AsianFloatingStrikeData=AsianFloatingStrikeOption(T*3.3)
 AsianFixedStrikeData=AsianFixedStrikeOption(T*1.2,K)
 Model=BlackScholesProcess(sigma,Underlying(S0,d));
 
-@show FwdPrice=pricer(Model,spotData1,mc,FwdData);
-@show EuPrice=pricer(Model,spotData1,mc,EUData);
-@show AmPrice=pricer(Model,spotData1,mc,AMData);
-@show BarrierPrice=pricer(Model,spotData1,mc,BarrierData);
-@show AsianPrice1=pricer(Model,spotData1,mc,AsianFloatingStrikeData);
-@show AsianPrice2=pricer(Model,spotData1,mc,AsianFixedStrikeData);
+@show FwdPrice=pricer(Model,rfCurve,mc,FwdData);
+@show EuPrice=pricer(Model,rfCurve,mc,EUData);
+@show AmPrice=pricer(Model,rfCurve,mc,AMData);
+@show BarrierPrice=pricer(Model,rfCurve,mc,BarrierData);
+@show AsianPrice1=pricer(Model,rfCurve,mc,AsianFloatingStrikeData);
+@show AsianPrice2=pricer(Model,rfCurve,mc,AsianFixedStrikeData);
 
 optionDatas=[FwdData,EUData,AMData,BarrierData,AsianFloatingStrikeData,AsianFixedStrikeData]
 
-(FwdPrice,EuPrice,AMPrice,BarrierPrice,AsianPrice1,AsianPrice2)=pricer(Model,spotData1,mc,optionDatas)
-@btime (FwdPrice,EuPrice,AMPrice,BarrierPrice,AsianPrice1,AsianPrice2)=pricer(Model,spotData1,mc,optionDatas)
+(FwdPrice,EuPrice,AMPrice,BarrierPrice,AsianPrice1,AsianPrice2)=pricer(Model,rfCurve,mc,optionDatas)
+@btime (FwdPrice,EuPrice,AMPrice,BarrierPrice,AsianPrice1,AsianPrice2)=pricer(Model,rfCurve,mc,optionDatas)
 @show FwdPrice
 @show EuPrice
 @show AmPrice

@@ -28,8 +28,8 @@ end
 
 export NormalInverseGaussianProcess;
 
-function simulate(mcProcess::NormalInverseGaussianProcess,spotData::ZeroRateCurve,mcBaseData::MonteCarloConfiguration{type1,type2,type3,type4},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AbstractMonteCarloMethod, type4 <: BaseMode}
-	r=spotData.r;
+function simulate(mcProcess::NormalInverseGaussianProcess,rfCurve::ZeroRateCurve,mcBaseData::MonteCarloConfiguration{type1,type2,type3,type4},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AbstractMonteCarloMethod, type4 <: BaseMode}
+	r=rfCurve.r;
 	S0=mcProcess.underlying.S0;
 	d=dividend(mcProcess);
 	Nsim=mcBaseData.Nsim;
@@ -51,7 +51,7 @@ function simulate(mcProcess::NormalInverseGaussianProcess,spotData::ZeroRateCurv
 	IGRandomVariable=InverseGaussian(dt,dt*dt/κ1);
 	#dt_s=quantile.(IGRandomVariable,rand(mcBaseData.rng,Nsim,Nstep));
 	
-	X=simulate(SubordinatedBrownianMotion(σ,drift,IGRandomVariable,Underlying(0.0)),spotData,mcBaseData,T);
+	X=simulate(SubordinatedBrownianMotion(σ,drift,IGRandomVariable,Underlying(0.0)),rfCurve,mcBaseData,T);
 
 	S=S0.*exp.(X);
 	

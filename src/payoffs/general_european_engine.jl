@@ -1,6 +1,6 @@
 
-function payoff(S::AbstractMatrix{num},euPayoff::EuropeanPayoff,spotData::ZeroRateCurve,T1::num2=euPayoff.T) where{ num <: Number, num2 <: Number}
-	r=spotData.r;
+function payoff(S::AbstractMatrix{num},euPayoff::EuropeanPayoff,rfCurve::ZeroRateCurve,T1::num2=euPayoff.T) where{ num <: Number, num2 <: Number}
+	r=rfCurve.r;
 	T=euPayoff.T;
 	(Nsim,NStep)=size(S)
 	NStep-=1;
