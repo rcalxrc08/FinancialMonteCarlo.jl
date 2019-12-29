@@ -59,11 +59,11 @@ function simulate(mcProcess::KouProcess,spotData::ZeroRateCurve,mcBaseData::Mont
 
 	t=range(0.0, stop=T, length=Nstep+1);
 	PoissonRV=Poisson(λ1*T);
-	NJumps=quantile.([PoissonRV],rand(mcBaseData.rng,Nsim));
+	NJumps=quantile.(PoissonRV,rand(mcBaseData.rng,Nsim));
 
 	for ii in 1:Nsim
 		Njumps_=NJumps[ii];
-		# Simulate the number of jumps (conditional simulation)
+		# Simulate the times of jump (conditional simulation)
 		tjumps=sort(rand(mcBaseData.rng,Njumps_)*T);
 		for tjump in tjumps
 			# Add the jump size

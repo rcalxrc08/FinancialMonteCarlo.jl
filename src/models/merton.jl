@@ -59,17 +59,17 @@ function simulate(mcProcess::MertonProcess,spotData::ZeroRateCurve,mcBaseData::M
 		tjumps=sort(rand(mcBaseData.rng,Njumps_)*T);
 		for tjump in tjumps
 			# Add the jump size
-			#i=findfirst(x->x>=tjump,t);
-			#jump_size=μ+σ1*randn()
-			#X[ii,i:end]+=jump_size; #add jump component
+			i=findfirst(x->x>=tjump,t);
+			jump_size=μ+σ1*randn(mcBaseData.rng)
+			X[ii,i:end].+=jump_size; #add jump component
 			
-			for i in 1:Nstep
-			   if tjump>t[i] && tjump<=t[i+1] #Look for where it is happening the jump
-				  jump_size=μ+σ1*randn(mcBaseData.rng) #Compute jump size
-				  X[ii,i+1:end].+=jump_size; #add jump component
-				  break;
-			   end
-			end
+			#for i in 1:Nstep
+			#   if tjump>t[i] && tjump<=t[i+1] #Look for where it is happening the jump
+			#	  jump_size=μ+σ1*randn(mcBaseData.rng) #Compute jump size
+			#	  X[ii,i+1:end].+=jump_size; #add jump component
+			#	  break;
+			#   end
+			#end
 			
 		end
 	end
