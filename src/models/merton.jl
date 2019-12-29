@@ -29,52 +29,5 @@ mutable struct MertonProcess{num <: Number, num1 <: Number,num2 <: Number,num3<:
 end
 
 export MertonProcess;
-
-function simulate(mcProcess::MertonProcess,spotData::ZeroRateCurve,mcBaseData::MonteCarloConfiguration{type1,type2,type3,type4},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AbstractMonteCarloMethod, type4 <: BaseMode}
-	r=spotData.r;
-	S0=mcProcess.underlying.S0;
-	d=dividend(mcProcess);
-	Nsim=mcBaseData.Nsim;
-	Nstep=mcBaseData.Nstep;
-
-	σ=mcProcess.σ;
-	λ1=mcProcess.λ;
-	μ=mcProcess.μJ;
-	σ1=mcProcess.σJ;
-	if T<=0.0
-		error("Final time must be positive");
-	end
-	
-	####Simulation
-	t=range(0.0, stop=T, length=Nstep+1);
-	## Simulate
-	# -psi(-i)
-	drift_RN=r-d-σ^2/2-λ1*(exp(μ+σ1*σ1/2.0)-1.0); 
-	X=Matrix(simulate(BrownianMotion(σ,drift_RN,Underlying(0.0)),spotData,mcBaseData,T))
-	D1=Poisson(λ1*T);
-	NJumps=Int.(quantile.([D1],rand(mcBaseData.rng,Nsim)));
-	for ii in 1:Nsim
-		Njumps_=NJumps[ii];
-		# Simulate the number of jumps (conditional simulation)
-		tjumps=sort(rand(mcBaseData.rng,Njumps_)*T);
-		for tjump in tjumps
-			# Add the jump size
-			i=findfirst(x->x>=tjump,t);
-			jump_size=μ+σ1*randn(mcBaseData.rng)
-			X[ii,i:end].+=jump_size; #add jump component
-			
-			#for i in 1:Nstep
-			#   if tjump>t[i] && tjump<=t[i+1] #Look for where it is happening the jump
-			#	  jump_size=μ+σ1*randn(mcBaseData.rng) #Compute jump size
-			#	  X[ii,i+1:end].+=jump_size; #add jump component
-			#	  break;
-			#   end
-			#end
-			
-		end
-	end
-	## Conclude
-	S=S0*exp.(X);
-	return S;
-	
-end
+compute_jump_size(mcProcess::MertonProcess,mcBaseData::MonteCarloConfiguration)=mcProcess.μ+mcProcess.σ1*randn(mcBaseData.rng);
+compute_drift(mcProcess::MertonProcess)=-(-(mcProcess.σ^2)/2-mcProcess.λ*(exp(mcProcess.μ+mcProcess.σ1^2/2.0)-1.0))

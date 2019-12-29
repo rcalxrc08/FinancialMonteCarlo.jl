@@ -58,6 +58,7 @@ include("models/log_normal_mixture.jl")
 include("models/shifted_log_normal_mixture.jl")
 
 ### Finite Activity Levy Processes
+include("models/fa_levy.jl")
 include("models/kou.jl")
 include("models/merton.jl")
 

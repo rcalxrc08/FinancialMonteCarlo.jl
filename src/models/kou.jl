@@ -36,56 +36,5 @@ end
 
 export KouProcess;
 
-function simulate(mcProcess::KouProcess,spotData::ZeroRateCurve,mcBaseData::MonteCarloConfiguration{type1,type2,type3,type4},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AbstractMonteCarloMethod, type4 <: BaseMode}
-	r=spotData.r;
-	S0=mcProcess.underlying.S0;
-	d=dividend(mcProcess);
-	Nsim=mcBaseData.Nsim;
-	Nstep=mcBaseData.Nstep;
-	σ=mcProcess.σ;
-	λ1=mcProcess.λ;
-	p=mcProcess.p;
-	λ₊=mcProcess.λ₊;
-	λ₋=mcProcess.λ₋;
-	if T<=0.0
-		error("Final time must be positive");
-	end
-
-	####Simulation
-	## Simulate
-	# r-d-psi(-i)
-	drift_RN=r-d-σ^2/2-λ1*(p/(λ₊-1)-(1-p)/(λ₋+1));
-	X=Matrix(simulate(BrownianMotion(σ,drift_RN,Underlying(0.0)),spotData,mcBaseData,T))
-
-	t=range(0.0, stop=T, length=Nstep+1);
-	PoissonRV=Poisson(λ1*T);
-	NJumps=quantile.(PoissonRV,rand(mcBaseData.rng,Nsim));
-
-	for ii in 1:Nsim
-		Njumps_=NJumps[ii];
-		# Simulate the times of jump (conditional simulation)
-		tjumps=sort(rand(mcBaseData.rng,Njumps_)*T);
-		for tjump in tjumps
-			# Add the jump size
-			
-			idx1=findfirst(x->x>=tjump,t);
-			u=rand(mcBaseData.rng); #simulate Uniform([0,1])
-			jump_size=u<p ? quantile_exp(λ₊,rand(mcBaseData.rng)) : -quantile_exp(λ₋,rand(mcBaseData.rng))
-			X[ii,idx1:end].+=jump_size; #add jump component
-			
-			#for i in 1:Nstep
-			#   if tjump>t[i] && tjump<=t[i+1] #Look for where it is happening the jump
-			#	  u=rand(mcBaseData.rng); #simulate Uniform([0,1])
-			#	  jump_size=(u<p) ? quantile(PosExpRV,rand(mcBaseData.rng)):-quantile(NegExpRV,rand(mcBaseData.rng)) #Compute jump size
-			#	  X[ii,i+1:end]+=jump_size; #add jump component
-			#	  break;
-			#   end
-			#end
-			
-		end
-	end
-	## Conclude
-	S=S0.*exp.(X);
-	return S;
-
-end
+compute_jump_size(mcProcess::KouProcess,mcBaseData::MonteCarloConfiguration)=rand(mcBaseData.rng)<mcProcess.p ? quantile_exp(mcProcess.λ₊,rand(mcBaseData.rng)) : -quantile_exp(mcProcess.λ₋,rand(mcBaseData.rng))
+compute_drift(mcProcess::KouProcess)=-(-mcProcess.σ^2/2-mcProcess.λ*(mcProcess.p/(mcProcess.λ₊-1)-(1-mcProcess.p)/(mcProcess.λ₋+1)))
