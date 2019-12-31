@@ -17,7 +17,7 @@ DatagenCopulaBased = "b9879e35-cdd4-53a9-a12a-bc41659e9769"
 EmpiricalCDFs = "0dcf7749-4f9f-5e13-9c57-506664207bbc"
 
 [compat]
-julia = "≥ 1.1.0"
+julia = "≥ 1.0.0"
 
 [extras]
 Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
