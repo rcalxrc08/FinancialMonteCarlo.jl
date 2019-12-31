@@ -19,11 +19,6 @@ before_script:
 .test_template: &build_definition
   script:
     - /usr/local/julia/bin/julia -e 'using InteractiveUtils; versioninfo(); using Pkg; Pkg.clone(pwd()); using FinancialMonteCarlo'
-  artifacts:
-    when: on_success
-    paths:
-      - .julia/
-    expire_in: '1 hour'
 
 .test_template: &test_definition
   script:
