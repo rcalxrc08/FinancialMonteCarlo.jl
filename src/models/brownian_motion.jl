@@ -35,11 +35,11 @@ function simulate(mcProcess::BrownianMotion,rfCurve::ZeroRateCurve,mcBaseData::M
 	stddev_bm=σ*sqrt(dt)
 	isDualZero=mean_bm*stddev_bm*0.0+mcProcess.underlying.S0;
 	X=Matrix{typeof(isDualZero)}(undef,Nsim,Nstep+1);
-	view(X,:,1).=isDualZero;
-	@inbounds for i=1:Nsim
-		@inbounds for j=1:Nstep
+	view(X,:,1).=isDualZero;	
+	@inbounds for j=1:Nstep
+		@inbounds for i=1:Nsim
 			x_i_j=@views X[i,j];
-			X[i,j+1]=x_i_j+mean_bm+stddev_bm*randn(mcBaseData.rng);
+			@views X[i,j+1]=x_i_j+mean_bm+stddev_bm*randn(mcBaseData.rng);
 		end
 	end
 

@@ -29,5 +29,5 @@ mutable struct MertonProcess{num <: Number, num1 <: Number,num2 <: Number,num3<:
 end
 
 export MertonProcess;
-compute_jump_size(mcProcess::MertonProcess,mcBaseData::MonteCarloConfiguration)=mcProcess.μ+mcProcess.σ1*randn(mcBaseData.rng);
-compute_drift(mcProcess::MertonProcess)=-(-(mcProcess.σ^2)/2-mcProcess.λ*(exp(mcProcess.μ+mcProcess.σ1^2/2.0)-1.0))
+compute_jump_size(mcProcess::MertonProcess,mcBaseData::MonteCarloConfiguration)=mcProcess.μJ+mcProcess.σJ*randn(mcBaseData.rng);
+compute_drift(mcProcess::MertonProcess)=-(-(mcProcess.σ^2)/2-mcProcess.λ*(exp(mcProcess.μJ+mcProcess.σJ^2/2.0)-1.0))

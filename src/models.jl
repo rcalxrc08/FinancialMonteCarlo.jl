@@ -173,18 +173,18 @@ end
 """
 General Interface for Stochastic Process simulation
 
-		S=simulate(mcProcess,spotData,mcBaseData,T)
+		S=simulate(mcProcess,zeroCurve,mcBaseData,T)
 	
 Where:\n
 		mcProcess          = Process to be simulated.
-		spotData  = Datas of the Spot.
+		zeroCurve  = Datas of the Zero Rate Curve.
 		mcBaseData = Basic properties of MonteCarlo simulation
 		T = Final time of the process
 
 		S      = Matrix with path of underlying.
 
 """
-function simulate(mcProcess::BaseProcess,spotData::ZeroRateCurve,mcBaseData::MonteCarloConfiguration{type1,type2,type3,type4},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AbstractMonteCarloMethod, type4 <: BaseMode}
+function simulate(mcProcess::BaseProcess,zeroCurve::ZeroRateCurve,mcBaseData::MonteCarloConfiguration{type1,type2,type3,type4},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AbstractMonteCarloMethod, type4 <: BaseMode}
 	error("Function used just for documentation")
 end
 

@@ -25,14 +25,11 @@ function simulate(mcProcess::finiteActivityProcess,rfCurve::ZeroRateCurve,mcBase
 
 	for ii in 1:Nsim
 		Njumps_=NJumps[ii];
-		# Simulate the times of jump (conditional simulation)
+		# Simulate the times of jump
 		tjumps=sort(rand(mcBaseData.rng,Njumps_)*T);
 		for tjump in tjumps
 			# Add the jump size
-			
 			idx1=findfirst(x->x>=tjump,t);
-			#u=rand(mcBaseData.rng); #simulate Uniform([0,1])
-			#jump_size=u<p ? quantile_exp(λ₊,rand(mcBaseData.rng)) : -quantile_exp(λ₋,rand(mcBaseData.rng))
 			jump_size=compute_jump_size(mcProcess,mcBaseData);
 			X[ii,idx1:end].+=jump_size; #add jump component
 			

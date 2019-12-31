@@ -33,16 +33,17 @@ function simulate(mcProcess::SubordinatedBrownianMotion,rfCurve::ZeroRateCurve,m
 	if T<=0.0
 		error("Final time must be positive");
 	end
-	dt_s=quantile.(mcProcess.subordinator_,rand(mcBaseData.rng,Nsim,Nstep));
+	type_sub=typeof(quantile(mcProcess.subordinator_,rand()));
+	dt_s=Array{type_sub}(undef,Nsim)
 	isDualZero=drift*sigma*dt_s[1,1]*0.0+mcProcess.underlying.S0;
 	X=Matrix{typeof(isDualZero)}(undef,Nsim,Nstep+1);
-	X[:,1].=isDualZero;
-
+	@views X[:,1].=isDualZero;
 	Z=Array{Float64}(undef,Nsim)
 	for i=1:Nstep
 		randn!(mcBaseData.rng,Z)
+		dt_s.=quantile.(mcProcess.subordinator_,rand(mcBaseData.rng,Nsim));
 		# SUBORDINATED BROWNIAN MOTION (dt_s=time change)
-		X[:,i+1]=X[:,i].+drift.*dt_s[:,i].+sigma.*sqrt.(dt_s[:,i]).*Z;
+		@views X[:,i+1].=X[:,i].+drift.*dt_s.+sigma.*sqrt.(dt_s).*Z;
 	end
 
 	return X;
@@ -52,7 +53,8 @@ end
 function simulate(mcProcess::SubordinatedBrownianMotion,rfCurve::ZeroRateCurve,mcBaseData::MonteCarloConfiguration{type1,type2,type3,SerialMode},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AntitheticMC}
 	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;
-	dt_s=quantile.(mcProcess.subordinator_,rand(mcBaseData.rng,Nsim,Nstep));
+	type_sub=typeof(quantile(mcProcess.subordinator_,rand()));
+	dt_s=Array{type_sub}(undef,Nsim)
 	drift=mcProcess.drift;
 	sigma=mcProcess.sigma;
 	if T<=0.0
@@ -65,8 +67,9 @@ function simulate(mcProcess::SubordinatedBrownianMotion,rfCurve::ZeroRateCurve,m
 		NsimAnti=div(Nsim,2)
 		Z=randn(mcBaseData.rng,NsimAnti);
 		Z=[Z;-Z];
+		dt_s.=quantile.(mcProcess.subordinator_,rand(mcBaseData.rng,Nsim));
 		# SUBORDINATED BROWNIAN MOTION (dt_s=time change)
-		X[:,i+1]=X[:,i].+drift.*dt_s[:,i].+sigma.*sqrt.(dt_s[:,i]).*Z;
+		X[:,i+1]=X[:,i].+drift.*dt_s.+sigma.*sqrt.(dt_s).*Z;
 	end
 	
 	return X;
