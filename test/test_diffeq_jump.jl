@@ -36,7 +36,7 @@ jump_prob = JumpProblem(prob,Direct(),jump)
 monte_prob = MonteCarloProblem(jump_prob)
 rfCurve=ZeroRateCurve(r);
 func(x)=S0*exp(x);
-model=FinancialMonteCarlo.MonteCarloDiffeEqModel(monte_prob,func,Underlying(S0,d))
+model=FinancialMonteCarlo.MonteCarloDiffEqModel(monte_prob,func,Underlying(S0,d))
 
 FwdData=Forward(T)
 EUData=EuropeanOption(T,K)
@@ -61,4 +61,4 @@ Tneg=-T;
 tspanNeg = (0.0,Tneg)
 probNeg = SDEProblem(dr_,g_1,u0,tspanNeg,rng=mc.rng)
 monte_probNeg = MonteCarloProblem(probNeg)
-@test_throws(ErrorException,simulate(FinancialMonteCarlo.MonteCarloDiffeEqModel(monte_probNeg,Underlying(S0,d)),rfCurve,mc,Tneg));
+@test_throws(ErrorException,simulate(FinancialMonteCarlo.MonteCarloDiffEqModel(monte_probNeg,Underlying(S0,d)),rfCurve,mc,Tneg));

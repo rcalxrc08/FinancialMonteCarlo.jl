@@ -4,6 +4,8 @@ test_listTmp=readdir(path1);
 
 BlackList=["REQUIRE",
 "runtests.jl",
+"Project.toml",
+"Manifest.toml",
 "runner.jl",
 "test_black_cuda.jl",
 "cuda",

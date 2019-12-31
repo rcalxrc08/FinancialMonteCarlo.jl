@@ -8,20 +8,20 @@ end
 
 
 
-mutable struct MonteCarloDiffeEqModel{num <: DiffEqBase.AbstractEnsembleProblem} <: ItoProcess
+mutable struct MonteCarloDiffEqModel{num <: DiffEqBase.AbstractEnsembleProblem} <: ItoProcess
 	model::num
 	final_trasform::Function
 	underlying::Underlying
-	function MonteCarloDiffeEqModel(model::num,final_trasform::Function,underlying::Underlying) where {num <: DiffEqBase.AbstractEnsembleProblem}
+	function MonteCarloDiffEqModel(model::num,final_trasform::Function,underlying::Underlying) where {num <: DiffEqBase.AbstractEnsembleProblem}
         return new{num}(model,final_trasform,underlying)
     end
-	function MonteCarloDiffeEqModel(model::num,underlying::Underlying) where {num <: DiffEqBase.AbstractEnsembleProblem}
+	function MonteCarloDiffEqModel(model::num,underlying::Underlying) where {num <: DiffEqBase.AbstractEnsembleProblem}
 		func(x)=identity(x);
         return new{num}(model,func,underlying)
     end
 end
 
-function simulate(mcProcess::MonteCarloDiffeEqModel,rfCurve::ZeroRateCurve,mcBaseData::MonteCarloConfiguration{type1,type2,type3,type4},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AbstractMonteCarloMethod, type4 <: BaseMode}
+function simulate(mcProcess::MonteCarloDiffEqModel,rfCurve::ZeroRateCurve,mcBaseData::MonteCarloConfiguration{type1,type2,type3,type4},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AbstractMonteCarloMethod, type4 <: BaseMode}
 	
 	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;
