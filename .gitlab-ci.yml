@@ -22,7 +22,7 @@ before_script:
 
 .test_template: &test_definition
   script:
-    - /usr/local/julia/bin/julia -e 'using InteractiveUtils; versioninfo(); using FinancialMonteCarlo'
+    - /usr/local/julia/bin/julia -e 'using InteractiveUtils; versioninfo(); using Pkg; Pkg.clone(pwd());'
     - /usr/local/julia/bin/julia -e 'using Pkg; Pkg.test("FinancialMonteCarlo",coverage = true)'
   artifacts:
     when: on_success
