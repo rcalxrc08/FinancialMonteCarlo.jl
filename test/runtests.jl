@@ -11,7 +11,6 @@ BlackList=["REQUIRE",
 "wip",
 "test_black_rev_diff.jl",
 "test_diff_eq_montecarlo_array.jl",
-"test_diffeq.jl",
 "test_black_pre.jl"];
 
 test_list=[test_element for test_element in test_listTmp if !Bool(sum(test_element.==BlackList))]

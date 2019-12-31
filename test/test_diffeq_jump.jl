@@ -12,18 +12,31 @@ r=0.02
 sigma=0.2
 T=1.0;
 d=0.01;
-u0=S0;
+u0=0.0;
+
+p1=0.3; 
+lam=5.0; 
+lamp=30.0; 
+lamm=20.0; 
+
 #Drift
-dr_(u,p,t) = (r-d)*u
+dr_(u,p,t) = (r-d-sigma^2/2.0-lam*(p1/(lamp-1)-(1-p1)/(lamm+1)))
 #Diffusion
-g_1(u,p,t) = sigma*u
+g_1(u,p,t) = sigma
 #Time Window
 tspan = (0.0,T)
+rate(u,p,t) = (lam*T)
+affect!(integrator) = (integrator.u = integrator.u+((rand()<p1) ? FinancialMonteCarlo.quantile_exp(lamp,rand()) : -FinancialMonteCarlo.quantile_exp(lamm,rand())))
+jump = ConstantRateJump(rate,affect!)
+
+
 #Definition of the SDE
 prob = SDEProblem(dr_,g_1,u0,tspan,rng=mc.rng)
-monte_prob = MonteCarloProblem(prob)
+jump_prob = JumpProblem(prob,Direct(),jump)
+monte_prob = MonteCarloProblem(jump_prob)
 rfCurve=ZeroRateCurve(r);
-model=FinancialMonteCarlo.MonteCarloDiffeEqModel(monte_prob,Underlying(S0,d))
+func(x)=S0*exp(x);
+model=FinancialMonteCarlo.MonteCarloDiffeEqModel(monte_prob,func,Underlying(S0,d))
 
 FwdData=Forward(T)
 EUData=EuropeanOption(T,K)
@@ -41,9 +54,6 @@ AsianFixedStrikeData=AsianFixedStrikeOption(T,K)
 @show AsianPrice2=pricer(model,rfCurve,mc,AsianFixedStrikeData);
 
 @test abs(FwdPrice-98.8436678850961)<toll
-@test abs(EuPrice-8.17917706833563)<toll
-@test abs(BarrierPrice-7.08419994877601)<toll
-@test abs(AsianPrice1-4.70419181812687)<toll
 
 
 
