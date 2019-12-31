@@ -12,21 +12,6 @@ function |>(x::String,y::FinancialMonteCarlo.AbstractMonteCarloProcess)
 	return out;
 end
 
-function |>(x::String,y::FinancialMonteCarlo.BiDimensionalMonteCarloProcess)
-	sep=findfirst("_",x);
-	if(isnothing(sep))
-		error("Bivariate process must follow the format: INDEX1_INDEX2");
-	end
-	sep=split(x,"_");
-	idx_1=string(sep[1])
-	idx_2=string(sep[2])
-	out=MarketDataSet( x => y );
-	out[idx_1]=y.model1
-	out[idx_2]=y.model2
-
-	return out;
-end
-
 function |>(x::String,y::FinancialMonteCarlo.NDimensionalMonteCarloProcess)
 	sep=findfirst("_",x);
 	if(isnothing(sep))

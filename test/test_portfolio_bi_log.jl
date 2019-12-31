@@ -31,7 +31,7 @@ Model_enj=BlackScholesProcess(sigma,Underlying(S0,d));
 Model_abpl=BlackScholesProcess(sigma,Underlying(S0,d));
 Model_n=BlackScholesProcess(sigma,Underlying(S0,d));
 
-Model=GaussianCopulaBivariateLogProcess(Model_enj,Model_abpl,0.4)
+Model=GaussianCopulaNVariateLogProcess(Model_enj,Model_abpl,0.4)
 
 display(Model)
 

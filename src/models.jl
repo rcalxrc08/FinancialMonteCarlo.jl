@@ -20,8 +20,6 @@ abstract type ScalarMonteCarloProcess <: AbstractMonteCarloProcess end
 
 abstract type VectorialMonteCarloProcess <: AbstractMonteCarloProcess end
 
-abstract type BiDimensionalMonteCarloProcess <: VectorialMonteCarloProcess end
-
 abstract type NDimensionalMonteCarloProcess <: VectorialMonteCarloProcess end
 
 abstract type LevyProcess<:ScalarMonteCarloProcess end
@@ -37,7 +35,6 @@ dividend(x::mc) where {mc <: ScalarMonteCarloProcess} = x.underlying.d;
 export AbstractMonteCarloProcess
 export ScalarMonteCarloProcess
 export VectorialMonteCarloProcess
-export BiDimensionalMonteCarloProcess
 export NDimensionalMonteCarloProcess
 export ItoProcess
 export LevyProcess
@@ -68,9 +65,7 @@ include("models/variance_gamma.jl")
 include("models/normal_inverse_gaussian.jl")
 
 
-include("models/bivariate.jl")
 include("models/nvariate.jl")
-include("models/bivariate_log.jl")
 include("models/nvariate_log.jl")
 
 ############### Display Function

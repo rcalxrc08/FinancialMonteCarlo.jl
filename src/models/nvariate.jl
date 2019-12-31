@@ -1,4 +1,4 @@
-using EmpiricalCDFs, DatagenCopulaBased 
+using EmpiricalCDFs, DatagenCopulaBased,LinearAlgebra
 """
 Struct for Kou Process
 
@@ -18,7 +18,13 @@ mutable struct GaussianCopulaNVariateProcess{ num3 <: Number} <: NDimensionalMon
 		sz=size(rho)
 		@assert sz[1]==sz[2]
 		@assert length(models)==sz[1]
+		@assert det(rho)>=0
 		return new{num3}(models,rho);
+	end
+	function GaussianCopulaNVariateProcess(model1::FinancialMonteCarlo.BaseProcess,model2::FinancialMonteCarlo.BaseProcess,rho::num3) where { num3 <: Number} 
+		corr_matrix_=[1.0 rho; rho 1.0];
+		@assert det(corr_matrix_)>=0
+		return new{num3}((model1,model2),[1.0 rho; rho 1.0]);
 	end
 end
 

@@ -20,12 +20,12 @@ toll=0.8
 
 rfCurve=ZeroRateCurve(r);
 
-EUData=EuropeanOption2D(T,K)
+EUData=EuropeanOptionND(T,K)
 
 Model_enj=BlackScholesProcess(sigma,Underlying(S0,d));
 Model_abpl=BlackScholesProcess(sigma,Underlying(S0,d));
 
-Model=GaussianCopulaBivariateProcess(Model_enj,Model_abpl,0.4)
+Model=GaussianCopulaNVariateProcess(Model_enj,Model_abpl,0.4)
 
 display(Model)
 

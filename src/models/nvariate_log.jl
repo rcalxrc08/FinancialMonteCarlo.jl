@@ -20,6 +20,11 @@ mutable struct GaussianCopulaNVariateLogProcess{ num3 <: Number} <: NDimensional
 		@assert length(models)==sz[1]
 		return new{num3}(models,rho);
 	end
+	function GaussianCopulaNVariateLogProcess(model1::FinancialMonteCarlo.BaseProcess,model2::FinancialMonteCarlo.BaseProcess,rho::num3) where { num3 <: Number} 
+		corr_matrix_=[1.0 rho; rho 1.0];
+		@assert det(corr_matrix_)>=0
+		return new{num3}((model1,model2),[1.0 rho; rho 1.0]);
+	end
 end
 
 export GaussianCopulaNVariateLogProcess;
