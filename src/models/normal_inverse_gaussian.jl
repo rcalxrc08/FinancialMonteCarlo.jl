@@ -51,7 +51,7 @@ function simulate(mcProcess::NormalInverseGaussianProcess,rfCurve::AbstractZeroR
 	IGRandomVariable=InverseGaussian(dt,dt*dt/κ1);
 	#dt_s=quantile.(IGRandomVariable,rand(mcBaseData.rng,Nsim,Nstep));
 	
-	X=simulate(SubordinatedBrownianMotion(σ,drift,IGRandomVariable,Underlying(0.0)),rfCurve,mcBaseData,T);
+	X=simulate(SubordinatedBrownianMotion(σ,drift,IGRandomVariable,Underlying(0.0)),mcBaseData,T);
 
 	S=S0.*exp.(X);
 	

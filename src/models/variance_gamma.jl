@@ -50,7 +50,7 @@ function simulate(mcProcess::VarianceGammaProcess,rfCurve::AbstractZeroRateCurve
 	
 	gammaRandomVariable=Gamma(dt/κ1,κ1);
 		
-	X=simulate(SubordinatedBrownianMotion(σ,drift,gammaRandomVariable,Underlying(0.0)),rfCurve,mcBaseData,T);
+	X=simulate(SubordinatedBrownianMotion(σ,drift,gammaRandomVariable,Underlying(0.0)),mcBaseData,T);
 
 	S=S0.*exp.(X);
 	

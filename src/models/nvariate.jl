@@ -1,15 +1,12 @@
 using EmpiricalCDFs, DatagenCopulaBased,LinearAlgebra
 """
-Struct for Kou Process
+Struct for MultiVariate Copula Process
 
 		kouProcess=GaussianCopulaNVariateProcess(models::num1,λ::num2,p::num3,λ₊::num4,λ₋::num5) where {num1,num2,num3,num4,num5 <: Number}
 	
 Where:\n
-		models  =	volatility of the process.
-		λ  = 	jumps intensity.
-		p  =	prob. of having positive jump.
-		λ₊ =	positive jump size.
-		λ₋ =	negative jump size.
+		models  =	the processes.
+		rho  = 	correlation matrix.
 """
 mutable struct GaussianCopulaNVariateProcess{ num3 <: Number} <: NDimensionalMonteCarloProcess
 	models::Tuple{Vararg{FinancialMonteCarlo.BaseProcess}}

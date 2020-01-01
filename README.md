@@ -73,6 +73,9 @@ Model=BlackScholesProcess(σ,underlying);
 @show EuPrice=pricer(Model,spotData,mcConfig,EU_payoff);
 ```
 
+## Curve Support
+Lorem ipsum
+
 ## Contracts Algebra
 Lorem ipsum
 
