@@ -6,15 +6,14 @@ Struct for Black Scholes Process
 Where:\n
 		σ	=	volatility of the process.
 """
-mutable struct BlackScholesProcess{num <: Number, num1 <: Number, num2 <: Number}<:ItoProcess
+mutable struct BlackScholesProcess{num <: Number, abstrUnderlying <: AbstractUnderlying}<:ItoProcess
 	σ::num
-	underlying::Underlying{num1,num2}
-
-	function BlackScholesProcess(σ::num,underlying::Underlying{num1,num2}) where {num <: Number, num1 <: Number, num2 <: Number}
+	underlying::abstrUnderlying
+	function BlackScholesProcess(σ::num,underlying::abstrUnderlying) where {num <: Number,  abstrUnderlying <: AbstractUnderlying}
         if σ <= 0.0
             error("Volatility must be positive")
         else
-            return new{num,num1,num2}(σ,underlying)
+            return new{num,abstrUnderlying}(σ,underlying)
         end
     end
 end
@@ -31,7 +30,8 @@ function simulate(mcProcess::BlackScholesProcess,rfCurve::AbstractZeroRateCurve,
 	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;
 	σ_gbm=mcProcess.σ;
-	mu_gbm=r.-d;
+	mu_gbm=r-d;
+	@show d
 	
 	S=simulate(GeometricBrownianMotion(σ_gbm,mu_gbm,mcProcess.underlying),rfCurve,mcBaseData,T)
 	#S=S0.*exp.(simulate(BrownianMotion(σ_gbm,mu_gbm,Underlying(0.0,0.0)),rfCurve,mcBaseData,T))

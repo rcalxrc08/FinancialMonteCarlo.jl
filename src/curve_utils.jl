@@ -14,8 +14,19 @@ function oper(+,adict)
 
 		return out
 	end
+	@eval function $+(r::$adict{num1,num2},d::num2) where { num1 <: Number, num2 <: Number }
+		return $+.(r,d)
+	end
 end
-			  
+
+oper(Symbol(+),Dictionary)
+oper(Symbol(-),Dictionary)
+oper(Symbol(/),Dictionary)
+oper(Symbol(*),Dictionary)
+oper(Symbol(+),HashDictionary)
+oper(Symbol(-),HashDictionary)
+oper(Symbol(/),HashDictionary)
+oper(Symbol(*),HashDictionary)
 
 keys_(x::Dictionary)=x.indices		  
 keys_(x)=keys(x)

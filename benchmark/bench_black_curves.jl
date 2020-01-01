@@ -1,9 +1,10 @@
-using Test, FinancialMonteCarlo,Statistics;
+using BenchmarkTools, FinancialMonteCarlo,Statistics;
 @show "Black Scholes Model"
 S0=100.0;
 K=100.0;
 r=[0.00,0.02];
 T=1.0;
+d=Curve([0.00,0.02],T);
 d=0.01;
 D=90.0;
 

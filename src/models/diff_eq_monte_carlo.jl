@@ -11,11 +11,11 @@ end
 mutable struct MonteCarloDiffEqModel{num <: DiffEqBase.AbstractEnsembleProblem} <: ItoProcess
 	model::num
 	final_trasform::Function
-	underlying::Underlying
-	function MonteCarloDiffEqModel(model::num,final_trasform::Function,underlying::Underlying) where {num <: DiffEqBase.AbstractEnsembleProblem}
+	underlying::AbstractUnderlying
+	function MonteCarloDiffEqModel(model::num,final_trasform::Function,underlying::AbstractUnderlying) where {num <: DiffEqBase.AbstractEnsembleProblem}
         return new{num}(model,final_trasform,underlying)
     end
-	function MonteCarloDiffEqModel(model::num,underlying::Underlying) where {num <: DiffEqBase.AbstractEnsembleProblem}
+	function MonteCarloDiffEqModel(model::num,underlying::AbstractUnderlying) where {num <: DiffEqBase.AbstractEnsembleProblem}
 		func(x)=identity(x);
         return new{num}(model,func,underlying)
     end

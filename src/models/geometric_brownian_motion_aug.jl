@@ -7,20 +7,20 @@ Where:\n
 		σ	=	volatility of the process.
 		μ	=	drift of the process.
 """
-mutable struct GeometricBrownianMotionVec{num <: Number, num1 <: Number, num2 <: Number , num3 <: Number, num4 <: Number}<:ItoProcess
+mutable struct GeometricBrownianMotionVec{num <: Number, num1 <: Number, num4 <: Number,  abstrUnderlying <: AbstractUnderlying}<:ItoProcess
 	σ::num
 	μ::Curve{num1,num4}
-	underlying::Underlying{num2,num3}
-	function GeometricBrownianMotionVec(σ::num,μ::Curve{num1,num4},underlying::Underlying{num2,num3}) where {num <: Number , num1 <: Number, num2 <: Number, num3 <: Number, num4 <: Number}
+	underlying::abstrUnderlying
+	function GeometricBrownianMotionVec(σ::num,μ::Curve{num1,num4},underlying::abstrUnderlying) where {num <: Number , num1 <: Number, num4 <: Number, abstrUnderlying <: AbstractUnderlying}
         if σ <= 0.0
             error("Volatility must be positive")
         else
-            return new{num,num1,num2,num3,num4}(σ,μ,underlying)
+            return new{num,num1,num4,abstrUnderlying}(σ,μ,underlying)
         end
     end
 end
 
-function GeometricBrownianMotion(σ::num,μ::Curve{num1,num4},underlying::Underlying{num2,num3}) where {num <: Number, num1 <: Number, num4 <: Number, num2 <: Number , num3 <: Number}
+function GeometricBrownianMotion(σ::num,μ::Curve{num1,num4},underlying::abstrUnderlying) where {num <: Number, num1 <: Number, num4 <: Number, abstrUnderlying <: AbstractUnderlying}
 	if σ <= 0.0
 		error("Volatility must be positive")
 	else
@@ -38,7 +38,7 @@ function simulate(mcProcess::GeometricBrownianMotionVec,rfCurve::AbstractZeroRat
 	Nstep=mcBaseData.Nstep;
 	σ_gbm=mcProcess.σ;
 	mu_gbm=mcProcess.μ;
-	μ_bm=mu_gbm.-(σ_gbm^2/2);
+	μ_bm=mu_gbm-(σ_gbm^2/2);
 	X=simulate(BrownianMotion(σ_gbm,μ_bm,Underlying(0.0)),rfCurve,mcBaseData,T)
 	S=(mcProcess.underlying.S0).*exp.(X);
 	return S;
