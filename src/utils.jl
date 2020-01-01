@@ -11,12 +11,31 @@ struct ZeroRateCurve{T2 <: Number} <: AbstractZeroRateCurve
     end
 end
 ########### Curve Section
-
 import Base.insert!
 insert!(dic::Dict,k::Number,val::Number) = dic[k]=val; return nothing;
 using Dictionaries
 #const FinMCDict=Dict
 const FinMCDict=HashDictionary
+
+const Curve = FinMCDict{num1,num2} where {num1 <: Number,num2 <: Number}
+
+function Curve(r_::Array{num1},T::num2) where {num1 <: Number, num2 <: Number}
+	r=FinMCDict{num2,num1}();
+	Nstep=length(r_)-1;
+	dt=T/Nstep;
+	for i in 1:length(r_)
+		insert!(r,(i-1)*dt,r_[i]);
+	end
+   return r
+end
+function (x::Curve)(t::Number,dt::Number)
+	T=collect(keys(x));
+	r=collect(values(x));
+	return intgral_2(t+dt,T,r)-intgral_2(t,T,r);
+end
+
+
+
 using Interpolations
 function intgral_2(x::num,T::Array{num1},r::Array{num2}) where {num <: Number, num1 <: Number, num2 <: Number}
 	if(x==0.0)
@@ -31,26 +50,16 @@ function intgral_2(x::num,T::Array{num1},r::Array{num2}) where {num <: Number, n
 end
 
 struct ZeroRateCurve2{num1 <: Number,num2 <: Number} <: AbstractZeroRateCurve
-    r::FinMCDict{num1,num2}
+    r::Curve{num1,num2}
 	function ZeroRateCurve2(r_::Array{num1},T::num2) where {num1 <: Number, num2 <: Number}
-		#@assert T==sort(T)
-		r=FinMCDict{num2,num1}();
-		Nstep=length(r_)-1;
-		dt=T/Nstep;
-		for i in 1:length(r_)
-			#r[(i-1)*dt]=r_[i];
-			insert!(r,(i-1)*dt,r_[i]);
-		end
-       new{num2,num1}(r)
+       new{num2,num1}(Curve(r_,T))
     end
-	function ZeroRateCurve2(r_::FinMCDict{num1,num2}) where {num1 <: Number, num2 <: Number}
-       new{num2,num1}(r_)
-    end
-	function (x::ZeroRateCurve2)(t::Number,dt::Number)
-		T=collect(keys(x.r));
-		r=collect(values(x.r));
-       return intgral_2(t+dt,T,r)-intgral_2(t,T,r);
-    end
+	#function ZeroRateCurve2(r_::Curve{num1,num2}) where {num1 <: Number, num2 <: Number}
+    #   new{num2,num1}(r_)
+    #end
+	#function (x::ZeroRateCurve2)(t::Number,dt::Number)
+    #   return x.r(t,dt);
+    #end
 end 
 function integral(x::ZeroRateCurve2,t::Number)
 	T=collect(keys(x.r));

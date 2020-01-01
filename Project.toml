@@ -1,27 +1,29 @@
 name = "FinancialMonteCarlo"
 uuid = "078f23cc-2637-5a1d-aba6-8a9ba9a6ff83"
 license = "MIT"
-version = "v0.2.0alfa"
 author = ["rcalxrc08"]
+version = "0.2.0"
 
 [deps]
-Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
-Distributed = "8ba89e20-285c-5b6f-9357-94700520ee1b"
+DatagenCopulaBased = "b9879e35-cdd4-53a9-a12a-bc41659e9769"
 DelimitedFiles = "8bb1440f-4735-579b-a4ab-409b98df4dab"
+Dictionaries = "85a47980-9c8c-11e8-2b9f-f7ca1fa99fb4"
+Distributed = "8ba89e20-285c-5b6f-9357-94700520ee1b"
+Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
+EmpiricalCDFs = "0dcf7749-4f9f-5e13-9c57-506664207bbc"
 Future = "9fa8497b-333b-5362-9e8d-4d0656e87820"
+Interpolations = "a98d9a8b-a2ab-59e6-89dd-64a1c18fca59"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 Requires = "ae029012-a4dd-5104-9daa-d747884805df"
 SpecialFunctions = "276daf66-3868-5448-9aa4-cd146d93841b"
-DatagenCopulaBased = "b9879e35-cdd4-53a9-a12a-bc41659e9769"
-EmpiricalCDFs = "0dcf7749-4f9f-5e13-9c57-506664207bbc"
 
 [compat]
 julia = "≥ 1.0.0"
 
 [extras]
-Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
 DifferentialEquations = "0c46a032-eb83-5123-abaf-570d42b7fbaa"
+Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
 DualNumbers = "fa6b7ba4-c1ee-5f82-b5fc-ecf0adba8f74"
 ForwardDiff = "f6369f11-7733-5829-9624-2563aa707210"
 ReverseDiff = "37e2e3b7-166d-5795-8a7a-e32c996b4267"

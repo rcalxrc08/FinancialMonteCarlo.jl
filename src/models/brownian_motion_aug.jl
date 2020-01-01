@@ -9,18 +9,18 @@ Where:\n
 """
 mutable struct BrownianMotionVec{num <: Number, num1 <: Number, num2 <: Number , num3 <: Number, num4 <: Number} <: ItoProcess
 	σ::num
-	μ::ZeroRateCurve2{num1,num4}
+	μ::Curve{num1,num4}
 	underlying::Underlying{num2,num3}
-	function BrownianMotionVec(σ::num,μ::FinMCDict{num1,num4},underlying::Underlying{num2,num3}) where {num <: Number, num1 <: Number, num4 <: Number, num2 <: Number , num3 <: Number}
+	function BrownianMotionVec(σ::num,μ::Curve{num1,num4},underlying::Underlying{num2,num3}) where {num <: Number, num1 <: Number, num4 <: Number, num2 <: Number , num3 <: Number}
         if σ <= 0.0
             error("Volatility must be positive")
         else
-            return new{num,num1,num2,num3,num4}(σ,ZeroRateCurve2(μ),underlying)
+            return new{num,num1,num2,num3,num4}(σ,μ,underlying)
         end
     end
 end
 
-function BrownianMotion(σ::num,μ::FinMCDict{num1,num4},underlying::Underlying{num2,num3}) where {num <: Number, num1 <: Number, num4 <: Number, num2 <: Number , num3 <: Number}
+function BrownianMotion(σ::num,μ::Curve{num1,num4},underlying::Underlying{num2,num3}) where {num <: Number, num1 <: Number, num4 <: Number, num2 <: Number , num3 <: Number}
 	if σ <= 0.0
 		error("Volatility must be positive")
 	else

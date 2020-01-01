@@ -1,5 +1,5 @@
 
-function simulate(mcProcess::finiteActivityProcess,rfCurve::ZeroRateCurve,mcBaseData::MonteCarloConfiguration{type1,type2,type3,type4},T::numb) where { finiteActivityProcess <: FiniteActivityProcess, numb <: Number, type1 <: Number, type2<: Number, type3 <: AbstractMonteCarloMethod, type4 <: BaseMode}
+function simulate(mcProcess::finiteActivityProcess,rfCurve::AbstractZeroRateCurve,mcBaseData::MonteCarloConfiguration{type1,type2,type3,type4},T::numb) where { finiteActivityProcess <: FiniteActivityProcess, numb <: Number, type1 <: Number, type2<: Number, type3 <: AbstractMonteCarloMethod, type4 <: BaseMode}
 	r=rfCurve.r;
 	S0=mcProcess.underlying.S0;
 	d=dividend(mcProcess);
@@ -16,7 +16,7 @@ function simulate(mcProcess::finiteActivityProcess,rfCurve::ZeroRateCurve,mcBase
 	## Simulate
 	# r-d-psi(-i)
 	#drift_RN=r-d-σ^2/2-λ1*(p/(λ₊-1)-(1-p)/(λ₋+1));
-	drift_RN=r-d-compute_drift(mcProcess);
+	drift_RN=r.-d.-compute_drift(mcProcess);
 	X=Matrix(simulate(BrownianMotion(σ,drift_RN,Underlying(0.0)),rfCurve,mcBaseData,T))
 
 	t=range(0.0, stop=T, length=Nstep+1);

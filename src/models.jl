@@ -47,7 +47,7 @@ include("models/utils.jl")
 
 ### Ito Processes
 include("models/brownian_motion.jl")
-include("models/brownian_motion_aug_2.jl")
+include("models/brownian_motion_aug.jl")
 include("models/brownian_motion_prescribed.jl")
 include("models/geometric_brownian_motion.jl")
 include("models/geometric_brownian_motion_aug.jl")
