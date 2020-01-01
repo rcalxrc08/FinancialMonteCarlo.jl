@@ -19,6 +19,9 @@ end
 
 export Forward;
 
+function payout(ST::numtype_,euPayoff::Forward) where {numtype_<:Number}
+	return ST;
+end
 
 function payoff(S::AbstractMatrix{num},optionData::Forward,rfCurve::ZeroRateCurve,T1::num2=optionData.T) where{num <: Number,num2 <: Number}
 	r=rfCurve.r;
@@ -28,5 +31,5 @@ function payoff(S::AbstractMatrix{num},optionData::Forward,rfCurve::ZeroRateCurv
 	index1=round(Int,T/T1 * NStep)+1;
 	@views ST=S[:,index1];
 	
-	return ST*exp(-r*T);
+	return ST*exp(-integral(r,T));
 end

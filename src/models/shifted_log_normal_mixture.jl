@@ -8,12 +8,12 @@ Where:\n
 		λ  = 	Array of weights.
 		α  = 	shift.
 """
-mutable struct ShiftedLogNormalMixture{num <: Number,num2 <: Number, num3 <: Number, nums0 <: Number, numd <: Number}<:ItoProcess
+mutable struct ShiftedLogNormalMixture{num <: Number,num2 <: Number, num3 <: Number, abstrUnderlying <: AbstractUnderlying}<:ItoProcess
 	η::Array{num,1}
 	λ::Array{num2,1}
 	α::num3
-	underlying::Underlying{nums0,numd}
-	function ShiftedLogNormalMixture(η::Array{num,1},λ::Array{num2,1},α::num3,underlying::Underlying{nums0,numd}) where {num <: Number,num2 <: Number, num3 <: Number, nums0 <: Number, numd <: Number}
+	underlying::abstrUnderlying
+	function ShiftedLogNormalMixture(η::Array{num,1},λ::Array{num2,1},α::num3,underlying::abstrUnderlying) where {num <: Number,num2 <: Number, num3 <: Number, abstrUnderlying <: AbstractUnderlying}
         if minimum(η) <= 0.0
             error("Volatilities must be positive")
         elseif minimum(λ) <= 0.0
@@ -23,14 +23,14 @@ mutable struct ShiftedLogNormalMixture{num <: Number,num2 <: Number, num3 <: Num
         elseif length(λ) != length(η)-1
             error("Check vector lengths")
         else
-            return new{num,num2,num3,nums0,numd}(η,λ,α,underlying)
+            return new{num,num2,num3,abstrUnderlying}(η,λ,α,underlying)
         end
     end
 end
 
 export ShiftedLogNormalMixture;
 
-function simulate(mcProcess::ShiftedLogNormalMixture,rfCurve::ZeroRateCurve,mcBaseData::MonteCarloConfiguration{type1,type2,type3,type4},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AbstractMonteCarloMethod, type4 <: BaseMode}
+function simulate(mcProcess::ShiftedLogNormalMixture,rfCurve::AbstractZeroRateCurve,mcBaseData::MonteCarloConfiguration{type1,type2,type3,type4},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AbstractMonteCarloMethod, type4 <: BaseMode}
 	if T<=0.0
 		error("Final time must be positive");
 	end

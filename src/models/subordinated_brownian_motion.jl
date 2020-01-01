@@ -1,23 +1,23 @@
 """
 Struct for SubordinatedBrownianMotion
 
-		subordinatedBrownianMotion=SubordinatedBrownianMotion(sigma::num,drift::num1,underlying::Underlying{nums0,numd})
+		subordinatedBrownianMotion=SubordinatedBrownianMotion(sigma::num,drift::num1,underlying::abstrUnderlying)
 	
 Where:\n
 		sigma       =	Volatility.
 		drift       = 	drift.
 		underlying  = 	underlying.
 """
-mutable struct SubordinatedBrownianMotion{num <: Number, num1 <: Number, Distr <: Distribution{Univariate,Continuous}, nums0 <: Number, numd <: Number}<:AbstractMonteCarloProcess
+mutable struct SubordinatedBrownianMotion{num <: Number, num1 <: Number, Distr <: Distribution{Univariate,Continuous}, abstrUnderlying <: AbstractUnderlying}<:AbstractMonteCarloProcess
 	sigma::num
 	drift::num1
 	subordinator_::Distr
-	underlying::Underlying{nums0,numd}
-	function SubordinatedBrownianMotion(sigma::num,drift::num1,dist::Distr,underlying::Underlying{nums0,numd}) where {num <: Number,num1 <: Number, Distr <: Distribution{Univariate,Continuous}, nums0 <: Number, numd <: Number}
+	underlying::abstrUnderlying
+	function SubordinatedBrownianMotion(sigma::num,drift::num1,dist::Distr,underlying::abstrUnderlying) where {num <: Number,num1 <: Number, Distr <: Distribution{Univariate,Continuous}, abstrUnderlying <: AbstractUnderlying}
         if sigma<=0.0
 			error("volatility must be positive");
 		else
-            return new{num,num1,Distr,nums0,numd}(sigma,drift,dist,underlying)
+            return new{num,num1,Distr,abstrUnderlying}(sigma,drift,dist,underlying)
         end
     end
 end

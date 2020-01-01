@@ -22,7 +22,7 @@ toll=0.8;
 Model_enj=BlackScholesProcess(sigma,Underlying(S0,d));
 Model_abpl=BlackScholesProcess(sigma,Underlying(S0,d));
 
-Model=GaussianCopulaBivariateProcess(Model_enj,Model_abpl,0.0)
+Model=GaussianCopulaNVariateProcess(Model_enj,Model_abpl,0.0)
 
 rfCurve=ZeroRateCurve(r);
 @test_throws(ErrorException,underlying_name|>Model)

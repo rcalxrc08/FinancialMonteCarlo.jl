@@ -9,13 +9,13 @@ Where:\n
 		μJ =	jumps mean.
 		σJ =	jumps variance.
 """
-mutable struct MertonProcess{num <: Number, num1 <: Number,num2 <: Number,num3<:Number, nums0 <: Number, numd <: Number}<:FiniteActivityProcess
+mutable struct MertonProcess{num <: Number, num1 <: Number,num2 <: Number,num3<:Number, abstrUnderlying <: AbstractUnderlying}<:FiniteActivityProcess
 	σ::num
 	λ::num1
 	μJ::num2
 	σJ::num3
-	underlying::Underlying{nums0,numd}
-	function MertonProcess(σ::num,λ::num1,μJ::num2,σJ::num3,underlying::Underlying{nums0,numd}) where {num <: Number, num1 <: Number,num2 <: Number,num3 <: Number, nums0 <: Number, numd <: Number}
+	underlying::abstrUnderlying
+	function MertonProcess(σ::num,λ::num1,μJ::num2,σJ::num3,underlying::abstrUnderlying) where {num <: Number, num1 <: Number,num2 <: Number,num3 <: Number, abstrUnderlying <: AbstractUnderlying}
         if σ<=0.0
 			error("volatility must be positive");
 		elseif λ<=0.0
@@ -23,7 +23,7 @@ mutable struct MertonProcess{num <: Number, num1 <: Number,num2 <: Number,num3<:
 		elseif σJ<=0.0
 			error("positive λ must be positive");
 		else
-            return new{num,num1,num2,num3,nums0,numd}(σ,λ,μJ,σJ,underlying)
+            return new{num,num1,num2,num3,abstrUnderlying}(σ,λ,μJ,σJ,underlying)
         end
     end
 end

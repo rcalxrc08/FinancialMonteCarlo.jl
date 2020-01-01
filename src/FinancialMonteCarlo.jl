@@ -15,6 +15,7 @@ module FinancialMonteCarlo
 	include("metrics.jl");
 	include("multi_threading.jl");
 	include("multi_process.jl");
+	include("curve_utils.jl");
 	export
 	    pricer,
 	    variance,

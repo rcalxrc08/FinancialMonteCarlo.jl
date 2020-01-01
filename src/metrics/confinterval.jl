@@ -19,7 +19,7 @@ function confinter_macro(model_type)
 				Price     = Price of the derivative
 
 		"""	
-		function confinter(mcProcess::$model_type,rfCurve::ZeroRateCurve,mcConfig::MonteCarloConfiguration,abstractPayoff::AbstractPayoff,alpha::Real=0.99)
+		function confinter(mcProcess::$model_type,rfCurve::AbstractZeroRateCurve,mcConfig::MonteCarloConfiguration,abstractPayoff::AbstractPayoff,alpha::Real=0.99)
 
 			set_seed(mcConfig)
 			T=maturity(abstractPayoff);
@@ -42,7 +42,7 @@ confinter_macro(BaseProcess)
 
 
 function confinter_macro_array(model_type)
-	@eval function confinter(mcProcess::$model_type,rfCurve::ZeroRateCurve,mcConfig::MonteCarloConfiguration,abstractPayoffs::Array{abstractPayoff_},alpha::Real=0.99) where {abstractPayoff_ <: AbstractPayoff}
+	@eval function confinter(mcProcess::$model_type,rfCurve::AbstractZeroRateCurve,mcConfig::MonteCarloConfiguration,abstractPayoffs::Array{abstractPayoff_},alpha::Real=0.99) where {abstractPayoff_ <: AbstractPayoff}
 
 		set_seed(mcConfig)
 		maxT=maximum([maturity(abstractPayoff) for abstractPayoff in abstractPayoffs])

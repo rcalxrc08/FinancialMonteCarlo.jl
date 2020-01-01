@@ -7,11 +7,11 @@ Where:\n
 		η  =	Array of volatilities.
 		λ  = 	Array of weights.
 """
-mutable struct LogNormalMixture{num <: Number,num2 <: Number, nums0 <: Number, numd <: Number}<:ItoProcess
+mutable struct LogNormalMixture{num <: Number,num2 <: Number, abstrUnderlying <: AbstractUnderlying}<:ItoProcess
 	η::Array{num,1}
 	λ::Array{num2,1}
-	underlying::Underlying{nums0,numd}
-	function LogNormalMixture(η::Array{num,1},λ::Array{num2,1},underlying::Underlying{nums0,numd}) where {num <: Number,num2 <: Number, nums0 <: Number, numd <: Number}
+	underlying::abstrUnderlying
+	function LogNormalMixture(η::Array{num,1},λ::Array{num2,1},underlying::abstrUnderlying) where {num <: Number,num2 <: Number, abstrUnderlying <: AbstractUnderlying}
         if minimum(η) <= 0.0
             error("Volatilities must be positive")
         elseif minimum(λ) <= 0.0
@@ -21,14 +21,14 @@ mutable struct LogNormalMixture{num <: Number,num2 <: Number, nums0 <: Number, n
         elseif length(λ) != length(η)-1
             error("Check vector lengths")
         else
-            return new{num,num2,nums0,numd}(η,λ,underlying)
+            return new{num,num2,abstrUnderlying}(η,λ,underlying)
         end
     end
 end
 
 export LogNormalMixture;
 
-function simulate(mcProcess::LogNormalMixture,rfCurve::ZeroRateCurve,mcBaseData::MonteCarloConfiguration{type1,type2,type3,type4},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AbstractMonteCarloMethod, type4 <: BaseMode}
+function simulate(mcProcess::LogNormalMixture,rfCurve::AbstractZeroRateCurve,mcBaseData::MonteCarloConfiguration{type1,type2,type3,type4},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AbstractMonteCarloMethod, type4 <: BaseMode}
 	if T<=0.0
 		error("Final time must be positive");
 	end

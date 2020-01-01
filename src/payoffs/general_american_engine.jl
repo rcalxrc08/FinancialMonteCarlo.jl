@@ -1,5 +1,5 @@
 
-function payoff(S1::abstractMatrix,amPayoff::AmericanPayoff,rfCurve::ZeroRateCurve,T1::num2=amPayoff.T) where{abstractMatrix <: AbstractMatrix{num}} where{num <: Number, num2 <: Number}
+function payoff(S1::abstractMatrix,amPayoff::AmericanPayoff,rfCurve::abstractZeroRateCurve,T1::num2=amPayoff.T) where{ abstractZeroRateCurve <: AbstractZeroRateCurve, abstractMatrix <: AbstractMatrix{num}} where{num <: Number, num2 <: Number}
 	T=amPayoff.T;	
 	(Nsim,NStep)=size(S1)
 	NStep-=1;
@@ -26,7 +26,8 @@ function payoff(S1::abstractMatrix,amPayoff::AmericanPayoff,rfCurve::ZeroRateCur
 			#-- Continuation Value 
 			#- Linear Regression on Quadratic Form
 			A=[ones(length(S_I)) S_I S_I.^2];
-			@views b=V[inMoneyIndexes].*exp.(-r*dt*(exerciseTimes[inMoneyIndexes].-j));
+			#@views b=V[inMoneyIndexes].*exp.(-r*dt*(exerciseTimes[inMoneyIndexes].-j));
+			@views b=V[inMoneyIndexes].*exp.(-[integral(r,dt*(exerciseTime-j)) for exerciseTime in exerciseTimes[inMoneyIndexes]]);
 			#MAT=A'*A;			
 			LuMat=lu(A'*A);
 			Btilde=A'*b;
@@ -43,7 +44,7 @@ function payoff(S1::abstractMatrix,amPayoff::AmericanPayoff,rfCurve::ZeroRateCur
 			@views exerciseTimes[exercisePositions].=j-1;
 		end
 	end
-	Out=V.*exp.(-r*dt.*exerciseTimes)
+	Out=V.*exp.(-[integral(r,dt*exerciseTime) for exerciseTime in exerciseTimes])
 	
 	return Out;
 end

@@ -1,5 +1,5 @@
 
-function payoff(S::AbstractMatrix{num},euPayoff::EuropeanPayoff,rfCurve::ZeroRateCurve,T1::num2=euPayoff.T) where{ num <: Number, num2 <: Number}
+function payoff(S::AbstractMatrix{num},euPayoff::EuropeanPayoff,rfCurve::abstractZeroRateCurve,T1::num2=euPayoff.T) where{ abstractZeroRateCurve <: AbstractZeroRateCurve, num <: Number, num2 <: Number}
 	r=rfCurve.r;
 	T=euPayoff.T;
 	(Nsim,NStep)=size(S)
@@ -9,5 +9,5 @@ function payoff(S::AbstractMatrix{num},euPayoff::EuropeanPayoff,rfCurve::ZeroRat
 	phi(Sti::numtype_) where {numtype_<:Number}=payout(Sti,euPayoff);
 	payoff2=phi.(ST);
 	
-	return payoff2*exp(-r*T);
+	return payoff2*exp(-integral(r,T));
 end

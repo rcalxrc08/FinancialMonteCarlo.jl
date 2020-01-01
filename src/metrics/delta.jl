@@ -16,10 +16,10 @@ function delta_macro(model_type)
 				Delta     = Delta of the derivative
 
 		"""	
-		function delta(mcProcess::$model_type,rfCurve::ZeroRateCurve,mcConfig::MonteCarloConfiguration,abstractPayoff::AbstractPayoff,dS0::Real=1e-7)
+		function delta(mcProcess::$model_type,rfCurve::AbstractZeroRateCurve,mcConfig::MonteCarloConfiguration,abstractPayoff::AbstractPayoff,dS0::Real=1e-7)
 
 			Price=pricer(mcProcess,rfCurve,mcConfig,abstractPayoff);
-			spotData_1=ZeroRateCurve(rfCurve.S0+dS0,rfCurve.r,rfCurve.d);
+			spotData_1=AbstractZeroRateCurve(rfCurve.S0+dS0,rfCurve.r,rfCurve.d);
 			PriceUp=pricer(mcProcess,spotData_1,mcConfig,abstractPayoff);
 			Delta=(PriceUp-Price)/dS0;
 
@@ -31,9 +31,9 @@ end
 delta_macro(BaseProcess)
 
 function delta_macro_array(model_type)
-	@eval function delta(mcProcess::$model_type,rfCurve::ZeroRateCurve,mcConfig::MonteCarloConfiguration,abstractPayoffs::Array{AbstractPayoff},dS0::Real=1e-7)
+	@eval function delta(mcProcess::$model_type,rfCurve::AbstractZeroRateCurve,mcConfig::MonteCarloConfiguration,abstractPayoffs::Array{AbstractPayoff},dS0::Real=1e-7)
 			Prices=pricer(mcProcess,rfCurve,mcConfig,abstractPayoffs);
-			spotData_1=ZeroRateCurve(rfCurve.S0+dS0,rfCurve.r,rfCurve.d);
+			spotData_1=AbstractZeroRateCurve(rfCurve.S0+dS0,rfCurve.r,rfCurve.d);
 			PricesUp=pricer(mcProcess,spotData_1,mcConfig,abstractPayoffs);
 			Delta=(PricesUp.-Prices)./dS0;
 		
@@ -42,7 +42,7 @@ function delta_macro_array(model_type)
 end
 
 function delta_macro_dict(model_type)
-	@eval function delta(mcProcess::$model_type,rfCurve::ZeroRateCurve,mcConfig::MonteCarloConfiguration,abstractPayoffs::Dict{FinancialMonteCarlo.AbstractPayoff,Number},dS0::Real=1e-7)
+	@eval function delta(mcProcess::$model_type,rfCurve::AbstractZeroRateCurve,mcConfig::MonteCarloConfiguration,abstractPayoffs::Dict{FinancialMonteCarlo.AbstractPayoff,Number},dS0::Real=1e-7)
 			Prices=pricer(mcProcess,rfCurve,mcConfig,abstractPayoffs);
 			mcProcess.underlying.S0+=dS0;
 			PricesUp=pricer(mcProcess,rfCurve,mcConfig,abstractPayoffs);
@@ -56,12 +56,14 @@ delta_macro_array(BaseProcess)
 delta_macro_dict(BaseProcess)
 
 
-function delta(mcProcess::Dict{String,FinancialMonteCarlo.AbstractMonteCarloProcess},rfCurve::ZeroRateCurve,mcConfig::MonteCarloConfiguration,dict_::Dict{String,Dict{FinancialMonteCarlo.AbstractPayoff,Number}})
+function delta(mcProcess::Dict{String,FinancialMonteCarlo.AbstractMonteCarloProcess},rfCurve::AbstractZeroRateCurve,mcConfig::MonteCarloConfiguration,dict_::Dict{String,Dict{FinancialMonteCarlo.AbstractPayoff,Number}},x::String)
 		set_seed(mcConfig)
 		underlyings_models=keys(mcProcess)
 		underlyings_payoff=keys(dict_)
 		price0=pricer(mcProcess,rfCurve,mcConfig,dict_);
-		#deltas=zeros(
+		delta_=0.0;
+		deps_=derive_dep(x,mcProcess);
+		mcProcess_=mcProcess;
 		for under_ in underlyings_payoff
 			options=dict_[under_]
 			model=mcProcess[under_]

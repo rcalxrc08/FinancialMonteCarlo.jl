@@ -10,8 +10,6 @@ struct ControlVariates{abstractPayoff <: AbstractPayoff} <: AbstractMonteCarloMe
 
 end
 
-
-
 abstract type SingleNamePayoff<:AbstractPayoff end
 abstract type EuropeanPayoff<:SingleNamePayoff end
 abstract type AmericanPayoff<:SingleNamePayoff end
@@ -88,6 +86,6 @@ Where:\n
 		Payoff      = payoff of the Option.
 
 """
-function payoff(S::AbstractMatrix{num},optionData::AbstractPayoff,spotData::ZeroRateCurve,T1::num2=optionData.T) where{num <: Number,num2 <: Number}
+function payoff(S::AbstractMatrix{num},optionData::AbstractPayoff,spotData::abstractZeroRateCurve,T1::num2=optionData.T) where{ abstractZeroRateCurve <: AbstractZeroRateCurve,num <: Number,num2 <: Number}
 	error("Function used just for documentation")
 end
