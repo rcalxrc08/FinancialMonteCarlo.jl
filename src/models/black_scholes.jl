@@ -31,10 +31,8 @@ function simulate(mcProcess::BlackScholesProcess,rfCurve::AbstractZeroRateCurve,
 	Nstep=mcBaseData.Nstep;
 	σ_gbm=mcProcess.σ;
 	mu_gbm=r-d;
-	@show d
 	
 	S=simulate(GeometricBrownianMotion(σ_gbm,mu_gbm,mcProcess.underlying),rfCurve,mcBaseData,T)
-	#S=S0.*exp.(simulate(BrownianMotion(σ_gbm,mu_gbm,Underlying(0.0,0.0)),rfCurve,mcBaseData,T))
 	
 	return S;
 	
