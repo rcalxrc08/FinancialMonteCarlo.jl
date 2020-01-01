@@ -28,7 +28,3 @@ Model=BlackScholesProcess(sigma,Underlying(S0,d));
 
 AsianPrice1=pricer(Model,spotData1,mc,AsianFloatingStrikeData);
 AsianPrice2=pricer(Model,spotData1,mc,AsianFixedStrikeData);
-
-optionDatas=[FwdData,EUData,AMData,BarrierData,AsianFloatingStrikeData,AsianFixedStrikeData]
-
-@btime (FwdPrice,EuPrice,AMPrice,BarrierPrice,AsianPrice1,AsianPrice2)=pricer(Model,spotData1,mc,optionDatas)
