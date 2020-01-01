@@ -41,11 +41,18 @@ function intgral_2(x::num,T::Array{num1},r::Array{num2}) where {num <: Number, n
 	if(x==0.0)
 		return 0.0;
 	end
-	@assert x<=T[end]
-	idx_=findfirst(y->y>=x,T)-1;
+	#@assert x<=T[end]
+	tmp_idx=findfirst(y->y>=x,T);
+	isnothing(tmp_idx) ? tmp_idx=length(T) : nothing;
+	idx_=tmp_idx-1;
 	out=sum([(r[i]+r[i+1])*0.5*(T[i+1]-T[i]) for i in 1:(idx_-1)])
-	itp=LinearInterpolation([T[idx_],T[idx_+1]],[r[idx_],r[idx_+1]]);
-	out=out+(r[idx_]+itp(x))*0.5*(x-T[idx_]);
+	if x<=T[end]
+		itp=LinearInterpolation([T[idx_],T[idx_+1]],[r[idx_],r[idx_+1]]);
+		out=out+(r[idx_]+itp(x))*0.5*(x-T[idx_]);
+	else
+		#continuation
+		out=out+(r[idx_]+r[idx_+1])*0.5*(x-T[idx_]);
+	end
 	return out;
 end
 

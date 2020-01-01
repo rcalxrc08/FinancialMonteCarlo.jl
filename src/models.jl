@@ -72,6 +72,7 @@ include("models/geometric_brownian_motion.jl")
 include("models/geometric_brownian_motion_aug.jl")
 include("models/black_scholes.jl")
 include("models/heston.jl")
+include("models/heston_aug.jl")
 include("models/log_normal_mixture.jl")
 include("models/shifted_log_normal_mixture.jl")
 
@@ -82,6 +83,7 @@ include("models/merton.jl")
 
 ### Infinite Activity Levy Processes
 include("models/subordinated_brownian_motion.jl")
+include("models/subordinated_brownian_motion_aug.jl")
 include("models/variance_gamma.jl")
 include("models/normal_inverse_gaussian.jl")
 
