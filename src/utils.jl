@@ -107,16 +107,16 @@ mutable struct MonteCarloConfiguration{num1 <: Integer , num2 <: Integer , abstr
 	seed::Int64
 	offset::Int64
 	rng::MersenneTwister
-	function MonteCarloConfiguration(Nsim::num1,Nstep::num2,seed::Int64) where {num1 <: Integer, num2 <: Integer}
+	function MonteCarloConfiguration(Nsim::num1,Nstep::num2,seed::Number) where {num1 <: Integer, num2 <: Integer}
         if Nsim <= zero(num1)
             error("Number of Simulations must be positive")
         elseif Nstep <= zero(num2)
             error("Number of Steps must be positive")
 		else
-            return new{num1,num2,StandardMC,SerialMode}(Nsim,Nstep,StandardMC(),SerialMode(),seed,div(Nsim,2)*Nstep*(Distributed.myid() == 1 ? 0 : (Distributed.myid()-2) ),MersenneTwister(seed))
+            return new{num1,num2,StandardMC,SerialMode}(Nsim,Nstep,StandardMC(),SerialMode(),Int64(seed),div(Nsim,2)*Nstep*(Distributed.myid() == 1 ? 0 : (Distributed.myid()-2) ),MersenneTwister(Int64(seed)))
         end
     end
-	function MonteCarloConfiguration(Nsim::num1,Nstep::num2,monteCarloMethod::abstractMonteCarloMethod=StandardMC(),seed::Int64=0) where {num1 <: Integer, num2 <: Integer, abstractMonteCarloMethod <: AbstractMonteCarloMethod}
+	function MonteCarloConfiguration(Nsim::num1,Nstep::num2,monteCarloMethod::abstractMonteCarloMethod=StandardMC(),seed::Number)=0) where {num1 <: Integer, num2 <: Integer, abstractMonteCarloMethod <: AbstractMonteCarloMethod}
         if Nsim <= zero(num1)
             error("Number of Simulations must be positive")
         elseif Nstep <= zero(num2)
@@ -124,19 +124,19 @@ mutable struct MonteCarloConfiguration{num1 <: Integer , num2 <: Integer , abstr
 		elseif (abstractMonteCarloMethod <: AntitheticMC) & ( div(Nsim,2)*2!=Nsim )
 			error("Antithetic support only even number of simulations")
 		else
-            return new{num1,num2,abstractMonteCarloMethod,SerialMode}(Nsim,Nstep,monteCarloMethod,SerialMode(),seed,div(Nsim,2)*Nstep*(Distributed.myid() == 1 ? 0 : (Distributed.myid()-2) ),MersenneTwister(seed))
+            return new{num1,num2,abstractMonteCarloMethod,SerialMode}(Nsim,Nstep,monteCarloMethod,SerialMode(),Int64(seed),div(Nsim,2)*Nstep*(Distributed.myid() == 1 ? 0 : (Distributed.myid()-2) ),MersenneTwister(Int64(seed)))
         end
     end
-	function MonteCarloConfiguration(Nsim::num1,Nstep::num2,parallelMethod::baseMode,seed::Int64=0) where {num1 <: Integer, num2 <: Integer, baseMode <: BaseMode}
+	function MonteCarloConfiguration(Nsim::num1,Nstep::num2,parallelMethod::baseMode,seed::Number)=0) where {num1 <: Integer, num2 <: Integer, baseMode <: BaseMode}
         if Nsim <= zero(num1)
             error("Number of Simulations must be positive")
         elseif Nstep <= zero(num2)
             error("Number of Steps must be positive")
 		else
-            return new{num1,num2,StandardMC,baseMode}(Nsim,Nstep,StandardMC(),parallelMethod,seed,div(Nsim,2)*Nstep*(Distributed.myid() == 1 ? 0 : (Distributed.myid()-2) ),MersenneTwister(seed))
+            return new{num1,num2,StandardMC,baseMode}(Nsim,Nstep,StandardMC(),parallelMethod,Int64(seed),div(Nsim,2)*Nstep*(Distributed.myid() == 1 ? 0 : (Distributed.myid()-2) ),MersenneTwister(Int64(seed)))
         end
     end
-	function MonteCarloConfiguration(Nsim::num1,Nstep::num2,monteCarloMethod::abstractMonteCarloMethod,parallelMethod::baseMode,seed::Int64=0) where {num1 <: Integer, num2 <: Integer, abstractMonteCarloMethod <: AbstractMonteCarloMethod, baseMode <: BaseMode}
+	function MonteCarloConfiguration(Nsim::num1,Nstep::num2,monteCarloMethod::abstractMonteCarloMethod,parallelMethod::baseMode,seed::Number)=0) where {num1 <: Integer, num2 <: Integer, abstractMonteCarloMethod <: AbstractMonteCarloMethod, baseMode <: BaseMode}
         if Nsim <= zero(num1)
             error("Number of Simulations must be positive")
         elseif Nstep <= zero(num2)
@@ -144,7 +144,7 @@ mutable struct MonteCarloConfiguration{num1 <: Integer , num2 <: Integer , abstr
 		elseif (abstractMonteCarloMethod <: AntitheticMC) & ( div(Nsim,2)*2!=Nsim )
 			error("Antithetic support only even number of simulations")
 		else
-            return new{num1,num2,abstractMonteCarloMethod,baseMode}(Nsim,Nstep,monteCarloMethod,parallelMethod,seed,div(Nsim,2)*Nstep*(Distributed.myid() == 1 ? 0 : (Distributed.myid()-2) ),MersenneTwister(seed))
+            return new{num1,num2,abstractMonteCarloMethod,baseMode}(Nsim,Nstep,monteCarloMethod,parallelMethod,Int64(seed),div(Nsim,2)*Nstep*(Distributed.myid() == 1 ? 0 : (Distributed.myid()-2) ),MersenneTwister(Int64(seed)))
         end
     end
 end
