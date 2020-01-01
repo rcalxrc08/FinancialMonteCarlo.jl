@@ -1,4 +1,3 @@
-using BenchmarkTools
 using FinancialMonteCarlo
 
 S0=100.0;
