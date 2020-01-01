@@ -21,7 +21,7 @@ end
 
 export BlackScholesProcess;
 
-function simulate(mcProcess::BlackScholesProcess,rfCurve::ZeroRateCurve,mcBaseData::MonteCarloConfiguration{type1,type2,type3,type4},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AbstractMonteCarloMethod, type4 <: BaseMode}
+function simulate(mcProcess::BlackScholesProcess,rfCurve::AbstractZeroRateCurve,mcBaseData::MonteCarloConfiguration{type1,type2,type3,type4},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AbstractMonteCarloMethod, type4 <: BaseMode}
 	if T<=0.0
 		error("Final time must be positive");
 	end
@@ -31,9 +31,10 @@ function simulate(mcProcess::BlackScholesProcess,rfCurve::ZeroRateCurve,mcBaseDa
 	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;
 	σ_gbm=mcProcess.σ;
-	mu_gbm=r-d;
+	mu_gbm=r.-d;
 	
 	S=simulate(GeometricBrownianMotion(σ_gbm,mu_gbm,mcProcess.underlying),rfCurve,mcBaseData,T)
+	#S=S0.*exp.(simulate(BrownianMotion(σ_gbm,mu_gbm,Underlying(0.0,0.0)),rfCurve,mcBaseData,T))
 	
 	return S;
 	

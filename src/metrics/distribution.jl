@@ -16,7 +16,7 @@ function distribution_macro(model_type)
 				Price     = Price of the derivative
 
 		"""	
-		function distribution(mcProcess::$model_type,rfCurve::ZeroRateCurve,mcConfig::MonteCarloConfiguration,T::num_) where { num_ <: Number }
+		function distribution(mcProcess::$model_type,rfCurve::AbstractZeroRateCurve,mcConfig::MonteCarloConfiguration,T::num_) where { num_ <: Number }
 
 			set_seed(mcConfig)
 			S=simulate(mcProcess,rfCurve,mcConfig,T)

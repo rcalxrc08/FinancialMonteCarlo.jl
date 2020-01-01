@@ -16,7 +16,7 @@ function pricer_macro(model_type)
 				Price     = Price of the derivative
 
 		"""	
-		function pricer(mcProcess::$model_type,rfCurve::ZeroRateCurve,mcConfig::MonteCarloConfiguration,abstractPayoff::AbstractPayoff)
+		function pricer(mcProcess::$model_type,rfCurve::AbstractZeroRateCurve,mcConfig::MonteCarloConfiguration,abstractPayoff::AbstractPayoff)
 
 			set_seed(mcConfig)
 			T=maturity(abstractPayoff);
@@ -31,7 +31,7 @@ end
 pricer_macro(BaseProcess)
 
 function pricer_macro_array(model_type)
-	@eval function pricer(mcProcess::$model_type,rfCurve::ZeroRateCurve,mcConfig::MonteCarloConfiguration,abstractPayoffs::Array{abstractPayoff_}) where {abstractPayoff_ <: AbstractPayoff}
+	@eval function pricer(mcProcess::$model_type,rfCurve::AbstractZeroRateCurve,mcConfig::MonteCarloConfiguration,abstractPayoffs::Array{abstractPayoff_}) where {abstractPayoff_ <: AbstractPayoff}
 		set_seed(mcConfig)
 		maxT=maximum([maturity(abstractPayoff) for abstractPayoff in abstractPayoffs])
 		S=simulate(mcProcess,rfCurve,mcConfig,maxT)
@@ -42,7 +42,7 @@ function pricer_macro_array(model_type)
 end
 
 function pricer_macro_dict(model_type)
-	@eval function pricer(mcProcess::$model_type,rfCurve::ZeroRateCurve,mcConfig::MonteCarloConfiguration,dict_::Dict{FinancialMonteCarlo.AbstractPayoff,Number})
+	@eval function pricer(mcProcess::$model_type,rfCurve::AbstractZeroRateCurve,mcConfig::MonteCarloConfiguration,dict_::Dict{FinancialMonteCarlo.AbstractPayoff,Number})
 		set_seed(mcConfig)
 		abstractPayoffs=keys(dict_);
 		maxT=maximum([maturity(abstractPayoff) for abstractPayoff in abstractPayoffs])
@@ -53,7 +53,7 @@ function pricer_macro_dict(model_type)
 	end
 end
 
-function pricer(mcProcess::Dict{String,FinancialMonteCarlo.AbstractMonteCarloProcess},rfCurve::ZeroRateCurve,mcConfig::MonteCarloConfiguration,dict_::Dict{String,Dict{FinancialMonteCarlo.AbstractPayoff,Number}})
+function pricer(mcProcess::Dict{String,FinancialMonteCarlo.AbstractMonteCarloProcess},rfCurve::AbstractZeroRateCurve,mcConfig::MonteCarloConfiguration,dict_::Dict{String,Dict{FinancialMonteCarlo.AbstractPayoff,Number}})
 		set_seed(mcConfig)
 		underlyings_payoff=keys(dict_)
 		price=0.0;
@@ -68,3 +68,23 @@ function pricer(mcProcess::Dict{String,FinancialMonteCarlo.AbstractMonteCarloPro
 
 pricer_macro_array(BaseProcess)
 pricer_macro_dict(BaseProcess)
+
+
+function derive_dep(x::String,mktData::Dict{String,FinancialMonteCarlo.AbstractMonteCarloProcess})
+	keys_mktdata=collect(keys(mktData))
+	filtered_keys=keys_mktdata[occursin.(x,keys_mktdata)];
+	filtered_keys=filter(y->y!=x,filtered_keys)
+	out_vec=[x];
+	for key_ in filtered_keys
+		if !(key_ ∈ out_vec)
+			push!(out_vec,key_)
+		end
+		unders=split(key_,"_");
+		for under_ in unders
+			if !(under_ ∈ out_vec)
+				push!(out_vec,under_)
+			end
+		end
+	end
+	return out_vec;
+end

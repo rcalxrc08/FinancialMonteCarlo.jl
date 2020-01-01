@@ -47,8 +47,10 @@ include("models/utils.jl")
 
 ### Ito Processes
 include("models/brownian_motion.jl")
+include("models/brownian_motion_aug_2.jl")
 include("models/brownian_motion_prescribed.jl")
 include("models/geometric_brownian_motion.jl")
+include("models/geometric_brownian_motion_aug.jl")
 include("models/black_scholes.jl")
 include("models/heston.jl")
 include("models/log_normal_mixture.jl")
@@ -179,7 +181,7 @@ Where:\n
 		S      = Matrix with path of underlying.
 
 """
-function simulate(mcProcess::BaseProcess,zeroCurve::ZeroRateCurve,mcBaseData::MonteCarloConfiguration{type1,type2,type3,type4},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AbstractMonteCarloMethod, type4 <: BaseMode}
+function simulate(mcProcess::BaseProcess,zeroCurve::AbstractZeroRateCurve,mcBaseData::MonteCarloConfiguration{type1,type2,type3,type4},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AbstractMonteCarloMethod, type4 <: BaseMode}
 	error("Function used just for documentation")
 end
 
