@@ -30,7 +30,7 @@ function simulate(mcProcess::HestonProcess,rfCurve::ZeroRateCurve2,mcBaseData::M
 		e2=randn(mcBaseData.rng,Nsim);
 		e2=e1*ρ+e2*sqrt(1-ρ*ρ);
 		tmp_=r_d((j-1)*dt,dt);
-		X[:,j+1]=X[:,j]+(tmp_.-0.5*max.(v_m,0))*dt+sqrt.(max.(v_m,0))*sqrt(dt).*e1;
+		X[:,j+1]=X[:,j]+(tmp_.-0.5*max.(v_m,0)*dt)+sqrt.(max.(v_m,0))*sqrt(dt).*e1;
 		v_m+=κ_s.*(θ_s.-max.(v_m,0)).*dt+σ.*sqrt.(max.(v_m,0)).*sqrt(dt).*e2;
 	end
 	## Conclude
@@ -75,7 +75,7 @@ function simulate(mcProcess::HestonProcess,rfCurve::ZeroRateCurve2,mcBaseData::M
 		e2=[e2;-e2];
 		e2=e1.*ρ.+e2.*sqrt(1-ρ*ρ);
 		tmp_=r_d((j-1)*dt,dt);
-		X[:,j+1]=X[:,j]+(tmp_.-0.5.*max.(v_m,0)).*dt+sqrt.(max.(v_m,0)).*sqrt(dt).*e1;
+		X[:,j+1]=X[:,j]+(tmp_.-0.5.*max.(v_m,0).*dt)+sqrt.(max.(v_m,0)).*sqrt(dt).*e1;
 		v_m+=κ_s.*(θ_s.-max.(v_m,0)).*dt+(σ*sqrt(dt)).*sqrt.(max.(v_m,0)).*e2;
 	end
 	
