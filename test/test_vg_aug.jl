@@ -5,6 +5,7 @@ K=100.0;
 r=[0.00,0.02];
 T=1.0;
 d=FinancialMonteCarlo.Curve([0.00,0.02],T);
+d2=FinancialMonteCarlo.Curve([0.00,0.01,0.02],T);
 D=90.0;
 
 Nsim=10000;
@@ -27,10 +28,12 @@ BarrierData=BarrierOptionDownOut(T,K,D)
 AsianFloatingStrikeData=AsianFloatingStrikeOption(T)
 AsianFixedStrikeData=AsianFixedStrikeOption(T,K)
 Model=VarianceGammaProcess(sigma,theta1,k1,Underlying(S0,d));
+Model2=VarianceGammaProcess(sigma,theta1,k1,Underlying(S0,d2));
 
 display(Model)
 @show FwdPrice=pricer(Model,ZeroRateCurve(r[end]),mc,FwdData);
 @show FwdPrice=pricer(Model,rfCurve,mc,FwdData);
+@show FwdPrice=pricer(Model2,rfCurve,mc,FwdData);
 @show FwdPrice=pricer(Model,rfCurve,mc1,FwdData);
 @show EuPrice=pricer(Model,rfCurve,mc,EUData);
 @show EuBinPrice=pricer(Model,rfCurve,mc,EUBin);
