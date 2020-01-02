@@ -23,11 +23,7 @@ mutable struct SubordinatedBrownianMotionVec{num <: Number, num1 <: Number, num4
 end
 
 function SubordinatedBrownianMotion(σ::num,drift::Curve{num1,num4},subordinator_::Distr,underlying::abstrUnderlying) where {num <: Number, num1 <: Number, num4 <: Number,Distr <: Distribution{Univariate,Continuous}, abstrUnderlying <: AbstractUnderlying}
-	if σ <= 0.0
-		error("Volatility must be positive")
-	else
-		return SubordinatedBrownianMotionVec(σ,drift,subordinator_,underlying)
-	end
+	return SubordinatedBrownianMotionVec(σ,drift,subordinator_,underlying)
 end
 
 export SubordinatedBrownianMotionVec;

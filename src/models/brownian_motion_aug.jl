@@ -21,11 +21,7 @@ mutable struct BrownianMotionVec{num <: Number, num1 <: Number , num4 <: Number,
 end
 
 function BrownianMotion(σ::num,μ::Curve{num1,num4},underlying::abstrUnderlying) where {num <: Number, num1 <: Number, num4 <: Number, abstrUnderlying <: AbstractUnderlying}
-	if σ <= 0.0
-		error("Volatility must be positive")
-	else
-		return BrownianMotionVec(σ,μ,underlying)
-	end
+	return BrownianMotionVec(σ,μ,underlying)
 end
 
 function simulate(mcProcess::BrownianMotionVec,mcBaseData::MonteCarloConfiguration{type1,type2,type3,SerialMode},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: StandardMC}

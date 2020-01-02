@@ -21,11 +21,7 @@ mutable struct GeometricBrownianMotionVec{num <: Number, num1 <: Number, num4 <:
 end
 
 function GeometricBrownianMotion(σ::num,μ::Curve{num1,num4},underlying::abstrUnderlying) where {num <: Number, num1 <: Number, num4 <: Number, abstrUnderlying <: AbstractUnderlying}
-	if σ <= 0.0
-		error("Volatility must be positive")
-	else
-		return GeometricBrownianMotionVec(σ,μ,underlying)
-	end
+	return GeometricBrownianMotionVec(σ,μ,underlying)
 end
 
 export GeometricBrownianMotionVec;
