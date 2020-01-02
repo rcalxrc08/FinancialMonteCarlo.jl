@@ -114,6 +114,7 @@ function print(p::Position)
 	flag=0;
 	for key_ in keys_
 		val_=p[key_]
+		iszero(val_) ? continue : nothing;
 		if typeof(val_) <: Real 
 			if(flag!=0)
 				val_ > 0.0 ? print(+) : print(-);
@@ -123,6 +124,7 @@ function print(p::Position)
 				print(*);
 				print(key_);
 			else
+				val_ > 0.0 ? nothing : print(-);
 				print(key_);
 			end
 		else

@@ -1,4 +1,4 @@
-using Test, FinancialMonteCarlo;
+using Test, FinancialMonteCarlo,DualNumbers;
 @show "Black Scholes Model"
 S0=100.0;
 K=100.0;
@@ -33,6 +33,24 @@ port_=port_*2.0;
 port_=2.0*port_;
 display(port_)
 print(port_)
+display(FwdData)
+display(-FwdData)
+print(FwdData)
+print(-FwdData)
+display(Forward(dual(T,1.0)))
+display(-Forward(dual(T,1.0)))
+print(Forward(dual(T,1.0)))
+print(-Forward(dual(T,1.0)))
+
+display(Forward(dual(T,1.0))+EUData)
+display(-Forward(dual(T,1.0))+EUData)
+print(Forward(dual(T,1.0))+EUData)
+print(-Forward(dual(T,1.0))+EUData)
+
+display(Forward(dual(T,1.0))-EUData)
+display(-Forward(dual(T,1.0))-EUData)
+print(Forward(dual(T,1.0))-EUData)
+print(-Forward(dual(T,1.0))-EUData)
 
 mktdataset=underlying_name|>Model
 portfolio_=[FwdData;EUData;AMData;BarrierData;AsianFloatingStrikeData;AsianFixedStrikeData];
