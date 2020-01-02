@@ -41,7 +41,8 @@ function simulate(mcProcess::SubordinatedBrownianMotionVec,mcBaseData::MonteCarl
 	dt_s=Array{type_sub}(undef,Nsim)
 	t_s=Array{type_sub}(undef,Nsim)
 	dt=T/Nstep;
-	isDualZero=sigma*dt_s[1,1]*0.0+mcProcess.underlying.S0;
+	zero_drift=drift(zero(type_sub),zero(type_sub)+dt);
+	isDualZero=sigma*dt_s[1,1]*0.0*mcProcess.underlying.S0*zero_drift;
 	X=Matrix{typeof(isDualZero)}(undef,Nsim,Nstep+1);
 	@views X[:,1].=isDualZero;
 	@views t_s.=isDualZero;
@@ -52,7 +53,7 @@ function simulate(mcProcess::SubordinatedBrownianMotionVec,mcBaseData::MonteCarl
 		tmp_drift=[drift(t_,dt_) for (t_,dt_) in zip(t_s,dt_s)];
 		t_s+=dt_s;
 		# SUBORDINATED BROWNIAN MOTION (dt_s=time change)
-		@views X[:,i+1].=X[:,i].+tmp_drift.+sigma.*sqrt.(dt_s).*Z;
+		@views X[:,i+1]=X[:,i]+tmp_drift+sigma*sqrt.(dt_s).*Z;
 	end
 
 	return X;
@@ -70,7 +71,9 @@ function simulate(mcProcess::SubordinatedBrownianMotionVec,mcBaseData::MonteCarl
 		error("Final time must be positive");
 	end
 	t_s=Array{type_sub}(undef,Nsim)
-	isDualZero=sigma*dt_s[1,1]*0.0+mcProcess.underlying.S0;
+	dt=T/Nstep;
+	zero_drift=drift(zero(type_sub),zero(type_sub)+dt);
+	isDualZero=sigma*dt_s[1,1]*0.0*mcProcess.underlying.S0*zero_drift;
 	@views t_s.=isDualZero;
 	X=Matrix{typeof(isDualZero)}(undef,Nsim,Nstep+1);
 	@views X[:,1].=isDualZero;

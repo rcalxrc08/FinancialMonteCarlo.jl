@@ -21,7 +21,8 @@ function simulate(mcProcess::HestonProcess,rfCurve::ZeroRateCurve2,mcBaseData::M
 	θ_s=κ*θ/(κ+λ1);
 	r_d=r-d;
 	dt=T/Nstep
-	isDualZero=S0*T*σ_zero*κ*θ*λ1*σ*ρ*0.0;
+	zero_drift=r_d(dt*0.0,dt);
+	isDualZero=S0*T*σ_zero*κ*θ*λ1*σ*ρ*0.0*zero_drift;
 	X=Matrix{typeof(isDualZero)}(undef,Nsim,Nstep+1);
 	X[:,1].=isDualZero;
 	v_m=[σ_zero+isDualZero for _ in 1:Nsim];

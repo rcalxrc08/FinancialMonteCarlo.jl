@@ -1,13 +1,15 @@
 function oper(+)
 	@eval import Base.$+
-	@eval function $+(r::FinMCDict{num1,num2},d::FinMCDict{num1,num2}) where { num1 <: Number, num2 <: Number }
+	@eval function $+(r::FinMCDict{num1,num2},d::FinMCDict{num1,num3}) where { num1 <: Number, num2 <: Number, num3 <: Number }
 		T_r=collect(keys_(r));
 		T_d=collect(keys_(d));
 		if(length(T_d)>length(T_r))
 			return $+(d,r)
 		end
 		d_complete=complete_(T_r,d);
-		out=FinMCDict{num1,num2}();
+		#key_type=typeof(zero(num1));
+		val_type=typeof(zero(num2)+zero(num3));
+		out=FinMCDict{num1,val_type}();
 		for t in T_r
 			insert!(out,t,  $+(r[t], d_complete[t]))
 		end
