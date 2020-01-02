@@ -28,6 +28,7 @@ Model=BlackScholesProcess(sigma,Underlying(S0,d));
 
 display(Model)
 
+@show spot=pricer(Model,rfCurve,mc,Spot());
 @show FwdPrice=pricer(Model,rfCurve,mc,FwdData);
 @show EuPrice=pricer(Model,rfCurve,mc,EUData);
 @show EuBinPrice=pricer(Model,rfCurve,mc,EUBin);

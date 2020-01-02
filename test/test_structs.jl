@@ -26,6 +26,7 @@ Model=GaussianCopulaNVariateProcess(Model_enj,Model_abpl,0.0)
 
 rfCurve=ZeroRateCurve(r);
 @test_throws(ErrorException,underlying_name|>Model)
+@test_throws(ErrorException,"c_i"|>Forward(1.0))
 @test_throws(ErrorException,Underlying(-Nsim))
 @test_throws(ErrorException,MonteCarloConfiguration(-Nsim,Nstep))
 @test_throws(ErrorException,MonteCarloConfiguration(Nsim,-Nstep))

@@ -1,5 +1,5 @@
 
-function payoff(S::AbstractMatrix{num},euPayoff::EuropeanPayoff,rfCurve::abstractZeroRateCurve,T1::num2=euPayoff.T) where{ abstractZeroRateCurve <: AbstractZeroRateCurve, num <: Number, num2 <: Number}
+function payoff(S::AbstractMatrix{num},euPayoff::EuropeanPayoff,rfCurve::abstractZeroRateCurve,T1::num2=maturity(euPayoff)) where{ abstractZeroRateCurve <: AbstractZeroRateCurve, num <: Number, num2 <: Number}
 	r=rfCurve.r;
 	T=euPayoff.T;
 	(Nsim,NStep)=size(S)

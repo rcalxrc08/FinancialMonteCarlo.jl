@@ -1,5 +1,5 @@
 
-function payoff(S1::abstractMatrix,amPayoff::AmericanPayoff,rfCurve::abstractZeroRateCurve,T1::num2=amPayoff.T) where{ abstractZeroRateCurve <: AbstractZeroRateCurve, abstractMatrix <: AbstractMatrix{num}} where{num <: Number, num2 <: Number}
+function payoff(S1::abstractMatrix,amPayoff::AmericanPayoff,rfCurve::abstractZeroRateCurve,T1::num2=maturity(amPayoff)) where{ abstractZeroRateCurve <: AbstractZeroRateCurve, abstractMatrix <: AbstractMatrix{num}} where{num <: Number, num2 <: Number}
 	T=amPayoff.T;	
 	(Nsim,NStep)=size(S1)
 	NStep-=1;

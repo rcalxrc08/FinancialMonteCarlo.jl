@@ -53,13 +53,16 @@ print(Forward(dual(T,1.0))-EUData)
 print(-Forward(dual(T,1.0))-EUData)
 
 mktdataset=underlying_name|>Model
-portfolio_=[FwdData;EUData;AMData;BarrierData;AsianFloatingStrikeData;AsianFixedStrikeData];
+portfolio_=[FwdData;EUData;AMData;BarrierData;AsianFloatingStrikeData;AsianFixedStrikeData;Spot()];
 portfolio=underlying_name|>FwdData
 portfolio+=underlying_name|>EUData
 portfolio+=underlying_name|>AMData
+portfolio+=underlying_name|>Spot()
 portfolio+=underlying_name|>BarrierData
 portfolio+=underlying_name|>AsianFloatingStrikeData
 portfolio+=underlying_name|>AsianFixedStrikeData
+
+display(portfolio)
 
 
 price_mkt=pricer(mktdataset,rfCurve,mc,portfolio)

@@ -26,7 +26,7 @@ end
 export EuropeanOptionND;
 
 
-function payoff(S::Array{abstractMatrix},euPayoff::EuropeanOptionND,rfCurve::ZeroRateCurve,T1::num2=euPayoff.T) where { abstractMatrix <: AbstractMatrix{num}, num2 <: Number} where { num <: Number}
+function payoff(S::Array{abstractMatrix},euPayoff::EuropeanOptionND,rfCurve::ZeroRateCurve,T1::num2=maturity(euPayoff)) where { abstractMatrix <: AbstractMatrix{num}, num2 <: Number} where { num <: Number}
 	r=rfCurve.r;
 	T=euPayoff.T;
 	iscall=euPayoff.isCall ? 1 : -1

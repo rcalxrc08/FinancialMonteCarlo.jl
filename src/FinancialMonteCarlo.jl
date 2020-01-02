@@ -10,8 +10,9 @@ module FinancialMonteCarlo
 		@require DifferentialEquations = "0c46a032-eb83-5123-abaf-570d42b7fbaa" include("diffeq_dependencies.jl")
 	end
 	include("utils.jl")
-	include("payoffs.jl")
 	include("models.jl")
+	include("payoffs.jl")
+	include("io_utils.jl")
 	include("metrics.jl");
 	include("multi_threading.jl");
 	include("multi_process.jl");
