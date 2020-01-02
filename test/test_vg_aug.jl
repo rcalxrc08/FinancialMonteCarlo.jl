@@ -29,8 +29,9 @@ AsianFixedStrikeData=AsianFixedStrikeOption(T,K)
 Model=VarianceGammaProcess(sigma,theta1,k1,Underlying(S0,d));
 
 display(Model)
-
+@show FwdPrice=pricer(Model,ZeroRateCurve(r[end]),mc,FwdData);
 @show FwdPrice=pricer(Model,rfCurve,mc,FwdData);
+@show FwdPrice=pricer(Model,rfCurve,mc1,FwdData);
 @show EuPrice=pricer(Model,rfCurve,mc,EUData);
 @show EuBinPrice=pricer(Model,rfCurve,mc,EUBin);
 @show AmPrice=pricer(Model,rfCurve,mc,AMData);

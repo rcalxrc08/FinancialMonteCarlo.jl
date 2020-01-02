@@ -39,17 +39,20 @@ function simulate(mcProcess::SubordinatedBrownianMotionVec,mcBaseData::MonteCarl
 	end
 	type_sub=typeof(quantile(mcProcess.subordinator_,rand()));
 	dt_s=Array{type_sub}(undef,Nsim)
+	t_s=Array{type_sub}(undef,Nsim)
 	dt=T/Nstep;
 	isDualZero=sigma*dt_s[1,1]*0.0+mcProcess.underlying.S0;
 	X=Matrix{typeof(isDualZero)}(undef,Nsim,Nstep+1);
 	@views X[:,1].=isDualZero;
+	@views t_s.=isDualZero;
 	Z=Array{Float64}(undef,Nsim)
 	for i=1:Nstep
 		randn!(mcBaseData.rng,Z)
 		dt_s.=quantile.(mcProcess.subordinator_,rand(mcBaseData.rng,Nsim));
-		tmp_drift=[drift((i-1)*dt,dt_) for dt_ in dt_s];
+		tmp_drift=[drift(t_,dt_) for (t_,dt_) in zip(t_s,dt_s)];
+		t_s+=dt_s;
 		# SUBORDINATED BROWNIAN MOTION (dt_s=time change)
-		@views X[:,i+1].=X[:,i].+tmp_drift.*dt_s.+sigma.*sqrt.(dt_s).*Z;
+		@views X[:,i+1].=X[:,i].+tmp_drift.+sigma.*sqrt.(dt_s).*Z;
 	end
 
 	return X;
@@ -66,18 +69,20 @@ function simulate(mcProcess::SubordinatedBrownianMotionVec,mcBaseData::MonteCarl
 	if T<=0.0
 		error("Final time must be positive");
 	end
+	t_s=Array{type_sub}(undef,Nsim)
 	isDualZero=sigma*dt_s[1,1]*0.0+mcProcess.underlying.S0;
+	@views t_s.=isDualZero;
 	X=Matrix{typeof(isDualZero)}(undef,Nsim,Nstep+1);
-	X[:,1].=isDualZero;
+	@views X[:,1].=isDualZero;
 	for i=1:Nstep
 		NsimAnti=div(Nsim,2)
 		Z=randn(mcBaseData.rng,NsimAnti);
 		Z=[Z;-Z];
 		dt_s.=quantile.(mcProcess.subordinator_,rand(mcBaseData.rng,Nsim));
-		#I am not sure about this
-		tmp_drift=[drift((i-1)*dt,dt_) for dt_ in dt_s];
+		tmp_drift=[drift(t_,dt_) for (t_,dt_) in zip(t_s,dt_s)];
+		t_s+=dt_s;
 		# SUBORDINATED BROWNIAN MOTION (dt_s=time change)
-		X[:,i+1]=X[:,i].+tmp_drift.*dt_s.+sigma.*sqrt.(dt_s).*Z;
+		@views X[:,i+1]=X[:,i].+tmp_drift.+sigma.*sqrt.(dt_s).*Z;
 	end
 	
 	return X;

@@ -19,11 +19,11 @@ end
 
 export Forward;
 
-function payout(ST::numtype_,euPayoff::Forward) where {numtype_<:Number}
-	return ST;
-end
+#function payout(ST::numtype_,euPayoff::Forward) where {numtype_<:Number}
+#	return ST;
+#end
 
-function payoff(S::AbstractMatrix{num},optionData::Forward,rfCurve::ZeroRateCurve,T1::num2=maturity(optionData)) where{num <: Number,num2 <: Number}
+function payoff(S::AbstractMatrix{num},optionData::Forward,rfCurve::AbstractZeroRateCurve,T1::num2=maturity(optionData)) where{num <: Number,num2 <: Number}
 	r=rfCurve.r;
 	T=optionData.T;
 	(Nsim,NStep)=size(S)
