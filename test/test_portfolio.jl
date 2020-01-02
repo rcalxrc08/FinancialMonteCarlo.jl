@@ -28,6 +28,12 @@ Model=BlackScholesProcess(sigma,Underlying(S0,d));
 
 display(Model)
 
+port_=EUData*2.0+FwdData-FwdData/2.0-FwdData;
+port_=port_*2.0;
+port_=2.0*port_;
+display(port_)
+print(port_)
+
 mktdataset=underlying_name|>Model
 portfolio_=[FwdData;EUData;AMData;BarrierData;AsianFloatingStrikeData;AsianFixedStrikeData];
 portfolio=underlying_name|>FwdData

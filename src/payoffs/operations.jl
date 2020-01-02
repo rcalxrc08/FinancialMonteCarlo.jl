@@ -1,6 +1,7 @@
 import Base.+;
 import Base.*;
 import Base.-;
+import Base./;
 
 const Position=Dict{FinancialMonteCarlo.AbstractPayoff,Number};
 
@@ -51,6 +52,8 @@ function *(x::FinancialMonteCarlo.AbstractPayoff,y::Number)
 end
 *(y::Number,out::FinancialMonteCarlo.AbstractPayoff)=out*y;
 *(y::Number,out::Position)=out*y;
+/(out::FinancialMonteCarlo.AbstractPayoff,y::Number)=out*(1.0/y);
+/(out::Position,y::Number)=out*(1.0/y);
 +(y::FinancialMonteCarlo.AbstractPayoff,out::Position)= out+y;
 -(x::FinancialMonteCarlo.AbstractPayoff)=return -1*x;
 -(x::Position)=return -1*x;

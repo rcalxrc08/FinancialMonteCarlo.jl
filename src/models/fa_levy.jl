@@ -16,7 +16,7 @@ function simulate(mcProcess::finiteActivityProcess,rfCurve::AbstractZeroRateCurv
 	## Simulate
 	# r-d-psi(-i)
 	#drift_RN=r-d-σ^2/2-λ1*(p/(λ₊-1)-(1-p)/(λ₋+1));
-	drift_RN=(r-d).-compute_drift(mcProcess);
+	drift_RN=(r-d)-compute_drift(mcProcess);
 	X=Matrix(simulate(BrownianMotion(σ,drift_RN,Underlying(0.0)),mcBaseData,T))
 
 	t=range(0.0, stop=T, length=Nstep+1);
