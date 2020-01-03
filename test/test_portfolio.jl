@@ -51,6 +51,13 @@ display(Forward(dual(T,1.0))-EUData)
 display(-Forward(dual(T,1.0))-EUData)
 print(Forward(dual(T,1.0))-EUData)
 print(-Forward(dual(T,1.0))-EUData)
+fwd=Forward(dual(T,1.0))*1.0
+fwd=1.0*Forward(dual(T,1.0))
+fwd=1.0*fwd
+fwd=fwd*1.0
+fwd=fwd/1.0
+fwd=-fwd
+fwd=Forward(dual(T,1.0))-fwd
 
 mktdataset=underlying_name|>Model
 portfolio_=[FwdData;EUData;AMData;BarrierData;AsianFloatingStrikeData;AsianFixedStrikeData;Spot()];

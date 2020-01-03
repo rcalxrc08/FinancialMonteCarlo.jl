@@ -32,6 +32,8 @@ rfCurve2=FinancialMonteCarlo.ZeroRateCurve2([0.00,0.02],T);
 @test_throws(ErrorException,Underlying(-S0,rfCurve2.r))
 @test_throws(ErrorException,"c_i"|>Forward(1.0))
 @test_throws(ErrorException,Underlying(-S0))
+@test_throws(ErrorException,EuropeanOptionND(-1.0,1.0))
+@test_throws(ErrorException,EuropeanOptionND(1.0,-1.0))
 @test_throws(ErrorException,MonteCarloConfiguration(-Nsim,Nstep))
 @test_throws(ErrorException,MonteCarloConfiguration(Nsim+1,Nstep,FinancialMonteCarlo.AntitheticMC()));
 @test_throws(ErrorException,MonteCarloConfiguration(Nsim,-Nstep))

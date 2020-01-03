@@ -1,10 +1,10 @@
-function get_initial_u0(mcProcess::MonteCarloProblem)
-	if(typeof(mcProcess.prob)<:JumpProblem)
-		return  mcProcess.prob.prob.u0;
-	else
-		return mcProcess.prob.u0;
-	end
-end
+#function get_initial_u0(mcProcess::MonteCarloProblem)
+#	if(typeof(mcProcess.prob)<:JumpProblem)
+#		return  mcProcess.prob.prob.u0;
+#	else
+#		return mcProcess.prob.u0;
+#	end
+#end
 
 
 
