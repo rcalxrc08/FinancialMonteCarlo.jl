@@ -10,11 +10,15 @@ Nstep=30;
 sigma=0.2; 
 
 McConfig=MonteCarloConfiguration(Nsim,Nstep);
+mc1=MonteCarloConfiguration(Nsim,Nstep,FinancialMonteCarlo.AntitheticMC());
 rfCurve=ZeroRateCurve(r);
 rfCurve2=FinancialMonteCarlo.ZeroRateCurve2([0.00,0.02],T);
 
 @show "Test Subordinated Brownian Motion Parameters"
 drift=0.0;
 @test_throws(ErrorException,SubordinatedBrownianMotion(-sigma,drift,InverseGaussian(1.0,1.0),Underlying(S0,d)))
+@test_throws(ErrorException,SubordinatedBrownianMotion(-sigma,rfCurve2.r,InverseGaussian(1.0,1.0),Underlying(S0,d)))
 @test_throws(ErrorException,simulate(SubordinatedBrownianMotion(sigma,rfCurve2.r,InverseGaussian(1.0,1.0),Underlying(S0,d)),McConfig,-T));
+@test_throws(ErrorException,simulate(SubordinatedBrownianMotion(sigma,rfCurve2.r,InverseGaussian(1.0,1.0),Underlying(S0,d)),mc1,-T));
 @test_throws(ErrorException,simulate(SubordinatedBrownianMotion(sigma,drift,InverseGaussian(1.0,1.0),Underlying(S0,d)),McConfig,-T));
+@test_throws(ErrorException,simulate(SubordinatedBrownianMotion(sigma,drift,InverseGaussian(1.0,1.0),Underlying(S0,d)),mc1,-T));

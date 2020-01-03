@@ -24,9 +24,10 @@ Model_enj=BlackScholesProcess(sigma,Underlying(S0,d));
 Model_abpl=BlackScholesProcess(sigma,Underlying(S0,d));
 
 Model=GaussianCopulaNVariateProcess(Model_enj,Model_abpl,0.0)
-
+port_="eni_aap"|>Model;
 rfCurve=ZeroRateCurve(r);
 rfCurve2=FinancialMonteCarlo.ZeroRateCurve2([0.00,0.02],T);
+@test_throws(ErrorException,port_+port_)
 @test_throws(ErrorException,underlying_name|>Model)
 @test_throws(ErrorException,Underlying(-S0,rfCurve2.r))
 @test_throws(ErrorException,"c_i"|>Forward(1.0))

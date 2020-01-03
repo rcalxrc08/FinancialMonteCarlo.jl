@@ -42,6 +42,6 @@ portfolio=underlying_|>EUData
 
 price_mkt=pricer(mktdataset,rfCurve,mc,portfolio)
 price_old= sum(pricer(Model,rfCurve,mc,portfolio_))
-
+@test_throws(ErrorException,simulate(Model,rfCurve,mc,-T));
 
 @test abs(price_mkt-price_old)<1e-8

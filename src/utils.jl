@@ -64,15 +64,8 @@ struct ZeroRateCurve2{num1 <: Number,num2 <: Number} <: AbstractZeroRateCurve
 	#function ZeroRateCurve2(r_::Curve{num1,num2}) where {num1 <: Number, num2 <: Number}
     #   new{num2,num1}(r_)
     #end
-	#function (x::ZeroRateCurve2)(t::Number,dt::Number)
-    #   return x.r(t,dt);
-    #end
 end 
-function integral(x::ZeroRateCurve2,t::Number)
-	T=collect(keys(x.r));
-	r=collect(values(x.r));
-   return intgral_2(t,T,r);
-end
+
 function integral(r::FinMCDict{num1,num2},t::Number) where {num1 <: Number, num2 <: Number}
 	T=collect(keys(r));
 	r=collect(values(r));
