@@ -11,6 +11,7 @@ Nsim=100000;
 Nstep=30;
 sigma=0.2;
 mc=MonteCarloConfiguration(Nsim,Nstep);
+mc1=MonteCarloConfiguration(Nsim,Nstep,FinancialMonteCarlo.AntitheticMC());
 toll=1.8
 
 rfCurve=FinancialMonteCarlo.ZeroRateCurve2(r,T);
@@ -27,6 +28,7 @@ Model=BlackScholesProcess(sigma,Underlying(S0,d));
 
 display(Model)
 
+@show FwdPrice=pricer(Model,rfCurve,mc1,FwdData);
 @show FwdPrice=pricer(Model,rfCurve,mc,FwdData);
 @show EuPrice=pricer(Model,rfCurve,mc,EUData);
 @show EuBinPrice=pricer(Model,rfCurve,mc,EUBin);
