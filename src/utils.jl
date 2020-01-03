@@ -38,10 +38,18 @@ end
 
 using Interpolations
 function intgral_2(x::num,T::Array{num1},r::Array{num2}) where {num <: Number, num1 <: Number, num2 <: Number}
+	@assert T==sort(T)
+	@assert length(T)==length(r)
 	if(x==0.0)
 		return 0.0;
 	end
-	@assert length(T)==length(r)
+	if(x<0.0)
+		@warn "strange"
+		@show x
+		@show T
+		@show r
+		return 0.0;
+	end
 	tmp_idx=findfirst(y->y>x,T);
 	isnothing(tmp_idx) || iszero(tmp_idx) ? tmp_idx=length(T) : nothing;
 	idx_=tmp_idx-1;
