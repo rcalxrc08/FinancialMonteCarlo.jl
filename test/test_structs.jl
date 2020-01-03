@@ -1,4 +1,4 @@
-using FinancialMonteCarlo
+using FinancialMonteCarlo,Test
 @show "Test Structs Building"
 S0=100.0;
 K=100.0;
@@ -26,9 +26,11 @@ Model_abpl=BlackScholesProcess(sigma,Underlying(S0,d));
 Model=GaussianCopulaNVariateProcess(Model_enj,Model_abpl,0.0)
 
 rfCurve=ZeroRateCurve(r);
+rfCurve2=FinancialMonteCarlo.ZeroRateCurve2([0.00,0.02],T);
 @test_throws(ErrorException,underlying_name|>Model)
+@test_throws(ErrorException,Underlying(-S0,rfCurve2.r))
 @test_throws(ErrorException,"c_i"|>Forward(1.0))
-@test_throws(ErrorException,Underlying(-Nsim))
+@test_throws(ErrorException,Underlying(-S0))
 @test_throws(ErrorException,MonteCarloConfiguration(-Nsim,Nstep))
 @test_throws(ErrorException,MonteCarloConfiguration(Nsim+1,Nstep,FinancialMonteCarlo.AntitheticMC()));
 @test_throws(ErrorException,MonteCarloConfiguration(Nsim,-Nstep))
