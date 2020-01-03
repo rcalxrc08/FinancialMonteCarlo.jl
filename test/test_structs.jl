@@ -18,6 +18,7 @@ sigma1=0.02;
 underlying_name="ENJ"
 mc=MonteCarloConfiguration(Nsim,Nstep);
 mc1=MonteCarloConfiguration(Nsim,Nstep,FinancialMonteCarlo.AntitheticMC());
+
 toll=0.8;
 Model_enj=BlackScholesProcess(sigma,Underlying(S0,d));
 Model_abpl=BlackScholesProcess(sigma,Underlying(S0,d));
@@ -29,6 +30,7 @@ rfCurve=ZeroRateCurve(r);
 @test_throws(ErrorException,"c_i"|>Forward(1.0))
 @test_throws(ErrorException,Underlying(-Nsim))
 @test_throws(ErrorException,MonteCarloConfiguration(-Nsim,Nstep))
+@test_throws(ErrorException,MonteCarloConfiguration(Nsim+1,Nstep,FinancialMonteCarlo.AntitheticMC()));
 @test_throws(ErrorException,MonteCarloConfiguration(Nsim,-Nstep))
 #####################################################################
 #Payoff Structs Test: Negative TTM
