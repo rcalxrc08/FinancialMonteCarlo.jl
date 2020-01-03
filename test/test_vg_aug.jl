@@ -4,8 +4,8 @@ S0=100.0;
 K=100.0;
 r=[0.00,0.02];
 T=1.0;
-d=FinancialMonteCarlo.Curve([0.00,0.02],T);
-d2=FinancialMonteCarlo.Curve([0.00,0.01,0.02],T);
+d=FinancialMonteCarlo.Curve([0.0,0.02],T);
+d2=FinancialMonteCarlo.Curve([0.0,0.01,0.02],T);
 D=90.0;
 
 Nsim=10000;
