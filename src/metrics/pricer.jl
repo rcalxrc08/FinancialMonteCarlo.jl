@@ -68,23 +68,3 @@ function pricer(mcProcess::Dict{String,FinancialMonteCarlo.AbstractMonteCarloPro
 
 pricer_macro_array(BaseProcess)
 pricer_macro_dict(BaseProcess)
-
-
-function derive_dep(x::String,mktData::Dict{String,FinancialMonteCarlo.AbstractMonteCarloProcess})
-	keys_mktdata=collect(keys(mktData))
-	filtered_keys=keys_mktdata[occursin.(x,keys_mktdata)];
-	filtered_keys=filter(y->y!=x,filtered_keys)
-	out_vec=[x];
-	for key_ in filtered_keys
-		if !(key_ ∈ out_vec)
-			push!(out_vec,key_)
-		end
-		unders=split(key_,"_");
-		for under_ in unders
-			if !(under_ ∈ out_vec)
-				push!(out_vec,under_)
-			end
-		end
-	end
-	return out_vec;
-end
