@@ -70,5 +70,6 @@ rfCurve2=FinancialMonteCarlo.ZeroRateCurve2([0.00,0.02],T);
 @test_throws(ErrorException,DoubleBarrierOption(T,Kneg,K,K));
 @test_throws(ErrorException,DoubleBarrierOption(T,K,Kneg,K));
 
+@test FinancialMonteCarlo.maturity(Spot())==0.0
 @test 2.0*EuropeanOption(T,K)==EuropeanOption(T,K)+1.0*EuropeanOption(T,K)
 @test 2.0*EuropeanOption(T,K)==EuropeanOption(T,K)+EuropeanOption(T,K)
