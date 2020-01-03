@@ -22,7 +22,7 @@ mc1=MonteCarloConfiguration(Nsim,Nstep,FinancialMonteCarlo.AntitheticMC());
 toll=0.8;
 Model_enj=BlackScholesProcess(sigma,Underlying(S0,d));
 Model_abpl=BlackScholesProcess(sigma,Underlying(S0,d));
-Curve([0.0,0.1],[0.0,0.1]);
+FinancialMonteCarlo.Curve([0.0,0.1],[0.0,0.1]);
 Model=GaussianCopulaNVariateProcess(Model_enj,Model_abpl,0.0)
 port_="eni_aap"|>Model;
 rfCurve=ZeroRate(r);
