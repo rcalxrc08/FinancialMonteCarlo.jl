@@ -74,7 +74,7 @@ function simulate(mcProcess::SubordinatedBrownianMotionVec,mcBaseData::MonteCarl
 	dt=T/Nstep;
 	zero_drift=drift(zero(type_sub),zero(type_sub)+dt);
 	isDualZero=sigma*zero(type_sub)*0.0*mcProcess.underlying.S0*zero_drift;
-	@views t_s.=isDualZero;
+	t_s.=isDualZero;
 	X=Matrix{typeof(isDualZero)}(undef,Nsim,Nstep+1);
 	@views X[:,1].=isDualZero;
 	for i=1:Nstep
