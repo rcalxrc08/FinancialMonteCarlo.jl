@@ -18,7 +18,7 @@ rho=0.0;
 mc=MonteCarloConfiguration(Nsim,Nstep);
 toll=0.8;
 
-rfCurve=ZeroRateCurve(r);
+rfCurve=ZeroRate(r);
 
 FwdData=Forward(T)
 EUData=EuropeanOption(T,K)

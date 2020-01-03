@@ -13,7 +13,7 @@ sigma=0.2
 mc=MonteCarloConfiguration(Nsim,Nstep);
 toll=1e-3;
 
-rfCurve=ZeroRateCurve(r);
+rfCurve=ZeroRate(r);
 
 FwdData=Forward(T)
 EUData=EuropeanOption(T,K)
@@ -23,14 +23,14 @@ AsianFloatingStrikeData=AsianFloatingStrikeOption(T)
 AsianFixedStrikeData=AsianFixedStrikeOption(T,K)
 Model=BlackScholesProcess(sigma,Underlying(S0,d));
 
-f__1(x::Vector) = pricer(BlackScholesProcess(x[1],Underlying(x[2],x[4])),ZeroRateCurve(x[3]),mc,EuropeanOption(x[5],K));
+f__1(x::Vector) = pricer(BlackScholesProcess(x[1],Underlying(x[2],x[4])),ZeroRate(x[3]),mc,EuropeanOption(x[5],K));
 x=Float64[sigma,S0,r,d,T]
 g__1 = x -> ForwardDiff.gradient(f__1, x);
 y0=g__1(x);
 @btime f__1(x);
 @btime g__1(x);
 
-f_(x::Vector) = pricer(BlackScholesProcess(x[1],Underlying(x[2],x[4])),ZeroRateCurve(x[3]),mc,AmericanOption(x[5],K));
+f_(x::Vector) = pricer(BlackScholesProcess(x[1],Underlying(x[2],x[4])),ZeroRate(x[3]),mc,AmericanOption(x[5],K));
 g_ = x -> ForwardDiff.gradient(f_, x);
 y0=g_(x);
 @btime f_(x);

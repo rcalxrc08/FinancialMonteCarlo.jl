@@ -12,8 +12,8 @@ Nstep=30;
 sigma=0.2; 
 McConfig=MonteCarloConfiguration(Nsim,Nstep);
 toll=0.8;
-rfCurve2=FinancialMonteCarlo.ZeroRateCurve2([0.00,0.02],T);
-rfCurve=ZeroRateCurve(r);
+rfCurve2=ZeroRate([0.00,0.02],T);
+rfCurve=ZeroRate(r);
 
 @show "Test Geometric Brownian Motion Parameters"
 drift=0.0

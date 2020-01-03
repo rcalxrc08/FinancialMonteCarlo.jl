@@ -18,7 +18,7 @@ lamm=20.0;
 mc=MonteCarloConfiguration(Nsim,Nstep);
 toll=0.8;
 
-rfCurve=FinancialMonteCarlo.ZeroRateCurve2(r,T);
+rfCurve=FinancialMonteCarlo.ZeroRateCurve(r,T);
 
 FwdData=Forward(T)
 EUData=EuropeanOption(T,K)

@@ -13,7 +13,7 @@ sigma=0.2
 mc=MonteCarloConfiguration(Nsim,Nstep);
 toll=0.8
 
-rfCurve=ZeroRateCurve(S0,r,d);
+rfCurve=ZeroRate(S0,r,d);
 
 FwdData=Forward(T)
 EUData=EuropeanOption(T,K)
@@ -24,8 +24,8 @@ AsianFixedStrikeData=AsianFixedStrikeOption(T,K)
 Model=BlackScholesProcess(sigma);
 
 
-#f__(x) = pricer(BlackScholesProcess(x[1]),ZeroRateCurve(x[2],x[3],d),mc,EUData);
-f__(x) = pricer(BlackScholesProcess(x[1]),ZeroRateCurve(x[2],x[3],d),mc,FwdData);
+#f__(x) = pricer(BlackScholesProcess(x[1]),ZeroRate(x[2],x[3],d),mc,EUData);
+f__(x) = pricer(BlackScholesProcess(x[1]),ZeroRate(x[2],x[3],d),mc,FwdData);
 #x=Float64[sigma,S0]
 x=Float64[sigma,S0,r]
 gradient(x -> f__(x), x)

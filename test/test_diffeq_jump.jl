@@ -34,7 +34,7 @@ jump = ConstantRateJump(rate,affect!)
 prob = SDEProblem(dr_,g_1,u0,tspan,rng=mc.rng)
 jump_prob = JumpProblem(prob,Direct(),jump)
 monte_prob = MonteCarloProblem(jump_prob)
-rfCurve=ZeroRateCurve(r);
+rfCurve=ZeroRate(r);
 func(x)=S0*exp(x);
 model=FinancialMonteCarlo.MonteCarloDiffEqModel(monte_prob,func,Underlying(S0,d))
 

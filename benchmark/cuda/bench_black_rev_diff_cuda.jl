@@ -15,7 +15,7 @@ mc_1=MonteCarloConfiguration(Nsim,Nstep,FinancialMonteCarlo.CudaMode());
 mc_2=MonteCarloConfiguration(Nsim,Nstep,FinancialMonteCarlo.CudaMode_2());
 toll=1e-3;
 
-rfCurve=ZeroRateCurve(r);
+rfCurve=ZeroRate(r);
 
 FwdData=Forward(T)
 EUData=EuropeanOption(T,K)
@@ -25,14 +25,14 @@ AsianFloatingStrikeData=AsianFloatingStrikeOption(T)
 AsianFixedStrikeData=AsianFixedStrikeOption(T,K)
 Model=BlackScholesProcess(sigma,Underlying(S0,d));
 
-f(x) = pricer(BlackScholesProcess(x[1]),ZeroRateCurve(x[2],x[3],x[4]),mc,EuropeanOption(x[5],K),FinancialMonteCarlo.CudaMode_2());
+f(x) = pricer(BlackScholesProcess(x[1]),ZeroRate(x[2],x[3],x[4]),mc,EuropeanOption(x[5],K),FinancialMonteCarlo.CudaMode_2());
 x=Float64[sigma,S0,r,d,T]
 g = x -> ReverseDiff.gradient(f, x);
 y0=g(x);
 @btime f(x);
 @btime g(x);
 
-f_(x::Vector) = pricer(BlackScholesProcess(x[1]),ZeroRateCurve(x[2],x[3],x[4]),mc,AmericanOption(x[5],K),FinancialMonteCarlo.CudaMode_2());
+f_(x::Vector) = pricer(BlackScholesProcess(x[1]),ZeroRate(x[2],x[3],x[4]),mc,AmericanOption(x[5],K),FinancialMonteCarlo.CudaMode_2());
 g_ = x -> ReverseDiff.gradient(f_, x);
 y0=g(x);
 @btime f_(x);

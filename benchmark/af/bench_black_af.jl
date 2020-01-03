@@ -14,7 +14,7 @@ mc=MonteCarloConfiguration(Nsim,Nstep);
 mc_=MonteCarloConfiguration(Nsim,Nstep,FinancialMonteCarlo.AFMode());
 toll=1e-3;
 
-rfCurve=ZeroRateCurve(r);
+rfCurve=ZeroRate(r);
 
 FwdData=Forward(T)
 EUData=EuropeanOption(T,K)

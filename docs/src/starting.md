@@ -25,7 +25,7 @@ Nstep=30;
 σ=0.2;
 #Build the Structs
 mcConfig=MonteCarloConfiguration(Nsim,Nstep);
-rfCurve=ZeroRateCurve(S0,r,d);
+rfCurve=ZeroRate(S0,r,d);
 
 #Define The Options
 EU_payoff=EuropeanOption(T,K)

@@ -9,11 +9,11 @@ T=-Tneg;
 Nsim=10000;
 Nstep=30;
 mc1=MonteCarloConfiguration(Nsim,Nstep,FinancialMonteCarlo.AntitheticMC());
-rfCurve2=FinancialMonteCarlo.ZeroRateCurve2([0.00,0.02],T);
+rfCurve2=ZeroRate([0.00,0.02],T);
 sigma=0.2; 
 
 McConfig=MonteCarloConfiguration(Nsim,Nstep);
-rfCurve=ZeroRateCurve(r);
+rfCurve=ZeroRate(r);
 
 @show "Test Brownian Motion Parameters"
 drift=0.0

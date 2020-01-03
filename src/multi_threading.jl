@@ -6,7 +6,7 @@ end
 
 function pricer_macro_multithreading(model_type)
 	@eval begin
-		function pricer(mcProcess::$model_type,spotData::ZeroRateCurve,mcConfig::MonteCarloConfiguration{<: Integer , <: Integer , <: AbstractMonteCarloMethod ,  <: MultiThreading},abstractPayoff::AbstractPayoff)
+		function pricer(mcProcess::$model_type,spotData::ZeroRate,mcConfig::MonteCarloConfiguration{<: Integer , <: Integer , <: AbstractMonteCarloMethod ,  <: MultiThreading},abstractPayoff::AbstractPayoff)
 			price=zeros(Threads.nthreads());
 			Threads.@threads for i in 1:Threads.nthreads()
 				price[i]=pricer(mcProcess,spotData,MonteCarloConfiguration(div(mcConfig.Nsim,Threads.nthreads()),mcConfig.Nstep,mcConfig.monteCarloMethod,SerialMode(),mcConfig.seed),abstractPayoff);

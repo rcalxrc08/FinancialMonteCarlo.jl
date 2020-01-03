@@ -61,7 +61,7 @@ Nstep=30;
 σ=0.2;
 #Build the Structs
 mcConfig=MonteCarloConfiguration(Nsim,Nstep); #Configurator
-spotData=ZeroRateCurve(r); #Zero rate curve, so far it is just a scalar
+spotData=ZeroRate(r);
 underlying=Underlying(S0,d); #Underlying relative data
 
 #Define The Option

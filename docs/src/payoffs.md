@@ -11,7 +11,7 @@ The following type of *Payoff* are supported from the package:
 
 Each payoff must implement its own *payoff* method; the general interface is the following:
 ```@docs
-payoff(S::AbstractMatrix{num},optionData::FinancialMonteCarlo.AbstractPayoff,spotData::ZeroRateCurve,T1::num2=optionData.T) where{num <: Number,num2 <: Number}
+payoff(S::AbstractMatrix{num},optionData::FinancialMonteCarlo.AbstractPayoff,spotData::ZeroRate,T1::num2=optionData.T) where{num <: Number,num2 <: Number}
 ```
 The following option structs are provided:
 ```@docs

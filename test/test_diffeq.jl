@@ -22,7 +22,7 @@ tspan = (0.0,T)
 #Definition of the SDE
 prob = SDEProblem(dr_,g_1,u0,tspan,rng=mc.rng)
 monte_prob = MonteCarloProblem(prob)
-rfCurve=ZeroRateCurve(r);
+rfCurve=ZeroRate(r);
 model=FinancialMonteCarlo.MonteCarloDiffEqModel(monte_prob,Underlying(S0,d))
 
 FwdData=Forward(T)

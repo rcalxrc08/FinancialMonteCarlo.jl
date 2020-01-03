@@ -4,9 +4,9 @@ import Future.randjump
 
 abstract type AbstractZeroRateCurve end
 
-struct ZeroRateCurve{T2 <: Number} <: AbstractZeroRateCurve
+struct ZeroRate{T2 <: Number} <: AbstractZeroRateCurve
     r::T2
-    function ZeroRateCurve(r::T2) where {T2 <: Number}
+    function ZeroRate(r::T2) where {T2 <: Number}
        return new{T2}(r)
     end
 end
@@ -56,15 +56,20 @@ function intgral_2(x::num,T::Array{num1},r::Array{num2}) where {num <: Number, n
 	return out;
 end
 
-struct ZeroRateCurve2{num1 <: Number,num2 <: Number} <: AbstractZeroRateCurve
+struct ZeroRateCurve{num1 <: Number,num2 <: Number} <: AbstractZeroRateCurve
     r::Curve{num1,num2}
-	function ZeroRateCurve2(r_::Array{num1},T::num2) where {num1 <: Number, num2 <: Number}
+	function ZeroRateCurve(r_::Array{num1},T::num2) where {num1 <: Number, num2 <: Number}
        new{num2,num1}(Curve(r_,T))
     end
-	#function ZeroRateCurve2(r_::Curve{num1,num2}) where {num1 <: Number, num2 <: Number}
+	#function ZeroRateCurve(r_::Curve{num1,num2}) where {num1 <: Number, num2 <: Number}
     #   new{num2,num1}(r_)
     #end
 end 
+function ZeroRate(r_::Array{num1},T::num2) where {num1 <: Number, num2 <: Number}
+       return ZeroRateCurve(r_,T);
+end
+
+export ZeroRateCurve;
 
 function integral(r::FinMCDict{num1,num2},t::Number) where {num1 <: Number, num2 <: Number}
 	T=collect(keys(r));
@@ -85,7 +90,7 @@ struct StandardMC <: AbstractMonteCarloMethod end
 struct AntitheticMC <: AbstractMonteCarloMethod end
 struct PrescribedMC <: AbstractMonteCarloMethod end
 
-export ZeroRateCurve;
+export ZeroRate;
 
 function randjump_(rng,num)
 	return randjump(rng,num);

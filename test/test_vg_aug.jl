@@ -17,7 +17,7 @@ mc=MonteCarloConfiguration(Nsim,Nstep);
 mc1=MonteCarloConfiguration(Nsim,Nstep,FinancialMonteCarlo.AntitheticMC());
 toll=0.8;
 
-rfCurve=FinancialMonteCarlo.ZeroRateCurve2(r,T);
+rfCurve=ZeroRate(r,T);
 
 FwdData=Forward(T)
 EUData=EuropeanOption(T,K)
@@ -31,7 +31,7 @@ Model=VarianceGammaProcess(sigma,theta1,k1,Underlying(S0,d));
 Model2=VarianceGammaProcess(sigma,theta1,k1,Underlying(S0,d2));
 
 display(Model)
-@show FwdPrice=pricer(Model,ZeroRateCurve(r[end]),mc,FwdData);
+@show FwdPrice=pricer(Model,ZeroRate(r[end]),mc,FwdData);
 @show FwdPrice=pricer(Model,rfCurve,mc,FwdData);
 @show FwdPrice=pricer(Model2,rfCurve,mc,FwdData);
 @show FwdPrice=pricer(Model,rfCurve,mc1,FwdData);

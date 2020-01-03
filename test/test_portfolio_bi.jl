@@ -18,7 +18,7 @@ sigma=0.2;
 mc=MonteCarloConfiguration(Nsim,Nstep);
 toll=0.8
 
-rfCurve=ZeroRateCurve(r);
+rfCurve=ZeroRate(r);
 
 EUData=EuropeanOptionND(T,K)
 

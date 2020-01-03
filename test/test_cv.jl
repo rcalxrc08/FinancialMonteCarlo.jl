@@ -15,7 +15,7 @@ mc=MonteCarloConfiguration(Nsim,Nstep,variate_);
 mc1=MonteCarloConfiguration(Nsim,Nstep);
 toll=1e-3;
 
-spotData1=ZeroRateCurve(r);
+spotData1=ZeroRate(r);
 
 FwdData=Forward(T)
 EUData=EuropeanOption(T,K)
