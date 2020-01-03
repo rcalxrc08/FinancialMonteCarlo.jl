@@ -28,6 +28,16 @@ function Curve(r_::Array{num1},T::num2) where {num1 <: Number, num2 <: Number}
 	end
    return r
 end
+function Curve(r_::Array{num1},T::Array{num2}) where {num1 <: Number, num2 <: Number}
+	@assert length(r_)==length(T)
+	@assert T==sort(T)
+	r=FinMCDict{num2,num1}();
+	Nstep=length(r_)-1;
+	for i in 1:length(r_)
+		insert!(r,T[i],r_[i]);
+	end
+   return r
+end
 function (x::Curve)(t::Number,dt::Number)
 	T=collect(keys(x));
 	r=collect(values(x));
@@ -38,7 +48,6 @@ end
 
 using Interpolations
 function intgral_2(x::num,T::Array{num1},r::Array{num2}) where {num <: Number, num1 <: Number, num2 <: Number}
-	@assert T==sort(T)
 	@assert length(T)==length(r)
 	if(x==0.0)
 		return 0.0;
@@ -48,6 +57,7 @@ function intgral_2(x::num,T::Array{num1},r::Array{num2}) where {num <: Number, n
 		@show x
 		@show T
 		@show r
+		@assert T==sort(T)
 		return 0.0;
 	end
 	tmp_idx=findfirst(y->y>x,T);
