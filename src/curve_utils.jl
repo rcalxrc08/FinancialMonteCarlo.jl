@@ -41,13 +41,13 @@ oper2(Symbol(*))
 oper2(Symbol(+))
 
 
-keys_(x::Dictionary)=x.indices		  
-keys_(x)=keys(x)
+#keys__(x::Dictionary)=x.indices
+#keys__(x)=keys_(x)
+#
+#values__(x::Dictionary)=x.values
+#values__(x)=values_(x)
 
-values_(x::Dictionary)=x.values		  
-values_(x)=values(x)
-
-function complete_(T,d::FinMCDict{num1,num2}) where {num1,num2}
+function complete_(T::Array{num},d::FinMCDict{num1,num2}) where {num <: Number, num1 <: Number,num2 <:Number}
 	T_d=collect(keys_(d));
 	idx_=sortperm(T_d);
 	T_d=T_d[idx_]

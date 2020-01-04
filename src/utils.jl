@@ -19,6 +19,16 @@ const FinMCDict=HashDictionary
 
 const Curve = FinMCDict{num1,num2} where {num1 <: Number,num2 <: Number}
 
+function keys_(x::Curve{num1,num2}) where {num1 <: Number,num2 <: Number}
+	return sort(collect(keys(x)));
+end
+
+function values_(x::Curve{num1,num2}) where {num1 <: Number,num2 <: Number}
+	T_d=collect(keys(x));
+	idx_=sortperm(T_d);
+	return collect(values(x))[idx_];
+end
+
 function Curve(r_::Array{num1},T::num2) where {num1 <: Number, num2 <: Number}
 	r=FinMCDict{num2,num1}();
 	Nstep=length(r_)-1;
@@ -39,8 +49,8 @@ function Curve(r_::Array{num1},T::Array{num2}) where {num1 <: Number, num2 <: Nu
    return r
 end
 function (x::Curve)(t::Number,dt::Number)
-	T=collect(keys(x));
-	r=collect(values(x));
+	T=collect(keys_(x));
+	r=collect(values_(x));
 	return intgral_2(t+dt,T,r)-intgral_2(t,T,r);
 end
 
@@ -90,8 +100,8 @@ end
 export ZeroRateCurve;
 
 function integral(r::FinMCDict{num1,num2},t::Number) where {num1 <: Number, num2 <: Number}
-	T=collect(keys(r));
-	r=collect(values(r));
+	T=collect(keys_(r));
+	r=collect(values_(r));
    return intgral_2(t,T,r);
 end
 integral(x::num1,t::num2) where {num1 <: Number, num2 <: Number}=x*t;
