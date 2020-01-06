@@ -57,18 +57,18 @@ delta_macro_dict(BaseProcess)
 
 
 function delta(mcProcess::Dict{String,FinancialMonteCarlo.AbstractMonteCarloProcess},rfCurve::AbstractZeroRateCurve,mcConfig::MonteCarloConfiguration,dict_::Dict{String,Dict{FinancialMonteCarlo.AbstractPayoff,Number}},x::String)
-		set_seed(mcConfig)
-		underlyings_models=keys(mcProcess)
-		underlyings_payoff=keys(dict_)
-		price0=pricer(mcProcess,rfCurve,mcConfig,dict_);
-		delta_=0.0;
-		deps_=derive_dep(x,mcProcess);
-		mcProcess_=mcProcess;
-		for under_ in underlyings_payoff
-			options=dict_[under_]
-			model=mcProcess[under_]
-			price=price+pricer(model,rfCurve,mcConfig,options);
-		end
-		
-		return price;
+	set_seed(mcConfig)
+	underlyings_models=keys(mcProcess)
+	underlyings_payoff=keys(dict_)
+	price0=pricer(mcProcess,rfCurve,mcConfig,dict_);
+	delta_=0.0;
+	deps_=derive_dep(x,mcProcess);
+	mcProcess_=mcProcess;
+	for under_ in underlyings_payoff
+		options=dict_[under_]
+		model=mcProcess[under_]
+		price=price+pricer(model,rfCurve,mcConfig,options);
 	end
+	
+	return price;
+end

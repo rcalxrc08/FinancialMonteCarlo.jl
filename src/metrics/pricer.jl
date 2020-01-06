@@ -1,4 +1,4 @@
-include("lex_less.jl")
+include("utils.jl")
 function pricer_macro(model_type)
 	@eval begin
 		"""
@@ -77,34 +77,23 @@ function pricer(mcProcess::VectorialMonteCarloProcess,rfCurve::AbstractZeroRateC
 	return price;
 end
 
-function complete_2(x,y)
-	out=String[];
-	for x_ in x
-		for y_ in y
-			if(any(z->z==x_,split(y_,"_"))||y_==x_)
-				push!(out,y_)
-			end
-		end
-	end
-	return out;
-end
 
 function pricer(mcProcess::Dict{String,FinancialMonteCarlo.AbstractMonteCarloProcess},rfCurve::AbstractZeroRateCurve,mcConfig::MonteCarloConfiguration,dict_::Dict{String,Dict{FinancialMonteCarlo.AbstractPayoff,Number}})
-		set_seed(mcConfig)
-		underlyings_payoff=keys(dict_);
-		underlyings_payoff_cpl=complete_2(underlyings_payoff,keys(mcProcess));
-		price=0.0;
-		for under_cpl in unique(underlyings_payoff_cpl)
-			#options=dict_[under_]
-			options=extract_(under_cpl,dict_)
-			model=mcProcess[under_cpl]
-			price=price+pricer(model,rfCurve,mcConfig,options);
-		end
-		
-		#price= sum(pricer(mcProcess[under_],rfCurve,mcConfig,dict_[under_]) for under_ in underlyings_payoff);
-		
-		return price;
+	set_seed(mcConfig)
+	underlyings_payoff=keys(dict_);
+	underlyings_payoff_cpl=complete_2(underlyings_payoff,keys(mcProcess));
+	price=0.0;
+	for under_cpl in unique(underlyings_payoff_cpl)
+		#options=dict_[under_]
+		options=extract_(under_cpl,dict_)
+		model=mcProcess[under_cpl]
+		price=price+pricer(model,rfCurve,mcConfig,options);
 	end
+	
+	#price= sum(pricer(mcProcess[under_],rfCurve,mcConfig,dict_[under_]) for under_ in underlyings_payoff);
+	
+	return price;
+end
 
 pricer_macro_array(BaseProcess)
 pricer_macro_dict(BaseProcess)

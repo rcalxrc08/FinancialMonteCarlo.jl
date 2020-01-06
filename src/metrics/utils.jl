@@ -1,7 +1,6 @@
 using IterTools
 function lex_less(x,y)
 	if(length(x)!=length(y))
-		#out = length(y) > length(x);
 		return length(y) > length(x);
 	else
 		x_s=sort(x)
@@ -25,12 +24,14 @@ function compute_indices(x::Integer)
 	
 end
 
-function compute_indices(X)
-
-	f(y)=filter(x->!(length(x)==0),y)
-	k=subsets(X)|>collect|>f
-	out=sort(k,lt=(x,y)->lex_less(x,y))
-	
+function complete_2(x,y)
+	out=String[];
+	for x_ in x
+		for y_ in y
+			if(any(z->z==x_,split(y_,"_"))||y_==x_)
+				push!(out,y_)
+			end
+		end
+	end
 	return out;
-	
 end
