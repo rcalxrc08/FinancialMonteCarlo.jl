@@ -31,7 +31,7 @@ Model_enj=BlackScholesProcess(sigma,Underlying(S0,d));
 Model_abpl=BlackScholesProcess(sigma,Underlying(S0,d));
 Model_n=BlackScholesProcess(sigma,Underlying(S0,d));
 
-Model=GaussianCopulaNVariateLogProcess(Model_enj,Model_abpl,0.4)
+Model=GaussianCopulaNVariateLogProcess(Model_enj,Model_abpl,0.0)
 
 display(Model)
 
@@ -39,7 +39,6 @@ mktdataset=underlying_|>Model
 mktdataset_2=underlying_name|>Model_enj
 mktdataset+="notneeded"|>Model_n
 
-portfolio_=[EUData,AMData,BarrierData];
 portfolio=underlying_name|>1.0*EUData
 portfolio+=underlying_name|>1.0*AMData
 portfolio+=underlying_name|>-1.0*(-1.0)*BarrierData

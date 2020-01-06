@@ -47,6 +47,9 @@ function simulate(mcProcess::GaussianCopulaNVariateProcess,rfCurve::AbstractZero
 	end
 	
 	rho=mcProcess.rho
+	if (rho[1,2:end]==zeros(len_-1))
+		return S_Total
+	end
 	for j in 1:Nstep
 	
 		U_joint=gausscopulagen(Nsim,rho);

@@ -52,3 +52,49 @@ function display(p::Portfolio)
 	end
 	println("")
 end
+
+function extract_(x::String,dict_::Portfolio)
+	keys_=keys(dict_);
+	out=Position();
+	out_vec=Position[];
+	ap_keys=String[];
+	for key_ in keys_
+		if((x==key_)||(any(z->z==key_,split(x,"_"))))
+			out= dict_[key_];
+			push!(out_vec,out);
+			push!(ap_keys,key_);
+		end
+	end
+	
+	if(length(out_vec)==1)&&(x==ap_keys[1])
+		return out;
+	else
+		ap_keys_s=sort(ap_keys,lt=(x,y)->lex_less(x,y))
+		multi_v=ap_keys_s[end];
+		str_v=split(multi_v,"_");
+		str_x=split(x,"_");
+		if(length(str_x)>length(str_v))
+			str_v=str_x;
+		end
+		X=compute_indices(length(str_v))
+		
+		#tmp_map=Dict( str_v .=> collect(1:length(str_v)))
+		tmp_map_rev=Dict( collect(1:length(str_v)) .=>  str_v ) 
+		
+		out__=Array{Position}(undef,length(X));
+		
+		for i_ in 1:length(X)
+			idx_=X[i_];
+			str_underlv=[tmp_map_rev[idx_2] for idx_2 in idx_]
+			str_underl=join(str_underlv,"_")
+			
+			if(haskey(dict_,str_underl))
+				out__[i_]=dict_[str_underl]
+			end
+		end
+		
+		return out__;
+	end
+			
+end
+
