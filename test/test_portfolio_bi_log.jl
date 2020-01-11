@@ -33,7 +33,7 @@ Model_n=BlackScholesProcess(sigma,Underlying(S0,d));
 
 Model1=GaussianCopulaNVariateLogProcess(Model_enj,Model_abpl)
 Model=GaussianCopulaNVariateLogProcess(Model_enj,Model_abpl,0.0)
-@test Model1==Model
+@test Model1.rho==Model.rho
 
 display(Model)
 
