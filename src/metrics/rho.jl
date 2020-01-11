@@ -19,8 +19,8 @@ function rho_macro(model_type)
 		function rho(mcProcess::$model_type,rfCurve::AbstractZeroRateCurve,mcConfig::MonteCarloConfiguration,abstractPayoff::AbstractPayoff,dr::Real=1e-7)
 
 			Price=pricer(mcProcess,rfCurve,mcConfig,abstractPayoff);
-			spotData_1=AbstractZeroRateCurve(rfCurve.S0,rfCurve.r+dr,rfCurve.d);
-			PriceUp=pricer(mcProcess,spotData_1,mcConfig,abstractPayoff);
+			rfCurve_1=ZeroRate(rfCurve.r+dr);
+			PriceUp=pricer(mcProcess,rfCurve_1,mcConfig,abstractPayoff);
 			rho=(PriceUp-Price)/dr;
 
 			return rho;
@@ -31,10 +31,10 @@ end
 rho_macro(BaseProcess)
 
 function rho_macro_array(model_type)
-	@eval function rho(mcProcess::$model_type,rfCurve::AbstractZeroRateCurve,mcConfig::MonteCarloConfiguration,abstractPayoffs::Array{AbstractPayoff},dr::Real=1e-7)
+	@eval function rho(mcProcess::$model_type,rfCurve::AbstractZeroRateCurve,mcConfig::MonteCarloConfiguration,abstractPayoffs::Array{abstractPayoff_},dr::Real=1e-7) where { abstractPayoff_ <: AbstractPayoff }
 			Prices=pricer(mcProcess,rfCurve,mcConfig,abstractPayoffs);
-			spotData_1=AbstractZeroRateCurve(rfCurve.S0,rfCurve.r+dr,rfCurve.d);
-			PricesUp=pricer(mcProcess,spotData_1,mcConfig,abstractPayoffs);
+			rfCurve_1=ZeroRate(rfCurve.r+dr);
+			PricesUp=pricer(mcProcess,rfCurve_1,mcConfig,abstractPayoffs);
 			rho=(PricesUp.-Prices)./dr;
 		
 		return rho;
@@ -42,3 +42,5 @@ function rho_macro_array(model_type)
 end
 
 rho_macro_array(BaseProcess)
+
+export rho;

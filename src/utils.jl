@@ -67,14 +67,14 @@ function intgral_2(x::num,T::Array{num1},r::Array{num2}) where {num <: Number, n
 	idx_=tmp_idx-1;
 	out=sum([(r[i]+r[i+1])*0.5*(T[i+1]-T[i]) for i in 1:(idx_-1)])
 	if x<T[end]
-		if(idx_<=0)
-			@warn "strange"
-			@show x
-			@show T
-			@show r
-			@assert T==sort(T)
-			return 0.0;
-		end
+		#if(idx_<=0)
+		#	@warn "strange"
+		#	@show x
+		#	@show T
+		#	@show r
+		#	@assert T==sort(T)
+		#	return 0.0;
+		#end
 		itp=LinearInterpolation([T[idx_],T[idx_+1]],[r[idx_],r[idx_+1]], extrapolation_bc = Flat());
 		out=out+(r[idx_]+itp(x))*0.5*(x-T[idx_]);
 	else

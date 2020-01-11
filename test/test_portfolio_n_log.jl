@@ -30,17 +30,20 @@ AsianFixedStrikeData=AsianFixedStrikeOption(T,K)
 Model_enj=BlackScholesProcess(sigma,Underlying(S0,d));
 Model_abpl=BlackScholesProcess(sigma,Underlying(S0,d));
 Model_tesl=BlackScholesProcess(sigma,Underlying(S0,d));
-rho=[1.0 0.0 0.0; 0.0 1.0 0.0; 0.0 0.0 1.0];
-Model=GaussianCopulaNVariateLogProcess(rho,Model_enj,Model_abpl,Model_tesl)
+rho_1=[1.0 0.0 0.1; 0.0 1.0 0.0; 0.1 0.0 1.0];
+Model=GaussianCopulaNVariateLogProcess(Model_enj,Model_abpl,Model_tesl)
+Model2=GaussianCopulaNVariateLogProcess(rho_1,Model_enj,Model_abpl,Model_tesl)
 
 display(Model)
 
 mktdataset=underlying_|>Model
+mktdataset2=underlying_|>Model2
 
 portfolio_=[EUData];
 portfolio=underlying_|>EUData
 
 price_mkt=pricer(mktdataset,rfCurve,mc,portfolio)
+price_mkt2=pricer(mktdataset2,rfCurve,mc,portfolio)
 price_old= sum(pricer(Model,rfCurve,mc,portfolio_))
 @test_throws(ErrorException,simulate(Model,rfCurve,mc,-T));
 @test_throws(ErrorException,BlackScholesProcess(-sigma,Underlying(S0,d)))

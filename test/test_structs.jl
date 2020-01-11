@@ -16,7 +16,8 @@ theta1=0.01;
 k1=0.03;
 sigma1=0.02;
 underlying_name="ENJ"
-mc=MonteCarloConfiguration(Nsim,Nstep);
+mc=MonteCarloConfiguration(Nsim,Nstep,1);
+mc2=MonteCarloConfiguration(Nsim,Nstep,FinancialMonteCarlo.SerialMode(),1);
 mc1=MonteCarloConfiguration(Nsim,Nstep,FinancialMonteCarlo.AntitheticMC());
 
 toll=0.8;
