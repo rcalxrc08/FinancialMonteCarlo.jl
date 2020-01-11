@@ -25,11 +25,11 @@ function delta(mcProcess::BaseProcess,rfCurve::AbstractZeroRateCurve,mcConfig::M
 	return Delta;
 end
 
-function delta(mcProcess::BaseProcess,rfCurve::AbstractZeroRateCurve,mcConfig::MonteCarloConfiguration,abstractPayoffs::Array{AbstractPayoff},dS0::Real=1e-7)
+function delta(mcProcess::BaseProcess,rfCurve::AbstractZeroRateCurve,mcConfig::MonteCarloConfiguration,abstractPayoffs::Array{abstractPayoff},dS0::Real=1e-7) where { abstractPayoff <: AbstractPayoff}
 		Prices=pricer(mcProcess,rfCurve,mcConfig,abstractPayoffs);
 		mcProcess_up=deepcopy(mcProcess)
 		mcProcess_up.underlying.S0+=dS0;
-		PricesUp=pricer(mcProcess_up,spotData_1,mcConfig,abstractPayoffs);
+		PricesUp=pricer(mcProcess_up,rfCurve,mcConfig,abstractPayoffs);
 		Delta=(PricesUp.-Prices)./dS0;
 	
 	return Delta;
