@@ -18,6 +18,7 @@ function delta(mcProcess::BaseProcess,rfCurve::AbstractZeroRateCurve,mcConfig::M
 	Price=pricer(mcProcess,rfCurve,mcConfig,abstractPayoff);
 	mcProcess_up=deepcopy(mcProcess)
 	mcProcess_up.underlying.S0+=dS0;
+	set_seed(mcConfig)
 	PriceUp=pricer(mcProcess_up,rfCurve,mcConfig,abstractPayoff);
 	Delta=(PriceUp-Price)/dS0;
 
@@ -38,25 +39,51 @@ function delta(mcProcess::BaseProcess,rfCurve::AbstractZeroRateCurve,mcConfig::M
 		Prices=pricer(mcProcess,rfCurve,mcConfig,abstractPayoffs);
 		mcProcess_up=deepcopy(mcProcess)
 		mcProcess_up.underlying.S0+=dS0;
+		set_seed(mcConfig)
 		PricesUp=pricer(mcProcess_up,rfCurve,mcConfig,abstractPayoffs);
 		Delta=(PricesUp.-Prices)./dS0;
 	
 	return Delta;
 end
 
-function delta(mcProcess::Dict{String,FinancialMonteCarlo.AbstractMonteCarloProcess},rfCurve::AbstractZeroRateCurve,mcConfig::MonteCarloConfiguration,dict_::Dict{String,Dict{FinancialMonteCarlo.AbstractPayoff,Number}},x::String)
+function delta(mcProcess::Dict{String,FinancialMonteCarlo.AbstractMonteCarloProcess},rfCurve::AbstractZeroRateCurve,mcConfig::MonteCarloConfiguration,dict_::Dict{String,Dict{FinancialMonteCarlo.AbstractPayoff,Number}},underl_::String,dS::Real=1e-7)
 	set_seed(mcConfig)
 	underlyings_models=keys(mcProcess)
 	underlyings_payoff=keys(dict_)
 	price0=pricer(mcProcess,rfCurve,mcConfig,dict_);
+	price2=0.0;
+	set_seed(mcConfig)
+	mcProcess_up=deepcopy(mcProcess);
 	delta_=0.0;
-	deps_=derive_dep(x,mcProcess);
-	mcProcess_=mcProcess;
-	for under_ in underlyings_payoff
-		options=dict_[under_]
-		model=mcProcess[under_]
-		price=price+pricer(model,rfCurve,mcConfig,options);
-	end
+	keys_mkt=collect(keys(mcProcess_up));
+	idx_supp=0;
+	idx_1=findfirst(y-> y==underl_,keys_mkt)
+	if(isnothing(idx_1))
+		idx_1=findfirst(out_el-> any(out_el_sub->out_el_sub==underl_,split(out_el,"_")),keys_mkt)
+		if(isnothing(idx_1))
+			return 0.0;
+		end
+		multi_name=keys_mkt[idx_1];
+		idx_supp=findfirst(x_->x_==underl_,split(multi_name,"_"));
+		model_=mcProcess_up[multi_name]
+		model_.models[idx_supp].underlying.S0+=dS;
+		delete!(mcProcess_up,multi_name)
+		tmp_mkt=multi_name|>model_;
+		mcProcess_up=mcProcess_up+tmp_mkt
+		price2=pricer(mcProcess_up,rfCurve,mcConfig,dict_);
+	else
+		if(!isnothing(findfirst("_",keys_mkt[idx_1])))
+			error("deltas are defined on single name")
+		end
+		model=mcProcess_up[keys_mkt[idx_1]]
+		model.underlying.S0+=dS
+		delete!(mcProcess_up,keys_mkt[idx_1])
+		tmp_mkt=keys_mkt[idx_1]|>model;
+		mcProcess_up=mcProcess_up+tmp_mkt
+		price2=pricer(mcProcess_up,rfCurve,mcConfig,dict_);
 	
-	return price;
+	end
+
+	
+	return (price2-price0)/dS;
 end

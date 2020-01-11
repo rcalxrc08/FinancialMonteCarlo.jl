@@ -26,7 +26,7 @@ end
 export EuropeanOptionND;
 
 
-function payoff(S::Array{abstractMatrix},euPayoff::EuropeanOptionND,rfCurve::ZeroRate,T1::num2=maturity(euPayoff)) where { abstractMatrix <: AbstractMatrix{num}, num2 <: Number} where { num <: Number}
+function payoff(S::Array{abstractMatrix},euPayoff::EuropeanOptionND,rfCurve::abstractZeroRateCurve,T1::num2=maturity(euPayoff)) where { abstractMatrix <: AbstractMatrix{num}, num2 <: Number} where {abstractZeroRateCurve <: AbstractZeroRateCurve, num <: Number}
 	r=rfCurve.r;
 	T=euPayoff.T;
 	iscall=euPayoff.isCall ? 1 : -1
@@ -37,5 +37,5 @@ function payoff(S::Array{abstractMatrix},euPayoff::EuropeanOptionND,rfCurve::Zer
 	ST_all=[ sum(x_i[j,index1] for x_i in S) for j in 1:Nsim]
 	payoff2=max.(iscall*(ST_all.-K),0.0);
 	
-	return payoff2*exp(-r*T);
+	return payoff2*exp(-integral(r,T));
 end

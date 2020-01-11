@@ -41,7 +41,7 @@ function +(x::MarketDataSet,y::MarketDataSet)
 	out=copy(x);
 	y_keys=keys(y);
 	for y_key in y_keys
-		if haskey(out,y_key)
+		if haskey(out,y_key)|| any(out_el-> any(out_el_sub->out_el_sub==y_key,split(out_el,"_")), keys(out)) || any(y_key_el->haskey(out,y_key_el),split(y_key,"_"))
 			error("check keys")
 		else
 			out[y_key]=y[y_key];

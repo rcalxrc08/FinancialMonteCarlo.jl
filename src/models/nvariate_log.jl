@@ -49,7 +49,6 @@ function simulate(mcProcess::GaussianCopulaNVariateLogProcess,rfCurve::AbstractZ
 		S_tmp=log.(simulate(mcProcess.models[i],rfCurve,mcBaseData,T)./mcProcess.models[i].underlying.S0);
 		push!(S_Total,S_tmp)
 	end
-	
 	rho=mcProcess.rho
 	if (rho[1,2:end]==zeros(len_-1))
 		return [mcProcess.models[i].underlying.S0.*exp.(S_Total[i]) for i in 1:len_];
@@ -59,12 +58,10 @@ function simulate(mcProcess::GaussianCopulaNVariateLogProcess,rfCurve::AbstractZ
 		U_joint=gausscopulagen(Nsim,rho);
 	
 		for i in 1:len_
-			S_tmp=S_Total[i][:,j+1];
-			cdf_ = EmpiricalCDF()
-			append!(cdf_,S_tmp)
+			cdf_ = EmpiricalCDF(S_Total[i][:,j+1])
 			sort!(cdf_)
 			icdf_ = finv(cdf_)
-			S_Total[i][:,j+1]=(mcProcess.models[i].underlying.S0).*exp.(icdf_.(U_joint[:,i]))
+			@views S_Total[i][:,j+1]=(mcProcess.models[i].underlying.S0).*exp.(icdf_.(U_joint[:,i]))
 		end
 	end
 	
