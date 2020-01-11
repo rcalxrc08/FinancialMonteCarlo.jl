@@ -1,4 +1,4 @@
-using EmpiricalCDFs, DatagenCopulaBased 
+using Statistics, DatagenCopulaBased 
 """
 Struct for MultiVariate (log moneyness x-> S0*exp(x) ) Copula Process
 
@@ -58,10 +58,8 @@ function simulate(mcProcess::GaussianCopulaNVariateLogProcess,rfCurve::AbstractZ
 		U_joint=gausscopulagen(Nsim,rho);
 	
 		for i in 1:len_
-			cdf_ = EmpiricalCDF(S_Total[i][:,j+1])
-			sort!(cdf_)
-			icdf_ = finv(cdf_)
-			@views S_Total[i][:,j+1]=(mcProcess.models[i].underlying.S0).*exp.(icdf_.(U_joint[:,i]))
+			cdf_ = sort(deepcopy(S_Total[i][:,j+1]))
+			@views S_Total[i][:,j+1]=(mcProcess.models[i].underlying.S0).*exp.(Statistics.quantile(cdf_,U_joint[:,i]))
 		end
 	end
 	

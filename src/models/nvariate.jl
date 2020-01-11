@@ -1,4 +1,4 @@
-using EmpiricalCDFs, DatagenCopulaBased,LinearAlgebra
+using Statistics, DatagenCopulaBased,LinearAlgebra
 """
 Struct for MultiVariate Copula Process
 
@@ -58,10 +58,8 @@ function simulate(mcProcess::GaussianCopulaNVariateProcess,rfCurve::AbstractZero
 		U_joint=gausscopulagen(Nsim,rho);
 	
 		for i in 1:len_
-			cdf_ = EmpiricalCDF(S_Total[i][:,j+1])
-			sort!(cdf_)
-			icdf_ = finv(cdf_)
-			@views S_Total[i][:,j+1]=icdf_.(U_joint[:,i])
+			cdf_ = sort(deepcopy(S_Total[i][:,j+1]))
+			@views S_Total[i][:,j+1].=Statistics.quantile(cdf_,U_joint[:,i])
 		end
 	end
 	
