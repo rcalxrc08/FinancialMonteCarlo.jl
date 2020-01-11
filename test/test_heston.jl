@@ -14,7 +14,7 @@ sigma_zero=0.2;
 kappa=0.01;
 theta=0.03;
 lambda=0.01;
-rho=0.0;
+rho_=0.0;
 mc=MonteCarloConfiguration(Nsim,Nstep);
 mc1=MonteCarloConfiguration(Nsim,Nstep,FinancialMonteCarlo.AntitheticMC());
 toll=0.8;
@@ -27,7 +27,7 @@ AMData=AmericanOption(T,K)
 BarrierData=BarrierOptionDownOut(T,K,D)
 AsianData1=AsianFloatingStrikeOption(T)
 AsianData2=AsianFixedStrikeOption(T,K)
-Model=HestonProcess(sigma,sigma_zero,lambda,kappa,rho,theta,Underlying(S0,d));
+Model=HestonProcess(sigma,sigma_zero,lambda,kappa,rho_,theta,Underlying(S0,d));
 
 @show FwdPrice=pricer(Model,rfCurve,mc,FwdData);
 @show EuPrice=pricer(Model,rfCurve,mc,EUData);
@@ -54,9 +54,9 @@ tollanti=0.8
 @test abs(AsianPrice1-9.762160560168732)<tollanti
 
 
-@test_throws(ErrorException,simulate(HestonProcess(sigma,sigma_zero,lambda,kappa,rho,theta,Underlying(S0,d)),rfCurve,McConfig,-T));
-@test_throws(ErrorException,simulate(HestonProcess(sigma,sigma_zero,lambda,kappa,rho,theta,Underlying(S0,d)),rfCurve,mc1,-T));
-@test_throws(ErrorException,HestonProcess(-sigma,sigma_zero,lambda,kappa,rho,theta,Underlying(S0,d)))
-@test_throws(ErrorException,HestonProcess(sigma,-sigma_zero,lambda,kappa,rho,theta,Underlying(S0,d)))
+@test_throws(ErrorException,simulate(HestonProcess(sigma,sigma_zero,lambda,kappa,rho_,theta,Underlying(S0,d)),rfCurve,McConfig,-T));
+@test_throws(ErrorException,simulate(HestonProcess(sigma,sigma_zero,lambda,kappa,rho_,theta,Underlying(S0,d)),rfCurve,mc1,-T));
+@test_throws(ErrorException,HestonProcess(-sigma,sigma_zero,lambda,kappa,rho_,theta,Underlying(S0,d)))
+@test_throws(ErrorException,HestonProcess(sigma,-sigma_zero,lambda,kappa,rho_,theta,Underlying(S0,d)))
 @test_throws(ErrorException,HestonProcess(sigma,sigma_zero,lambda,kappa,-5.0,theta,Underlying(S0,d)))
-@test_throws(ErrorException,HestonProcess(sigma,sigma_zero,1e-16,1e-16,rho,theta,Underlying(S0,d)))
+@test_throws(ErrorException,HestonProcess(sigma,sigma_zero,1e-16,1e-16,rho_,theta,Underlying(S0,d)))
