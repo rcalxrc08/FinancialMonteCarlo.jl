@@ -26,17 +26,6 @@ function |>(x::String,y::FinancialMonteCarlo.NDimensionalMonteCarloProcess)
 	return out;
 end
 
-function extract_(x::String,dict_::MarketDataSet)
-
-	keys_=keys(dict_);
-	for key_ in keys_
-		if((z==key_)||(any(z->z==x,split(key_,"_"))))
-			return dict_[key_]
-		end
-	end
-
-end
-
 function +(x::MarketDataSet,y::MarketDataSet)
 	out=copy(x);
 	y_keys=keys(y);

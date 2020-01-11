@@ -13,7 +13,7 @@ sigma=0.2;
 variate_=FinancialMonteCarlo.ControlVariates(Forward(T),MonteCarloConfiguration(1000,100))
 variate_2=FinancialMonteCarlo.ControlVariates(AsianFloatingStrikeOption(T),MonteCarloConfiguration(1000,100))
 mc=MonteCarloConfiguration(Nsim,Nstep,variate_);
-mc2=MonteCarloConfiguration(Nsim,Nstep,variate_);
+mc2=MonteCarloConfiguration(Nsim,Nstep,variate_2);
 mc1=MonteCarloConfiguration(Nsim,Nstep);
 toll=1e-3;
 
