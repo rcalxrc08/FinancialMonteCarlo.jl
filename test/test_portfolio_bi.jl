@@ -26,6 +26,7 @@ Model_enj=BlackScholesProcess(sigma,Underlying(S0,d));
 Model_abpl=BlackScholesProcess(sigma,Underlying(S0,d));
 
 Model=GaussianCopulaNVariateProcess(Model_enj,Model_abpl,0.4)
+@test GaussianCopulaNVariateProcess(Model_enj,Model_abpl)==GaussianCopulaNVariateProcess(Model_enj,Model_abpl,0.0)
 
 display(Model)
 
