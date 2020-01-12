@@ -52,7 +52,7 @@ function get_parameters(model::XProcess) where {XProcess <: BaseProcess}
 	param_=[];
 	for i=1:N1
 		tmp_=getproperty(model,fields_[i]);
-		typeof(tmp_) <: Underlying ? continue : nothing;
+		typeof(tmp_) <: AbstractUnderlying ? continue : nothing;
 		append!(param_,tmp_)
 	end
 	typecheck_=typeof(sum(param_)+prod(param_))
