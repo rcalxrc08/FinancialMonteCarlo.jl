@@ -25,6 +25,10 @@ Model_enj=BlackScholesProcess(sigma,Underlying(S0,d));
 Model_abpl=BlackScholesProcess(sigma,Underlying(S0,d));
 FinancialMonteCarlo.Curve([0.0,0.1],[0.0,0.1]);
 Model=GaussianCopulaNVariateProcess(Model_enj,Model_abpl,0.0)
+param_=FinancialMonteCarlo.get_parameters(Model_abpl);
+
+@test_throws(ErrorException,FinancialMonteCarlo.set_parameters!(Model_abpl,[1,2,3,4]))
+
 port_="eni_aap"|>Model;
 rfCurve=ZeroRate(r);
 rfCurve2=ZeroRate([0.00,0.02],T);
@@ -74,3 +78,18 @@ rfCurve2=ZeroRate([0.00,0.02],T);
 @test FinancialMonteCarlo.maturity(Spot())==0.0
 @test 2.0*EuropeanOption(T,K)==EuropeanOption(T,K)+1.0*EuropeanOption(T,K)
 @test 2.0*EuropeanOption(T,K)==EuropeanOption(T,K)+EuropeanOption(T,K)
+
+
+########
+
+import FinancialMonteCarlo.BaseProcess
+import FinancialMonteCarlo.AbstractPayoff
+
+struct tmptype <: FinancialMonteCarlo.BaseProcess end
+struct tmptype2 <: FinancialMonteCarlo.AbstractPayoff 
+T::Float64
+end
+
+@test_throws(ErrorException,simulate(tmptype(),rfCurve,mc,1.0));
+@test_throws(ErrorException,payoff([1.0 1.0; 1.0 1.0],tmptype2(1.0),rfCurve));
+

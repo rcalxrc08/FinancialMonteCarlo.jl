@@ -31,6 +31,8 @@ FinancialMonteCarlo.set_parameters!(Model,param_)
 
 display(Model)
 
+@test_throws(ErrorException,FinancialMonteCarlo.set_parameters!(Model,[1,2]))
+
 @show FwdPrice=pricer(Model,rfCurve,mc,FwdData);
 @show EuPrice=pricer(Model,rfCurve,mc,EUData);
 @show AmPrice=pricer(Model,rfCurve,mc,AMData);

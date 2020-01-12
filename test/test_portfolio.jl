@@ -53,6 +53,7 @@ print(Forward(dual(T,1.0))-EUData)
 print(-Forward(dual(T,1.0))-EUData)
 fwd=Forward(dual(T,1.0))*1.0
 fwd=1.0*Forward(dual(T,1.0))
+ok=FwdData-fwd;
 display(fwd)
 print(fwd)
 fwd=1.0*fwd

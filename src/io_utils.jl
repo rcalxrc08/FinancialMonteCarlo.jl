@@ -79,7 +79,7 @@ end
 
 function set_parameters!(model::LogNormalMixture,param::Array{num}) where {num <: Number}
 	N1=div(length(param)+1,2)
-	if N1*2 != length(param) + 1
+	if N1*2 != length(param) + 1 || N1 < 2
 		error("Check number of parameters of the model")
 	end
 	eta=param[1:N1]
@@ -92,7 +92,7 @@ end
 
 function set_parameters!(model::ShiftedLogNormalMixture,param::Array{num}) where {num <: Number}
 	N1=div(length(param),2)
-	if N1*2 != length(param)
+	if N1*2 != length(param) || N1 < 2
 		error("Check number of parameters of the model")
 	end
 	eta=param[1:N1]
