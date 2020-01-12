@@ -69,13 +69,7 @@ function extract_(x::String,dict_::Portfolio)
 	if(length(out_vec)==1)&&(x==ap_keys[1])
 		return out;
 	else
-		ap_keys_s=sort(ap_keys,lt=(x,y)->lex_less(x,y))
-		multi_v=ap_keys_s[end];
-		str_v=split(multi_v,"_");
-		str_x=split(x,"_");
-		if(length(str_x)>length(str_v))
-			str_v=str_x;
-		end
+		str_v=split(x,"_");
 		X=compute_indices(length(str_v))
 		
 		#tmp_map=Dict( str_v .=> collect(1:length(str_v)))
