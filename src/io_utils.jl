@@ -87,6 +87,7 @@ function set_parameters!(model::LogNormalMixture,param::Array{num}) where {num <
 	fields_=fieldnames(LogNormalMixture)
 	setproperty!(model,fields_[1],eta);
 	setproperty!(model,fields_[2],lam);
+	return;
 end
 
 function set_parameters!(model::ShiftedLogNormalMixture,param::Array{num}) where {num <: Number}
@@ -97,8 +98,9 @@ function set_parameters!(model::ShiftedLogNormalMixture,param::Array{num}) where
 	eta=param[1:N1]
 	lam=param[(N1+1):(2*N1-1)]
 	alfa=param[end]
-	fields_=fieldnames(LogNormalMixture)
+	fields_=fieldnames(ShiftedLogNormalMixture)
 	setproperty!(model,fields_[1],eta);
 	setproperty!(model,fields_[2],lam);
 	setproperty!(model,fields_[3],alfa);
+	return;
 end
