@@ -25,6 +25,10 @@ AsianFloatingStrikeData=AsianFloatingStrikeOption(T)
 AsianFixedStrikeData=AsianFixedStrikeOption(T,K)
 Model=ShiftedLogNormalMixture(sigma,lam,0.0,Underlying(S0,d));
 
+param_=FinancialMonteCarlo.get_parameters(Model)
+
+FinancialMonteCarlo.set_parameters!(Model,param_)
+
 display(Model)
 
 @show FwdPrice=pricer(Model,rfCurve,mc,FwdData);

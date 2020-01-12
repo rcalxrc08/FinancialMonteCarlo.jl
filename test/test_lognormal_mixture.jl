@@ -24,7 +24,9 @@ BarrierData=BarrierOptionDownOut(T,K,D)
 AsianFloatingStrikeData=AsianFloatingStrikeOption(T)
 AsianFixedStrikeData=AsianFixedStrikeOption(T,K)
 Model=LogNormalMixture(sigma,lam,Underlying(S0,d));
+param_=FinancialMonteCarlo.get_parameters(Model)
 
+FinancialMonteCarlo.set_parameters!(Model,param_)
 display(Model)
 
 @show FwdPrice=pricer(Model,rfCurve,mc,FwdData);

@@ -22,7 +22,6 @@ end
 
 
 function pricer(mcProcess::BaseProcess,rfCurve::AbstractZeroRateCurve,mcConfig::MonteCarloConfiguration{<: Integer , <: Integer , <: ControlVariates{Forward{num}} ,  <: BaseMode},abstractPayoff::AbstractPayoff) where { num <: Number }
-	@show "special"
 	set_seed(mcConfig)
 	variate_handl=mcConfig.monteCarloMethod
 	variate_conf=variate_handl.conf_variate;

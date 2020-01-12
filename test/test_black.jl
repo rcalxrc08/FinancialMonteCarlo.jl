@@ -17,6 +17,7 @@ toll=0.8
 rfCurve=ZeroRate(r);
 
 FwdData=Forward(T)
+@test FinancialMonteCarlo.get_parameters(FwdData)[1]==T
 EUData=EuropeanOption(T,K)
 EUBin=BinaryEuropeanOption(T,K)
 AMData=AmericanOption(T,K)
@@ -24,10 +25,16 @@ AmBin=BinaryEuropeanOption(T,K)
 BarrierData=BarrierOptionDownOut(T,K,D)
 AsianFloatingStrikeData=AsianFloatingStrikeOption(T)
 AsianFixedStrikeData=AsianFixedStrikeOption(T,K)
-Model=BlackScholesProcess(sigma,Underlying(S0,d));
+Model=BlackScholesProcess(0.1,Underlying(S0,d));
+
+
+param_=FinancialMonteCarlo.get_parameters(Model)
+
+@test param_[1]==0.1
+
+FinancialMonteCarlo.set_parameters!(Model,[sigma])
 
 display(Model)
-
 @show spot=pricer(Model,rfCurve,mc,Spot());
 @show FwdPrice=pricer(Model,rfCurve,mc,FwdData);
 @show EuPrice=pricer(Model,rfCurve,mc,EUData);
