@@ -47,6 +47,10 @@ function delta(mcProcess::BaseProcess,rfCurve::AbstractZeroRateCurve,mcConfig::M
 end
 
 function delta(mcProcess::Dict{String,FinancialMonteCarlo.AbstractMonteCarloProcess},rfCurve::AbstractZeroRateCurve,mcConfig::MonteCarloConfiguration,dict_::Dict{String,Dict{FinancialMonteCarlo.AbstractPayoff,Number}},underl_::String,dS::Real=1e-7)
+	
+	if(!isnothing(findfirst("_",underl_)))
+		error("deltas are defined on single name")
+	end
 	set_seed(mcConfig)
 	underlyings_models=keys(mcProcess)
 	underlyings_payoff=keys(dict_)
@@ -72,9 +76,6 @@ function delta(mcProcess::Dict{String,FinancialMonteCarlo.AbstractMonteCarloProc
 		mcProcess_up=mcProcess_up+tmp_mkt
 		price2=pricer(mcProcess_up,rfCurve,mcConfig,dict_);
 	else
-		if(!isnothing(findfirst("_",keys_mkt[idx_1])))
-			error("deltas are defined on single name")
-		end
 		model=mcProcess_up[keys_mkt[idx_1]]
 		model.underlying.S0+=dS
 		delete!(mcProcess_up,keys_mkt[idx_1])

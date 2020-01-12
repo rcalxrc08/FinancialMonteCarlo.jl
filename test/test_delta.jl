@@ -57,3 +57,8 @@ price_mkt_1_dual=pricer(mktdataset_1_dual,rfCurve,mc,portfolio_1)
 @test( abs(price_mkt_1_dual.epsilon-FinancialMonteCarlo.delta(Model_enj,rfCurve,mc,AMData,1e-7)) < 1e-4)
 @test( abs(price_mkt_1_dual.epsilon-FinancialMonteCarlo.delta(Model_enj,rfCurve,mc,AMData*1.0,1e-7)) < 1e-4)
 @test( abs(price_mkt_1_dual.epsilon-FinancialMonteCarlo.delta(Model_enj,rfCurve,mc,[AMData],1e-7)[1]) < 1e-4)
+
+
+
+@test_throws(ErrorException,FinancialMonteCarlo.delta(mktdataset_1,rfCurve,mc,portfolio_1,underlying_,1e-7))
+@test(FinancialMonteCarlo.delta(mktdataset_1,rfCurve,mc,portfolio_1,"ciao",1e-7)==0.0)
