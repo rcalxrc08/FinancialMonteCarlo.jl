@@ -1,5 +1,5 @@
 
-function simulate(mcProcess::finiteActivityProcess,rfCurve::AbstractZeroRateCurve,mcBaseData::MonteCarloConfiguration{type1,type2,type3,type4},T::numb) where { finiteActivityProcess <: FiniteActivityProcess, numb <: Number, type1 <: Number, type2<: Number, type3 <: AbstractMonteCarloMethod, type4 <: BaseMode}
+function simulate(mcProcess::finiteActivityProcess,rfCurve::AbstractZeroRateCurve,mcBaseData::MonteCarloConfiguration{type1,type2,type3,type4,type5},T::numb) where { finiteActivityProcess <: FiniteActivityProcess, numb <: Number, type1 <: Number, type2<: Number, type3 <: AbstractMonteCarloMethod, type4 <: BaseMode, type5 <: Random.AbstractRNG}
 	r=rfCurve.r;
 	S0=mcProcess.underlying.S0;
 	d=dividend(mcProcess);

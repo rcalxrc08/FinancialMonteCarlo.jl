@@ -24,7 +24,7 @@ function BrownianMotion(σ::num,μ::Curve{num1,num4},underlying::abstrUnderlying
 	return BrownianMotionVec(σ,μ,underlying)
 end
 
-function simulate(mcProcess::BrownianMotionVec,mcBaseData::MonteCarloConfiguration{type1,type2,type3,SerialMode},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: StandardMC}
+function simulate(mcProcess::BrownianMotionVec,mcBaseData::MonteCarloConfiguration{type1,type2,type3,SerialMode,type5},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: StandardMC, type5 <: Random.AbstractRNG}
 	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;
 	σ=mcProcess.σ;
@@ -51,7 +51,7 @@ function simulate(mcProcess::BrownianMotionVec,mcBaseData::MonteCarloConfigurati
 end
 
 
-function simulate(mcProcess::BrownianMotionVec,mcBaseData::MonteCarloConfiguration{type1,type2,type3,SerialMode},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AntitheticMC}
+function simulate(mcProcess::BrownianMotionVec,mcBaseData::MonteCarloConfiguration{type1,type2,type3,SerialMode,type5},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AntitheticMC, type5 <: Random.AbstractRNG}
 	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;
 	σ=mcProcess.σ;

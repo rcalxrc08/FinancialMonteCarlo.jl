@@ -28,7 +28,7 @@ end
 
 export SubordinatedBrownianMotionVec;
 
-function simulate(mcProcess::SubordinatedBrownianMotionVec,mcBaseData::MonteCarloConfiguration{type1,type2,type3,SerialMode},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: StandardMC}
+function simulate(mcProcess::SubordinatedBrownianMotionVec,mcBaseData::MonteCarloConfiguration{type1,type2,type3,SerialMode,type5},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: StandardMC, type5 <: Random.AbstractRNG}
 	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;
 	
@@ -60,7 +60,7 @@ function simulate(mcProcess::SubordinatedBrownianMotionVec,mcBaseData::MonteCarl
 end
 
 
-function simulate(mcProcess::SubordinatedBrownianMotionVec,mcBaseData::MonteCarloConfiguration{type1,type2,type3,SerialMode},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AntitheticMC}
+function simulate(mcProcess::SubordinatedBrownianMotionVec,mcBaseData::MonteCarloConfiguration{type1,type2,type3,SerialMode,type5},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AntitheticMC, type5 <: Random.AbstractRNG}
 	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;
 	type_sub=typeof(quantile(mcProcess.subordinator_,0.5));
