@@ -14,7 +14,8 @@ It currently contains the following capabilities:
     - Variance Gamma
     - Heston
     - LogNormal Mixture
-- Support for Multivariate process through Gaussian Copula
+- Support for Multivariate processes through Gaussian Copula
+- Support for non costant zero rates and dividends
 - Support for the following Option families:
     - European Options 
     - American Options

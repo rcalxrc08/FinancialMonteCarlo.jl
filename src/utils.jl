@@ -48,6 +48,14 @@ function Curve(r_::Array{num1},T::Array{num2}) where {num1 <: Number, num2 <: Nu
 	end
    return r
 end
+function ImpliedCurve(r_::Array{num1},T::Array{num2}) where {num1 <: Number, num2 <: Number}
+	@assert length(r_)==length(T)
+	@assert T==sort(T)
+	error("missing")
+end
+function ImpliedCurve(r_::Array{num1},T::num2) where {num1 <: Number, num2 <: Number}
+	error("missing")
+end
 function (x::Curve)(t::Number,dt::Number)
 	T=collect(keys_(x));
 	r=collect(values_(x));
@@ -89,6 +97,12 @@ struct ZeroRateCurve{num1 <: Number,num2 <: Number} <: AbstractZeroRateCurve
 	function ZeroRateCurve(r_::Array{num1},T::num2) where {num1 <: Number, num2 <: Number}
        new{num2,num1}(Curve(r_,T))
     end
+	function ImpliedZeroRateCurve(r_::Array{num1},T::num2) where {num1 <: Number, num2 <: Number}
+       new{num2,num1}(ImpliedCurve(r_,T))
+    end
+	function ImpliedZeroRateCurve(r_::Array{num1},T::Array{num2}) where {num1 <: Number, num2 <: Number}
+       new{num2,num1}(ImpliedCurve(r_,T))
+    end
 	#function ZeroRateCurve(r_::Curve{num1,num2}) where {num1 <: Number, num2 <: Number}
     #   new{num2,num1}(r_)
     #end
@@ -116,6 +130,7 @@ abstract type AbstractMethod end
 abstract type AbstractMonteCarloMethod <: AbstractMethod end
 struct StandardMC <: AbstractMonteCarloMethod end
 struct AntitheticMC <: AbstractMonteCarloMethod end
+struct SobolMode <: AbstractMonteCarloMethod end
 struct PrescribedMC <: AbstractMonteCarloMethod end
 
 export ZeroRate;
