@@ -28,13 +28,11 @@ function pricer(mcProcess::BaseProcess,rfCurve::AbstractZeroRateCurve,mcConfig::
 	variate_payoff=variate_handl.variate;
 	@assert maturity(abstractPayoff)==variate_payoff.T
 	T=maturity(abstractPayoff);
-	eps_1=0.01
-	r=rfCurve.r;
 	S_var=simulate(mcProcess,rfCurve,variate_conf,T)
 	Payoff_var=payoff(S_var,variate_payoff,rfCurve);
 	Payoff_opt_var=payoff(S_var,abstractPayoff,rfCurve);
-	c=collect(cov(Payoff_var,Payoff_opt_var)/var(Payoff_var))[1];
-	price_var=mcProcess.underlying.S0;
+	c=-collect(cov(Payoff_var,Payoff_opt_var)/var(Payoff_var))[1];
+	price_var=mcProcess.underlying.S0*exp(-integral(mcProcess.underlying.d,T));
 	mcConfig_mod=MonteCarloConfiguration(mcConfig.Nsim,mcConfig.Nstep,variate_conf.monteCarloMethod,mcConfig.parallelMode,mcConfig.seed+3)
 	#END OF VARIATE SECTION
 	Prices=pricer(mcProcess,rfCurve,mcConfig_mod,[abstractPayoff,variate_payoff]);
