@@ -50,11 +50,26 @@ function Curve(r_::Array{num1},T::Array{num2}) where {num1 <: Number, num2 <: Nu
 end
 function ImpliedCurve(r_::Array{num1},T::Array{num2}) where {num1 <: Number, num2 <: Number}
 	@assert length(r_)==length(T)
+	@assert length(r_)>=1
 	@assert T==sort(T)
-	error("missing")
+	
+	r=FinMCDict{num2,num1}();
+	Nstep=length(r_)-1;
+	insert!(r,0.0,0.0);
+	insert!(r,T[1],r_[1]*2.0);
+	prec_r=r_[1]*2.0;
+	for i in 2:length(r_)
+		tmp_r=(r_[i]*T[i]-r_[i-1]*T[i-1])*2/(T[i]-T[i-1])-prec_r
+		insert!(r,T[i],tmp_r);
+		prec_r=tmp_r;
+	end
+	return r;
 end
 function ImpliedCurve(r_::Array{num1},T::num2) where {num1 <: Number, num2 <: Number}
-	error("missing")
+	N=length(r_);
+	dt_=T/(N);
+	t_=collect(dt_:dt_:T)
+	return ImpliedCurve(r_,t_)
 end
 function (x::Curve)(t::Number,dt::Number)
 	T=collect(keys_(x));
@@ -70,24 +85,14 @@ function intgral_2(x::num,T::Array{num1},r::Array{num2}) where {num <: Number, n
 	if(x==0.0)
 		return 0.0;
 	end
-	tmp_idx=findfirst(y->y>x,T);
-	isnothing(tmp_idx) || iszero(tmp_idx) ? tmp_idx=length(T) : nothing;
-	idx_=tmp_idx-1;
+	idx_=findlast(y->y<x,T);
 	out=sum([(r[i]+r[i+1])*0.5*(T[i+1]-T[i]) for i in 1:(idx_-1)])
-	if x<T[end]
-		#if(idx_<=0)
-		#	@warn "strange"
-		#	@show x
-		#	@show T
-		#	@show r
-		#	@assert T==sort(T)
-		#	return 0.0;
-		#end
+	if x<=T[end]
 		itp=LinearInterpolation([T[idx_],T[idx_+1]],[r[idx_],r[idx_+1]], extrapolation_bc = Flat());
 		out=out+(r[idx_]+itp(x))*0.5*(x-T[idx_]);
 	else
 		#continuation
-		out=out+(r[idx_]+r[idx_+1])*0.5*(x-T[idx_]);
+		out=out+(r[idx_]+r[idx_-1])*0.5*(x-T[idx_]);
 	end
 	return out;
 end
@@ -97,18 +102,19 @@ struct ZeroRateCurve{num1 <: Number,num2 <: Number} <: AbstractZeroRateCurve
 	function ZeroRateCurve(r_::Array{num1},T::num2) where {num1 <: Number, num2 <: Number}
        new{num2,num1}(Curve(r_,T))
     end
-	function ImpliedZeroRateCurve(r_::Array{num1},T::num2) where {num1 <: Number, num2 <: Number}
-       new{num2,num1}(ImpliedCurve(r_,T))
+
+	function ZeroRateCurve(r_::Curve{num1,num2}) where {num1 <: Number, num2 <: Number}
+       new{num2,num1}(r_)
     end
-	function ImpliedZeroRateCurve(r_::Array{num1},T::Array{num2}) where {num1 <: Number, num2 <: Number}
-       new{num2,num1}(ImpliedCurve(r_,T))
-    end
-	#function ZeroRateCurve(r_::Curve{num1,num2}) where {num1 <: Number, num2 <: Number}
-    #   new{num2,num1}(r_)
-    #end
 end 
 function ZeroRate(r_::Array{num1},T::num2) where {num1 <: Number, num2 <: Number}
        return ZeroRateCurve(r_,T);
+end
+function ImpliedZeroRate(r_::Array{num1},T::num2) where {num1 <: Number, num2 <: Number}
+   return ZeroRateCurve(ImpliedCurve(r_,T))
+end
+function ImpliedZeroRate(r_::Array{num1},T::Array{num2}) where {num1 <: Number, num2 <: Number}
+   return ZeroRateCurve(ImpliedCurve(r_,T))
 end
 
 export ZeroRateCurve;
