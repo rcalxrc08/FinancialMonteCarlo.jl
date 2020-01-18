@@ -8,9 +8,7 @@ function simulate(mcProcess::finiteActivityProcess,rfCurve::AbstractZeroRateCurv
 	σ=mcProcess.σ;
 	λ1=mcProcess.λ;
 	
-	if T<=0.0
-		error("Final time must be positive");
-	end
+	@assert T>0.0
 
 	####Simulation
 	## Simulate

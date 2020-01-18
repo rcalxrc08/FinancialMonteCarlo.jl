@@ -55,4 +55,3 @@ tollanti=0.8
 @test abs(AsianPrice1-9.762160560168732)<tollanti
 
 
-@test_throws(ErrorException,simulate(Model,rfCurve,mc,-T));

@@ -5,9 +5,7 @@ function simulate(mcProcess::BrownianMotion,mcBaseData::MonteCarloConfiguration{
 	Nstep=mcBaseData.Nstep;
 	σ=mcProcess.σ;
 	μ=mcProcess.μ;
-	if T<=0.0
-		error("Final time must be positive");
-	end
+	@assert T>0.0
 	dt=T/Nstep
 	mean_bm=μ*dt
 	stddev_bm=σ*sqrt(dt)

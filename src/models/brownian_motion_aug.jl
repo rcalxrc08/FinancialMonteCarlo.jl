@@ -29,9 +29,7 @@ function simulate(mcProcess::BrownianMotionVec,mcBaseData::MonteCarloConfigurati
 	Nstep=mcBaseData.Nstep;
 	σ=mcProcess.σ;
 	μ=mcProcess.μ;
-	if T<=0.0
-		error("Final time must be positive");
-	end
+	@assert T>0.0
 	dt=T/Nstep
 	stddev_bm=σ*sqrt(dt)
 	zero_drift=μ(dt*0.0,dt);
@@ -56,9 +54,7 @@ function simulate(mcProcess::BrownianMotionVec,mcBaseData::MonteCarloConfigurati
 	Nstep=mcBaseData.Nstep;
 	σ=mcProcess.σ;
 	μ=mcProcess.μ;
-	if T<=0.0
-		error("Final time must be positive");
-	end
+	@assert T>0.0
 	dt=T/Nstep
 	stddev_bm=σ*sqrt(dt)
 	zero_drift=μ(dt*0.0,dt);

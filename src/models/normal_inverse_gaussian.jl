@@ -38,9 +38,7 @@ function simulate(mcProcess::NormalInverseGaussianProcess,rfCurve::AbstractZeroR
 	σ=mcProcess.σ;
 	θ1=mcProcess.θ;
 	κ1=mcProcess.κ;
-	if T<=0.0
-		error("Final time must be positive");
-	end
+	@assert T>0.0
 	
 	dt=T/Nstep;
 	#psi1(v::Number)::Number=(1-sqrt(1.0+ ((σ*v)^2-2.0*1im*θ1*v)*κ1))/κ1;

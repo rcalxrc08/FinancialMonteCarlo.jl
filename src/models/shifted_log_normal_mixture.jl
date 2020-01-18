@@ -31,9 +31,7 @@ end
 export ShiftedLogNormalMixture;
 
 function simulate(mcProcess::ShiftedLogNormalMixture,rfCurve::AbstractZeroRateCurve,mcBaseData::MonteCarloConfiguration{type1,type2,type3,type4,type5},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AbstractMonteCarloMethod, type4 <: BaseMode, type5 <: Random.AbstractRNG}
-	if T<=0.0
-		error("Final time must be positive");
-	end
+	@assert T>0.0
 	r=rfCurve.r;
 	S0=mcProcess.underlying.S0;
 	d=dividend(mcProcess);

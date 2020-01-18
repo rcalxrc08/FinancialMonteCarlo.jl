@@ -34,9 +34,7 @@ export GaussianCopulaNVariateLogProcess;
 function simulate(mcProcess::GaussianCopulaNVariateLogProcess,rfCurve::AbstractZeroRateCurve,mcBaseData::MonteCarloConfiguration{type1,type2,type3,type4,type5},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AbstractMonteCarloMethod, type4 <: BaseMode, type5 <: Random.AbstractRNG}
 	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;
-	if T<=0.0
-		error("Final time must be positive");
-	end
+	@assert T>0.0
 	
 	####Simulation
 	## Simulate

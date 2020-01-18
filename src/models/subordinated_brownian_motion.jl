@@ -30,9 +30,7 @@ function simulate(mcProcess::SubordinatedBrownianMotion,mcBaseData::MonteCarloCo
 	
 	drift=mcProcess.drift;
 	sigma=mcProcess.sigma;
-	if T<=0.0
-		error("Final time must be positive");
-	end
+	@assert T>0.0
 	type_sub=typeof(quantile(mcProcess.subordinator_,0.5));
 	dt_s=Array{type_sub}(undef,Nsim)
 	isDualZero=drift*zero(type_sub)*0.0*mcProcess.underlying.S0;
@@ -57,9 +55,7 @@ function simulate(mcProcess::SubordinatedBrownianMotion,mcBaseData::MonteCarloCo
 	dt_s=Array{type_sub}(undef,Nsim)
 	drift=mcProcess.drift;
 	sigma=mcProcess.sigma;
-	if T<=0.0
-		error("Final time must be positive");
-	end
+	@assert T>0.0
 	isDualZero=drift*sigma*zero(type_sub)*0.0*mcProcess.underlying.S0;
 	X=Matrix{typeof(isDualZero)}(undef,Nsim,Nstep+1);
 	X[:,1].=isDualZero;

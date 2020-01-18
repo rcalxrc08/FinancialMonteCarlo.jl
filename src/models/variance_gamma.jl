@@ -38,9 +38,7 @@ function simulate(mcProcess::VarianceGammaProcess,rfCurve::AbstractZeroRateCurve
 	σ=mcProcess.σ;
 	θ1=mcProcess.θ;
 	κ1=mcProcess.κ;
-	if T<=0.0
-		error("Final time must be positive");
-	end
+	@assert T>0.0
 	
 	dt=T/Nstep;
 	#-1/p[3]*log(1+u*u*p[1]*p[1]*p[3]/2.0-1im*p[2]*p[3]*u);

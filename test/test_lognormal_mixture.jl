@@ -53,4 +53,4 @@ lam11=[0.9999]
 @test_throws(ErrorException,LogNormalMixture(0.2*ones(3),ones(2),Underlying(S0,d)))
 @test_throws(ErrorException,LogNormalMixture(0.2*ones(3),0.2*ones(3),Underlying(S0,d)))
 
-@test_throws(ErrorException,simulate(LogNormalMixture(eta,lam11,Underlying(S0,d)),rfCurve,mc,-T));
+

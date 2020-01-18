@@ -52,7 +52,7 @@ Model=VarianceGammaProcess(sigma,theta1,k1,Underlying(S0,d));
 
 @show "Test Variance Gamma Parameters"
 
-@test_throws(ErrorException,simulate(VarianceGammaProcess(sigma,theta1,k1,Underlying(S0,d)),rfCurve,mc,-T));
+
 @test_throws(ErrorException,VarianceGammaProcess(-sigma,theta1,k1,Underlying(S0,d)))
 @test_throws(ErrorException,VarianceGammaProcess(sigma,theta1,-k1,Underlying(S0,d)))
 @test_throws(ErrorException,VarianceGammaProcess(sigma,10000.0,k1,Underlying(S0,d)))

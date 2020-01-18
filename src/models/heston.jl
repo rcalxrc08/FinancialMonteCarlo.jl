@@ -48,9 +48,7 @@ function simulate(mcProcess::HestonProcess,rfCurve::ZeroRate,mcBaseData::MonteCa
 	κ=mcProcess.κ;
 	ρ=mcProcess.ρ;
 	θ=mcProcess.θ;
-	if T<=0.0
-		error("Final time must be positive");
-	end
+	@assert T>0.0
 
 	####Simulation
 	## Simulate
@@ -87,9 +85,7 @@ function simulate(mcProcess::HestonProcess,rfCurve::ZeroRate,mcBaseData::MonteCa
 	κ=mcProcess.κ;
 	ρ=mcProcess.ρ;
 	θ=mcProcess.θ;
-	if T<=0.0
-		error("Final time must be positive");
-	end
+	@assert T>0.0
 
 	####Simulation
 	## Simulate

@@ -45,5 +45,5 @@ display(Model)
 @test abs(AsianPrice1-4.774451704549382)<toll
 
 @show "Test Black Scholes Parameters"
-@test_throws(ErrorException,simulate(BlackScholesProcess(sigma,Underlying(S0,d)),rfCurve,mc,-T));
+
 @test_throws(ErrorException,BlackScholesProcess(-sigma,Underlying(S0,d)))

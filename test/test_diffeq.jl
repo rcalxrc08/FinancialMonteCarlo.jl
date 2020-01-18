@@ -51,4 +51,4 @@ Tneg=-T;
 tspanNeg = (0.0,Tneg)
 probNeg = SDEProblem(dr_,g_1,u0,tspanNeg,rng=mc.rng)
 monte_probNeg = MonteCarloProblem(probNeg)
-@test_throws(ErrorException,simulate(FinancialMonteCarlo.MonteCarloDiffEqModel(monte_probNeg,Underlying(S0,d)),rfCurve,mc,Tneg));
+

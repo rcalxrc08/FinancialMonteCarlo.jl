@@ -19,5 +19,4 @@ rfCurve=ZeroRate(r);
 drift=0.0
 @test_throws(ErrorException,GeometricBrownianMotion(-sigma,drift,Underlying(S0,d)))
 @test_throws(ErrorException,GeometricBrownianMotion(-sigma,rfCurve2.r,Underlying(S0,d)))
-@test_throws(ErrorException,simulate(GeometricBrownianMotion(sigma,drift,Underlying(S0,d)),McConfig,Tneg));
-@test_throws(ErrorException,simulate(GeometricBrownianMotion(sigma,rfCurve2.r,Underlying(S0,d)),McConfig,Tneg));
+

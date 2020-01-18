@@ -27,9 +27,7 @@ function simulate(mcProcess::MonteCarloDiffEqModel,rfCurve::ZeroRate,mcBaseData:
 	Nstep=mcBaseData.Nstep;
 	Dt=T/Nstep
 	tt=collect(0.0:Dt:T)
-	if T<=0.0
-		error("Final time must be positive");
-	end
+	@assert T>0.0
 	diffeqmodel=mcProcess.model;
 	sol = solve(diffeqmodel,SOSRI(),EnsembleThreads(),trajectories=Nsim,dt=Dt,adaptive=false)
 	if(!(typeof(diffeqmodel)<:JumpProblem))

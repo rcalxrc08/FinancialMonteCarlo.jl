@@ -55,4 +55,4 @@ lam11=[0.9999]
 @test_throws(ErrorException,ShiftedLogNormalMixture(0.2*ones(3),ones(2),0.0,Underlying(S0,d)))
 @test_throws(ErrorException,ShiftedLogNormalMixture(0.2*ones(3),0.2*ones(3),0.0,Underlying(S0,d)))
 
-@test_throws(ErrorException,simulate(ShiftedLogNormalMixture(eta,lam11,0.0,Underlying(S0,d)),rfCurve,mc,-T));
+

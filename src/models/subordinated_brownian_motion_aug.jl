@@ -34,9 +34,7 @@ function simulate(mcProcess::SubordinatedBrownianMotionVec,mcBaseData::MonteCarl
 	
 	drift=mcProcess.drift;
 	sigma=mcProcess.sigma;
-	if T<=0.0
-		error("Final time must be positive");
-	end
+	@assert T>0.0
 	type_sub=typeof(quantile(mcProcess.subordinator_,0.5));
 	dt_s=Array{type_sub}(undef,Nsim)
 	t_s=Array{type_sub}(undef,Nsim)
@@ -67,9 +65,7 @@ function simulate(mcProcess::SubordinatedBrownianMotionVec,mcBaseData::MonteCarl
 	dt_s=Array{type_sub}(undef,Nsim)
 	drift=mcProcess.drift;
 	sigma=mcProcess.sigma;
-	if T<=0.0
-		error("Final time must be positive");
-	end
+	@assert T>0.0
 	t_s=Array{type_sub}(undef,Nsim)
 	dt=T/Nstep;
 	zero_drift=drift(zero(type_sub),zero(type_sub)+dt);

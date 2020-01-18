@@ -116,5 +116,5 @@ doubleBarrierOptionDownOut=DoubleBarrierOption(T,K,K/10.0,1.2*K)
 
 
 @show "Test Black Scholes Parameters"
-@test_throws(ErrorException,simulate(BlackScholesProcess(sigma,Underlying(S0,d)),rfCurve,mc,-T));
+
 @test_throws(ErrorException,BlackScholesProcess(-sigma,Underlying(S0,d)))
