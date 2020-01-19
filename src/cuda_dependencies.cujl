@@ -4,7 +4,9 @@ struct CudaMode_2 <: AbstractCudaMode end
 
 using .CuArrays
 include("models/cuda/brownian_motion_cuda.cujl")
+include("models/cuda/brownian_motion_cuda_aug.cujl")
 include("models/cuda/brownian_motion_cuda_2.cujl")
+include("models/cuda/brownian_motion_cuda_2_aug.cujl")
 include("models/cuda/heston_cuda.cujl")
 include("models/cuda/heston_cuda_2.cujl")
 include("models/cuda/subordinated_brownian_motion_cuda.cujl")
@@ -24,3 +26,11 @@ end
 #	return;
 #	
 #end
+
+
+
+function payoff(S::CuMatrix{num},payoff_::PathDependentPayoff,rfCurve::abstractZeroRateCurve,T1::num2=maturity(payoff_)) where{ abstractZeroRateCurve <: AbstractZeroRateCurve, num <: Number,num2 <: Number}
+	S_=collect(S);
+	
+	return payoff(S_,payoff_,rfCurve,T1);
+end

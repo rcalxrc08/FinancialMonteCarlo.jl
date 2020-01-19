@@ -145,8 +145,9 @@ function randjump_(rng,num)
 	return randjump(rng,num);
 end	
 
+abstract type AbstractMonteCarloConfiguration end
 
-mutable struct MonteCarloConfiguration{num1 <: Integer , num2 <: Integer , abstractMonteCarloMethod <: AbstractMonteCarloMethod , baseMode <: BaseMode , rngType <: Random.AbstractRNG}
+mutable struct MonteCarloConfiguration{num1 <: Integer , num2 <: Integer , abstractMonteCarloMethod <: AbstractMonteCarloMethod , baseMode <: BaseMode , rngType <: Random.AbstractRNG} <: AbstractMonteCarloConfiguration
 	Nsim::num1
 	Nstep::num2
 	monteCarloMethod::abstractMonteCarloMethod
@@ -164,15 +165,23 @@ mutable struct MonteCarloConfiguration{num1 <: Integer , num2 <: Integer , abstr
         return MonteCarloConfiguration(Nsim,Nstep,StandardMC(),parallelMethod,Int64(seed),rng)
     end
 	#Most General
-	function MonteCarloConfiguration(Nsim::num1,Nstep::num2,monteCarloMethod::abstractMonteCarloMethod,parallelMethod::baseMode,seed::Number=0,rng::rngType_=MersenneTwister()) where {num1 <: Integer, num2 <: Integer, abstractMonteCarloMethod <: AbstractMonteCarloMethod, baseMode <: BaseMode, rngType_ <: Random.AbstractRNG}
+	function GeneralMonteCarloConfiguration(Nsim::num1,Nstep::num2,monteCarloMethod::abstractMonteCarloMethod,parallelMethod::baseMode,seed::Number=0,rng::rngType_=MersenneTwister()) where {num1 <: Integer, num2 <: Integer, abstractMonteCarloMethod <: AbstractMonteCarloMethod, baseMode <: BaseMode, rngType_ <: Random.AbstractRNG}
         if Nsim <= zero(num1)
             error("Number of Simulations must be positive")
         elseif Nstep <= zero(num2)
             error("Number of Steps must be positive")
-		elseif (abstractMonteCarloMethod <: AntitheticMC) & ( div(Nsim,2)*2!=Nsim )
-			error("Antithetic support only even number of simulations")
 		else
             return new{num1,num2,abstractMonteCarloMethod,baseMode,rngType_}(Nsim,Nstep,monteCarloMethod,parallelMethod,Int64(seed),div(Nsim,2)*Nstep*(Distributed.myid() == 1 ? 0 : (Distributed.myid()-2) ),rng)
+        end
+    end
+	function MonteCarloConfiguration(Nsim::num1,Nstep::num2,monteCarloMethod::abstractMonteCarloMethod,parallelMethod::baseMode,seed::Number=0,rng::rngType_=MersenneTwister()) where {num1 <: Integer, num2 <: Integer, abstractMonteCarloMethod <: AbstractMonteCarloMethod, baseMode <: BaseMode, rngType_ <: Random.AbstractRNG}
+        return GeneralMonteCarloConfiguration(Nsim,Nstep,monteCarloMethod,parallelMethod,Int64(seed),rng)
+    end
+	function MonteCarloConfiguration(Nsim::num1,Nstep::num2,monteCarloMethod::AntitheticMC,parallelMethod::baseMode,seed::Number=0,rng::rngType_=MersenneTwister()) where {num1 <: Integer, num2 <: Integer, baseMode <: BaseMode, rngType_ <: Random.AbstractRNG}
+		if div(Nsim,2)*2!=Nsim
+			error("Antithetic support only even number of simulations")
+		else
+            return GeneralMonteCarloConfiguration(Nsim,Nstep,monteCarloMethod,parallelMethod,Int64(seed),rng)
         end
     end
 end

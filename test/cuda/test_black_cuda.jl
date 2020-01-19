@@ -13,7 +13,7 @@ sigma=0.2;
 mc=MonteCarloConfiguration(Nsim,Nstep,FinancialMonteCarlo.CudaMode());
 toll=0.8
 
-rfCurve=ZeroRate(S0,r,d);
+rfCurve=ZeroRate(r);
 
 FwdData=Forward(T)
 EUData=EuropeanOption(T,K)
@@ -21,7 +21,7 @@ AMData=AmericanOption(T,K)
 BarrierData=BarrierOptionDownOut(T,K,D)
 AsianFloatingStrikeData=AsianFloatingStrikeOption(T)
 AsianFixedStrikeData=AsianFixedStrikeOption(T,K)
-Model=BlackScholesProcess(sigma);
+Model=BlackScholesProcess(sigma,Underlying(S0,d));
 
 display(Model)
 
