@@ -9,8 +9,7 @@ The package support the following processes:
 * `Variance Gamma Process`
 * `Normal Inverse Gaussian Process`
 * `Lognormal Mixture Process`
-
-To be noticed that in order to work also with package DifferentialEquations.jl, the base class of the process is from it.
+* `Shifted Lognormal Mixture Process`
 
 ## Common Interface
 

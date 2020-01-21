@@ -2,10 +2,11 @@
 
 The following type of *Metric* are supported from the package:
 
-* `European Options`
-* `Asian Options`
-* `Barrier Options`
-* `American Options`
+* `pricer`
+* `delta`
+* `rho`
+* `variance`
+* `confinter`
 
 ## Common Interface
 

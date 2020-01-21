@@ -1,11 +1,9 @@
 # [Multivariates](@id Multivariate)
 
-The following type of *Multivariate* are supported from the package:
+The following types of *Multivariate* are supported from the package using package "DatagenCopulaBased.jl":
 
-* `European Options`
-* `Asian Options`
-* `Barrier Options`
-* `American Options`
+* `N dimensional Gaussian copula`
+* `N dimensional Gaussian copula for log processes`
 
 ## Common Interface
 

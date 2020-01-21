@@ -55,7 +55,7 @@ Nstep=30;
 σ=0.2;
 #Build the Structs
 mcConfig=MonteCarloConfiguration(Nsim,Nstep);
-rfCurve=ZeroRate(S0,r,d);
+rfCurve=ZeroRate(r);
 
 #Define The Options
 Fwd_payoff=Forward(T)
@@ -66,7 +66,7 @@ AsianFloatingStrike_payoff=AsianFloatingStrikeOption(T)
 AsianFixedStrike_payoff=AsianFixedStrikeOption(T,K)
 
 #Define the Model
-Model=BlackScholesProcess(σ);
+Model=BlackScholesProcess(σ,Underlying(S0,d));
 
 #Price
 @show FwdPrice=pricer(Model,rfCurve,mcConfig,Fwd_payoff);						
