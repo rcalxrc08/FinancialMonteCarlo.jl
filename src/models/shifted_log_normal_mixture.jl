@@ -39,14 +39,11 @@ function simulate(mcProcess::ShiftedLogNormalMixture,rfCurve::AbstractZeroRateCu
 	Nstep=mcBaseData.Nstep;
 	η_gbm=copy(mcProcess.η);
 	λ_gmb=copy(mcProcess.λ)
-	push!(λ_gmb,1.0-sum(mcProcess.λ))
 	mu_gbm=r-d;
 	dt=T/Nstep
 	A0=S0*(1-mcProcess.α)
-	S=λ_gmb[1].*simulate(GeometricBrownianMotion(η_gbm[1],mu_gbm,Underlying(A0)),mcBaseData,T);
-	for (η_gbm_,λ_gmb_) in zip(η_gbm[2:end],λ_gmb[2:end])
-		S+=λ_gmb_.*simulate(GeometricBrownianMotion(η_gbm_,mu_gbm,Underlying(A0)),mcBaseData,T)
-	end
-	return S.+mcProcess.α.*S0.*exp.(mu_gbm.*(0.0:dt:T))';
+	S=simulate(LogNormalMixture(η_gbm,λ_gmb,Underlying(A0,d)),rfCurve,mcBaseData,T)
+	tt=collect(0.0:dt:T);
+	return S.+mcProcess.α.*S0.*exp.(integral(mu_gbm,t_) for t_ in tt)';
 	
 end

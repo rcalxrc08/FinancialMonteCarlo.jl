@@ -11,7 +11,7 @@ function simulate(mcProcess::BrownianMotion,mcBaseData::MonteCarloConfiguration{
 	stddev_bm=σ*sqrt(dt)
 	isDualZero=mean_bm*stddev_bm*zero(Float32);
 	X_cu=zeros(CuMatrix{typeof(isDualZero)},Nsim,Nstep+1);
-	Z=CuArrays.zeros(Nsim);
+	Z=CuArray{Float32}(undef,Nsim);
 	for i=1:Nstep
 		X_pr=view(X_cu,:,i);
 		randn!(Z);

@@ -45,10 +45,10 @@ function simulate(mcProcess::NormalInverseGaussianProcess,rfCurve::AbstractZeroR
 	psi1=(1-sqrt(1.0-(σ^2+2.0*θ1)*κ1))/κ1;
 	drift=r-d-psi1;
 	
-	#Simulate subordinator
+	#Define subordinator
 	IGRandomVariable=InverseGaussian(dt,dt*dt/κ1);
-	#dt_s=quantile.(IGRandomVariable,rand(mcBaseData.rng,Nsim,Nstep));
 	
+	#Call SubordinatedBrownianMotion
 	X=simulate(SubordinatedBrownianMotion(σ,drift,IGRandomVariable,Underlying(0.0)),mcBaseData,T);
 
 	S=S0.*exp.(X);
