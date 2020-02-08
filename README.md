@@ -62,7 +62,7 @@ Nstep=30;
 σ=0.2;
 #Build the Structs
 mcConfig=MonteCarloConfiguration(Nsim,Nstep); #Configurator
-spotData=ZeroRate(r);
+zeroRate=ZeroRate(r);
 underlying=Underlying(S0,d); #Underlying relative data
 
 #Define The Option
@@ -71,7 +71,7 @@ EU_payoff=EuropeanOption(T,K)
 Model=BlackScholesProcess(σ,underlying);
 
 #Price
-@show EuPrice=pricer(Model,spotData,mcConfig,EU_payoff);
+@show EuPrice=pricer(Model,zeroRate,mcConfig,EU_payoff);
 ```
 
 ## Curve Support
