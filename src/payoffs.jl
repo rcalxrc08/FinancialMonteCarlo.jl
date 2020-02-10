@@ -13,6 +13,7 @@ end
 abstract type SingleNamePayoff<:AbstractPayoff end
 abstract type EuropeanPayoff<:SingleNamePayoff end
 abstract type AmericanPayoff<:SingleNamePayoff end
+abstract type BermudanPayoff<:SingleNamePayoff end
 abstract type PathDependentPayoff<:SingleNamePayoff end
 abstract type BarrierPayoff<:PathDependentPayoff end
 abstract type AsianPayoff<:PathDependentPayoff end
@@ -49,6 +50,8 @@ include("payoffs/binary_american_option.jl")
 
 ### Path Dependent Payoffs
 include("payoffs/general_path_dependent_engine.jl")
+include("payoffs/bermudan_option.jl")
+include("payoffs/general_bermudan_engine.jl")
 
 ### Asian Payoffs
 include("payoffs/asian_fixed_strike_option.jl")

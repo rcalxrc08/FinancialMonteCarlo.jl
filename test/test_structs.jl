@@ -47,6 +47,7 @@ rfCurve2=ZeroRate([0.00,0.02],T);
 @test_throws(ErrorException,Forward(Tneg));
 @test_throws(ErrorException,EuropeanOption(Tneg,K));
 @test_throws(ErrorException,AmericanOption(Tneg,K));
+@test_throws(ErrorException,BermudanOption([Tneg],K));
 @test_throws(ErrorException,BinaryAmericanOption(Tneg,K));
 @test_throws(ErrorException,BinaryEuropeanOption(Tneg,K));
 @test_throws(ErrorException,BarrierOptionDownOut(Tneg,K,D));
@@ -60,6 +61,7 @@ rfCurve2=ZeroRate([0.00,0.02],T);
 # Negative Strike and Barriers
 @test_throws(ErrorException,EuropeanOption(T,Kneg));
 @test_throws(ErrorException,AmericanOption(T,Kneg));
+@test_throws(ErrorException,BermudanOption([T],Kneg));
 @test_throws(ErrorException,BinaryEuropeanOption(T,Kneg));
 @test_throws(ErrorException,BinaryAmericanOption(T,Kneg));
 @test_throws(ErrorException,AsianFixedStrikeOption(T,Kneg));

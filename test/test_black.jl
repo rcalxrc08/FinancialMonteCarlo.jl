@@ -111,11 +111,13 @@ BinAMData=BinaryAmericanOption(T,K)
 BarrierDataDI=BarrierOptionDownIn(T,K,D)
 BarrierDataUI=BarrierOptionUpIn(T,K,D)
 BarrierDataUO=BarrierOptionUpOut(T,K,D)
+BermData=BermudanOption(collect(0.2:0.1:T),K);
 doubleBarrierOptionDownOut=DoubleBarrierOption(T,K,K/10.0,1.2*K)
 
 @show BarrierPrice=pricer(Model,rfCurve,mc,BarrierDataDI);
 @show BarrierPrice=pricer(Model,rfCurve,mc,BarrierDataUI);
 @show BarrierPrice=pricer(Model,rfCurve,mc,BarrierDataUO);
+@show BermPrice=pricer(Model,rfCurve,mc,BermData);
 @show AmBinPrice=pricer(Model,rfCurve,mc,BinAMData);
 @show EuBinPrice=pricer(Model,rfCurve,mc,EUDataBin);
 @show doubleBarrier=pricer(Model,rfCurve,mc,doubleBarrierOptionDownOut);
