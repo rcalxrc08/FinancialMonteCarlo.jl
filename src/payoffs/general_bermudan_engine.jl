@@ -16,7 +16,7 @@ function payoff(S1::abstractMatrix,bmPayoff::BermudanPayoff,rfCurve::abstractZer
 	idx_opt=round.(Int,T_opt./dt);
 	@views V=phi.(S[:,end]); #payoff
 	# Backward Procedure 
-	for j in idx_opt
+	for j in reverse(idx_opt)
 		@views Tmp=phi.(S[:,j]);
 		inMoneyIndexes=findall(Tmp.>0.0);
 		if !isempty(inMoneyIndexes)
