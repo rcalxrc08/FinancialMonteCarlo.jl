@@ -18,7 +18,7 @@ function simulate(mcProcess::finiteActivityProcess,rfCurve::AbstractZeroRateCurv
 
 	t=collect(range(0.0, stop=T, length=Nstep+1));
 	PoissonRV=Poisson(λ1*T);
-	NJumps=quantile.(PoissonRV,rand(mcBaseData.rng,Nsim));
+	NJumps=rand(mcBaseData.rng,PoissonRV,Nsim);
 
 	for ii in 1:Nsim
 		# Simulate the times of jump
