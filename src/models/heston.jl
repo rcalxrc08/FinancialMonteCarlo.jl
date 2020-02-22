@@ -56,16 +56,18 @@ function simulate(mcProcess::HestonProcess,rfCurve::ZeroRate,mcBaseData::MonteCa
 	θ_s=κ*θ/(κ+λ1);
 
 	dt=T/Nstep
-	isDualZero=S0*T*r*σ_zero*κ*θ*λ1*σ*ρ*0.0;
+	isDualZero=T*r*σ_zero*κ*θ*λ1*σ*ρ*0.0;
 	X=Matrix{typeof(isDualZero)}(undef,Nsim,Nstep+1);
-	X[:,1].=isDualZero;
-	v_m=[σ_zero+isDualZero for _ in 1:Nsim];
-	for j in 1:Nstep
-		e1=randn(mcBaseData.rng,Nsim);
-		e2=randn(mcBaseData.rng,Nsim);
-		e2=e1*ρ+e2*sqrt(1-ρ*ρ);
-		X[:,j+1]=X[:,j]+((r-d).-0.5*max.(v_m,0))*dt+sqrt.(max.(v_m,0))*sqrt(dt).*e1;
-		v_m+=κ_s.*(θ_s.-max.(v_m,0)).*dt+σ.*sqrt.(max.(v_m,0)).*sqrt(dt).*e2;
+	view(X,:,1).=isDualZero;
+	for i in 1:Nsim
+		v_m=σ_zero;
+		for j in 1:Nstep
+			e1=randn(mcBaseData.rng);
+			e2=randn(mcBaseData.rng);
+			e2=e1*ρ+e2*sqrt(1-ρ*ρ);
+			@views X[i,j+1]=X[i,j]+((r-d)-0.5*max(v_m,isDualZero))*dt+sqrt(max(v_m,isDualZero))*sqrt(dt)*e1;
+			v_m+=κ_s*(θ_s-max.(v_m,isDualZero))*dt+σ*sqrt(max(v_m,isDualZero))*sqrt(dt)*e2;
+		end
 	end
 	## Conclude
 	S=S0.*exp.(X);
@@ -93,22 +95,23 @@ function simulate(mcProcess::HestonProcess,rfCurve::ZeroRate,mcBaseData::MonteCa
 	θ_s=κ*θ/(κ+λ1);
 
 	dt=T/Nstep
-	isDualZero=S0*T*r*σ_zero*κ*θ*λ1*σ*ρ*0.0;
+	isDualZero=T*r*σ_zero*κ*θ*λ1*σ*ρ*0.0;
 	X=Matrix{typeof(isDualZero)}(undef,Nsim,Nstep+1);
-	X[:,1].=isDualZero;
-	v_m=[σ_zero+isDualZero for _ in 1:Nsim];
-	Nsim_2=div(Nsim,2)
-
-	for j in 1:Nstep
-		e1=randn(mcBaseData.rng,Nsim_2);
-		e2=randn(mcBaseData.rng,Nsim_2);
-		e1=[e1;-e1];
-		e2=[e2;-e2];
-		e2=e1.*ρ.+e2.*sqrt(1-ρ*ρ);
-		X[:,j+1]=X[:,j]+((r-d).-0.5.*max.(v_m,0)).*dt+sqrt.(max.(v_m,0)).*sqrt(dt).*e1;
-		v_m+=κ_s.*(θ_s.-max.(v_m,0)).*dt+(σ*sqrt(dt)).*sqrt.(max.(v_m,0)).*e2;
+	view(X,:,1).=isDualZero;
+	for i in 1:div(Nsim,2)
+		v_m=σ_zero;
+		v_m_bis=σ_zero;
+		for j in 1:Nstep
+			e1=randn(mcBaseData.rng);
+			e2=randn(mcBaseData.rng);
+			e2bis= e1*ρ+e2*sqrt(1-ρ*ρ);
+			e2   = -e1*ρ-e2*sqrt(1-ρ*ρ);
+			@views X[2*i-1,j+1]=X[2*i-1,j]+((r-d)-0.5*max(v_m,isDualZero))*dt+sqrt(max(v_m,isDualZero))*sqrt(dt)*e1;
+			@views X[2*i,j+1]=X[2*i,j]+((r-d)-0.5*max(v_m_bis,isDualZero))*dt+sqrt(max(v_m_bis,isDualZero))*sqrt(dt)*(-e1);
+			v_m+=κ_s*(θ_s-max.(v_m,isDualZero))*dt+σ*sqrt(max(v_m,isDualZero))*sqrt(dt)*e2;
+			v_m_bis+=κ_s*(θ_s-max.(v_m_bis,isDualZero))*dt+σ*sqrt(max(v_m_bis,isDualZero))*sqrt(dt)*e2bis;
+		end
 	end
-	
 	## Conclude
 	S=S0.*exp.(X);
 	return S;
