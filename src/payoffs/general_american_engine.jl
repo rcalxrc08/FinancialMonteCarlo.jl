@@ -9,25 +9,25 @@ function payoff(S1::abstractMatrix,amPayoff::AmericanPayoff,rfCurve::abstractZer
 	Nstep-=1;
 	r=rfCurve.r;
 	dt=T/Nstep
-	# initialize 
-	exerciseTimes=Nstep.*ones(Nsim);
+	# initialize vectors
+	exerciseTimes=(Nstep).*ones(Int64,Nsim);
+	df_exerciseTimes=[exp.(-integral(r,dt*j_)) for j_ in 0:NStep];
+	#define payout
 	phi(Sti::numtype_) where {numtype_<:Number}=payout(Sti,amPayoff);
-	@views V=phi.(S[:,end]); #payoff
+	#compute payout
+	@views V=phi.(S[:,end]);
 	# Backward Procedure 
-	for j in Nstep:-1:2
+	@inbounds for j in Nstep:-1:2
 		@views Tmp=phi.(S[:,j]);
 		inMoneyIndexes=findall(Tmp.>0.0);
 		if !isempty(inMoneyIndexes)
-			#S_I=S[inMoneyIndexes,j];
 			S_I=view(S,inMoneyIndexes,j);
 			#-- Intrinsic Value
 			@views IV=Tmp[inMoneyIndexes];
 			#-- Continuation Value 
 			#- Linear Regression on Quadratic Form
 			A=[ones(length(S_I)) S_I S_I.^2];
-			#@views b=V[inMoneyIndexes].*exp.(-r*dt*(exerciseTimes[inMoneyIndexes].-j));
-			@views b=V[inMoneyIndexes].*exp.(-[integral(r,dt*(exerciseTime-j)) for exerciseTime in exerciseTimes[inMoneyIndexes]]);
-			#MAT=A'*A;			
+			b=[V[j_]*df_exerciseTimes[exerciseTimes[j_]-j+1] for j_ in inMoneyIndexes]
 			LuMat=lu(A'*A);
 			Btilde=A'*b;
 			alpha=LuMat\Btilde;
@@ -43,7 +43,7 @@ function payoff(S1::abstractMatrix,amPayoff::AmericanPayoff,rfCurve::abstractZer
 			@views exerciseTimes[exercisePositions].=j-1;
 		end
 	end
-	Out=V.*exp.(-[integral(r,dt*exerciseTime) for exerciseTime in exerciseTimes])
+	Out=V.*df_exerciseTimes[exerciseTimes.+1];
 	
 	return Out;
 end

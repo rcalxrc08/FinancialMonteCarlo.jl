@@ -7,8 +7,8 @@ function simulate(mcProcess::BrownianMotion,mcBaseData::MonteCarloConfiguration{
 	μ=mcProcess.μ;
 	@assert T>0.0
 	dt=T/Nstep
-	mean_bm=μ*dt
-	stddev_bm=σ*sqrt(dt)
+	mean_bm=Float32(μ*dt)
+	stddev_bm=Float32(σ*sqrt(dt))
 	isDualZero=mean_bm*stddev_bm*zero(Float32);
 	X_cu=zeros(CuMatrix{typeof(isDualZero)},Nsim,Nstep+1);
 	Z=CuArray{Float32}(undef,Nsim);
@@ -34,8 +34,8 @@ function simulate(mcProcess::BrownianMotion,mcBaseData::MonteCarloConfiguration{
 	μ=mcProcess.μ;
 	@assert T>0.0
 	dt=T/Nstep
-	mean_bm=μ*dt
-	stddev_bm=σ*sqrt(dt)
+	mean_bm=Float32(μ*dt)
+	stddev_bm=Float32(σ*sqrt(dt))
 	isDualZero=mean_bm*stddev_bm*zero(Float32);
 	X_cu=zeros(CuMatrix{typeof(isDualZero)},Nsim,Nstep+1);
 	Nsim_2=Int(floor(Nsim/2))
