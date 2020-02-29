@@ -38,15 +38,8 @@ function simulate(mcProcess::GaussianCopulaNVariateProcess,rfCurve::AbstractZero
 	
 	####Simulation
 	## Simulate
-	S_1=simulate(mcProcess.models[1],rfCurve,mcBaseData,T);
-	
-	#Preallocate in some way
-	S_Total=[S_1];
 	len_=length(mcProcess.models);
-	for i in 2:len_
-		S_tmp=simulate(mcProcess.models[i],rfCurve,mcBaseData,T);
-		push!(S_Total,S_tmp)
-	end
+	S_Total::Array{Matrix{Number}}=[simulate(model_i,rfCurve,mcBaseData,T) for model_i in mcProcess.models];
 	rho=mcProcess.rho
 	if (rho[1,2:end]==zeros(len_-1))
 		return S_Total
@@ -56,8 +49,8 @@ function simulate(mcProcess::GaussianCopulaNVariateProcess,rfCurve::AbstractZero
 		U_joint=gausscopulagen(Nsim,rho);
 	
 		for i in 1:len_
-			cdf_ = sort(deepcopy(S_Total[i][:,j+1]))
-			@views S_Total[i][:,j+1].=Statistics.quantile(cdf_,U_joint[:,i])
+			cdf_ = sort(S_Total[i][:,j+1])
+			@views S_Total[i][:,j+1]=Statistics.quantile(cdf_,U_joint[:,i])
 		end
 	end
 	

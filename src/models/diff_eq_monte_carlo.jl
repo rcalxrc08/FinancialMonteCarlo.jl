@@ -26,15 +26,9 @@ function simulate(mcProcess::MonteCarloDiffEqModel,rfCurve::ZeroRate,mcBaseData:
 	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;
 	Dt=T/Nstep
-	tt=collect(0.0:Dt:T)
 	@assert T>0.0
 	diffeqmodel=mcProcess.model;
 	sol = solve(diffeqmodel,SOSRI(),EnsembleThreads(),trajectories=Nsim,dt=Dt,adaptive=false)
-	if(!(typeof(diffeqmodel)<:JumpProblem))
-		X=[path.u[j] for path in sol.u, j in 1:(Nstep+1)];
-		return mcProcess.final_trasform.(X);
-	else
-		X=[path(tt[j]) for path in sol.u, j in 1:(Nstep+1)];
-		return mcProcess.final_trasform.(X);
-	end
+	X=[path.u[j] for path in sol.u, j in 1:(Nstep+1)];
+	return mcProcess.final_trasform.(X);
 end
