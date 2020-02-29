@@ -5,6 +5,7 @@ K=100.0;
 r=0.02;
 T=1.0;
 d=0.01;
+d_=FinancialMonteCarlo.Curve([0.009999,0.01],T);
 D=90.0;
 
 Nsim=10000;
@@ -25,10 +26,12 @@ BarrierData=BarrierOptionDownOut(T,K,D)
 AsianFloatingStrikeData=AsianFloatingStrikeOption(T)
 AsianFixedStrikeData=AsianFixedStrikeOption(T,K)
 Model=BlackScholesProcess(sigma,Underlying(S0,d));
+Model_=BlackScholesProcess(sigma,Underlying(S0,d));
 
 display(Model)
 
 @show FwdPrice=pricer(Model,spotData1,mc,FwdData);
+@show FwdPrice_=pricer(Model_,spotData1,mc,FwdData);
 @show EuPrice=pricer(Model,spotData1,mc,EUData);
 @show EuBinPrice=pricer(Model,spotData1,mc,EUBin);
 @show AmPrice=pricer(Model,spotData1,mc,AMData);
@@ -38,6 +41,7 @@ display(Model)
 @show AsianPrice2=pricer(Model,spotData1,mc,AsianFixedStrikeData);
 
 @test abs(FwdPrice-99.1078451563562)<toll
+@test abs(FwdPrice_-99.1078451563562)<toll
 @test abs(EuPrice-8.43005524824866)<toll
 @test abs(AmPrice-8.450489415187354)<toll
 @test abs(BarrierPrice-7.5008664470880735)<toll
