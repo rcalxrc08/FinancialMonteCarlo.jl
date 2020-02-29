@@ -18,12 +18,7 @@ function simulate(mcProcess::BrownianMotionVec,mcBaseData::MonteCarloConfigurati
 		randn!(Z);
 		@inbounds X_cu[:,i+1]=X_pr+(tmp_.+stddev_bm*Z);
 	end
-	isdual(p)=false
-	if(isdual(isDualZero))
-		return Matrix(X_cu)
-	else
-		return X_cu;
-	end
+	return X_cu
 end
 
 
@@ -47,11 +42,6 @@ function simulate(mcProcess::BrownianMotionVec,mcBaseData::MonteCarloConfigurati
 		Z=[Z;-Z];
 		X_cu[:,i+1]=X_cu[:,i]+(tmp_.+stddev_bm.*Z);
 	end
-	isdual(p)=false
-	if(isdual(isDualZero))
-		return Matrix(X_cu)
-	else
-		return X_cu;
-	end
+	return X_cu;
 end
 

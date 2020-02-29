@@ -1,37 +1,38 @@
 
-function simulate(mcProcess::SubordinatedBrownianMotion,mcBaseData::MonteCarloConfiguration{type1,type2,type3,CudaMode,type5},T::numb,dt_s::Array{num1,2}) where {numb <: Number , num1 <: Number, type1 <: Number, type2<: Number, type3 <: StandardMC, type5 <: Random.AbstractRNG}
+function simulate(mcProcess::SubordinatedBrownianMotion,mcBaseData::MonteCarloConfiguration{type1,type2,type3,CudaMode,type5},T::numb) where {numb <: Number , type1 <: Number, type2<: Number, type3 <: StandardMC, type5 <: Random.AbstractRNG}
 	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;
-	if(size(dt_s)!=(Nsim,Nstep))
-		error("Inconsistent Time Matrix")
-	end
 	drift=mcProcess.drift;
 	sigma=mcProcess.sigma;
 	@assert T>0.0
-	dt_s=cu(dt_s)
+	type_sub=typeof(Float32(quantile(mcProcess.subordinator_,0.5)));
+	dt_s=CuArray{type_sub}(undef,Nsim)
+	dt_s_cpu=Array{type_sub}(undef,Nsim)
 	isDualZero=drift*sigma*zero(eltype(dt_s))*zero(Float32);
 	X_cu=CuMatrix{typeof(isDualZero)}(undef,Nsim,Nstep+1);
 	X_cu[:,1].=isDualZero;
-	Z=Array{Float64}(undef,Nsim)
+	Z=CuArray{Float32}(undef,Nsim)
 	for i=1:Nstep
 		# SUBORDINATED BROWNIAN MOTION (dt_s=time change)
-		X_cu[:,i+1]=X_cu[:,i].+drift.*dt_s[:,i].+sigma.*sqrt.(dt_s[:,i]).*CuArrays.CURAND.curandn(Float32,Nsim);
+		rand!(mcBaseData.rng,mcProcess.subordinator_,dt_s_cpu);
+		dt_s=cu(dt_s_cpu);
+		randn!(Z);
+		X_cu[:,i+1]=X_cu[:,i]+(drift.*dt_s+sigma.*sqrt.(dt_s).*Z);
 	end
 	return X_cu;
 end
 
 
 
-function simulate(mcProcess::SubordinatedBrownianMotion,mcBaseData::MonteCarloConfiguration{type1,type2,type3,CudaMode,type5},T::numb,dt_s::Array{num1,2}) where {numb <: Number, num1 <: Number, type1 <: Number, type2<: Number, type3 <: AntitheticMC, type5 <: Random.AbstractRNG}
+function simulate(mcProcess::SubordinatedBrownianMotion,mcBaseData::MonteCarloConfiguration{type1,type2,type3,CudaMode,type5},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AntitheticMC, type5 <: Random.AbstractRNG}
 	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;
-	if(size(dt_s)!=(Nsim,Nstep))
-		error("Inconsistent Time Matrix")
-	end
 	drift=mcProcess.drift;
 	sigma=mcProcess.sigma;
 	@assert T>0.0
-	dt_s=cu(dt_s)
+	type_sub=typeof(Float32(quantile(mcProcess.subordinator_,0.5)));
+	dt_s=CuArray{type_sub}(undef,Nsim)
+	dt_s_cpu=Array{type_sub}(undef,Nsim)
 	isDualZero=drift*sigma*zero(eltype(dt_s))*zero(Float32);
 	X_cu=CuMatrix{typeof(isDualZero)}(undef,Nsim,Nstep+1);
 	X_cu[:,1].=isDualZero;
@@ -40,6 +41,8 @@ function simulate(mcProcess::SubordinatedBrownianMotion,mcBaseData::MonteCarloCo
 		Z=CuArrays.CURAND.curandn(Float32,NsimAnti);
 		Z=[Z;-Z];
 		# SUBORDINATED BROWNIAN MOTION (dt_s=time change)
+		rand!(mcBaseData.rng,mcProcess.subordinator_,dt_s_cpu);
+		dt_s=cu(dt_s_cpu);
 		X_cu[:,i+1]=X_cu[:,i].+drift.*dt_s[:,i].+sigma.*sqrt.(dt_s[:,i]).*Z;
 	end
 	return X_cu;
