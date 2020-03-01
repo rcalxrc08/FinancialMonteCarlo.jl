@@ -10,7 +10,6 @@ D=90.0;
 Nsim=10000;
 Nstep=30;
 sigma=dual(0.2,1.0);
-@test Float32(dual(0.2,0.1))==dual(0.2f0,0.1f0)
 mc=MonteCarloConfiguration(Nsim,Nstep);
 mc1=MonteCarloConfiguration(Nsim,Nstep,FinancialMonteCarlo.AntitheticMC());
 toll=0.8
