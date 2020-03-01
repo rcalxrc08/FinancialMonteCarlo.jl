@@ -76,11 +76,6 @@ tollPut=0.6;
 @test abs(AsianPrice1-4.230547012372306)<tollPut
 @test abs(AsianPrice2-4.236220218194027)<tollPut
 
-#Check Nsim even for antithetic
-mc2=MonteCarloConfiguration(Nsim+1,Nstep);
-@test_throws(ErrorException,pricer(Model,rfCurve,mc2,AsianFixedStrikeData));
-
-
 
 @test variance(Model,rfCurve,mc,EUDataPut)>variance(Model,rfCurve,mc1,EUDataPut);
 @test prod(variance(Model,rfCurve,mc,[EUDataPut,AMDataPut]).>=variance(Model,rfCurve,mc1,[EUDataPut,AMDataPut]));
