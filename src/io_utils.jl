@@ -71,7 +71,7 @@ function get_parameters(model::XProcess) where {XProcess <: FinancialMonteCarlo.
 	param_=[];
 	for i=1:N1
 		tmp_=getproperty(model,fields_[i]);
-		typeof(tmp_) <: BaseProcess ? continue : nothing;
+		typeof(tmp_) <: Tuple ? continue : nothing;
 		append!(param_,tmp_)
 	end
 	typecheck_=typeof(sum(param_)+prod(param_))

@@ -33,8 +33,8 @@ end
 
 function predict_output_type_zero(mcProcess::FinancialMonteCarlo.VectorialMonteCarloProcess)
 	zero_out_=sum(y->predict_output_type_zero(y),mcProcess.models)
-	model_par=FinancialMonteCarlo.get_parameters(mcProcess);
-	return zero_out_*zero(model_par)
+	model_par=sum(FinancialMonteCarlo.get_parameters(mcProcess));
+	return zero(zero_out_)*zero(model_par)
 	
 end
 
