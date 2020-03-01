@@ -3,13 +3,13 @@ struct CudaMode <: AbstractCudaMode end
 struct CudaMode_2 <: AbstractCudaMode end
 
 using .CuArrays
-include("models/cuda/brownian_motion_cuda.cujl")
-include("models/cuda/brownian_motion_cuda_aug.cujl")
-include("models/cuda/brownian_motion_cuda_2.cujl")
-include("models/cuda/brownian_motion_cuda_2_aug.cujl")
-include("models/cuda/heston_cuda.cujl")
-include("models/cuda/heston_cuda_2.cujl")
-include("models/cuda/subordinated_brownian_motion_cuda.cujl")
+include("../models/cuda/brownian_motion_cuda.cujl")
+include("../models/cuda/brownian_motion_cuda_aug.cujl")
+include("../models/cuda/brownian_motion_cuda_2.cujl")
+include("../models/cuda/brownian_motion_cuda_2_aug.cujl")
+include("../models/cuda/heston_cuda.cujl")
+include("../models/cuda/heston_cuda_2.cujl")
+include("../models/cuda/subordinated_brownian_motion_cuda.cujl")
 
 function set_seed(mcConfig::MonteCarloConfiguration{type1,type2,type3,type4,type5})  where {type1 <: Number, type2<: Number, type3 <: AbstractMonteCarloMethod, type4 <: AbstractCudaMode, type5 <: Random.AbstractRNG}
 
