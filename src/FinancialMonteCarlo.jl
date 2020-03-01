@@ -12,11 +12,12 @@ module FinancialMonteCarlo
 	end
 	include("utils.jl")
 	include("models.jl")
-	include("payoffs.jl")
+	include("options.jl")
 	include("io_utils.jl")
 	include("metrics.jl");
-	include("multi_threading.jl");
 	include("output_type.jl")
+	include("operations.jl")
+	include("multi_threading.jl");
 	export
 	    pricer,
 	    variance,

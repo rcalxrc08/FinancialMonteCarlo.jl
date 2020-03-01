@@ -29,6 +29,3 @@ include("payoffs/asian_floating_strike_option.jl")
 ### Basket Payoffs
 include("payoffs/basket/n_european_option.jl")
 
-### Operations and Strategies
-include("operations.jl")
-include("operations2.jl")

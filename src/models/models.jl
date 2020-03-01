@@ -2,7 +2,6 @@ using Distributions;
 
 ### Utils
 include("utils.jl")
-include("operations.jl")
 
 ### Ito Processes
 include("brownian_motion.jl")
