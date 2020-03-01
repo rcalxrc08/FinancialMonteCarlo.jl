@@ -24,3 +24,8 @@ function pricer(mcProcess::BaseProcess,rfCurve::AbstractZeroRateCurve,mcConfig::
 
 	return mcProcess.underlying.S0;
 end
+
+
+function maturity(x::Spot)
+	return 0.0;
+end

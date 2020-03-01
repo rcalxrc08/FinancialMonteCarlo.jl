@@ -1,26 +1,4 @@
-function set_seed(mcConfig::MonteCarloConfiguration{type1,type2,type3,type4,MersenneTwister})  where {type1 <: Number, type2<: Number, type3 <: AbstractMonteCarloMethod, type4 <: SerialMode}
-
-	tmp_rng=deepcopy(mcConfig.rng);
-	Random.seed!(tmp_rng,mcConfig.seed)
-	mcConfig.rng=randjump_(tmp_rng, mcConfig.offset)
-	Random.seed!(mcConfig.seed*10+10)
-	
-	return;
-	
-end
-
-function set_seed(mcConfig::MonteCarloConfiguration{type1,type2,type3,type4,type5})  where {type1 <: Number, type2<: Number, type3 <: AbstractMonteCarloMethod, type4 <: SerialMode, type5 <: Random.AbstractRNG}
-
-	tmp_rng=deepcopy(mcConfig.rng);
-	Random.seed!(tmp_rng,mcConfig.seed)
-	mcConfig.rng=tmp_rng
-	Random.seed!(mcConfig.seed*10+10)
-	
-	return;
-	
-end
-
-
+include("metrics/seed.jl")
 include("metrics/pricer.jl")
 include("metrics/pricer_cv.jl")
 include("metrics/distribution.jl")

@@ -29,6 +29,9 @@ function display(p::Union{AbstractMonteCarloProcess,AbstractPayoff})
 	println(")");
 end
 
+
+# Agnostic getters and setters, useful for testing and calibration
+
 function get_parameters(model::XProcess) where {XProcess <: AbstractPayoff}
 	fields_=fieldnames(XProcess)
 	N1=length(fields_)

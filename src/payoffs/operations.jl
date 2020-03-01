@@ -75,6 +75,7 @@ hash(x::Payoff) where { Payoff <: AbstractPayoff }=sum(hash(get_parameters(x)))+
 isequal(x::Payoff1,y::Payoff2) where { Payoff1 <: AbstractPayoff , Payoff2 <: AbstractPayoff }=hash(x)==hash(y)
 
 function display(p::Position)
+	#Help dispacthing on arguments, not on code
 	keys_=keys(p);
 	flag=0;
 	for key_ in keys_

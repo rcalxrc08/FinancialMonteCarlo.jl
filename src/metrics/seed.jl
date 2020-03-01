@@ -1,0 +1,18 @@
+import Future.randjump
+
+randjump_(rng::MersenneTwister,num)=randjump(rng,num);
+randjump_(rng,num)=rng;
+
+inner_seed!(tmp_rng,seed)=Random.seed!(tmp_rng,seed)
+inner_seed!(tmp_rng::VectorizedRNG.AbstractPCG,seed)= return nothing;
+
+function set_seed(mcConfig::MonteCarloConfiguration{type1,type2,type3,type4,type5})  where {type1 <: Number, type2<: Number, type3 <: AbstractMonteCarloMethod, type4 <: SerialMode, type5 <: Random.AbstractRNG}
+
+	tmp_rng=deepcopy(mcConfig.rng);
+	inner_seed!(tmp_rng,mcConfig.seed)
+	mcConfig.rng=randjump_(tmp_rng, mcConfig.offset)
+	Random.seed!(mcConfig.seed*10+10)
+	
+	return;
+	
+end
