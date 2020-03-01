@@ -31,6 +31,13 @@ function predict_output_type_zero(mcProcess::FinancialMonteCarlo.BaseProcess)
 
 end
 
+function predict_output_type_zero(mcProcess::FinancialMonteCarlo.VectorialMonteCarloProcess)
+	zero_out_=sum(y->predict_output_type_zero(y),x.models)
+	model_par=FinancialMonteCarlo.get_parameters(mcProcess);
+	return zero_out_*zero(model_par)
+	
+end
+
 function predict_output_type_zero(rfCurve::ZeroRate)
 	
 	return zero(rfCurve.r);
