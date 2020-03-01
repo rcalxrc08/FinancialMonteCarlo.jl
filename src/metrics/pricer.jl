@@ -30,7 +30,8 @@ function pricer(mcProcess::BaseProcess,rfCurve::AbstractZeroRateCurve,mcConfig::
 	set_seed(mcConfig)
 	maxT=maximum([maturity(abstractPayoff) for abstractPayoff in abstractPayoffs])
 	S=simulate(mcProcess,rfCurve,mcConfig,maxT)
-	Prices=[mean(payoff(S,abstractPayoff,rfCurve,maxT)) for abstractPayoff in abstractPayoffs  ]
+	zero_typed=predict_output_type(mcProcess,rfCurve,mcConfig,abstractPayoffs);
+	Prices::Array{zero_typed}=[mean(payoff(S,abstractPayoff,rfCurve,maxT)) for abstractPayoff in abstractPayoffs  ]
 	
 	return Prices;
 end

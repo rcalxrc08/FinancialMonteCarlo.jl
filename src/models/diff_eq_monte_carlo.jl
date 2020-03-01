@@ -1,23 +1,13 @@
-#function get_initial_u0(mcProcess::MonteCarloProblem)
-#	if(typeof(mcProcess.prob)<:JumpProblem)
-#		return  mcProcess.prob.prob.u0;
-#	else
-#		return mcProcess.prob.u0;
-#	end
-#end
-
-
-
-mutable struct MonteCarloDiffEqModel{num <: DiffEqBase.AbstractEnsembleProblem} <: ItoProcess
-	model::num
+mutable struct MonteCarloDiffEqModel{absdiffeqmodel <: DiffEqBase.AbstractEnsembleProblem} <: ItoProcess
+	model::absdiffeqmodel
 	final_trasform::Function
 	underlying::AbstractUnderlying
-	function MonteCarloDiffEqModel(model::num,final_trasform::Function,underlying::AbstractUnderlying) where {num <: DiffEqBase.AbstractEnsembleProblem}
-        return new{num}(model,final_trasform,underlying)
+	function MonteCarloDiffEqModel(model::absdiffeqmodel,final_trasform::Function,underlying::AbstractUnderlying) where {absdiffeqmodel <: DiffEqBase.AbstractEnsembleProblem}
+        return new{absdiffeqmodel}(model,final_trasform,underlying)
     end
-	function MonteCarloDiffEqModel(model::num,underlying::AbstractUnderlying) where {num <: DiffEqBase.AbstractEnsembleProblem}
+	function MonteCarloDiffEqModel(model::absdiffeqmodel,underlying::AbstractUnderlying) where {absdiffeqmodel <: DiffEqBase.AbstractEnsembleProblem}
 		func(x)=identity(x);
-        return new{num}(model,func,underlying)
+        return new{absdiffeqmodel}(model,func,underlying)
     end
 end
 
