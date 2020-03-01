@@ -37,13 +37,12 @@ function simulate(mcProcess::SubordinatedBrownianMotionVec,mcBaseData::MonteCarl
 	@assert T>0.0
 	type_sub=typeof(quantile(mcProcess.subordinator_,0.5));
 	dt_s=Array{type_sub}(undef,Nsim)
-	t_s=Array{type_sub}(undef,Nsim)
+	t_s=zeros(type_sub,Nsim)
 	dt=T/Nstep;
 	zero_drift=drift(zero(type_sub),zero(type_sub)+dt)*0.0;
 	isDualZero=sigma*zero(type_sub)*0.0*zero_drift;
 	X=Matrix{typeof(isDualZero)}(undef,Nsim,Nstep+1);
 	@views X[:,1].=isDualZero;
-	t_s.=isDualZero;
 	Z=Array{Float64}(undef,Nsim)
 	for i=1:Nstep
 		randn!(mcBaseData.rng,Z)
@@ -66,11 +65,10 @@ function simulate(mcProcess::SubordinatedBrownianMotionVec,mcBaseData::MonteCarl
 	drift=mcProcess.drift;
 	sigma=mcProcess.sigma;
 	@assert T>0.0
-	t_s=Array{type_sub}(undef,Nsim)
+	t_s=zeros(type_sub,Nsim)
 	dt=T/Nstep;
 	zero_drift=drift(zero(type_sub),zero(type_sub)+dt);
 	isDualZero=sigma*zero(type_sub)*0.0*zero_drift;
-	t_s.=isDualZero;
 	X=Matrix{typeof(isDualZero)}(undef,Nsim,Nstep+1);
 	@views X[:,1].=isDualZero;
 	for i=1:Nstep

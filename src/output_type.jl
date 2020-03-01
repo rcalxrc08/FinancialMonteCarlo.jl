@@ -38,12 +38,6 @@ function predict_output_type_zero(mcProcess::FinancialMonteCarlo.VectorialMonteC
 	
 end
 
-function predict_output_type_zero(rfCurve::ZeroRate)
-	
-	return zero(rfCurve.r);
-
-end
-
 function predict_output_type_zero(und::FinancialMonteCarlo.AbstractUnderlying)
 	
 	return predict_output_type_zero(und.S0)+predict_output_type_zero(und.d);
