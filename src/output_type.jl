@@ -71,3 +71,9 @@ function predict_output_type_zero(abstractPayoff::FinancialMonteCarlo.AbstractPa
 	return zero_out_*zero(zero_out_);
 
 end
+
+function predict_output_type_zero(abstractPayoff::FinancialMonteCarlo.Spot)
+	
+	return zero(Int8);
+
+end
