@@ -1,3 +1,4 @@
 ### Operations and Strategies
-include("payoffs/payoff_base.jl")
-include("payoffs/payoffs.jl")
+include("options/payoff_base.jl")
+include("options/engines.jl")
+include("options/payoffs.jl")

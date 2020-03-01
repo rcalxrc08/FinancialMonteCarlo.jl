@@ -8,7 +8,7 @@ module FinancialMonteCarlo
 		@require ArrayFire = "b19378d9-d87a-599a-927f-45f220a2c452" include("deps/af_dependencies.cujl")
 		@require DualNumbers = "fa6b7ba4-c1ee-5f82-b5fc-ecf0adba8f74" include("deps/dual_dependencies.jl")
 		@require DifferentialEquations = "0c46a032-eb83-5123-abaf-570d42b7fbaa" include("deps/diffeq_dependencies.jl")
-		@require Distributed = "8ba89e20-285c-5b6f-9357-94700520ee1b" include("deps/distributed_dependencies.jl.jl")
+		@require Distributed = "8ba89e20-285c-5b6f-9357-94700520ee1b" include("deps/distributed_dependencies.jl")
 	end
 	include("utils.jl")
 	include("models.jl")
