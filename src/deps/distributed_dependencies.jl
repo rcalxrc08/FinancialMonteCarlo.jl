@@ -22,10 +22,10 @@ end
 function pricer_macro_multiprocesses(model_type,payoff_type)
 	@eval begin
 		function pricer(mcProcess::$model_type,spotData::AbstractZeroRateCurve,mcConfig::MonteCarloConfiguration{<: Integer , <: Integer , <: AbstractMonteCarloMethod ,  <: MultiProcess, <: Random.AbstractRNG},abstractPayoff::$payoff_type)
-			zero_typed=predict_output_type(mcProcess,spotData,mcConfig,abstractPayoff);
+			zero_typed=predict_output_type_zero(mcProcess,spotData,mcConfig,abstractPayoff);
 			ns=mcConfig.parallelMode.ns;
 			#ns=100;
-			price::zero_typed =@sync @distributed (+) for i in 1:ns
+			price::typeof(zero_typed) =@sync @distributed (+) for i in 1:ns
 				pricer(mcProcess,spotData,MonteCarloConfiguration(div(mcConfig.Nsim,ns),mcConfig.Nstep,mcConfig.monteCarloMethod,mcConfig.parallelMode.sub_mod,mcConfig.seed+1+i),abstractPayoff)::typeof(zero_typed);
 			end
 			Out=price/ns;
