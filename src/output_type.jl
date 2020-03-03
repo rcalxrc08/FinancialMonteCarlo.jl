@@ -23,34 +23,34 @@ function predict_output_type_zero(x::num)::num where {num <: Number}
 	return zero(x);
 end
 
-function predict_output_type_zero(mcProcess::FinancialMonteCarlo.BaseProcess)
-	model_par=FinancialMonteCarlo.get_parameters(mcProcess);
+function predict_output_type_zero(mcProcess::BaseProcess)
+	model_par=get_parameters(mcProcess);
 	zero_out_=sum(model_par)
 	
 	return zero_out_*zero(zero_out_)*predict_output_type_zero(mcProcess.underlying);
 
 end
 
-function predict_output_type_zero(mcProcess::FinancialMonteCarlo.VectorialMonteCarloProcess)
+function predict_output_type_zero(mcProcess::VectorialMonteCarloProcess)
 	zero_out_=sum(y->predict_output_type_zero(y),mcProcess.models)
-	model_par=sum(FinancialMonteCarlo.get_parameters(mcProcess));
+	model_par=sum(get_parameters(mcProcess));
 	return zero(zero_out_)*zero(model_par)
 	
 end
 
-function predict_output_type_zero(und::FinancialMonteCarlo.AbstractUnderlying)
+function predict_output_type_zero(und::AbstractUnderlying)
 	
 	return predict_output_type_zero(und.S0)+predict_output_type_zero(und.d);
 
 end
 
-function predict_output_type_zero(und::FinancialMonteCarlo.Curve)
+function predict_output_type_zero(und::Curve)
 	
 	return zero(eltype(keys_(und)))+zero(eltype(values_(und)));
 
 end
 
-function predict_output_type_zero(rfCurve::FinancialMonteCarlo.AbstractZeroRateCurve)
+function predict_output_type_zero(rfCurve::AbstractZeroRateCurve)
 	
 	return predict_output_type_zero(rfCurve.r);
 
@@ -65,15 +65,15 @@ function predict_output_type_zero(mcConfig::MonteCarloConfiguration)
 	end
 end
 
-function predict_output_type_zero(abstractPayoff::FinancialMonteCarlo.AbstractPayoff)
-	opt_par=FinancialMonteCarlo.get_parameters(abstractPayoff);
+function predict_output_type_zero(abstractPayoff::AbstractPayoff)
+	opt_par=get_parameters(abstractPayoff);
 	zero_out_=sum(opt_par)
 	
 	return zero_out_*zero(zero_out_);
 
 end
 
-function predict_output_type_zero(abstractPayoff::FinancialMonteCarlo.Spot)
+function predict_output_type_zero(abstractPayoff::Spot)
 	
 	return zero(Int8);
 

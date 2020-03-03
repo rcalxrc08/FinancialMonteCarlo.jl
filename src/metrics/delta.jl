@@ -35,7 +35,7 @@ function delta(mcProcess::BaseProcess,rfCurve::AbstractZeroRateCurve,mcConfig::M
 	return Delta;
 end
 
-function delta(mcProcess::BaseProcess,rfCurve::AbstractZeroRateCurve,mcConfig::MonteCarloConfiguration,abstractPayoffs::Dict{FinancialMonteCarlo.AbstractPayoff,Number},dS0::Real=1e-7)
+function delta(mcProcess::BaseProcess,rfCurve::AbstractZeroRateCurve,mcConfig::MonteCarloConfiguration,abstractPayoffs::Dict{AbstractPayoff,Number},dS0::Real=1e-7)
 		Prices=pricer(mcProcess,rfCurve,mcConfig,abstractPayoffs);
 		mcProcess_up=deepcopy(mcProcess)
 		mcProcess_up.underlying.S0+=dS0;
@@ -46,7 +46,7 @@ function delta(mcProcess::BaseProcess,rfCurve::AbstractZeroRateCurve,mcConfig::M
 	return Delta;
 end
 
-function delta(mcProcess::Dict{String,FinancialMonteCarlo.AbstractMonteCarloProcess},rfCurve::AbstractZeroRateCurve,mcConfig::MonteCarloConfiguration,dict_::Dict{String,Dict{FinancialMonteCarlo.AbstractPayoff,Number}},underl_::String,dS::Real=1e-7)
+function delta(mcProcess::Dict{String,AbstractMonteCarloProcess},rfCurve::AbstractZeroRateCurve,mcConfig::MonteCarloConfiguration,dict_::Dict{String,Dict{AbstractPayoff,Number}},underl_::String,dS::Real=1e-7)
 	
 	if(!isnothing(findfirst("_",underl_)))
 		error("deltas are defined on single name")

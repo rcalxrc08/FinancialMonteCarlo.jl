@@ -37,9 +37,9 @@ function pricer_macro_multiprocesses(model_type,payoff_type)
 	end
 end
 pricer_macro_multiprocesses(BaseProcess,AbstractPayoff)
-pricer_macro_multiprocesses(BaseProcess,Dict{FinancialMonteCarlo.AbstractPayoff,Number})
-pricer_macro_multiprocesses(Dict{String,FinancialMonteCarlo.AbstractMonteCarloProcess},Dict{String,Dict{FinancialMonteCarlo.AbstractPayoff,Number}})
-pricer_macro_multiprocesses(VectorialMonteCarloProcess,Array{Dict{FinancialMonteCarlo.AbstractPayoff,Number}})
+pricer_macro_multiprocesses(BaseProcess,Dict{AbstractPayoff,Number})
+pricer_macro_multiprocesses(Dict{String,AbstractMonteCarloProcess},Dict{String,Dict{AbstractPayoff,Number}})
+pricer_macro_multiprocesses(VectorialMonteCarloProcess,Array{Dict{AbstractPayoff,Number}})
 
 function pricer(mcProcess::BaseProcess,rfCurve::AbstractZeroRateCurve,mcConfig::MonteCarloConfiguration{<: Integer , <: Integer , <: AbstractMonteCarloMethod ,  <: MultiProcess, <: Random.AbstractRNG},abstractPayoffs::Array{abstractPayoff_}) where {abstractPayoff_ <: AbstractPayoff}
 	price = @distributed (+) for i in 1:nworkers()

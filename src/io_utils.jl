@@ -65,7 +65,7 @@ function get_parameters(model::XProcess) where {XProcess <: BaseProcess}
 	return param_;
 end
 
-function get_parameters(model::XProcess) where {XProcess <: FinancialMonteCarlo.VectorialMonteCarloProcess}
+function get_parameters(model::XProcess) where {XProcess <: VectorialMonteCarloProcess}
 	fields_=fieldnames(XProcess)
 	N1=length(fields_)
 	param_=[];

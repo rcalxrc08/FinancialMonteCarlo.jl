@@ -11,7 +11,7 @@ function |>(x::String,y::Position)
 	return out;
 end
 
-function |>(x::String,y::FinancialMonteCarlo.SingleNamePayoff)
+function |>(x::String,y::SingleNamePayoff)
 	sep=findfirst("_",x);
 	if(!isnothing(sep))
 		error("NO UNDERSCORE ALLOWED IN SINGLE NAME OPTIONS");
@@ -19,7 +19,7 @@ function |>(x::String,y::FinancialMonteCarlo.SingleNamePayoff)
 	return x|>(1.0*y);
 end
 
-function |>(x::String,y::FinancialMonteCarlo.BasketPayoff)
+function |>(x::String,y::BasketPayoff)
 	sep=findfirst("_",x)[1];
 	if(isnothing(sep))
 		error("Bivariate payoff underlying must follow the format: INDEX1_INDEX2");

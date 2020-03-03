@@ -20,9 +20,9 @@ function pricer_macro_multithreading(model_type,payoff_type)
 end
 
 pricer_macro_multithreading(BaseProcess,AbstractPayoff)
-pricer_macro_multithreading(BaseProcess,Dict{FinancialMonteCarlo.AbstractPayoff,Number})
-pricer_macro_multithreading(Dict{String,FinancialMonteCarlo.AbstractMonteCarloProcess},Dict{String,Dict{FinancialMonteCarlo.AbstractPayoff,Number}})
-pricer_macro_multithreading(VectorialMonteCarloProcess,Array{Dict{FinancialMonteCarlo.AbstractPayoff,Number}})
+pricer_macro_multithreading(BaseProcess,Dict{AbstractPayoff,Number})
+pricer_macro_multithreading(Dict{String,AbstractMonteCarloProcess},Dict{String,Dict{AbstractPayoff,Number}})
+pricer_macro_multithreading(VectorialMonteCarloProcess,Array{Dict{AbstractPayoff,Number}})
 
 function pricer(mcProcess::BaseProcess,rfCurve::AbstractZeroRateCurve,mcConfig::MonteCarloConfiguration{<: Integer , <: Integer , <: AbstractMonteCarloMethod ,  <: AbstractMultiThreading, <: Random.AbstractRNG},abstractPayoffs::Array{abstractPayoff_}) where {abstractPayoff_ <: AbstractPayoff}
 	zero_typed=predict_output_type(mcProcess,rfCurve,mcConfig,abstractPayoffs);

@@ -9,20 +9,20 @@ Where:\n
 		rho  = 	correlation matrix.
 """
 mutable struct GaussianCopulaNVariateLogProcess{ num3 <: Number} <: NDimensionalMonteCarloProcess
-	models::Tuple{Vararg{FinancialMonteCarlo.BaseProcess}}
+	models::Tuple{Vararg{BaseProcess}}
 	rho::Matrix{num3}
-	function GaussianCopulaNVariateLogProcess(rho::Matrix{num3},models::FinancialMonteCarlo.BaseProcess...) where { num3 <: Number} 
+	function GaussianCopulaNVariateLogProcess(rho::Matrix{num3},models::BaseProcess...) where { num3 <: Number} 
 		sz=size(rho)
 		@assert sz[1]==sz[2]
 		@assert length(models)==sz[1]
 		@assert det(rho)>=0
 		return new{num3}(models,rho);
 	end
-	function GaussianCopulaNVariateLogProcess(models::FinancialMonteCarlo.BaseProcess...) 
+	function GaussianCopulaNVariateLogProcess(models::BaseProcess...) 
 		len_=length(models)
 		return GaussianCopulaNVariateLogProcess(Matrix{Float64}(I, len_, len_),models...);
 	end
-	function GaussianCopulaNVariateLogProcess(model1::FinancialMonteCarlo.BaseProcess,model2::FinancialMonteCarlo.BaseProcess,rho::num3) where { num3 <: Number} 
+	function GaussianCopulaNVariateLogProcess(model1::BaseProcess,model2::BaseProcess,rho::num3) where { num3 <: Number} 
 		corr_matrix_=[1.0 rho; rho 1.0];
 		@assert det(corr_matrix_)>=0
 		return GaussianCopulaNVariateLogProcess(corr_matrix_,model1,model2);

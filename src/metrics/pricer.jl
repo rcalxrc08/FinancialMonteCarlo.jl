@@ -36,7 +36,7 @@ function pricer(mcProcess::BaseProcess,rfCurve::AbstractZeroRateCurve,mcConfig::
 	return Prices;
 end
 
-function pricer(mcProcess::BaseProcess,rfCurve::AbstractZeroRateCurve,mcConfig::MonteCarloConfiguration,dict_::Dict{FinancialMonteCarlo.AbstractPayoff,Number})
+function pricer(mcProcess::BaseProcess,rfCurve::AbstractZeroRateCurve,mcConfig::MonteCarloConfiguration,dict_::Dict{AbstractPayoff,Number})
 	set_seed(mcConfig)
 	abstractPayoffs=keys(dict_);
 	maxT=maximum([maturity(abstractPayoff) for abstractPayoff in abstractPayoffs])
@@ -47,7 +47,7 @@ function pricer(mcProcess::BaseProcess,rfCurve::AbstractZeroRateCurve,mcConfig::
 end
 
 #####Pricer for multivariate
-function pricer(mcProcess::VectorialMonteCarloProcess,rfCurve::AbstractZeroRateCurve,mcConfig::MonteCarloConfiguration,dict_::Array{Dict{FinancialMonteCarlo.AbstractPayoff,Number}})
+function pricer(mcProcess::VectorialMonteCarloProcess,rfCurve::AbstractZeroRateCurve,mcConfig::MonteCarloConfiguration,dict_::Array{Dict{AbstractPayoff,Number}})
 	set_seed(mcConfig)
 	N_=length(mcProcess.models);
 	idx_=compute_indices(N_);
@@ -56,7 +56,7 @@ function pricer(mcProcess::VectorialMonteCarloProcess,rfCurve::AbstractZeroRateC
 	filter!(i->isassigned(dict_,i),IND_)
 	dict_cl=dict_[IND_];
 	
-	maxT=maximum([ maximum(FinancialMonteCarlo.maturity.(collect(keys(ar_el)))) for ar_el in dict_cl])
+	maxT=maximum([ maximum(maturity.(collect(keys(ar_el)))) for ar_el in dict_cl])
 	S=simulate(mcProcess,rfCurve,mcConfig,maxT)
 	#price=0.0;
 	#for i in IND_
@@ -71,7 +71,7 @@ function pricer(mcProcess::VectorialMonteCarloProcess,rfCurve::AbstractZeroRateC
 end
 
 
-function pricer(mcProcess::Dict{String,FinancialMonteCarlo.AbstractMonteCarloProcess},rfCurve::AbstractZeroRateCurve,mcConfig::MonteCarloConfiguration,dict_::Dict{String,Dict{FinancialMonteCarlo.AbstractPayoff,Number}})
+function pricer(mcProcess::Dict{String,AbstractMonteCarloProcess},rfCurve::AbstractZeroRateCurve,mcConfig::MonteCarloConfiguration,dict_::Dict{String,Dict{AbstractPayoff,Number}})
 	set_seed(mcConfig)
 	underlyings_payoff=keys(dict_);
 	underlyings_payoff_cpl=complete_2(underlyings_payoff,keys(mcProcess));

@@ -3,10 +3,10 @@ import Base.*;
 import Base.-;
 import Base./;
 
-const Position=Dict{FinancialMonteCarlo.AbstractPayoff,Number};
+const Position=Dict{AbstractPayoff,Number};
 
 #Strategies Implementation
-function +(x::FinancialMonteCarlo.AbstractPayoff,y::FinancialMonteCarlo.AbstractPayoff)
+function +(x::AbstractPayoff,y::AbstractPayoff)
 	out=Position( x => 1.0 );
 	if haskey(out,y)
 		out[x]=2.0;
@@ -16,7 +16,7 @@ function +(x::FinancialMonteCarlo.AbstractPayoff,y::FinancialMonteCarlo.Abstract
 	return out;
 end
 
-function +(x::Position,y::FinancialMonteCarlo.AbstractPayoff)
+function +(x::Position,y::AbstractPayoff)
 	out=copy(x);
 	if haskey(out,y)
 		out[y]+=1.0;
@@ -47,98 +47,62 @@ function *(x::Position,y::Number)
 	return out;
 end
 
-function *(x::FinancialMonteCarlo.AbstractPayoff,y::Number)
+function *(x::AbstractPayoff,y::Number)
 	return Position( x => y );
 end
-*(y::Number,out::FinancialMonteCarlo.AbstractPayoff)=out*y;
+*(y::Number,out::AbstractPayoff)=out*y;
 *(y::Number,out::Position)=out*y;
-/(out::FinancialMonteCarlo.AbstractPayoff,y::Number)=out*(1.0/y);
+/(out::AbstractPayoff,y::Number)=out*(1.0/y);
 /(out::Position,y::Number)=out*(1.0/y);
-+(y::FinancialMonteCarlo.AbstractPayoff,out::Position)= out+y;
--(x::FinancialMonteCarlo.AbstractPayoff)=return -1*x;
++(y::AbstractPayoff,out::Position)= out+y;
+-(x::AbstractPayoff)=return -1*x;
 -(x::Position)=return -1*x;
--(y::FinancialMonteCarlo.AbstractPayoff,out::FinancialMonteCarlo.AbstractPayoff)= y+(-1*out);
--(y::FinancialMonteCarlo.AbstractPayoff,out::Position)= y+(-1*out);
--(y::Position,out::FinancialMonteCarlo.AbstractPayoff)= y+(-1*out);
+-(y::AbstractPayoff,out::AbstractPayoff)= y+(-1*out);
+-(y::AbstractPayoff,out::Position)= y+(-1*out);
+-(y::Position,out::AbstractPayoff)= y+(-1*out);
 -(y::Position,out::Position)= y+(-1*out);
 
-#+(x::FinancialMonteCarlo.AbstractPayoff,y::Tuple{FinancialMonteCarlo.AbstractPayoff,FinancialMonteCarlo.AbstractPayoff,typeof(+)})=(x,y,+)
+#+(x::AbstractPayoff,y::Tuple{AbstractPayoff,AbstractPayoff,typeof(+)})=(x,y,+)
 
-#+(x::Position,FinancialMonteCarlo.AbstractPayoff)
+#+(x::Position,AbstractPayoff)
 
 
-import Base.Multimedia.display;
 import Base.hash;
 import Base.isequal;
 
 hash(x::Payoff) where { Payoff <: AbstractPayoff }=sum(hash(get_parameters(x)))+hash(string(Payoff))
 isequal(x::Payoff1,y::Payoff2) where { Payoff1 <: AbstractPayoff , Payoff2 <: AbstractPayoff }=hash(x)==hash(y)
 
-function display(p::Position)
-	#Help dispacthing on arguments, not on code
-	keys_=keys(p);
-	flag=0;
-	for key_ in keys_
+import Base.show;
+
+function show(io::IO,p::Position)
+	keys_=collect(keys(p));
+	for idx_ in 1:length(keys_)
+		key_=keys_[idx_]
 		val_=p[key_]
 		iszero(val_) ? continue : nothing;
 		if typeof(val_) <: Real 
-			if(flag!=0)
-				val_ > 0.0 ? print(+) : print(-);
+			if(idx_!=1)
+				val_ > 0.0 ? print(io,+) : print(io,-);
 			end
 			if(abs(val_)!=1.0)
-				flag!=0 ? print(abs(val_)) : print(val_);
-				print(*);
-				print(key_);
+				idx_!=1 ? print(io,abs(val_)) : print(io,val_);
+				print(io,*);
+				print(io,key_);
 			else
-				val_ > 0.0 ? nothing : print(-);
-				print(key_);
+				idx_==1 && val_<0.0 ? print(io,-) : nothing;
+				print(io,key_);
 			end
 		else
-			if(flag!=0)
-				print(+)
+			if(idx_!=1)
+				print(io,+)
 			end
-			print("(");
-			print(val_);
-			print(")");
-			print(*);
-			print(key_);
+			print(io,"(");
+			print(io,val_);
+			print(io,")");
+			print(io,*);
+			print(io,key_);
 		end
-		flag+=1;
 	end
-	println("")
-end
-
-import Base.Multimedia.print;
-
-function print(p::Position)
-	keys_=keys(p);
-	flag=0;
-	for key_ in keys_
-		val_=p[key_]
-		iszero(val_) ? continue : nothing;
-		if typeof(val_) <: Real 
-			if(flag!=0)
-				val_ > 0.0 ? print(+) : print(-);
-			end
-			if(abs(val_)!=1.0)
-				flag!=0 ? print(abs(val_)) : print(val_);
-				print(*);
-				print(key_);
-			else
-				val_ > 0.0 ? nothing : print(-);
-				print(key_);
-			end
-		else
-			if(flag!=0)
-				print(+)
-			end
-			print("(");
-			print(val_);
-			print(")");
-			print(*);
-			print(key_);
-		end
-		flag+=1;
-	end
-	println("")
+	#println("")
 end
