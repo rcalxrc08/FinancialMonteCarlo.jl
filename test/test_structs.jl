@@ -92,6 +92,5 @@ struct tmptype2 <: FinancialMonteCarlo.AbstractPayoff
 T::Float64
 end
 
-@test_throws(ErrorException,simulate(tmptype(),rfCurve,mc,1.0));
 @test_throws(ErrorException,payoff([1.0 1.0; 1.0 1.0],tmptype2(1.0),rfCurve));
 

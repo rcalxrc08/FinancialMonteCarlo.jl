@@ -5,7 +5,7 @@ mutable struct Underlying{num <: Number, num2 <: Number} <: AbstractUnderlying
 	S0::num
 	d::num2
 	function Underlying(S0::num_,d::num_2=0.0) where {num_ <: Number, num_2 <: Number}
-		if(S0<num_(0))
+		if(S0<zero(num_))
 			error("Underlying starting value must be positive");
 		else
 			return new{num_,num_2}(S0,d)
@@ -17,7 +17,7 @@ mutable struct UnderlyingVec{num <: Number, num2 <: Number, num3 <: Number} <: A
 	S0::num
 	d::Curve{num2,num3}
 	function UnderlyingVec(S0::num_,d::Curve{num2,num3}) where {num_ <: Number, num2 <: Number, num3 <: Number}
-		if(S0<num_(0))
+		if(S0<zero(num_))
 			error("Underlying starting value must be positive");
 		else
 			return new{num_,num2,num3}(S0,d)

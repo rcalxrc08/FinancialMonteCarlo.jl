@@ -1,7 +1,7 @@
 using Sobol, StatsFuns
 
 
-function simulate(mcProcess::BrownianMotion,mcBaseData::MonteCarloConfiguration{type1,type2,type3,SerialMode,type5},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: SobolMode, type5 <: Random.AbstractRNG}
+function simulate!(X,mcProcess::BrownianMotion,mcBaseData::MonteCarloConfiguration{type1,type2,type3,SerialMode,type5},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: SobolMode, type5 <: Random.AbstractRNG}
 	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;
 	σ=mcProcess.σ;
@@ -11,7 +11,6 @@ function simulate(mcProcess::BrownianMotion,mcBaseData::MonteCarloConfiguration{
 	mean_bm=μ*dt
 	stddev_bm=σ*sqrt(dt)
 	isDualZero=mean_bm*stddev_bm*0.0+mcProcess.underlying.S0;
-	X=Matrix{typeof(isDualZero)}(undef,Nsim,Nstep+1);
 	view(X,:,1).=isDualZero;
 	seq=SobolSeq(Nstep);
 	skip(seq,Nstep*Nsim)
@@ -21,11 +20,11 @@ function simulate(mcProcess::BrownianMotion,mcBaseData::MonteCarloConfiguration{
 			@views X[i,j+1]=X[i,j]+mean_bm+stddev_bm*vec[j];
 		end
 	end
-	return X;
+	nothing
 end
 
 
-function simulate(mcProcess::BrownianMotionVec,mcBaseData::MonteCarloConfiguration{type1,type2,type3,SerialMode,type5},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: SobolMode, type5 <: Random.AbstractRNG}
+function simulate!(X,mcProcess::BrownianMotionVec,mcBaseData::MonteCarloConfiguration{type1,type2,type3,SerialMode,type5},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: SobolMode, type5 <: Random.AbstractRNG}
 	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;
 	σ=mcProcess.σ;
@@ -35,7 +34,6 @@ function simulate(mcProcess::BrownianMotionVec,mcBaseData::MonteCarloConfigurati
 	stddev_bm=σ*sqrt(dt)
 	zero_drift=μ(dt*0.0,dt);
 	isDualZero=stddev_bm*0.0*mcProcess.underlying.S0*zero_drift;
-	X=Matrix{typeof(isDualZero)}(undef,Nsim,Nstep+1);
 	view(X,:,1).=isDualZero;	
 	seq=SobolSeq(Nstep);
 	skip(seq,Nstep*Nsim)
@@ -47,6 +45,6 @@ function simulate(mcProcess::BrownianMotionVec,mcBaseData::MonteCarloConfigurati
 		end
 	end
 
-	return X;
+	nothing
 
 end

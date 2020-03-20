@@ -1,4 +1,4 @@
-function predict_output_type(x...)
+function predict_output_type(x...)::Type
 	
 	zero_out_=predict_output_type_zero(x...)
 

@@ -13,7 +13,7 @@ end
 
 export MonteCarloDiffeEqModel;
 
-function simulate(mcProcess::MonteCarloDiffEqModel,rfCurve::ZeroRate,mcBaseData::MonteCarloConfiguration{type1,type2,type3,type4,type5},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AbstractMonteCarloMethod, type4 <: BaseMode, type5 <: Random.AbstractRNG}
+function simulate!(X,mcProcess::MonteCarloDiffEqModel,rfCurve::ZeroRate,mcBaseData::MonteCarloConfiguration{type1,type2,type3,type4,type5},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AbstractMonteCarloMethod, type4 <: BaseMode, type5 <: Random.AbstractRNG}
 	
 	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;
@@ -21,6 +21,8 @@ function simulate(mcProcess::MonteCarloDiffEqModel,rfCurve::ZeroRate,mcBaseData:
 	@assert T>0.0
 	diffeqmodel=mcProcess.model;
 	sol = solve(diffeqmodel,SOSRI(),EnsembleThreads(),trajectories=Nsim,dt=Dt,adaptive=false)
-	X=[path.u[j] for path in sol.u, j in 1:(Nstep+1)];
-	return mcProcess.final_trasform.(X);
+	X.=[path.u[j] for path in sol.u, j in 1:(Nstep+1)];
+	f(x)=mcProcess.final_trasform(x);
+	broadcast!(f,X,X)
+	nothing;
 end

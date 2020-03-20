@@ -36,7 +36,7 @@ end
 
 export HestonProcess;
 
-function simulate(mcProcess::HestonProcess,rfCurve::ZeroRate,mcBaseData::MonteCarloConfiguration{type1,type2,type3,SerialMode,type5},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: StandardMC, type5 <: Random.AbstractRNG}
+function simulate!(X,mcProcess::HestonProcess,rfCurve::ZeroRate,mcBaseData::MonteCarloConfiguration{type1,type2,type3,SerialMode,type5},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: StandardMC, type5 <: Random.AbstractRNG}
 	r=rfCurve.r;
 	S0=mcProcess.underlying.S0;
 	d=dividend(mcProcess);
@@ -57,7 +57,7 @@ function simulate(mcProcess::HestonProcess,rfCurve::ZeroRate,mcBaseData::MonteCa
 
 	dt=T/Nstep
 	isDualZero=T*r*σ_zero*κ*θ*λ1*σ*ρ*0.0;
-	X=Matrix{typeof(isDualZero)}(undef,Nsim,Nstep+1);
+	#X=Matrix{typeof(isDualZero)}(undef,Nsim,Nstep+1);
 	view(X,:,1).=isDualZero;
 	for i in 1:Nsim
 		v_m=σ_zero;
@@ -69,12 +69,12 @@ function simulate(mcProcess::HestonProcess,rfCurve::ZeroRate,mcBaseData::MonteCa
 		end
 	end
 	## Conclude
-	S=S0.*exp.(X);
-	return S;
+	X.=S0.*exp.(X);
+	return;
 
 end
 
-function simulate(mcProcess::HestonProcess,rfCurve::ZeroRate,mcBaseData::MonteCarloConfiguration{type1,type2,type3,SerialMode,type5},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AntitheticMC, type5 <: Random.AbstractRNG}
+function simulate!(X,mcProcess::HestonProcess,rfCurve::ZeroRate,mcBaseData::MonteCarloConfiguration{type1,type2,type3,SerialMode,type5},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AntitheticMC, type5 <: Random.AbstractRNG}
 	r=rfCurve.r;
 	S0=mcProcess.underlying.S0;
 	d=dividend(mcProcess);
@@ -95,7 +95,7 @@ function simulate(mcProcess::HestonProcess,rfCurve::ZeroRate,mcBaseData::MonteCa
 
 	dt=T/Nstep
 	isDualZero=T*r*σ_zero*κ*θ*λ1*σ*ρ*0.0;
-	X=Matrix{typeof(isDualZero)}(undef,Nsim,Nstep+1);
+	#X=Matrix{typeof(isDualZero)}(undef,Nsim,Nstep+1);
 	view(X,:,1).=isDualZero;
 	for i in 1:div(Nsim,2)
 		v_m_1=σ_zero;
@@ -110,7 +110,7 @@ function simulate(mcProcess::HestonProcess,rfCurve::ZeroRate,mcBaseData::MonteCa
 		end
 	end
 	## Conclude
-	S=S0.*exp.(X);
-	return S;
+	X.=S0.*exp.(X);
+	return;
 
 end

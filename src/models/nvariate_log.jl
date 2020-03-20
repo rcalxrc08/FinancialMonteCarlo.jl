@@ -15,7 +15,7 @@ mutable struct GaussianCopulaNVariateLogProcess{ num3 <: Number} <: NDimensional
 		sz=size(rho)
 		@assert sz[1]==sz[2]
 		@assert length(models)==sz[1]
-		@assert det(rho)>=0
+		@assert isposdef(rho)
 		return new{num3}(models,rho);
 	end
 	function GaussianCopulaNVariateLogProcess(models::BaseProcess...) 
@@ -31,7 +31,7 @@ end
  
 export GaussianCopulaNVariateLogProcess;
 
-function simulate(mcProcess::GaussianCopulaNVariateLogProcess,rfCurve::AbstractZeroRateCurve,mcBaseData::MonteCarloConfiguration{type1,type2,type3,type4,type5},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AbstractMonteCarloMethod, type4 <: BaseMode, type5 <: Random.AbstractRNG}
+function simulate!(S_Total,mcProcess::GaussianCopulaNVariateLogProcess,rfCurve::AbstractZeroRateCurve,mcBaseData::MonteCarloConfiguration{type1,type2,type3,type4,type5},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AbstractMonteCarloMethod, type4 <: BaseMode, type5 <: Random.AbstractRNG}
 	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;
 	@assert T>0.0
@@ -39,14 +39,21 @@ function simulate(mcProcess::GaussianCopulaNVariateLogProcess,rfCurve::AbstractZ
 	####Simulation
 	## Simulate
 	len_=length(mcProcess.models);
-	S_Total::Array{Matrix{Number}}=[log.(simulate(model_i,rfCurve,mcBaseData,T)./model_i.underlying.S0) for model_i in mcProcess.models];
+	#S_Total::Array{Matrix{Number}}=[log.(simulate(model_i,rfCurve,mcBaseData,T)./model_i.underlying.S0) for model_i in mcProcess.models];
+	
+	for i in 1:len_
+		simulate!(S_Total[i],mcProcess.models[i],rfCurve,mcBaseData,T)
+	end
+	
 	rho=mcProcess.rho
 	if (rho[1,2:end]==zeros(len_-1))
-		return [mcProcess.models[i].underlying.S0.*exp.(S_Total[i]) for i in 1:len_];
+		return;
+	end
+	for i in 1:len_
+		S_Total[i].=log.(S_Total[i]./mcProcess.models[i].underlying.S0);
 	end
 	for j in 1:Nstep
-	
-		U_joint=gausscopulagen(Nsim,rho);
+		U_joint=gausscopulagen2(Nsim,rho);
 	
 		for i in 1:len_
 			cdf_ = sort(S_Total[i][:,j+1])
@@ -55,6 +62,6 @@ function simulate(mcProcess::GaussianCopulaNVariateLogProcess,rfCurve::AbstractZ
 	end
 	
 	## Conclude
-	return S_Total;
+	return;
 
 end

@@ -7,7 +7,7 @@ mutable struct MonteCarloConfiguration{num1 <: Integer , num2 <: Integer , abstr
 	monteCarloMethod::abstractMonteCarloMethod
 	parallelMode::baseMode
 	seed::Int64
-	offset::Int64
+	offset::Union{Int64, Nothing}
 	rng::rngType
 	function MonteCarloConfiguration(Nsim::num1,Nstep::num2,seed::Number) where {num1 <: Integer, num2 <: Integer}
         return MonteCarloConfiguration(Nsim,Nstep,StandardMC(),SerialMode(),Int64(seed),MersenneTwister())

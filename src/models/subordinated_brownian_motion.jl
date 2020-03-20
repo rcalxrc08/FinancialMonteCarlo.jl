@@ -24,16 +24,17 @@ end
 
 export SubordinatedBrownianMotion;
 
-function simulate(mcProcess::SubordinatedBrownianMotion,mcBaseData::MonteCarloConfiguration{type1,type2,type3,SerialMode,type5},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: StandardMC, type5 <: Random.AbstractRNG}
+
+function simulate!(X,mcProcess::SubordinatedBrownianMotion,mcBaseData::MonteCarloConfiguration{type1,type2,type3,SerialMode,type5},T::numb) where {numb <: Number, type1 <: Integer, type2<: Integer, type3 <: StandardMC, type5 <: Random.AbstractRNG}
 	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;
 	
 	drift=mcProcess.drift;
 	sigma=mcProcess.sigma;
 	@assert T>0.0
-	type_sub=typeof(quantile(mcProcess.subordinator_,0.5));
+	type_sub=typeof(rand(mcBaseData.rng,mcProcess.subordinator_));
 	isDualZero=drift*zero(type_sub)*0.0;
-	X=Matrix{typeof(isDualZero)}(undef,Nsim,Nstep+1);
+	#X=Matrix{typeof(isDualZero)}(undef,Nsim,Nstep+1);
 	@views X[:,1].=isDualZero;
 	for i=1:Nstep
 		# SUBORDINATED BROWNIAN MOTION (dt_s=time change)
@@ -44,11 +45,11 @@ function simulate(mcProcess::SubordinatedBrownianMotion,mcBaseData::MonteCarloCo
 	end
 	
 
-	return X;
+	#return X;
 end
 
 
-function simulate(mcProcess::SubordinatedBrownianMotion,mcBaseData::MonteCarloConfiguration{type1,type2,type3,SerialMode,type5},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AntitheticMC, type5 <: Random.AbstractRNG}
+function simulate!(X,mcProcess::SubordinatedBrownianMotion,mcBaseData::MonteCarloConfiguration{type1,type2,type3,SerialMode,type5},T::numb) where {numb <: Number, type1 <: Integer, type2<: Integer, type3 <: AntitheticMC, type5 <: Random.AbstractRNG}
 	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;
 	type_sub=typeof(quantile(mcProcess.subordinator_,0.5));
@@ -56,7 +57,7 @@ function simulate(mcProcess::SubordinatedBrownianMotion,mcBaseData::MonteCarloCo
 	sigma=mcProcess.sigma;
 	@assert T>0.0
 	isDualZero=drift*sigma*zero(type_sub)*0.0;
-	X=Matrix{typeof(isDualZero)}(undef,Nsim,Nstep+1);
+	#X=Matrix{typeof(isDualZero)}(undef,Nsim,Nstep+1);
 	X[:,1].=isDualZero;
 	Nsim_2=div(Nsim,2);
 	for j=1:Nstep
@@ -69,5 +70,5 @@ function simulate(mcProcess::SubordinatedBrownianMotion,mcBaseData::MonteCarloCo
 		end
 	end
 	
-	return X;
+	nothing
 end

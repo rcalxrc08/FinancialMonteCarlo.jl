@@ -28,7 +28,7 @@ end
 
 export NormalInverseGaussianProcess;
 
-function simulate(mcProcess::NormalInverseGaussianProcess,rfCurve::AbstractZeroRateCurve,mcBaseData::MonteCarloConfiguration{type1,type2,type3,type4,type5},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AbstractMonteCarloMethod, type4 <: BaseMode, type5 <: Random.AbstractRNG}
+function simulate!(X,mcProcess::NormalInverseGaussianProcess,rfCurve::AbstractZeroRateCurve,mcBaseData::MonteCarloConfiguration{type1,type2,type3,type4,type5},T::numb) where {numb <: Number, type1 <: Integer, type2<: Integer, type3 <: AbstractMonteCarloMethod, type4 <: BaseMode, type5 <: Random.AbstractRNG}
 	r=rfCurve.r;
 	S0=mcProcess.underlying.S0;
 	d=dividend(mcProcess);
@@ -49,10 +49,11 @@ function simulate(mcProcess::NormalInverseGaussianProcess,rfCurve::AbstractZeroR
 	IGRandomVariable=InverseGaussian(dt,dt*dt/κ1);
 	
 	#Call SubordinatedBrownianMotion
-	X=simulate(SubordinatedBrownianMotion(σ,drift,IGRandomVariable,Underlying(0.0)),mcBaseData,T);
+	simulate!(X,SubordinatedBrownianMotion(σ,drift,IGRandomVariable,Underlying(0.0)),mcBaseData,T);
 
-	S=S0.*exp.(X);
-	
-	return S;
+	f(x)=S0*exp(x);
+	broadcast!(f,X,X)
+
+	return nothing;
 	
 end

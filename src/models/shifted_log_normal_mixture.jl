@@ -30,7 +30,7 @@ end
 
 export ShiftedLogNormalMixture;
 
-function simulate(mcProcess::ShiftedLogNormalMixture,rfCurve::AbstractZeroRateCurve,mcBaseData::MonteCarloConfiguration{type1,type2,type3,type4,type5},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AbstractMonteCarloMethod, type4 <: BaseMode, type5 <: Random.AbstractRNG}
+function simulate!(X,mcProcess::ShiftedLogNormalMixture,rfCurve::AbstractZeroRateCurve,mcBaseData::MonteCarloConfiguration{type1,type2,type3,type4,type5},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AbstractMonteCarloMethod, type4 <: BaseMode, type5 <: Random.AbstractRNG}
 	@assert T>0.0
 	r=rfCurve.r;
 	S0=mcProcess.underlying.S0;
@@ -42,8 +42,9 @@ function simulate(mcProcess::ShiftedLogNormalMixture,rfCurve::AbstractZeroRateCu
 	mu_gbm=r-d;
 	dt=T/Nstep
 	A0=S0*(1-mcProcess.α)
-	S=simulate(LogNormalMixture(η_gbm,λ_gmb,Underlying(A0,d)),rfCurve,mcBaseData,T)
+	simulate!(X,LogNormalMixture(η_gbm,λ_gmb,Underlying(A0,d)),rfCurve,mcBaseData,T)
 	tt=collect(0.0:dt:T);
-	return S.+mcProcess.α.*S0.*exp.(integral(mu_gbm,t_) for t_ in tt)';
+	X.=X.+mcProcess.α.*S0.*exp.(integral(mu_gbm,t_) for t_ in tt)'
+	return nothing;
 	
 end

@@ -28,7 +28,7 @@ end
 
 export SubordinatedBrownianMotionVec;
 
-function simulate(mcProcess::SubordinatedBrownianMotionVec,mcBaseData::MonteCarloConfiguration{type1,type2,type3,SerialMode,type5},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: StandardMC, type5 <: Random.AbstractRNG}
+function simulate!(X,mcProcess::SubordinatedBrownianMotionVec,mcBaseData::MonteCarloConfiguration{type1,type2,type3,SerialMode,type5},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: StandardMC, type5 <: Random.AbstractRNG}
 	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;
 	
@@ -41,7 +41,7 @@ function simulate(mcProcess::SubordinatedBrownianMotionVec,mcBaseData::MonteCarl
 	dt=T/Nstep;
 	zero_drift=drift(zero(type_sub),zero(type_sub)+dt)*0.0;
 	isDualZero=sigma*zero(type_sub)*0.0*zero_drift;
-	X=Matrix{typeof(isDualZero)}(undef,Nsim,Nstep+1);
+	#X=Matrix{typeof(isDualZero)}(undef,Nsim,Nstep+1);
 	@views X[:,1].=isDualZero;
 	Z=Array{Float64}(undef,Nsim)
 	for i=1:Nstep
@@ -53,11 +53,11 @@ function simulate(mcProcess::SubordinatedBrownianMotionVec,mcBaseData::MonteCarl
 		@views X[:,i+1]=X[:,i]+tmp_drift+sigma*sqrt.(dt_s).*Z;
 	end
 
-	return X;
+	return;
 end
 
 
-function simulate(mcProcess::SubordinatedBrownianMotionVec,mcBaseData::MonteCarloConfiguration{type1,type2,type3,SerialMode,type5},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AntitheticMC, type5 <: Random.AbstractRNG}
+function simulate!(X,mcProcess::SubordinatedBrownianMotionVec,mcBaseData::MonteCarloConfiguration{type1,type2,type3,SerialMode,type5},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AntitheticMC, type5 <: Random.AbstractRNG}
 	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;
 	type_sub=typeof(quantile(mcProcess.subordinator_,0.5));
@@ -69,7 +69,7 @@ function simulate(mcProcess::SubordinatedBrownianMotionVec,mcBaseData::MonteCarl
 	dt=T/Nstep;
 	zero_drift=drift(zero(type_sub),zero(type_sub)+dt);
 	isDualZero=sigma*zero(type_sub)*0.0*zero_drift;
-	X=Matrix{typeof(isDualZero)}(undef,Nsim,Nstep+1);
+	#X=Matrix{typeof(isDualZero)}(undef,Nsim,Nstep+1);
 	@views X[:,1].=isDualZero;
 	for i=1:Nstep
 		NsimAnti=div(Nsim,2)
@@ -82,5 +82,5 @@ function simulate(mcProcess::SubordinatedBrownianMotionVec,mcBaseData::MonteCarl
 		@views X[:,i+1]=X[:,i].+tmp_drift.+sigma.*sqrt.(dt_s).*Z;
 	end
 	
-	return X;
+	return;
 end

@@ -29,5 +29,5 @@ export EuropeanOption;
 function payout(ST::numtype_,euPayoff::EuropeanOption) where {numtype_<:Number}
 	iscall=euPayoff.isCall ? 1 : -1
 	zero_typed=zero(ST)*euPayoff.K;
-	return max.(iscall*(ST.-euPayoff.K),zero_typed);
+	return max(iscall*(ST-euPayoff.K),zero_typed);
 end

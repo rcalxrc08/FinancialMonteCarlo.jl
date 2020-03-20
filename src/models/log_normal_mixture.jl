@@ -28,7 +28,7 @@ end
 
 export LogNormalMixture;
 
-function simulate(mcProcess::LogNormalMixture,rfCurve::AbstractZeroRateCurve,mcBaseData::MonteCarloConfiguration{type1,type2,type3,type4,type5},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AbstractMonteCarloMethod, type4 <: BaseMode, type5 <: Random.AbstractRNG}
+function simulate!(S,mcProcess::LogNormalMixture,rfCurve::AbstractZeroRateCurve,mcBaseData::MonteCarloConfiguration{type1,type2,type3,type4,type5},T::numb) where {numb <: Number, type1 <: Integer, type2<: Integer, type3 <: AbstractMonteCarloMethod, type4 <: BaseMode, type5 <: Random.AbstractRNG}
 	@assert T>0.0
 	r=rfCurve.r;
 	S0=mcProcess.underlying.S0;
@@ -39,10 +39,14 @@ function simulate(mcProcess::LogNormalMixture,rfCurve::AbstractZeroRateCurve,mcB
 	λ_gmb=mcProcess.λ
 	push!(λ_gmb,1.0-sum(mcProcess.λ))
 	mu_gbm=r-d;
-	S=λ_gmb[1].*simulate(GeometricBrownianMotion(η_gbm[1],mu_gbm,Underlying(S0)),mcBaseData,T);
+	simulate!(S,GeometricBrownianMotion(η_gbm[1],mu_gbm,Underlying(S0)),mcBaseData,T)
+	S.*=λ_gmb[1];
+	tmp_=similar(S);
+	#S=λ_gmb[1].*simulate(GeometricBrownianMotion(η_gbm[1],mu_gbm,Underlying(S0)),mcBaseData,T);
 	for (η_gbm_,λ_gmb_) in zip(η_gbm[2:end],λ_gmb[2:end])
-		S+=λ_gmb_.*simulate(GeometricBrownianMotion(η_gbm_,mu_gbm,Underlying(S0)),mcBaseData,T)
+		simulate!(tmp_,GeometricBrownianMotion(η_gbm_,mu_gbm,Underlying(S0)),mcBaseData,T)
+		S.+=λ_gmb_*tmp_;
 	end
-	return S;
+	return nothing;
 	
 end
