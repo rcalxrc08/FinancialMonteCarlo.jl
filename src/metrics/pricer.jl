@@ -25,6 +25,11 @@ function pricer(mcProcess::BaseProcess,rfCurve::AbstractZeroRateCurve,mcConfig::
 	return Price;
 end
 
+get_matrix_type(mcConfig::MonteCarloConfiguration{<: Integer, <: Integer, <: AbstractMonteCarloMethod, <: BaseMode, <: Random.AbstractRNG},model::BaseProcess,price)=Matrix{typeof(price)};
+get_array_type(mcConfig::MonteCarloConfiguration{<: Integer, <: Integer, <: AbstractMonteCarloMethod, <: BaseMode, <: Random.AbstractRNG},model::BaseProcess,price)=Array{typeof(price)};
+
+get_matrix_type(mcConfig::MonteCarloConfiguration{<: Integer, <: Integer, <: AbstractMonteCarloMethod, <: BaseMode, <: Random.AbstractRNG},model::VectorialMonteCarloProcess,price)=Array{Matrix{typeof(price)}};
+
 
 function pricer(mcProcess::BaseProcess,rfCurve::AbstractZeroRateCurve,mcConfig::MonteCarloConfiguration,abstractPayoffs::Array{abstractPayoff_}) where {abstractPayoff_ <: AbstractPayoff}
 	set_seed(mcConfig)
@@ -75,15 +80,15 @@ function pricer(mcProcess::Dict{String,AbstractMonteCarloProcess},rfCurve::Abstr
 	set_seed(mcConfig)
 	underlyings_payoff=keys(dict_);
 	underlyings_payoff_cpl=complete_2(underlyings_payoff,keys(mcProcess));
-	price=0.0;
-	for under_cpl in unique(underlyings_payoff_cpl)
-		#options=dict_[under_]
-		options=extract_(under_cpl,dict_)
-		model=mcProcess[under_cpl]
-		price=price+pricer(model,rfCurve,mcConfig,options);
-	end
-	
-	#price= sum(pricer(mcProcess[under_],rfCurve,mcConfig,dict_[under_]) for under_ in underlyings_payoff);
+	#price=0.0;
+	#for under_cpl in unique(underlyings_payoff_cpl)
+	#	#options=dict_[under_]
+	#	options=extract_(under_cpl,dict_)
+	#	model=mcProcess[under_cpl]
+	#	price=price+pricer(model,rfCurve,mcConfig,options);
+	#end
+	zero_typed=predict_output_type(rfCurve,mcConfig,collect(keys(collect(values(dict_)))),collect(values(mcProcess)));
+	price::zero_typed= sum(pricer(mcProcess[under_cpl],rfCurve,mcConfig,extract_(under_cpl,dict_)) for under_cpl in unique(underlyings_payoff_cpl));
 	
 	return price;
 end

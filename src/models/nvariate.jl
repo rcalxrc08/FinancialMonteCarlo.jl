@@ -31,7 +31,16 @@ end
 
 export GaussianCopulaNVariateProcess;
 
-function simulate(mcProcess::GaussianCopulaNVariateProcess,rfCurve::AbstractZeroRateCurve,mcBaseData::MonteCarloConfiguration{type1,type2,type3,type4,type5},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AbstractMonteCarloMethod, type4 <: BaseMode, type5 <: Random.AbstractRNG}
+function gausscopulagen2(t::Int, Σ::Matrix{Float64} = [1. 0.5; 0.5 1.])
+  z = rand(MvNormal(Σ),t)
+  for i in 1:size(Σ, 2)
+    d = Normal(0, sqrt(Σ[i,i]))
+    @views z[i,:].= cdf.(d, z[i,:])
+  end
+  return collect(z');
+end
+
+function simulate!(S_total,mcProcess::GaussianCopulaNVariateProcess,rfCurve::AbstractZeroRateCurve,mcBaseData::MonteCarloConfiguration{type1,type2,type3,type4,type5},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AbstractMonteCarloMethod, type4 <: BaseMode, type5 <: Random.AbstractRNG}
 	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;
 	@assert T>0.0
@@ -39,22 +48,25 @@ function simulate(mcProcess::GaussianCopulaNVariateProcess,rfCurve::AbstractZero
 	####Simulation
 	## Simulate
 	len_=length(mcProcess.models);
-	S_Total::Array{Matrix{Number}}=[simulate(model_i,rfCurve,mcBaseData,T) for model_i in mcProcess.models];
+	for i in 1:len_
+		simulate!(S_total[i],mcProcess.models[i],rfCurve,mcBaseData,T)
+	end
+	#S_Total::Array{Matrix{Number}}=[simulate(model_i,rfCurve,mcBaseData,T) for model_i in mcProcess.models];
 	rho=mcProcess.rho
 	if (rho[1,2:end]==zeros(len_-1))
-		return S_Total
+		return;
 	end
 	for j in 1:Nstep
 	
-		U_joint=gausscopulagen(Nsim,rho);
+		U_joint=gausscopulagen2(Nsim,rho);
 	
 		for i in 1:len_
-			cdf_ = sort(S_Total[i][:,j+1])
-			@views S_Total[i][:,j+1]=Statistics.quantile(cdf_,U_joint[:,i])
+			cdf_ = sort(S_total[i][:,j+1])
+			@views S_total[i][:,j+1]=Statistics.quantile(cdf_,U_joint[:,i])
 		end
 	end
 	
 	## Conclude
-	return S_Total;
+	return;
 
 end

@@ -7,7 +7,7 @@ Where:\n
 		σ	=	volatility of the process.
 		μ	=	drift of the process.
 """
-mutable struct BrownianMotion{num <: Number, num1 <: Number, abstrUnderlying <: AbstractUnderlying} <: ItoProcess
+mutable struct BrownianMotion{num <: Number, num1 <: Number, abstrUnderlying <: AbstractUnderlying} <: AbstractMonteCarloEngine
 	σ::num
 	μ::num1
 	underlying::abstrUnderlying
@@ -22,7 +22,7 @@ end
 
 export BrownianMotion;
 
-function simulate(mcProcess::BrownianMotion,mcBaseData::MonteCarloConfiguration{type1,type2,type3,SerialMode,type5},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: StandardMC, type5 <: Random.AbstractRNG}
+function simulate!(X,mcProcess::BrownianMotion,mcBaseData::MonteCarloConfiguration{type1,type2,type3,SerialMode,type5},T::numb) where {numb <: Number, type1 <: Integer, type2<: Integer, type3 <: StandardMC, type5 <: Random.AbstractRNG}
 	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;
 	σ=mcProcess.σ;
@@ -31,8 +31,7 @@ function simulate(mcProcess::BrownianMotion,mcBaseData::MonteCarloConfiguration{
 	dt=T/Nstep
 	mean_bm=μ*dt
 	stddev_bm=σ*sqrt(dt)
-	isDualZero=mean_bm*stddev_bm*0.0;
-	X=Matrix{typeof(isDualZero)}(undef,Nsim,Nstep+1);
+	isDualZero=mean_bm*stddev_bm*0.0+mcProcess.underlying.S0;
 	view(X,:,1).=isDualZero;	
 	@inbounds for j=1:Nstep
 		@inbounds for i=1:Nsim
@@ -41,12 +40,13 @@ function simulate(mcProcess::BrownianMotion,mcBaseData::MonteCarloConfiguration{
 		end
 	end
 
-	return X;
+	nothing;
 
 end
 
 
-function simulate(mcProcess::BrownianMotion,mcBaseData::MonteCarloConfiguration{type1,type2,type3,SerialMode,type5},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AntitheticMC, type5 <: Random.AbstractRNG}
+
+function simulate!(X,mcProcess::BrownianMotion,mcBaseData::MonteCarloConfiguration{type1,type2,type3,SerialMode,type5},T::numb) where {numb <: Number, type1 <: Integer, type2<: Integer, type3 <: AntitheticMC, type5 <: Random.AbstractRNG}
 	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;
 	σ=mcProcess.σ;
@@ -56,18 +56,17 @@ function simulate(mcProcess::BrownianMotion,mcBaseData::MonteCarloConfiguration{
 	mean_bm=μ*dt
 	stddev_bm=σ*sqrt(dt)
 	isDualZero=mean_bm*stddev_bm*0.0;
-	X=Matrix{typeof(isDualZero)}(undef,Nsim,Nstep+1);
 	view(X,:,1).=isDualZero;
 	Nsim_2=div(Nsim,2)
 
 	@inbounds for j in 1:Nstep
 		@inbounds for i in 1:Nsim_2
 			Z=stddev_bm.*randn(mcBaseData.rng);
-			X[2*i-1,j+1]=X[2*i-1,j].+mean_bm.+Z;
-			X[2*i,j+1]  =X[2*i,j]  .+mean_bm.-Z;
+			X[2*i-1,j+1]=X[2*i-1,j]+mean_bm.+Z;
+			X[2*i,j+1]  =X[2*i,j]  +mean_bm.-Z;
 		end
 	end
 
-	return X;
+	nothing;
 
 end

@@ -25,8 +25,8 @@ dr_(u,p,t) = (r-d-sigma^2/2.0-lam*(p1/(lamp-1)-(1-p1)/(lamm+1)))
 g_1(u,p,t) = sigma
 #Time Window
 tspan = (0.0,T)
-rate(u,p,t) = (lam*T)
-affect!(integrator) = (integrator.u = integrator.u+((rand()<p1) ? FinancialMonteCarlo.quantile_exp(lamp,rand()) : -FinancialMonteCarlo.quantile_exp(lamm,rand())))
+rate(u,p,t) = lam*T
+affect!(integrator) = (integrator.u = integrator.u+((rand(mc.rng)<p1) ? FinancialMonteCarlo.quantile_exp(lamp,rand(mc.rng)) : -FinancialMonteCarlo.quantile_exp(lamm,rand(mc.rng))))
 jump = ConstantRateJump(rate,affect!)
 
 

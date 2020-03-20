@@ -1,5 +1,5 @@
 
-function simulate(mcProcess::HestonProcess,rfCurve::ZeroRateCurve,mcBaseData::MonteCarloConfiguration{type1,type2,type3,SerialMode,type5},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: StandardMC, type5 <: Random.AbstractRNG}
+function simulate!(X,mcProcess::HestonProcess,rfCurve::ZeroRateCurve,mcBaseData::MonteCarloConfiguration{type1,type2,type3,SerialMode,type5},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: StandardMC, type5 <: Random.AbstractRNG}
 	r=rfCurve.r;
 	S0=mcProcess.underlying.S0;
 	d=dividend(mcProcess);
@@ -21,7 +21,7 @@ function simulate(mcProcess::HestonProcess,rfCurve::ZeroRateCurve,mcBaseData::Mo
 	dt=T/Nstep
 	zero_drift=r_d(dt*0.0,dt);
 	isDualZero=S0*T*σ_zero*κ*θ*λ1*σ*ρ*0.0*zero_drift;
-	X=Matrix{typeof(isDualZero)}(undef,Nsim,Nstep+1);
+	#X=Matrix{typeof(isDualZero)}(undef,Nsim,Nstep+1);
 	X[:,1].=isDualZero;
 	v_m=[σ_zero+isDualZero for _ in 1:Nsim];
 	for j in 1:Nstep
@@ -33,12 +33,12 @@ function simulate(mcProcess::HestonProcess,rfCurve::ZeroRateCurve,mcBaseData::Mo
 		v_m+=κ_s.*(θ_s.-max.(v_m,0)).*dt+σ.*sqrt.(max.(v_m,0)).*sqrt(dt).*e2;
 	end
 	## Conclude
-	S=S0.*exp.(X);
-	return S;
+	X.=S0.*exp.(X);
+	return ;
 
 end
 
-function simulate(mcProcess::HestonProcess,rfCurve::ZeroRateCurve,mcBaseData::MonteCarloConfiguration{type1,type2,type3,SerialMode,type5},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AntitheticMC, type5 <: Random.AbstractRNG}
+function simulate!(X,mcProcess::HestonProcess,rfCurve::ZeroRateCurve,mcBaseData::MonteCarloConfiguration{type1,type2,type3,SerialMode,type5},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AntitheticMC, type5 <: Random.AbstractRNG}
 	r=rfCurve.r;
 	S0=mcProcess.underlying.S0;
 	d=dividend(mcProcess);
@@ -59,7 +59,7 @@ function simulate(mcProcess::HestonProcess,rfCurve::ZeroRateCurve,mcBaseData::Mo
 
 	dt=T/Nstep
 	isDualZero=S0*T*σ_zero*κ*θ*λ1*σ*ρ*0.0;
-	X=Matrix{typeof(isDualZero)}(undef,Nsim,Nstep+1);
+	#X=Matrix{typeof(isDualZero)}(undef,Nsim,Nstep+1);
 	X[:,1].=isDualZero;
 	v_m=[σ_zero+isDualZero for _ in 1:Nsim];
 	Nsim_2=div(Nsim,2)
@@ -77,7 +77,7 @@ function simulate(mcProcess::HestonProcess,rfCurve::ZeroRateCurve,mcBaseData::Mo
 	end
 	
 	## Conclude
-	S=S0.*exp.(X);
-	return S;
+	X.=S0.*exp.(X);
+	return;
 
 end

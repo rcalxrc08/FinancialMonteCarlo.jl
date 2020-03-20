@@ -7,7 +7,7 @@ Where:\n
 		σ	=	volatility of the process.
 		μ	=	drift of the process.
 """
-mutable struct BrownianMotionVec{num <: Number, num1 <: Number , num4 <: Number, abstrUnderlying <: AbstractUnderlying} <: ItoProcess
+mutable struct BrownianMotionVec{num <: Number, num1 <: Number , num4 <: Number, abstrUnderlying <: AbstractUnderlying} <: AbstractMonteCarloEngine
 	σ::num
 	μ::Curve{num1,num4}
 	underlying::abstrUnderlying
@@ -24,7 +24,7 @@ function BrownianMotion(σ::num,μ::Curve{num1,num4},underlying::abstrUnderlying
 	return BrownianMotionVec(σ,μ,underlying)
 end
 
-function simulate(mcProcess::BrownianMotionVec,mcBaseData::MonteCarloConfiguration{type1,type2,type3,SerialMode,type5},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: StandardMC, type5 <: Random.AbstractRNG}
+function simulate!(X,mcProcess::BrownianMotionVec,mcBaseData::MonteCarloConfiguration{type1,type2,type3,SerialMode,type5},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: StandardMC, type5 <: Random.AbstractRNG}
 	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;
 	σ=mcProcess.σ;
@@ -34,7 +34,6 @@ function simulate(mcProcess::BrownianMotionVec,mcBaseData::MonteCarloConfigurati
 	stddev_bm=σ*sqrt(dt)
 	zero_drift=μ(dt*0.0,dt);
 	isDualZero=stddev_bm*0.0*zero_drift;
-	X=Matrix{typeof(isDualZero)}(undef,Nsim,Nstep+1);
 	view(X,:,1).=isDualZero;
 	@inbounds for j=1:Nstep
 		tmp_=μ((j-1)*dt,dt);
@@ -44,12 +43,12 @@ function simulate(mcProcess::BrownianMotionVec,mcBaseData::MonteCarloConfigurati
 		end
 	end
 
-	return X;
+	nothing
 
 end
 
 
-function simulate(mcProcess::BrownianMotionVec,mcBaseData::MonteCarloConfiguration{type1,type2,type3,SerialMode,type5},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AntitheticMC, type5 <: Random.AbstractRNG}
+function simulate!(X,mcProcess::BrownianMotionVec,mcBaseData::MonteCarloConfiguration{type1,type2,type3,SerialMode,type5},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AntitheticMC, type5 <: Random.AbstractRNG}
 	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;
 	σ=mcProcess.σ;
@@ -59,7 +58,6 @@ function simulate(mcProcess::BrownianMotionVec,mcBaseData::MonteCarloConfigurati
 	stddev_bm=σ*sqrt(dt)
 	zero_drift=μ(dt*0.0,dt);
 	isDualZero=stddev_bm*0.0*zero_drift;
-	X=Matrix{typeof(isDualZero)}(undef,Nsim,Nstep+1);
 	view(X,:,1).=isDualZero;
 	Nsim_2=div(Nsim,2)
 
@@ -72,6 +70,6 @@ function simulate(mcProcess::BrownianMotionVec,mcBaseData::MonteCarloConfigurati
 		end
 	end
 
-	return X;
+	nothing
 
 end
