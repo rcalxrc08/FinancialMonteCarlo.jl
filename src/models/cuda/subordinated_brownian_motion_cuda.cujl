@@ -1,5 +1,5 @@
 
-function simulate(mcProcess::SubordinatedBrownianMotion,mcBaseData::MonteCarloConfiguration{type1,type2,type3,CudaMode,type5},T::numb) where {numb <: Number , type1 <: Number, type2<: Number, type3 <: StandardMC, type5 <: Random.AbstractRNG}
+function simulate!(X_cu,mcProcess::SubordinatedBrownianMotion,mcBaseData::MonteCarloConfiguration{type1,type2,type3,CudaMode,type5},T::numb) where {numb <: Number , type1 <: Number, type2<: Number, type3 <: StandardMC, type5 <: Random.AbstractRNG}
 	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;
 	drift=mcProcess.drift;
@@ -9,7 +9,6 @@ function simulate(mcProcess::SubordinatedBrownianMotion,mcBaseData::MonteCarloCo
 	dt_s=CuArray{type_sub}(undef,Nsim)
 	dt_s_cpu=Array{type_sub}(undef,Nsim)
 	isDualZero=drift*sigma*zero(eltype(dt_s))*zero(Float32);
-	X_cu=CuMatrix{typeof(isDualZero)}(undef,Nsim,Nstep+1);
 	X_cu[:,1].=isDualZero;
 	Z=CuArray{Float32}(undef,Nsim)
 	for i=1:Nstep
@@ -19,12 +18,12 @@ function simulate(mcProcess::SubordinatedBrownianMotion,mcBaseData::MonteCarloCo
 		randn!(Z);
 		X_cu[:,i+1]=X_cu[:,i]+(drift.*dt_s+sigma.*sqrt.(dt_s).*Z);
 	end
-	return X_cu;
+	return;
 end
 
 
 
-function simulate(mcProcess::SubordinatedBrownianMotion,mcBaseData::MonteCarloConfiguration{type1,type2,type3,CudaMode,type5},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AntitheticMC, type5 <: Random.AbstractRNG}
+function simulate(X_cu,mcProcess::SubordinatedBrownianMotion,mcBaseData::MonteCarloConfiguration{type1,type2,type3,CudaMode,type5},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AntitheticMC, type5 <: Random.AbstractRNG}
 	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;
 	drift=mcProcess.drift;
@@ -34,7 +33,6 @@ function simulate(mcProcess::SubordinatedBrownianMotion,mcBaseData::MonteCarloCo
 	dt_s=CuArray{type_sub}(undef,Nsim)
 	dt_s_cpu=Array{type_sub}(undef,Nsim)
 	isDualZero=drift*sigma*zero(eltype(dt_s))*zero(Float32);
-	X_cu=CuMatrix{typeof(isDualZero)}(undef,Nsim,Nstep+1);
 	X_cu[:,1].=isDualZero;
 	NsimAnti=div(Nsim,2)
 	for i=1:Nstep
@@ -45,5 +43,5 @@ function simulate(mcProcess::SubordinatedBrownianMotion,mcBaseData::MonteCarloCo
 		dt_s=cu(dt_s_cpu);
 		X_cu[:,i+1]=X_cu[:,i].+drift.*dt_s[:,i].+sigma.*sqrt.(dt_s[:,i]).*Z;
 	end
-	return X_cu;
+	return;
 end
