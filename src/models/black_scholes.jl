@@ -29,7 +29,7 @@ function simulate!(S,mcProcess::BlackScholesProcess,rfCurve::AbstractZeroRateCur
 	σ_gbm=mcProcess.σ;
 	mu_gbm=r-d;
 	
-	simulate!(S,GeometricBrownianMotion(σ_gbm,mu_gbm,mcProcess.underlying),mcBaseData,T)
+	simulate!(S,GeometricBrownianMotion(σ_gbm,mu_gbm,mcProcess.underlying.S0),mcBaseData,T)
 	
 	nothing
 	
