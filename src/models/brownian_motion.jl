@@ -7,15 +7,14 @@ Where:\n
 		σ	=	volatility of the process.
 		μ	=	drift of the process.
 """
-mutable struct BrownianMotion{num <: Number, num1 <: Number, abstrUnderlying <: AbstractUnderlying} <: AbstractMonteCarloEngine
+mutable struct BrownianMotion{num <: Number, num1 <: Number} <: AbstractMonteCarloEngine
 	σ::num
 	μ::num1
-	underlying::abstrUnderlying
-	function BrownianMotion(σ::num,μ::num1,underlying::abstrUnderlying) where {num <: Number, num1 <: Number, abstrUnderlying <: AbstractUnderlying}
+	function BrownianMotion(σ::num,μ::num1) where {num <: Number, num1 <: Number}
         if σ <= 0.0
             error("Volatility must be positive")
         else
-            return new{num,num1,abstrUnderlying}(σ,μ,underlying)
+            return new{num,num1}(σ,μ)
         end
     end
 end
@@ -31,7 +30,7 @@ function simulate!(X,mcProcess::BrownianMotion,mcBaseData::MonteCarloConfigurati
 	dt=T/Nstep
 	mean_bm=μ*dt
 	stddev_bm=σ*sqrt(dt)
-	isDualZero=mean_bm*stddev_bm*0.0+mcProcess.underlying.S0;
+	isDualZero=mean_bm*stddev_bm*0.0;
 	view(X,:,1).=isDualZero;	
 	@inbounds for j=1:Nstep
 		@inbounds for i=1:Nsim

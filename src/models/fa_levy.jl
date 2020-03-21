@@ -14,7 +14,7 @@ function simulate!(X,mcProcess::finiteActivityProcess,rfCurve::AbstractZeroRateC
 	## Simulate
 	# r-d-psi(-i)
 	drift_RN=(r-d)-compute_drift(mcProcess);
-	simulate!(X,BrownianMotion(σ,drift_RN,Underlying(0.0)),mcBaseData,T)
+	simulate!(X,BrownianMotion(σ,drift_RN),mcBaseData,T)
 
 	t=collect(range(zero(T), stop=T, length=Nstep+1));
 	PoissonRV=Poisson(λ1*T);

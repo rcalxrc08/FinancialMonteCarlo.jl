@@ -49,7 +49,7 @@ function simulate!(X,mcProcess::NormalInverseGaussianProcess,rfCurve::AbstractZe
 	IGRandomVariable=InverseGaussian(dt,dt*dt/κ1);
 	
 	#Call SubordinatedBrownianMotion
-	simulate!(X,SubordinatedBrownianMotion(σ,drift,IGRandomVariable,Underlying(0.0)),mcBaseData,T);
+	simulate!(X,SubordinatedBrownianMotion(σ,drift,IGRandomVariable),mcBaseData,T);
 
 	f(x)=S0*exp(x);
 	broadcast!(f,X,X)

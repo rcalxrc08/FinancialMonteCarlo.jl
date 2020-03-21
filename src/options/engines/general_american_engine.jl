@@ -28,7 +28,7 @@ function payoff(S1::abstractMatrix,amPayoff::AmericanPayoff,rfCurve::abstractZer
 			#- Linear Regression on Quadratic Form
 			A=[ones(length(S_I)) S_I S_I.^2];
 			b=[V[j_]*df_exerciseTimes[exerciseTimes[j_]-j+1] for j_ in inMoneyIndexes]
-			LuMat=lu(A'*A);
+			LuMat=lu!(A'*A);
 			Btilde=A'*b;
 			alpha=LuMat\Btilde;
 			#alpha=A\b;

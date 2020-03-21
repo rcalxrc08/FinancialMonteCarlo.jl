@@ -7,21 +7,20 @@ Where:\n
 		σ	=	volatility of the process.
 		μ	=	drift of the process.
 """
-mutable struct BrownianMotionVec{num <: Number, num1 <: Number , num4 <: Number, abstrUnderlying <: AbstractUnderlying} <: AbstractMonteCarloEngine
+mutable struct BrownianMotionVec{num <: Number, num1 <: Number , num4 <: Number} <: AbstractMonteCarloEngine
 	σ::num
 	μ::Curve{num1,num4}
-	underlying::abstrUnderlying
-	function BrownianMotionVec(σ::num,μ::Curve{num1,num4},underlying::abstrUnderlying) where {num <: Number, num1 <: Number, num4 <: Number, abstrUnderlying <: AbstractUnderlying}
+	function BrownianMotionVec(σ::num,μ::Curve{num1,num4}) where {num <: Number, num1 <: Number, num4 <: Number}
         if σ <= 0.0
             error("Volatility must be positive")
         else
-            return new{num,num1,num4,abstrUnderlying}(σ,μ,underlying)
+            return new{num,num1,num4}(σ,μ)
         end
     end
 end
 
-function BrownianMotion(σ::num,μ::Curve{num1,num4},underlying::abstrUnderlying) where {num <: Number, num1 <: Number, num4 <: Number, abstrUnderlying <: AbstractUnderlying}
-	return BrownianMotionVec(σ,μ,underlying)
+function BrownianMotion(σ::num,μ::Curve{num1,num4}) where {num <: Number, num1 <: Number, num4 <: Number}
+	return BrownianMotionVec(σ,μ)
 end
 
 function simulate!(X,mcProcess::BrownianMotionVec,mcBaseData::MonteCarloConfiguration{type1,type2,type3,SerialMode,type5},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: StandardMC, type5 <: Random.AbstractRNG}

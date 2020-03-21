@@ -17,8 +17,8 @@ rfCurve=ZeroRate(r);
 
 @show "Test Brownian Motion Parameters"
 drift=0.0
-@test_throws(ErrorException,BrownianMotion(-sigma,drift,Underlying(S0,d)))
-@test_throws(ErrorException,BrownianMotion(-sigma,rfCurve2.r,Underlying(S0,d)))
+@test_throws(ErrorException,BrownianMotion(-sigma,drift))
+@test_throws(ErrorException,BrownianMotion(-sigma,rfCurve2.r))
 
 
 

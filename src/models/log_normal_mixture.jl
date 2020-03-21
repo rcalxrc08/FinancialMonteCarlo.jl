@@ -39,12 +39,12 @@ function simulate!(S,mcProcess::LogNormalMixture,rfCurve::AbstractZeroRateCurve,
 	λ_gmb=mcProcess.λ
 	push!(λ_gmb,1.0-sum(mcProcess.λ))
 	mu_gbm=r-d;
-	simulate!(S,GeometricBrownianMotion(η_gbm[1],mu_gbm,Underlying(S0)),mcBaseData,T)
+	simulate!(S,GeometricBrownianMotion(η_gbm[1],mu_gbm,S0),mcBaseData,T)
 	S.*=λ_gmb[1];
 	tmp_=similar(S);
 	#S=λ_gmb[1].*simulate(GeometricBrownianMotion(η_gbm[1],mu_gbm,Underlying(S0)),mcBaseData,T);
 	for (η_gbm_,λ_gmb_) in zip(η_gbm[2:end],λ_gmb[2:end])
-		simulate!(tmp_,GeometricBrownianMotion(η_gbm_,mu_gbm,Underlying(S0)),mcBaseData,T)
+		simulate!(tmp_,GeometricBrownianMotion(η_gbm_,mu_gbm,S0),mcBaseData,T)
 		S.+=λ_gmb_*tmp_;
 	end
 	return nothing;

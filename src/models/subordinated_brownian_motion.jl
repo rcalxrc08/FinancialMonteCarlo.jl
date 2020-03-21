@@ -8,16 +8,15 @@ Where:\n
 		drift       = 	drift.
 		underlying  = 	underlying.
 """
-mutable struct SubordinatedBrownianMotion{num <: Number, num1 <: Number, Distr <: Distribution{Univariate,Continuous}, abstrUnderlying <: AbstractUnderlying}<:AbstractMonteCarloProcess
+mutable struct SubordinatedBrownianMotion{num <: Number, num1 <: Number, Distr <: Distribution{Univariate,Continuous}}<:AbstractMonteCarloProcess
 	sigma::num
 	drift::num1
 	subordinator_::Distr
-	underlying::abstrUnderlying
-	function SubordinatedBrownianMotion(sigma::num,drift::num1,dist::Distr,underlying::abstrUnderlying) where {num <: Number,num1 <: Number, Distr <: Distribution{Univariate,Continuous}, abstrUnderlying <: AbstractUnderlying}
+	function SubordinatedBrownianMotion(sigma::num,drift::num1,dist::Distr) where {num <: Number,num1 <: Number, Distr <: Distribution{Univariate,Continuous}}
         if sigma<=0.0
 			error("volatility must be positive");
 		else
-            return new{num,num1,Distr,abstrUnderlying}(sigma,drift,dist,underlying)
+            return new{num,num1,Distr}(sigma,drift,dist)
         end
     end
 end

@@ -17,6 +17,6 @@ rfCurve=ZeroRate(r);
 
 @show "Test Geometric Brownian Motion Parameters"
 drift=0.0
-@test_throws(ErrorException,GeometricBrownianMotion(-sigma,drift,Underlying(S0,d)))
-@test_throws(ErrorException,GeometricBrownianMotion(-sigma,rfCurve2.r,Underlying(S0,d)))
+@test_throws(ErrorException,GeometricBrownianMotion(-sigma,drift,1.0))
+@test_throws(ErrorException,GeometricBrownianMotion(-sigma,rfCurve2.r,1.0))
 

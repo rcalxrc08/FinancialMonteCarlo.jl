@@ -1,29 +1,28 @@
 """
 Struct for SubordinatedBrownianMotion
 
-		subordinatedBrownianMotion=SubordinatedBrownianMotion(sigma::num,drift::num1,underlying::abstrUnderlying)
+		subordinatedBrownianMotion=SubordinatedBrownianMotion(sigma::num,drift::num1)
 	
 Where:\n
 		sigma       =	Volatility.
 		drift       = 	drift.
 		underlying  = 	underlying.
 """
-mutable struct SubordinatedBrownianMotionVec{num <: Number, num1 <: Number, num4 <: Number, Distr <: Distribution{Univariate,Continuous},  abstrUnderlying <: AbstractUnderlying}<:AbstractMonteCarloProcess
+mutable struct SubordinatedBrownianMotionVec{num <: Number, num1 <: Number, num4 <: Number, Distr <: Distribution{Univariate,Continuous}}<:AbstractMonteCarloProcess
 	sigma::num
 	drift::Curve{num1,num4}
 	subordinator_::Distr
-	underlying::abstrUnderlying
-	function SubordinatedBrownianMotionVec(sigma::num,drift::Curve{num1,num4},dist::Distr,underlying::abstrUnderlying) where {num <: Number,num1 <: Number, num4 <: Number, Distr <: Distribution{Univariate,Continuous}, abstrUnderlying <: AbstractUnderlying}
+	function SubordinatedBrownianMotionVec(sigma::num,drift::Curve{num1,num4},dist::Distr) where {num <: Number,num1 <: Number, num4 <: Number, Distr <: Distribution{Univariate,Continuous}}
         if sigma<=0.0
 			error("volatility must be positive");
 		else
-            return new{num,num1,num4,Distr,abstrUnderlying}(sigma,drift,dist,underlying)
+            return new{num,num1,num4,Distr}(sigma,drift,dist)
         end
     end
 end
 
-function SubordinatedBrownianMotion(σ::num,drift::Curve{num1,num4},subordinator_::Distr,underlying::abstrUnderlying) where {num <: Number, num1 <: Number, num4 <: Number,Distr <: Distribution{Univariate,Continuous}, abstrUnderlying <: AbstractUnderlying}
-	return SubordinatedBrownianMotionVec(σ,drift,subordinator_,underlying)
+function SubordinatedBrownianMotion(σ::num,drift::Curve{num1,num4},subordinator_::Distr) where {num <: Number, num1 <: Number, num4 <: Number,Distr <: Distribution{Univariate,Continuous}}
+	return SubordinatedBrownianMotionVec(σ,drift,subordinator_)
 end
 
 export SubordinatedBrownianMotionVec;

@@ -10,7 +10,7 @@ function simulate!(X,mcProcess::BrownianMotion,mcBaseData::MonteCarloConfigurati
 	dt=T/Nstep
 	mean_bm=μ*dt
 	stddev_bm=σ*sqrt(dt)
-	isDualZero=mean_bm*stddev_bm*0.0+mcProcess.underlying.S0;
+	isDualZero=mean_bm*stddev_bm*0.0;
 	view(X,:,1).=isDualZero;
 	seq=SobolSeq(Nstep);
 	skip(seq,Nstep*Nsim)
@@ -33,7 +33,7 @@ function simulate!(X,mcProcess::BrownianMotionVec,mcBaseData::MonteCarloConfigur
 	dt=T/Nstep
 	stddev_bm=σ*sqrt(dt)
 	zero_drift=μ(dt*0.0,dt);
-	isDualZero=stddev_bm*0.0*mcProcess.underlying.S0*zero_drift;
+	isDualZero=stddev_bm*0.0*zero_drift;
 	view(X,:,1).=isDualZero;	
 	seq=SobolSeq(Nstep);
 	skip(seq,Nstep*Nsim)
