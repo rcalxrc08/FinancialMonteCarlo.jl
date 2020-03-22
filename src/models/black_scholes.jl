@@ -20,7 +20,7 @@ end
 
 export BlackScholesProcess;
 
-function simulate!(S,mcProcess::BlackScholesProcess,rfCurve::AbstractZeroRateCurve,mcBaseData::MonteCarloConfiguration{type1,type2,type3,type4,type5},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AbstractMonteCarloMethod, type4 <: BaseMode, type5 <: Random.AbstractRNG}
+function simulate!(S,mcProcess::BlackScholesProcess,rfCurve::AbstractZeroRateCurve,mcBaseData::AbstractMonteCarloConfiguration,T::Number)
 	@assert T>0.0
 	r=rfCurve.r;
 	d=dividend(mcProcess);

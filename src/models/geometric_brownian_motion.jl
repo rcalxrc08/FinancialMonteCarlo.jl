@@ -22,7 +22,7 @@ end
 
 export GeometricBrownianMotion;
 
-function simulate!(X,mcProcess::GeometricBrownianMotion,mcBaseData::MonteCarloConfiguration{type1,type2,type3,type4,type5},T::numb) where {numb <: Number, type1 <: Integer, type2<: Integer, type3 <: AbstractMonteCarloMethod, type4 <: BaseMode, type5 <: Random.AbstractRNG}
+function simulate!(X,mcProcess::GeometricBrownianMotion,mcBaseData::AbstractMonteCarloConfiguration,T::Number)
 	@assert T>0.0
 	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;

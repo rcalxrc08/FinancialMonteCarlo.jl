@@ -78,3 +78,12 @@ function predict_output_type_zero(abstractPayoff::Spot)
 	return zero(Int8);
 
 end
+
+
+##Vectorization "utils"
+import Base.iterate
+iterate(x::Union{BaseProcess,AbstractZeroRateCurve,AbstractPayoff,AbstractMonteCarloConfiguration}) where {proc <: BaseProcess}=(x,nothing)
+iterate(x::Union{BaseProcess,AbstractZeroRateCurve,AbstractPayoff,AbstractMonteCarloConfiguration},p::Nothing)=nothing
+
+import Base.length
+length(x::Union{BaseProcess,AbstractZeroRateCurve,AbstractPayoff,AbstractMonteCarloConfiguration})=1

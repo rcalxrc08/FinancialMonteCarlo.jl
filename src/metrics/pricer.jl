@@ -52,14 +52,14 @@ function pricer(mcProcess::BaseProcess,rfCurve::AbstractZeroRateCurve,mcConfig::
 end
 
 #####Pricer for multivariate
-function pricer(mcProcess::VectorialMonteCarloProcess,rfCurve::AbstractZeroRateCurve,mcConfig::MonteCarloConfiguration,dict_::Array{Dict{AbstractPayoff,Number}})
+function pricer(mcProcess::VectorialMonteCarloProcess,rfCurve::AbstractZeroRateCurve,mcConfig::MonteCarloConfiguration,special_array_payoff::Array{Dict{AbstractPayoff,Number}})
 	set_seed(mcConfig)
 	N_=length(mcProcess.models);
 	idx_=compute_indices(N_);
-	## Filter dict_ for undef
-	IND_=collect(1:length(dict_));
-	filter!(i->isassigned(dict_,i),IND_)
-	dict_cl=dict_[IND_];
+	## Filter special_array_payoff for undef
+	IND_=collect(1:length(special_array_payoff));
+	filter!(i->isassigned(special_array_payoff,i),IND_)
+	dict_cl=special_array_payoff[IND_];
 	
 	maxT=maximum([ maximum(maturity.(collect(keys(ar_el)))) for ar_el in dict_cl])
 	S=simulate(mcProcess,rfCurve,mcConfig,maxT)
@@ -67,10 +67,10 @@ function pricer(mcProcess::VectorialMonteCarloProcess,rfCurve::AbstractZeroRateC
 	#for i in IND_
 	#	idx_loc=idx_[i]
 	#	idx_tmp = length(idx_loc)==1 ? idx_loc[1] : idx_loc;
-	#	price+=sum(weight_*mean(payoff(S[idx_tmp],abstractPayoff,rfCurve,maxT)) for (abstractPayoff,weight_) in dict_[i])
+	#	price+=sum(weight_*mean(payoff(S[idx_tmp],abstractPayoff,rfCurve,maxT)) for (abstractPayoff,weight_) in special_array_payoff[i])
 	#end
 
-	price=sum( sum(weight_*mean(payoff(S[idx_[i]],abstractPayoff,rfCurve,maxT)) for (abstractPayoff,weight_) in dict_[i]) for i in IND_)
+	price=sum( sum(weight_*mean(payoff(S[idx_[i]],abstractPayoff,rfCurve,maxT)) for (abstractPayoff,weight_) in special_array_payoff[i]) for i in IND_)
 	
 	return price;
 end

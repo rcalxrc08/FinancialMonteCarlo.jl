@@ -40,7 +40,7 @@ function gausscopulagen2(t::Int, Σ::Matrix{Float64} = [1. 0.5; 0.5 1.])
   return collect(z');
 end
 
-function simulate!(S_total,mcProcess::GaussianCopulaNVariateProcess,rfCurve::AbstractZeroRateCurve,mcBaseData::MonteCarloConfiguration{type1,type2,type3,type4,type5},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AbstractMonteCarloMethod, type4 <: BaseMode, type5 <: Random.AbstractRNG}
+function simulate!(S_total,mcProcess::GaussianCopulaNVariateProcess,rfCurve::AbstractZeroRateCurve,mcBaseData::AbstractMonteCarloConfiguration,T::Number)
 	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;
 	@assert T>0.0
