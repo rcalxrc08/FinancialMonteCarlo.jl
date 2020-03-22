@@ -32,5 +32,5 @@ export BarrierOptionUpOut;
 function payout(S::abstractArray,barrierPayoff::BarrierOptionUpOut) where {abstractArray<:AbstractArray{num_}} where {num_<:Number}
 	iscall=barrierPayoff.isCall ? 1 : -1
 	zero_typed=zero(eltype(S))*barrierPayoff.K*barrierPayoff.barrier;
-	return max(iscall*(S[end]-barrierPayoff.K),zero_typed)*(maximum(S)<barrierPayoff.barrier);
+	return max(iscall*(S[end]-barrierPayoff.K),zero_typed)*(findfirst(x->x>barrierPayoff.barrier,S)==nothing);
 end

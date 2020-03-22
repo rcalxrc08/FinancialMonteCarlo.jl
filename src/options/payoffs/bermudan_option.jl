@@ -20,7 +20,7 @@ mutable struct BermudanOption{num1 <: Number,num2 <: Number}<:BermudanPayoff
             error("Strike Price must be positive")
         else
 			@assert issorted(T);
-            return new{num1,num2}(maximum(T),T,K,isCall)
+            return new{num1,num2}(T[end],T,K,isCall)
         end
     end
 end
