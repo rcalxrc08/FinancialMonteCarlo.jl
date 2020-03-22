@@ -75,13 +75,18 @@ Model=BlackScholesProcess(σ,underlying);
 ```
 
 ## Curve Support
-Lorem ipsum
+Non constant zero rates and dividend are managed.
+An implied curve is built at time zero, such implied curve is able to return the right implied zero/dividend at a given time,
+Without the need to carry the integral structure of the curve.
+No support for multicurrency.
 
 ## Contracts Algebra
-Lorem ipsum
+Contracts that refer to the same underlying can be sum togheter in order to build a "new instrument".
+In this sense assuming the same underlying, the set of contracts form a vectorial space over "Real" Numbers.
 
 ## Market Data and Multivariate Support
-Lorem ipsum
+A market data set is a dictionary containing all of the process for which we have a view (or a model). ( "KEY" => MODEL)
+The portofolio is a dictionary as well but it carries the structure of the portfolio. ( "KEY" => CONTRACTS_ON_MODEL)
 
 ## Keep in mind
 There are few things that you should keep in mind when using this library:
