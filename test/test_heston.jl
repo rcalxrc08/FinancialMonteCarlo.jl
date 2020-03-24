@@ -36,10 +36,10 @@ Model=HestonProcess(sigma,sigma_zero,lambda,kappa,rho_,theta,Underlying(S0,d));
 @show AsianPrice1=pricer(Model,rfCurve,mc,AsianData1);
 @show AsianPrice2=pricer(Model,rfCurve,mc,AsianData2);
 
-@test abs(FwdPrice-98.72567723404445)<toll
-@test abs(EuPrice-17.62536090688433)<toll
-@test abs(BarrierPrice-11.38748933756886)<toll
-@test abs(AsianPrice1-9.762160560168732)<toll
+@test abs(FwdPrice-98.8790717426047)<toll
+@test abs(EuPrice-7.9813557592924)<toll
+@test abs(BarrierPrice- 7.006564636309922)<toll
+@test abs(AsianPrice1-4.242256952013707)<toll
 
 @show FwdPrice=pricer(Model,rfCurve,mc1,FwdData);
 @show EuPrice=pricer(Model,rfCurve,mc1,EUData);
@@ -48,11 +48,10 @@ Model=HestonProcess(sigma,sigma_zero,lambda,kappa,rho_,theta,Underlying(S0,d));
 @show AsianPrice1=pricer(Model,rfCurve,mc1,AsianData1);
 @show AsianPrice2=pricer(Model,rfCurve,mc1,AsianData2);
 tollanti=0.8
-@test abs(FwdPrice-98.72567723404445)<tollanti
-@test abs(EuPrice-17.62536090688433)<tollanti
-@test abs(BarrierPrice-11.38748933756886)<tollanti
-@test abs(AsianPrice1-9.762160560168732)<tollanti
-
+@test abs(FwdPrice-98.8790717426047)<tollanti
+@test abs(EuPrice-7.9813557592924)<tollanti
+@test abs(BarrierPrice- 7.006564636309922)<tollanti
+@test abs(AsianPrice1-4.242256952013707)<tollanti
 
 
 
