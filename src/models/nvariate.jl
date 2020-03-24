@@ -15,7 +15,7 @@ mutable struct GaussianCopulaNVariateProcess{ num3 <: Number} <: NDimensionalMon
 		sz=size(rho)
 		@assert sz[1]==sz[2]
 		@assert length(models)==sz[1]
-		@assert det(rho)>=0
+		@assert isposdef(rho)
 		return new{num3}(models,rho);
 	end
 	function GaussianCopulaNVariateProcess(models::BaseProcess...) 
@@ -24,14 +24,14 @@ mutable struct GaussianCopulaNVariateProcess{ num3 <: Number} <: NDimensionalMon
 	end
 	function GaussianCopulaNVariateProcess(model1::BaseProcess,model2::BaseProcess,rho::num3) where { num3 <: Number} 
 		corr_matrix_=[1.0 rho; rho 1.0];
-		@assert det(corr_matrix_)>=0
+		@assert isposdef(corr_matrix_)
 		return GaussianCopulaNVariateProcess(corr_matrix_,model1,model2);
 	end
 end
 
 export GaussianCopulaNVariateProcess;
 
-function gausscopulagen2(t::Int, Σ::Matrix{Float64} = [1. 0.5; 0.5 1.])
+function gausscopulagen2(t::Int, Σ::Matrix{Float64})
   z = rand(MvNormal(Σ),t)
   for i in 1:size(Σ, 2)
     d = Normal(0, sqrt(Σ[i,i]))

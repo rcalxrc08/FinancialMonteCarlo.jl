@@ -6,6 +6,7 @@ Struct for Geometric Brownian Motion
 Where:\n
 		σ	=	volatility of the process.
 		μ	=	drift of the process.
+		x0	=	initial value.
 """
 mutable struct GeometricBrownianMotion{num <: Number, num1 <: Number, num2 <: Number}<:ItoProcess
 	σ::num
@@ -24,15 +25,12 @@ export GeometricBrownianMotion;
 
 function simulate!(X,mcProcess::GeometricBrownianMotion,mcBaseData::AbstractMonteCarloConfiguration,T::Number)
 	@assert T>0.0
-	Nsim=mcBaseData.Nsim;
-	Nstep=mcBaseData.Nstep;
 	σ_gbm=mcProcess.σ;
 	mu_gbm=mcProcess.μ;
 	μ_bm=mu_gbm-σ_gbm^2/2;
 	simulate!(X,BrownianMotion(σ_gbm,μ_bm),mcBaseData,T)
 	S0=mcProcess.x0;
-	f(x)=S0*exp(x);
-	broadcast!(f,X,X)
+	@. X=S0*exp(X);
 	
 	nothing;
 end

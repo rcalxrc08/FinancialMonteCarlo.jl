@@ -33,8 +33,6 @@ function simulate!(S,mcProcess::LogNormalMixture,rfCurve::AbstractZeroRateCurve,
 	r=rfCurve.r;
 	S0=mcProcess.underlying.S0;
 	d=dividend(mcProcess);
-	Nsim=mcBaseData.Nsim;
-	Nstep=mcBaseData.Nstep;
 	η_gbm=mcProcess.η;
 	λ_gmb=mcProcess.λ
 	push!(λ_gmb,1.0-sum(mcProcess.λ))

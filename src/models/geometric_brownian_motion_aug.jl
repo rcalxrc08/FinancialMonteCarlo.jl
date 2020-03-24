@@ -28,8 +28,6 @@ export GeometricBrownianMotionVec;
 
 function simulate!(X,mcProcess::GeometricBrownianMotionVec,mcBaseData::AbstractMonteCarloConfiguration,T::Number)
 	@assert T>0.0
-	Nsim=mcBaseData.Nsim;
-	Nstep=mcBaseData.Nstep;
 	σ_gbm=mcProcess.σ;
 	mu_gbm=mcProcess.μ;
 	μ_bm=mu_gbm-(σ_gbm^2/2);

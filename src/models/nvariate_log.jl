@@ -24,7 +24,7 @@ mutable struct GaussianCopulaNVariateLogProcess{ num3 <: Number} <: NDimensional
 	end
 	function GaussianCopulaNVariateLogProcess(model1::BaseProcess,model2::BaseProcess,rho::num3) where { num3 <: Number} 
 		corr_matrix_=[1.0 rho; rho 1.0];
-		@assert det(corr_matrix_)>=0
+		@assert isposdef(corr_matrix_)
 		return GaussianCopulaNVariateLogProcess(corr_matrix_,model1,model2);
 	end
 end

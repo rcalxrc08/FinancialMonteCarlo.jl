@@ -56,15 +56,16 @@ function simulate!(X,mcProcess::HestonProcess,rfCurve::ZeroRate,mcBaseData::Mont
 	θ_s=κ*θ/(κ+λ1);
 
 	dt=T/Nstep
-	isDualZero=T*r*σ_zero*κ*θ*λ1*σ*ρ*0.0;
+	isDualZero=T*r*σ_zero*θ_s*κ_s*σ*ρ*0.0*S0;
 	#X=Matrix{typeof(isDualZero)}(undef,Nsim,Nstep+1);
 	view(X,:,1).=isDualZero;
 	for i in 1:Nsim
-		v_m=σ_zero;
+		v_m=σ_zero^2;
 		for j in 1:Nstep
 			e1=randn(mcBaseData.rng);
 			e2=e1*ρ+randn(mcBaseData.rng)*sqrt(1-ρ*ρ);
 			@views X[i,j+1]=X[i,j]+((r-d)-0.5*max(v_m,isDualZero))*dt+sqrt(max(v_m,isDualZero))*sqrt(dt)*e1;
+			#when v_m = 0.0, the derivative becomes NaN
 			v_m+=κ_s*(θ_s-max.(v_m,isDualZero))*dt+σ*sqrt(max(v_m,isDualZero))*sqrt(dt)*e2;
 		end
 	end

@@ -33,7 +33,6 @@ function simulate!(X,mcProcess::VarianceGammaProcess,rfCurve::AbstractZeroRateCu
 	r=rfCurve.r;
 	S0=mcProcess.underlying.S0;
 	d=dividend(mcProcess);
-	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;
 	σ=mcProcess.σ;
 	θ1=mcProcess.θ;

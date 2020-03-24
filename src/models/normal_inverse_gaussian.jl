@@ -32,7 +32,6 @@ function simulate!(X,mcProcess::NormalInverseGaussianProcess,rfCurve::AbstractZe
 	r=rfCurve.r;
 	S0=mcProcess.underlying.S0;
 	d=dividend(mcProcess);
-	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;
 
 	σ=mcProcess.σ;

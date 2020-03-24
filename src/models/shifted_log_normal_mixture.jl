@@ -35,7 +35,6 @@ function simulate!(X,mcProcess::ShiftedLogNormalMixture,rfCurve::AbstractZeroRat
 	r=rfCurve.r;
 	S0=mcProcess.underlying.S0;
 	d=dividend(mcProcess);
-	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;
 	η_gbm=copy(mcProcess.η);
 	λ_gmb=copy(mcProcess.λ)
