@@ -55,7 +55,7 @@ function simulate!(S_Total,mcProcess::GaussianCopulaNVariateLogProcess,rfCurve::
 	for j in 1:Nstep
 		gausscopulagen2!(U_joint,rho,mcBaseData);
 		for i in 1:len_
-			@views tmp_=S Total[i][:,j+1]
+			@views tmp_=S_Total[i][:,j+1]
 			sort!(tmp_)
 			@views tmp_.=(mcProcess.models[i].underlying.S0).*exp.(Statistics.quantile(tmp_,U_joint[i,:];sorted=true))
 		end
