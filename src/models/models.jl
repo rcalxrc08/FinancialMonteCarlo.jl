@@ -1,4 +1,5 @@
 using Distributions;
+using Statistics
 
 ### Utils
 include("utils.jl")

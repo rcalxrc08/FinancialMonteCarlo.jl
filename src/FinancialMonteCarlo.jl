@@ -2,7 +2,9 @@ __precompile__()
 
 module FinancialMonteCarlo
 
-	using Requires,Random, LinearAlgebra
+	using Requires # for conditional dependencies
+	using Random # for randn! and related
+	using LinearAlgebra # for Longstaff Schwartz
 	function __init__()
 		@require CuArrays = "3a865a2d-5b23-5a0f-bc46-62713ec82fae" include("deps/cuda_dependencies.cujl")
 		@require ArrayFire = "b19378d9-d87a-599a-927f-45f220a2c452" include("deps/af_dependencies.cujl")

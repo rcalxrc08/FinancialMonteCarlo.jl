@@ -23,7 +23,7 @@ function simulate!(X,mcProcess::HestonProcess,rfCurve::ZeroRateCurve,mcBaseData:
 	isDualZero=S0*T*σ_zero*κ*θ*λ1*σ*ρ*0.0*zero_drift;
 	#X=Matrix{typeof(isDualZero)}(undef,Nsim,Nstep+1);
 	X[:,1].=isDualZero;
-	v_m=[σ_zero+isDualZero for _ in 1:Nsim];
+	v_m=[σ_zero^2+isDualZero for _ in 1:Nsim];
 	for j in 1:Nstep
 		e1=randn(mcBaseData.rng,Nsim);
 		e2=randn(mcBaseData.rng,Nsim);
@@ -61,7 +61,7 @@ function simulate!(X,mcProcess::HestonProcess,rfCurve::ZeroRateCurve,mcBaseData:
 	isDualZero=S0*T*σ_zero*κ*θ*λ1*σ*ρ*0.0;
 	#X=Matrix{typeof(isDualZero)}(undef,Nsim,Nstep+1);
 	X[:,1].=isDualZero;
-	v_m=[σ_zero+isDualZero for _ in 1:Nsim];
+	v_m=[σ_zero^2+isDualZero for _ in 1:Nsim];
 	Nsim_2=div(Nsim,2)
 	r_d=r-d;
 

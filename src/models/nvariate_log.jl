@@ -1,4 +1,3 @@
-using Statistics, DatagenCopulaBased 
 """
 Struct for MultiVariate (log moneyness x-> S0*exp(x) ) Copula Process
 
@@ -52,12 +51,13 @@ function simulate!(S_Total,mcProcess::GaussianCopulaNVariateLogProcess,rfCurve::
 	for i in 1:len_
 		S_Total[i].=log.(S_Total[i]./mcProcess.models[i].underlying.S0);
 	end
+	U_joint=Matrix{eltype(rho)}(undef,len_,Nsim);
 	for j in 1:Nstep
-		U_joint=gausscopulagen2(Nsim,rho);
-	
+		gausscopulagen2!(U_joint,rho,mcBaseData);
 		for i in 1:len_
-			cdf_ = sort(S_Total[i][:,j+1])
-			@views S_Total[i][:,j+1]=(mcProcess.models[i].underlying.S0).*exp.(Statistics.quantile(cdf_,U_joint[:,i]))
+			@views tmp_=S_total[i][:,j+1]
+			sort!(tmp_)
+			@views tmp_.=(mcProcess.models[i].underlying.S0).*exp.(Statistics.quantile(tmp_,U_joint[i,:];sorted=true))
 		end
 	end
 	

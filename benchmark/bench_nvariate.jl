@@ -30,14 +30,17 @@ Model_tesl=BlackScholesProcess(sigma,Underlying(S0,d));
 rho_1=[1.0 0.0 0.0; 0.0 1.0 0.0; 0.0 0.0 1.0];
 Model=GaussianCopulaNVariateProcess(rho_1,Model_enj,Model_abpl,Model_tesl)
 ModelDual=GaussianCopulaNVariateProcess(rho_1,Model_enj_2,Model_abpl,Model_tesl)
+Model2=GaussianCopulaNVariateProcess([1.0 0.3 0.0;0.3 1.0 0.0; 0.0 0.0 1.0],Model_enj_2,Model_abpl,Model_tesl)
 
 display(Model)
 
 mktdataset=underlying_|>Model
 mktdataset_dual=underlying_|>ModelDual
+mktdataset_aug=underlying_|>Model2
 
 portfolio_=[EUData];
 portfolio=underlying_|>EUData
 
 @btime price_mkt=pricer(mktdataset,rfCurve,mc,portfolio)
 @btime price_mkt=pricer(mktdataset_dual,rfCurve,mc,portfolio)
+@btime price_mkt=pricer(mktdataset_aug,rfCurve,mc,portfolio)

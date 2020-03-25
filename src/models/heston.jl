@@ -99,8 +99,8 @@ function simulate!(X,mcProcess::HestonProcess,rfCurve::ZeroRate,mcBaseData::Mont
 	#X=Matrix{typeof(isDualZero)}(undef,Nsim,Nstep+1);
 	view(X,:,1).=isDualZero;
 	for i in 1:div(Nsim,2)
-		v_m_1=σ_zero;
-		v_m_2=σ_zero;
+		v_m_1=σ_zero^2;
+		v_m_2=σ_zero^2;
 		for j in 1:Nstep
 			e1=randn(mcBaseData.rng);
 			e2= -(e1*ρ+randn(mcBaseData.rng)*sqrt(1-ρ*ρ));

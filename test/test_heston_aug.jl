@@ -36,11 +36,3 @@ Model=HestonProcess(sigma,sigma_zero,lambda,kappa,rho_,theta,Underlying(S0,d));
 @show FwdPrice=pricer(Model,rfCurve,mc1,FwdData);
 tollanti=0.8
 @test abs(FwdPrice-98.72567723404445)<tollanti
-
-
-
-
-@test_throws(ErrorException,HestonProcess(-sigma,sigma_zero,lambda,kappa,rho_,theta,Underlying(S0,d)))
-@test_throws(ErrorException,HestonProcess(sigma,-sigma_zero,lambda,kappa,rho_,theta,Underlying(S0,d)))
-@test_throws(ErrorException,HestonProcess(sigma,sigma_zero,lambda,kappa,-5.0,theta,Underlying(S0,d)))
-@test_throws(ErrorException,HestonProcess(sigma,sigma_zero,1e-16,1e-16,rho_,theta,Underlying(S0,d)))

@@ -1,4 +1,3 @@
-using Statistics, DatagenCopulaBased,LinearAlgebra
 """
 Struct for MultiVariate Copula Process
 
@@ -31,15 +30,6 @@ end
 
 export GaussianCopulaNVariateProcess;
 
-function gausscopulagen2(t::Int, Σ::Matrix{Float64})
-  z = rand(MvNormal(Σ),t)
-  for i in 1:size(Σ, 2)
-    d = Normal(0, sqrt(Σ[i,i]))
-    @views z[i,:].= cdf.(d, z[i,:])
-  end
-  return collect(z');
-end
-
 function simulate!(S_total,mcProcess::GaussianCopulaNVariateProcess,rfCurve::AbstractZeroRateCurve,mcBaseData::AbstractMonteCarloConfiguration,T::Number)
 	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;
@@ -51,18 +41,19 @@ function simulate!(S_total,mcProcess::GaussianCopulaNVariateProcess,rfCurve::Abs
 	for i in 1:len_
 		simulate!(S_total[i],mcProcess.models[i],rfCurve,mcBaseData,T)
 	end
-	#S_Total::Array{Matrix{Number}}=[simulate(model_i,rfCurve,mcBaseData,T) for model_i in mcProcess.models];
 	rho=mcProcess.rho
 	if (rho[1,2:end]==zeros(len_-1))
 		return;
 	end
+	U_joint=Matrix{eltype(rho)}(undef,len_,Nsim);
 	for j in 1:Nstep
 	
-		U_joint=gausscopulagen2(Nsim,rho);
+		gausscopulagen2!(U_joint,rho,mcBaseData);
 	
 		for i in 1:len_
-			cdf_ = sort(S_total[i][:,j+1])
-			@views S_total[i][:,j+1]=Statistics.quantile(cdf_,U_joint[:,i])
+			@views tmp_=S_total[i][:,j+1]
+			sort!(tmp_)
+			@views tmp_.=Statistics.quantile(tmp_,U_joint[i,:];sorted=true)
 		end
 	end
 	
