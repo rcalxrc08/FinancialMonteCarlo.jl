@@ -31,6 +31,10 @@ function predict_output_type_zero(mcProcess::BaseProcess)
 
 end
 
+function predict_output_type_zero(mcProcess::AbstractMonteCarloEngine)
+	return sum(zero.(fieldtypes(typeof(mcProcess))))
+end
+
 function predict_output_type_zero(mcProcess::VectorialMonteCarloProcess)
 	zero_out_=sum(y->predict_output_type_zero(y),mcProcess.models)
 	model_par=sum(get_parameters(mcProcess));
@@ -58,11 +62,7 @@ end
 
 
 function predict_output_type_zero(mcConfig::MonteCarloConfiguration)
-	if typeof(mcConfig.parallelMode) <: SerialMode #Move to Cuda section
-		return zero(Float64)
-	else
-		return zero(Float32)
-	end
+	zero(Int8)
 end
 
 function predict_output_type_zero(abstractPayoff::AbstractPayoff)
