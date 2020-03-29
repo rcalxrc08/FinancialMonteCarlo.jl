@@ -16,18 +16,18 @@ function simulate!(X,mcProcess::finiteActivityProcess,rfCurve::AbstractZeroRateC
 	drift_RN=(r-d)-compute_drift(mcProcess);
 	simulate!(X,BrownianMotion(σ,drift_RN),mcBaseData,T)
 
-	t=collect(range(zero(T), stop=T, length=Nstep+1));
+	dt=T/Nstep;
 	PoissonRV=Poisson(λ1*T);
 	NJumps=rand(mcBaseData.rng,PoissonRV,Nsim);
 
-	for ii in eachindex(NJumps)
+	for (index_, njumps_) in enumerate(NJumps)
 		# Simulate the times of jump
-		@views tjumps=rand(mcBaseData.rng,NJumps[ii])*T;
+		@views tjumps=rand(mcBaseData.rng,njumps_)*T;
 		for tjump in tjumps
 			# Add the jump size
-			idx1=findfirst(x->x>=tjump,t);
+			idx1=ceil(Int64,tjump/dt)+1;
 			#jump_size=compute_jump_size(mcProcess,mcBaseData);
-			@views X[ii,idx1:end].+=compute_jump_size(mcProcess,mcBaseData); #add jump component
+			@views X[index_,idx1:end].+=compute_jump_size(mcProcess,mcBaseData); #add jump component
 			
 		end
 	end

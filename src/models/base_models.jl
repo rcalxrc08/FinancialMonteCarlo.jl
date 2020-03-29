@@ -81,7 +81,7 @@ Where:\n
 function simulate(mcProcess::AbstractMonteCarloEngine,mcBaseData::AbstractMonteCarloConfiguration,T::Number)
 	price_type=predict_output_type_zero(mcProcess,mcBaseData,T);
 	matrix_type=get_matrix_type(mcBaseData,mcProcess,price_type);
-	S=matrix_type{typeof(price_type)}(undef,mcBaseData.Nsim,mcBaseData.Nstep+1);
+	S=matrix_type(undef,mcBaseData.Nsim,mcBaseData.Nstep+1);
 	simulate!(S,mcProcess,mcBaseData,T)
 	return S;
 end
