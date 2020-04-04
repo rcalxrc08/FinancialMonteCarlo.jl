@@ -15,7 +15,7 @@ Where:\n
 		Price     = Price of the derivative
 
 """	
-function pricer(mcProcess::BaseProcess,rfCurve::AbstractZeroRateCurve,mcConfig::MonteCarloConfiguration,abstractPayoff::AbstractPayoff)
+function pricer(mcProcess::BaseProcess,rfCurve::AbstractZeroRateCurve,mcConfig::AbstractMonteCarloConfiguration,abstractPayoff::AbstractPayoff)
 
 	set_seed(mcConfig)
 	T=maturity(abstractPayoff);

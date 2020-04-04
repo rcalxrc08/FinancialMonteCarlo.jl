@@ -1,4 +1,4 @@
-mutable struct MonteCarloDiffEqModel{absdiffeqmodel <: DiffEqBase.AbstractEnsembleProblem} <: ItoProcess
+mutable struct MonteCarloDiffEqModel{absdiffeqmodel <: DiffEqBase.AbstractEnsembleProblem} <: BaseProcess
 	model::absdiffeqmodel
 	final_trasform::Function
 	underlying::AbstractUnderlying

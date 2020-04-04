@@ -18,9 +18,10 @@ It currently contains the following capabilities:
 - Support for non costant zero rates and dividends
 - Support for the following Option families:
     - European Options 
-    - American Options
     - Barrier Options
     - Asian Options
+    - Bermudan Options (Using Longstaff-Schwartz)
+    - American Options (Using Longstaff-Schwartz)
 - Partial Support for the following Parallelization:
     - CUDA using  [CuArrays.jl](https://github.com/JuliaGPU/CuArrays.jl)
     - ArrayFire using  [ArrayFire.jl](https://github.com/JuliaComputing/ArrayFire.jl)
