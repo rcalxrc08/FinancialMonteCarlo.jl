@@ -11,7 +11,7 @@ Nsim=100000;
 Nstep=30;
 sigma=0.2
 mc=MonteCarloConfiguration(Nsim,Nstep);
-mc_1=MonteCarloConfiguration(Nsim,Nstep,FinancialMonteCarlo.CudaMode());
+
 mc_2=MonteCarloConfiguration(Nsim,Nstep,FinancialMonteCarlo.CudaMode_2());
 toll=1e-3;
 

@@ -11,7 +11,7 @@ Nsim=100000;
 Nstep=30;
 sigma=dual(0.2,1.0);
 mc=MonteCarloConfiguration(Nsim,Nstep);
-mc_1=MonteCarloConfiguration(Nsim,Nstep,FinancialMonteCarlo.CudaMode());
+
 mc_2=MonteCarloConfiguration(Nsim,Nstep,FinancialMonteCarlo.CudaMode_2());
 toll=1e-3;
 
@@ -25,22 +25,22 @@ AsianFloatingStrikeData=AsianFloatingStrikeOption(T)
 AsianFixedStrikeData=AsianFixedStrikeOption(T,K)
 Model=BlackScholesProcess(sigma,Underlying(S0,d));
 @show "CUDA_1 fwd"
-@btime FwdPrice=pricer(Model,rfCurve,mc_1,FwdData);
+
 @show "STD fwd"
 @btime FwdPrice=pricer(Model,rfCurve,mc,FwdData);
 @show "CUDA_1 fwd"
-@btime FwdPrice=pricer(Model,rfCurve,mc_1,FwdData);
+
 @show "CUDA_2 fwd"
 @btime FwdPrice=pricer(Model,rfCurve,mc_2,FwdData);
 @show "std eu"
 @btime EuPrice=pricer(Model,rfCurve,mc,EUData);
 @show "CUDA_1 eu"
-@btime EuPrice=pricer(Model,rfCurve,mc_1,EUData);
+
 @show "CUDA_2 eu"
 @btime EuPrice=pricer(Model,rfCurve,mc_2,EUData);
 @show "std am"
 @btime AmPrice=pricer(Model,rfCurve,mc,AMData);
 @show "CUDA_1 am"
-@btime AmPrice=pricer(Model,rfCurve,mc_1,AMData);
+
 @show "CUDA_2 am"
 @btime AmPrice=pricer(Model,rfCurve,mc_2,AMData);
