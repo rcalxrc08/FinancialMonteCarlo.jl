@@ -1,35 +1,37 @@
 # The following contains just abstract types regarding models and "virtual" method
 
-abstract type BaseProcess end
+#The most basic type, needed in order to support DifferentialEquations.jl
+abstract type BaseProcess{T <: Number} end
 
-abstract type AbstractMonteCarloProcess <: BaseProcess end
+# There will inherit from this type just processes, i.e. models that know what is a zeroCurve and a divided
+abstract type AbstractMonteCarloProcess{T <: Number} <: BaseProcess{T} end
 
-abstract type AbstractMonteCarloEngine <: BaseProcess end
+# Just engines will inherit from this, Brownian Motion et al.
+abstract type AbstractMonteCarloEngine{T <: Number} <: BaseProcess{T} end
 
-abstract type ScalarMonteCarloProcess <: AbstractMonteCarloProcess end
+# Abstract type representing scalar montecarlo processes
+abstract type ScalarMonteCarloProcess{T <: Number} <: AbstractMonteCarloProcess{T} end
 
-abstract type VectorialMonteCarloProcess <: AbstractMonteCarloProcess end
+# Abstract type representing multi dimensional montecarlo processes
+abstract type VectorialMonteCarloProcess{T <: Number} <: AbstractMonteCarloProcess{T} end
 
-abstract type NDimensionalMonteCarloProcess <: VectorialMonteCarloProcess end
+# Abstract type representing N dimensional montecarlo processes (??)
+abstract type NDimensionalMonteCarloProcess{T <: Number} <: VectorialMonteCarloProcess{T} end
 
-abstract type LevyProcess<:ScalarMonteCarloProcess end
+# Abstract type for Levy (useful in FinancialFFT.jl)
+abstract type LevyProcess{T <: Number} <: ScalarMonteCarloProcess{T} end
 
-abstract type ItoProcess<:LevyProcess end
+# Abstract type for Ito, an Ito process is always a Levy
+abstract type ItoProcess{T <: Number} <: LevyProcess{T} end
 
-abstract type FiniteActivityProcess<:LevyProcess end
+# Abstract type for FA processes
+abstract type FiniteActivityProcess{T <: Number} <: LevyProcess{T} end
 
-abstract type InfiniteActivityProcess<:LevyProcess end
+# Abstract type for IA processes
+abstract type InfiniteActivityProcess{T <: Number} <: LevyProcess{T} end
 
+# Utility for dividends (implemented just for mono dimensional processes)
 dividend(x::mc) where {mc <: ScalarMonteCarloProcess} = x.underlying.d;
-
-# export AbstractMonteCarloProcess
-# export ScalarMonteCarloProcess
-# export VectorialMonteCarloProcess
-# export NDimensionalMonteCarloProcess
-# export ItoProcess
-# export LevyProcess
-# export FiniteActivityProcess
-# export InfiniteActivityProcess
 
 
 """
@@ -47,15 +49,14 @@ Where:\n
 
 """
 function simulate(mcProcess::AbstractMonteCarloProcess,zeroCurve::AbstractZeroRateCurve,mcBaseData::AbstractMonteCarloConfiguration,T::Number)
-	price_type=predict_output_type_zero(mcProcess,zeroCurve,mcBaseData,T);
-	matrix_type=get_matrix_type(mcBaseData,mcProcess,price_type);
-	S=matrix_type(undef,mcBaseData.Nsim,mcBaseData.Nstep+1);
+	price_type=predict_output_type_zero_(mcProcess,zeroCurve,mcBaseData,T);
+	S=get_matrix_type(mcBaseData,mcProcess,price_type);
 	simulate!(S,mcProcess,zeroCurve,mcBaseData,T)
 	return S;
 end
 
 function simulate(mcProcess::VectorialMonteCarloProcess,zeroCurve::AbstractZeroRateCurve,mcBaseData::AbstractMonteCarloConfiguration,T::Number)
-	price_type=predict_output_type_zero(mcProcess,zeroCurve,mcBaseData,T);
+	price_type=predict_output_type_zero_(mcProcess,zeroCurve,mcBaseData,T);
 	matrix_type=get_matrix_type(mcBaseData,mcProcess,price_type);
 	S=matrix_type(undef,length(mcProcess.models));
 	for i=1:length(mcProcess.models)
@@ -79,7 +80,7 @@ Where:\n
 
 """
 function simulate(mcProcess::AbstractMonteCarloEngine,mcBaseData::AbstractMonteCarloConfiguration,T::Number)
-	price_type=predict_output_type_zero(mcProcess,mcBaseData,T);
+	price_type=predict_output_type_zero_(mcProcess,mcBaseData,T);
 	matrix_type=get_matrix_type(mcBaseData,mcProcess,price_type);
 	S=matrix_type(undef,mcBaseData.Nsim,mcBaseData.Nstep+1);
 	simulate!(S,mcProcess,mcBaseData,T)

@@ -5,11 +5,11 @@ function simulate!(X,mcProcess::BrownianMotion,mcBaseData::MonteCarloConfigurati
 	Nstep=mcBaseData.Nstep;
 	σ=mcProcess.σ;
 	μ=mcProcess.μ;
-	@assert T>0.0
+	@assert T>0
 	dt=T/Nstep
 	mean_bm=μ*dt
 	stddev_bm=σ*sqrt(dt)
-	isDualZero=mean_bm*stddev_bm*0.0;
+	isDualZero=mean_bm*stddev_bm*0;
 	#X=Matrix{typeof(isDualZero)}(undef,Nsim,Nstep+1);
 	Z=DelimitedFiles.readdlm("C:\\Users\\Nicola\\.julia\\dev\\FinancialMonteCarlo\\src\\models\\matrix.txt")[1:Nsim,1:Nstep];
 	view(X,:,1).=isDualZero;

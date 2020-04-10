@@ -7,7 +7,7 @@ Where:\n
 		models  =	the processes.
 		rho  = 	correlation matrix.
 """
-mutable struct GaussianCopulaNVariateProcess{ num3 <: Number} <: NDimensionalMonteCarloProcess
+mutable struct GaussianCopulaNVariateProcess{ num3 <: Number, numtype <: Number} <: NDimensionalMonteCarloProcess{numtype}
 	models::Tuple{Vararg{BaseProcess}}
 	rho::Matrix{num3}
 	function GaussianCopulaNVariateProcess(rho::Matrix{num3},models::BaseProcess...) where { num3 <: Number} 
@@ -15,25 +15,27 @@ mutable struct GaussianCopulaNVariateProcess{ num3 <: Number} <: NDimensionalMon
 		@assert sz[1]==sz[2]
 		@assert length(models)==sz[1]
 		@assert isposdef(rho)
-		return new{num3}(models,rho);
+		zero_typed=predict_output_type_zero_(models...)+zero(num3);
+		return new{num3,typeof(zero_typed)}(models,rho);
 	end
 	function GaussianCopulaNVariateProcess(models::BaseProcess...) 
 		len_=length(models)
 		return GaussianCopulaNVariateProcess(Matrix{Float64}(I, len_, len_),models...);
 	end
 	function GaussianCopulaNVariateProcess(model1::BaseProcess,model2::BaseProcess,rho::num3) where { num3 <: Number} 
-		corr_matrix_=[1.0 rho; rho 1.0];
+		corr_matrix_=[1 rho; rho 1];
 		@assert isposdef(corr_matrix_)
 		return GaussianCopulaNVariateProcess(corr_matrix_,model1,model2);
 	end
 end
+support_type(z::GaussianCopulaNVariateProcess{num,num1}) where {num <: Number, num1 <: Number}=zero(num)
 
 export GaussianCopulaNVariateProcess;
 
 function simulate!(S_total,mcProcess::GaussianCopulaNVariateProcess,rfCurve::AbstractZeroRateCurve,mcBaseData::AbstractMonteCarloConfiguration,T::Number)
 	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;
-	@assert T>0.0
+	@assert T>0
 	
 	####Simulation
 	## Simulate

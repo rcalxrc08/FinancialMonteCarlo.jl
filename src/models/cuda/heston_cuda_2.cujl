@@ -11,7 +11,7 @@ function simulate!(X,mcProcess::HestonProcess,spotData::ZeroRate,mcBaseData::Mon
 	κ=mcProcess.κ;
 	ρ=mcProcess.ρ;
 	θ=mcProcess.θ;
-	@assert T>0.0
+	@assert T>0
 
 	####Simulation
 	## Simulate
@@ -53,7 +53,7 @@ function simulate!(X,mcProcess::HestonProcess,spotData::ZeroRate,mcBaseData::Mon
 	κ=mcProcess.κ;
 	ρ=mcProcess.ρ;
 	θ=mcProcess.θ;
-	@assert T>0.0
+	@assert T>0
 
 	####Simulation
 	## Simulate

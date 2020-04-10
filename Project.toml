@@ -5,7 +5,6 @@ author = ["rcalxrc08"]
 version = "0.2.0"
 
 [deps]
-DatagenCopulaBased = "b9879e35-cdd4-53a9-a12a-bc41659e9769"
 DelimitedFiles = "8bb1440f-4735-579b-a4ab-409b98df4dab"
 Dictionaries = "85a47980-9c8c-11e8-2b9f-f7ca1fa99fb4"
 Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"

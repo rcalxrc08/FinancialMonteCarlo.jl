@@ -84,11 +84,9 @@ rfCurve2=ZeroRate([0.00,0.02],T);
 
 ########
 
-import FinancialMonteCarlo.BaseProcess
 import FinancialMonteCarlo.AbstractPayoff
 
-struct tmptype <: FinancialMonteCarlo.BaseProcess end
-struct tmptype2 <: FinancialMonteCarlo.AbstractPayoff 
+struct tmptype2 <: FinancialMonteCarlo.AbstractPayoff{Float64} 
 T::Float64
 end
 

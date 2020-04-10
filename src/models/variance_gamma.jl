@@ -8,20 +8,21 @@ Where:\n
 		θ = variance of volatility.
 		κ =	skewness of volatility.
 """
-mutable struct VarianceGammaProcess{num <: Number, num1 <: Number, num2 <: Number, abstrUnderlying <: AbstractUnderlying}<:InfiniteActivityProcess
+mutable struct VarianceGammaProcess{num <: Number, num1 <: Number, num2 <: Number, abstrUnderlying <: AbstractUnderlying, numtype <: Number} <: InfiniteActivityProcess{numtype}
 	σ::num
 	θ::num1
 	κ::num2
 	underlying::abstrUnderlying
 	function VarianceGammaProcess(σ::num,θ::num1,κ::num2,underlying::abstrUnderlying) where {num <: Number, num1 <: Number, num2 <: Number, abstrUnderlying <: AbstractUnderlying}
-        if σ<=0.0
+        if σ<=0
 			error("volatility must be positive");
-		elseif κ<=0.0
+		elseif κ<=0
 			error("κappa must be positive");
-		elseif 1-σ*σ*κ/2.0-θ*κ<0.0
+		elseif 1-σ*σ*κ/2-θ*κ<0
 			error("Parameters with unfeasible values")
 		else
-            return new{num,num1,num2,abstrUnderlying}(σ,θ,κ,underlying)
+			zero_typed=zero(num)+zero(num1)+zero(num2);
+            return new{num,num1,num2,abstrUnderlying,typeof(zero_typed)}(σ,θ,κ,underlying)
         end
     end
 end
@@ -37,11 +38,11 @@ function simulate!(X,mcProcess::VarianceGammaProcess,rfCurve::AbstractZeroRateCu
 	σ=mcProcess.σ;
 	θ1=mcProcess.θ;
 	κ1=mcProcess.κ;
-	@assert T>0.0
+	@assert T>0
 	
 	dt=T/Nstep;
 	#-1/p[3]*log(1+u*u*p[1]*p[1]*p[3]/2.0-1im*p[2]*p[3]*u);
-	psi1=-1/κ1*log(1-σ*σ*κ1/2.0-θ1*κ1);
+	psi1=-1/κ1*log(1-σ*σ*κ1/2-θ1*κ1);
 	drift=r-d-psi1;
 	
 	gammaRandomVariable=Gamma(dt/κ1,κ1);

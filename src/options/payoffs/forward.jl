@@ -1,14 +1,14 @@
 """
 Class for Dispatching Forward Payoff
 
-		forward=Forward(T::num) where {num<:Number}
+		forward=Forward(T::num) where {num <: Number}
 	
 Where:\n
 		T	=	Time to maturity of the Forward.
 """
-mutable struct Forward{num<:Number}<:EuropeanPayoff
+mutable struct Forward{num <: Number} <: EuropeanPayoff{num}
 	T::num
-	function Forward(T::num) where {num<:Number}
+	function Forward(T::num) where {num <: Number}
         if T <= 0.0
             error("Time to Maturity must be positive")
         else
@@ -19,7 +19,7 @@ end
 
 export Forward;
 
-#function payout(ST::numtype_,euPayoff::Forward) where {numtype_<:Number}
+#function payout(ST::numtype_,euPayoff::Forward) where {numtype_ <: Number}
 #	return ST;
 #end
 

@@ -7,14 +7,15 @@ Where:\n
 		σ	=	volatility of the process.
 		μ	=	drift of the process.
 """
-mutable struct BrownianMotionVec{num <: Number, num1 <: Number , num4 <: Number} <: AbstractMonteCarloEngine
+mutable struct BrownianMotionVec{num <: Number, num1 <: Number , num4 <: Number, numtype <: Number} <: AbstractMonteCarloEngine{numtype}
 	σ::num
 	μ::Curve{num1,num4}
 	function BrownianMotionVec(σ::num,μ::Curve{num1,num4}) where {num <: Number, num1 <: Number, num4 <: Number}
-        if σ <= 0.0
+        if σ <= 0
             error("Volatility must be positive")
         else
-            return new{num,num1,num4}(σ,μ)
+			zero_typed=zero(num)+zero(num1)+zero(num4);
+            return new{num,num1,num4,typeof(zero_typed)}(σ,μ)
         end
     end
 end
@@ -28,11 +29,11 @@ function simulate!(X,mcProcess::BrownianMotionVec,mcBaseData::MonteCarloConfigur
 	Nstep=mcBaseData.Nstep;
 	σ=mcProcess.σ;
 	μ=mcProcess.μ;
-	@assert T>0.0
+	@assert T>0
 	dt=T/Nstep
 	stddev_bm=σ*sqrt(dt)
-	zero_drift=μ(dt*0.0,dt);
-	isDualZero=stddev_bm*0.0*zero_drift;
+	zero_drift=μ(dt*0,dt);
+	isDualZero=stddev_bm*0*zero_drift;
 	view(X,:,1).=isDualZero;
 	@inbounds for j=1:Nstep
 		tmp_=μ((j-1)*dt,dt);
@@ -52,11 +53,11 @@ function simulate!(X,mcProcess::BrownianMotionVec,mcBaseData::MonteCarloConfigur
 	Nstep=mcBaseData.Nstep;
 	σ=mcProcess.σ;
 	μ=mcProcess.μ;
-	@assert T>0.0
+	@assert T>0
 	dt=T/Nstep
 	stddev_bm=σ*sqrt(dt)
-	zero_drift=μ(dt*0.0,dt);
-	isDualZero=stddev_bm*0.0*zero_drift;
+	zero_drift=μ(dt*0,dt);
+	isDualZero=stddev_bm*0*zero_drift;
 	view(X,:,1).=isDualZero;
 	Nsim_2=div(Nsim,2)
 

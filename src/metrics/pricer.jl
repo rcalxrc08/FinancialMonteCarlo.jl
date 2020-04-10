@@ -25,18 +25,17 @@ function pricer(mcProcess::BaseProcess,rfCurve::AbstractZeroRateCurve,mcConfig::
 	return Price;
 end
 
-get_matrix_type(mcConfig::MonteCarloConfiguration{<: Integer, <: Integer, <: AbstractMonteCarloMethod, <: BaseMode, <: Random.AbstractRNG},model::BaseProcess,price)=Matrix{typeof(price)};
-get_array_type(mcConfig::MonteCarloConfiguration{<: Integer, <: Integer, <: AbstractMonteCarloMethod, <: BaseMode, <: Random.AbstractRNG},model::BaseProcess,price)=Array{typeof(price)};
-
+get_matrix_type(mcConfig::MonteCarloConfiguration{<: Integer, <: Integer, <: AbstractMonteCarloMethod, <: BaseMode, <: Random.AbstractRNG},model::BaseProcess,price)=Matrix{typeof(price)}(undef,mcConfig.Nsim,mcConfig.Nstep+1);
+get_array_type(mcConfig::MonteCarloConfiguration{<: Integer, <: Integer, <: AbstractMonteCarloMethod, <: BaseMode, <: Random.AbstractRNG},model::BaseProcess,price)=Array{typeof(price)}(undef,mcConfig.Nstep);
 get_matrix_type(mcConfig::MonteCarloConfiguration{<: Integer, <: Integer, <: AbstractMonteCarloMethod, <: BaseMode, <: Random.AbstractRNG},model::VectorialMonteCarloProcess,price)=Array{Matrix{typeof(price)}};
 
 
 function pricer(mcProcess::BaseProcess,rfCurve::AbstractZeroRateCurve,mcConfig::MonteCarloConfiguration,abstractPayoffs::Array{abstractPayoff_}) where {abstractPayoff_ <: AbstractPayoff}
 	set_seed(mcConfig)
-	maxT=maximum([maturity(abstractPayoff) for abstractPayoff in abstractPayoffs])
+	maxT=maximum(maturity.(abstractPayoffs))
 	S=simulate(mcProcess,rfCurve,mcConfig,maxT)
-	zero_typed=predict_output_type(mcProcess,rfCurve,mcConfig,abstractPayoffs);
-	Prices::Array{zero_typed}=[mean(payoff(S,abstractPayoff,rfCurve,maxT)) for abstractPayoff in abstractPayoffs  ]
+	zero_typed=predict_output_type_zero_(mcProcess,rfCurve,mcConfig,abstractPayoffs);
+	Prices::Array{typeof(zero_typed)}=[mean(payoff(S,abstractPayoff,rfCurve,maxT)) for abstractPayoff in abstractPayoffs  ]
 	
 	return Prices;
 end
@@ -87,8 +86,8 @@ function pricer(mcProcess::Dict{String,AbstractMonteCarloProcess},rfCurve::Abstr
 	#	model=mcProcess[under_cpl]
 	#	price=price+pricer(model,rfCurve,mcConfig,options);
 	#end
-	zero_typed=predict_output_type(rfCurve,mcConfig,collect(keys(collect(values(dict_)))),collect(values(mcProcess)));
-	price::zero_typed= sum(pricer(mcProcess[under_cpl],rfCurve,mcConfig,extract_(under_cpl,dict_)) for under_cpl in unique(underlyings_payoff_cpl));
+	zero_typed=predict_output_type_zero_(rfCurve,mcConfig,collect(keys(collect(values(dict_)))),collect(values(mcProcess)));
+	price::typeof(zero_typed)= sum(pricer(mcProcess[under_cpl],rfCurve,mcConfig,extract_(under_cpl,dict_)) for under_cpl in unique(underlyings_payoff_cpl));
 	
 	return price;
 end

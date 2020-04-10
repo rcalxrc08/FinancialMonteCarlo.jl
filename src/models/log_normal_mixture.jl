@@ -7,7 +7,7 @@ Where:\n
 		η  =	Array of volatilities.
 		λ  = 	Array of weights.
 """
-mutable struct LogNormalMixture{num <: Number,num2 <: Number, abstrUnderlying <: AbstractUnderlying}<:ItoProcess
+mutable struct LogNormalMixture{num <: Number,num2 <: Number, abstrUnderlying <: AbstractUnderlying, numtype <: Number} <: ItoProcess{numtype}
 	η::Array{num,1}
 	λ::Array{num2,1}
 	underlying::abstrUnderlying
@@ -21,7 +21,8 @@ mutable struct LogNormalMixture{num <: Number,num2 <: Number, abstrUnderlying <:
         elseif length(λ) != length(η)-1
             error("Check vector lengths")
         else
-            return new{num,num2,abstrUnderlying}(η,λ,underlying)
+			zero_typed=zero(num)+zero(num2);
+            return new{num,num2,abstrUnderlying,typeof(zero_typed)}(η,λ,underlying)
         end
     end
 end

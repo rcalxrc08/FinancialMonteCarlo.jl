@@ -1,32 +1,32 @@
 ## Payoffs
-abstract type AbstractPayoff end
+abstract type AbstractPayoff{numtype <: Number} end
 
-struct ControlVariates{abstractPayoff <: AbstractPayoff} <: AbstractMonteCarloMethod
+struct ControlVariates{abstractPayoff <: AbstractPayoff{<:Number}} <: AbstractMonteCarloMethod
 	variate::AbstractPayoff
 	conf_variate::MonteCarloConfiguration{<: Integer , <: Integer , <: AbstractMonteCarloMethod ,  <: BaseMode}
-	function ControlVariates(variate::T1,conf_variate::MonteCarloConfiguration) where { T1 <: AbstractPayoff}
+	function ControlVariates(variate::T1,conf_variate::MonteCarloConfiguration) where { T1 <: AbstractPayoff{<:Number}}
 		return new{T1}(variate,conf_variate)
     end
 
 end
 
-abstract type SingleNamePayoff<:AbstractPayoff end
-abstract type EuropeanPayoff<:SingleNamePayoff end
-abstract type AmericanPayoff<:SingleNamePayoff end
-abstract type BermudanPayoff<:SingleNamePayoff end
-abstract type PathDependentPayoff<:SingleNamePayoff end
-abstract type BarrierPayoff<:PathDependentPayoff end
-abstract type AsianPayoff<:PathDependentPayoff end
+abstract type SingleNamePayoff{numtype <: Number} <: AbstractPayoff{numtype} end
+abstract type EuropeanPayoff{numtype <: Number} <: SingleNamePayoff{numtype} end
+abstract type AmericanPayoff{numtype <: Number} <: SingleNamePayoff{numtype} end
+abstract type BermudanPayoff{numtype <: Number} <: SingleNamePayoff{numtype} end
+abstract type PathDependentPayoff{numtype <: Number} <: SingleNamePayoff{numtype} end
+abstract type BarrierPayoff{numtype <: Number} <: PathDependentPayoff{numtype} end
+abstract type AsianPayoff{numtype <: Number} <: PathDependentPayoff{numtype} end
 
 #No multiple inheritance, sigh
-abstract type BasketPayoff<:AbstractPayoff end
-abstract type EuropeanBasketPayoff<:BasketPayoff end
-abstract type AmericanBasketPayoff<:BasketPayoff end
-abstract type BarrierBasketPayoff<:BasketPayoff end
-abstract type AsianBasketPayoff<:BasketPayoff end
+abstract type BasketPayoff{numtype <: Number} <: AbstractPayoff{numtype} end
+abstract type EuropeanBasketPayoff{numtype <: Number} <: BasketPayoff{numtype} end
+abstract type AmericanBasketPayoff{numtype <: Number} <: BasketPayoff{numtype} end
+abstract type BarrierBasketPayoff{numtype <: Number} <: BasketPayoff{numtype} end
+abstract type AsianBasketPayoff{numtype <: Number} <: BasketPayoff{numtype} end
 
 
-function maturity(x::abstractPayoff) where { abstractPayoff <: AbstractPayoff}
+function maturity(x::abstractPayoff) where { abstractPayoff <: AbstractPayoff{<:Number}}
 	return x.T;
 end
 

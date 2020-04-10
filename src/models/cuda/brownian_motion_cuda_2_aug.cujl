@@ -5,11 +5,11 @@ function simulate!(X_cu,mcProcess::BrownianMotionVec,mcBaseData::MonteCarloConfi
 
 	σ=mcProcess.σ;
 	μ=mcProcess.μ;
-	@assert T>0.0
+	@assert T>0
 	dt=T/Nstep
 	mean_bm=μ*dt
 	stddev_bm=σ*sqrt(dt)
-	isDualZero=mean_bm*stddev_bm*zero(Float32);
+	isDualZero=mean_bm*stddev_bm*0;
 	Z=CuArrays.zeros(Nsim);
 	for i=1:Nstep
 		X_pr=view(X_cu,:,i);
@@ -27,7 +27,7 @@ function simulate!(X_cu,mcProcess::BrownianMotionVec,mcBaseData::MonteCarloConfi
 
 	σ=mcProcess.σ;
 	μ=mcProcess.μ;
-	@assert T>0.0
+	@assert T>0
 	dt=T/Nstep
 	mean_bm=μ*dt
 	stddev_bm=σ*sqrt(dt)
