@@ -36,11 +36,11 @@ Model=GaussianCopulaNVariateLogProcess(rho_1,Model_enj,Model_abpl,Model_tesl)
 
 display(Model)
 
-mktdataset=underlying_|>Model
-mktdataset2=underlying_|>Model2
+mktdataset=underlying_→Model
+mktdataset2=underlying_→Model2
 
 portfolio_=[EUData];
-portfolio=underlying_|>EUData
+portfolio=underlying_→EUData
 
 price_mkt=pricer(mktdataset,rfCurve,mc,portfolio)
 price_mkt2=pricer(mktdataset2,rfCurve,mc,portfolio)

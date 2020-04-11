@@ -1,4 +1,4 @@
-@everywhere using BenchmarkTools
+using BenchmarkTools
 @everywhere using FinancialMonteCarlo
 S0=100.0;
 K=100.0;

@@ -35,10 +35,10 @@ Model=GaussianCopulaNVariateProcess(rho_1,Model_enj,Model_abpl,Model_tesl)
 
 display(Model)
 
-mktdataset=underlying_|>Model
+mktdataset=underlying_→Model
 
 portfolio_=[EUData];
-portfolio=underlying_|>EUData
+portfolio=underlying_→EUData
 
 price_mkt=pricer(mktdataset,rfCurve,mc,portfolio)
 price_old= sum(pricer(Model,rfCurve,mc,portfolio_))

@@ -29,13 +29,13 @@ param_=FinancialMonteCarlo.get_parameters(Model_abpl);
 
 @test_throws(ErrorException,FinancialMonteCarlo.set_parameters!(Model_abpl,[1,2,3,4]))
 
-port_="eni_aap"|>Model;
+port_="eni_aap"→Model;
 rfCurve=ZeroRate(r);
 rfCurve2=ZeroRate([0.00,0.02],T);
 @test_throws(ErrorException,port_+port_)
-@test_throws(ErrorException,underlying_name|>Model)
+@test_throws(ErrorException,underlying_name→Model)
 @test_throws(ErrorException,Underlying(-S0,rfCurve2.r))
-@test_throws(ErrorException,"c_i"|>Forward(1.0))
+@test_throws(ErrorException,"c_i"→Forward(1.0))
 @test_throws(ErrorException,Underlying(-S0))
 @test_throws(ErrorException,EuropeanOptionND(-1.0,1.0))
 @test_throws(ErrorException,EuropeanOptionND(1.0,-1.0))
