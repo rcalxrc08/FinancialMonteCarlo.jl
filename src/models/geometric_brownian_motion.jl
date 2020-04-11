@@ -8,15 +8,16 @@ Where:\n
 		μ	=	drift of the process.
 		x0	=	initial value.
 """
-mutable struct GeometricBrownianMotion{num <: Number, num1 <: Number, num2 <: Number}<:ItoProcess
+mutable struct GeometricBrownianMotion{num <: Number, num1 <: Number, num2 <: Number, numtype <: Number} <: ItoProcess{numtype}
 	σ::num
 	μ::num1
 	x0::num2
 	function GeometricBrownianMotion(σ::num,μ::num1,x0::num2) where {num <: Number , num1 <: Number, num2 <: Number}
-        if σ <= 0.0
+        if σ <= 0
             error("Volatility must be positive")
         else
-            return new{num,num1,num2}(σ,μ,x0)
+			zero_typed=zero(num)+zero(num1);
+            return new{num,num1,num2,typeof(zero_typed)}(σ,μ,x0)
         end
     end
 end
@@ -24,7 +25,7 @@ end
 export GeometricBrownianMotion;
 
 function simulate!(X,mcProcess::GeometricBrownianMotion,mcBaseData::AbstractMonteCarloConfiguration,T::Number)
-	@assert T>0.0
+	@assert T>0
 	σ_gbm=mcProcess.σ;
 	mu_gbm=mcProcess.μ;
 	μ_bm=mu_gbm-σ_gbm^2/2;

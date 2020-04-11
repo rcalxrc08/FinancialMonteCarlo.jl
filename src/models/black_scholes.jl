@@ -6,7 +6,7 @@ Struct for Black Scholes Process
 Where:\n
 		σ	=	volatility of the process.
 """
-mutable struct BlackScholesProcess{num <: Number, abstrUnderlying <: AbstractUnderlying}<:ItoProcess
+mutable struct BlackScholesProcess{num <: Number, abstrUnderlying <: AbstractUnderlying} <: ItoProcess{num}
 	σ::num
 	underlying::abstrUnderlying
 	function BlackScholesProcess(σ::num,underlying::abstrUnderlying) where {num <: Number,  abstrUnderlying <: AbstractUnderlying}

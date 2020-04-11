@@ -4,11 +4,11 @@ function simulate!(X_cu,mcProcess::SubordinatedBrownianMotion,mcBaseData::MonteC
 	Nstep=mcBaseData.Nstep;
 	drift=mcProcess.drift;
 	sigma=mcProcess.sigma;
-	@assert T>0.0
+	@assert T>0
 	type_sub=typeof(Float32(quantile(mcProcess.subordinator_,0.5)));
 	dt_s=CuArray{type_sub}(undef,Nsim)
 	dt_s_cpu=Array{type_sub}(undef,Nsim)
-	isDualZero=drift*sigma*zero(eltype(dt_s))*zero(Float32);
+	isDualZero=drift*sigma*zero(eltype(dt_s))*0;
 	X_cu[:,1].=isDualZero;
 	Z=CuArray{Float32}(undef,Nsim)
 	for i=1:Nstep
@@ -28,11 +28,11 @@ function simulate(X_cu,mcProcess::SubordinatedBrownianMotion,mcBaseData::MonteCa
 	Nstep=mcBaseData.Nstep;
 	drift=mcProcess.drift;
 	sigma=mcProcess.sigma;
-	@assert T>0.0
+	@assert T>0
 	type_sub=typeof(Float32(quantile(mcProcess.subordinator_,0.5)));
 	dt_s=CuArray{type_sub}(undef,Nsim)
 	dt_s_cpu=Array{type_sub}(undef,Nsim)
-	isDualZero=drift*sigma*zero(eltype(dt_s))*zero(Float32);
+	isDualZero=drift*sigma*zero(eltype(dt_s))*0;
 	X_cu[:,1].=isDualZero;
 	NsimAnti=div(Nsim,2)
 	for i=1:Nstep

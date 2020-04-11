@@ -26,7 +26,8 @@ module FinancialMonteCarlo
 		confinter,
 		delta,
 		simulate,
-		payoff
+		payoff,
+		→
 
 
 

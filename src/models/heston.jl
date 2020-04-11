@@ -11,7 +11,7 @@ Where:\n
 		ρ	=	??volatility of the process.
 		θ	=	??drift of the process.
 """
-mutable struct HestonProcess{num <: Number, num1 <: Number , num2 <: Number , num3 <: Number , num4 <: Number, num5 <:Number, abstrUnderlying <: AbstractUnderlying}<:ItoProcess
+mutable struct HestonProcess{num <: Number, num1 <: Number , num2 <: Number , num3 <: Number , num4 <: Number, num5 <:Number, abstrUnderlying <: AbstractUnderlying, numtype <: Number} <: ItoProcess{numtype}
 	σ::num
 	σ_zero::num1
 	λ::num2
@@ -29,7 +29,8 @@ mutable struct HestonProcess{num <: Number, num1 <: Number , num2 <: Number , nu
 		elseif !(-1.0<=ρ<=1.0)
 			error("ρ must be a correlation");
         else
-            return new{num,num1,num2,num3,num4,num5,abstrUnderlying}(σ,σ_zero,λ,κ,ρ,θ,underlying)
+			zero_typed=zero(num)+zero(num1)+zero(num2)+zero(num3)+zero(num4)+zero(num5);
+            return new{num,num1,num2,num3,num4,num5,abstrUnderlying,typeof(zero_typed)}(σ,σ_zero,λ,κ,ρ,θ,underlying)
         end
     end
 end

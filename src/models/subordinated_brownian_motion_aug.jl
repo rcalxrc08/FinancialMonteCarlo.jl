@@ -8,15 +8,16 @@ Where:\n
 		drift       = 	drift.
 		underlying  = 	underlying.
 """
-mutable struct SubordinatedBrownianMotionVec{num <: Number, num1 <: Number, num4 <: Number, Distr <: Distribution{Univariate,Continuous}}<:AbstractMonteCarloProcess
+mutable struct SubordinatedBrownianMotionVec{num <: Number, num1 <: Number, num4 <: Number, Distr <: Distribution{Univariate,Continuous}, numtype <: Number} <: AbstractMonteCarloProcess{numtype}
 	sigma::num
 	drift::Curve{num1,num4}
 	subordinator_::Distr
 	function SubordinatedBrownianMotionVec(sigma::num,drift::Curve{num1,num4},dist::Distr) where {num <: Number,num1 <: Number, num4 <: Number, Distr <: Distribution{Univariate,Continuous}}
-        if sigma<=0.0
+        if sigma<=0
 			error("volatility must be positive");
 		else
-            return new{num,num1,num4,Distr}(sigma,drift,dist)
+			zero_typed=zero(num)+zero(num1)+zero(num4);
+            return new{num,num1,num4,Distr,typeof(zero_typed)}(sigma,drift,dist)
         end
     end
 end
@@ -33,13 +34,13 @@ function simulate!(X,mcProcess::SubordinatedBrownianMotionVec,mcBaseData::MonteC
 	
 	drift=mcProcess.drift;
 	sigma=mcProcess.sigma;
-	@assert T>0.0
+	@assert T>0
 	type_sub=typeof(quantile(mcProcess.subordinator_,0.5));
 	dt_s=Array{type_sub}(undef,Nsim)
 	t_s=zeros(type_sub,Nsim)
 	dt=T/Nstep;
-	zero_drift=drift(zero(type_sub),zero(type_sub)+dt)*0.0;
-	isDualZero=sigma*zero(type_sub)*0.0*zero_drift;
+	zero_drift=drift(zero(type_sub),zero(type_sub)+dt)*0;
+	isDualZero=sigma*zero(type_sub)*0*zero_drift;
 	#X=Matrix{typeof(isDualZero)}(undef,Nsim,Nstep+1);
 	@views X[:,1].=isDualZero;
 	Z=Array{Float64}(undef,Nsim)
@@ -63,11 +64,11 @@ function simulate!(X,mcProcess::SubordinatedBrownianMotionVec,mcBaseData::MonteC
 	dt_s=Array{type_sub}(undef,Nsim)
 	drift=mcProcess.drift;
 	sigma=mcProcess.sigma;
-	@assert T>0.0
+	@assert T>0
 	t_s=zeros(type_sub,Nsim)
 	dt=T/Nstep;
 	zero_drift=drift(zero(type_sub),zero(type_sub)+dt);
-	isDualZero=sigma*zero(type_sub)*0.0*zero_drift;
+	isDualZero=sigma*zero(type_sub)*0*zero_drift;
 	#X=Matrix{typeof(isDualZero)}(undef,Nsim,Nstep+1);
 	@views X[:,1].=isDualZero;
 	for i=1:Nstep

@@ -8,7 +8,7 @@ Where:\n
 		K	=	Strike Price of the Option.
 		isCall  = true for CALL, false for PUT.
 """
-mutable struct EuropeanOptionND{num1 <: Number ,num2<:Number}<:EuropeanBasketPayoff
+mutable struct EuropeanOptionND{num1 <: Number ,num2 <: Number, numtype <: Number} <: EuropeanBasketPayoff{numtype}
 	T::num1
 	K::num2
 	isCall::Bool
@@ -18,7 +18,8 @@ mutable struct EuropeanOptionND{num1 <: Number ,num2<:Number}<:EuropeanBasketPay
         elseif K <= 0.0
             error("Strike Price must be positive")
         else
-            return new{num1,num2}(T,K,isCall)
+			zero_typed=zero(num1)+zero(num2)
+            return new{num1,num2,typeof(zero_typed)}(T,K,isCall)
         end
     end
 end

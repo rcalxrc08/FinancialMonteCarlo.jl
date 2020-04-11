@@ -67,15 +67,15 @@ fwd=-Forward(dual(T,1.0))*dual(1.0,1.0)+EUData*2.0+AMData
 display(fwd)
 print(fwd)
 
-mktdataset=underlying_name|>Model
+mktdataset=underlying_name→Model
 portfolio_=[FwdData;EUData;AMData;BarrierData;AsianFloatingStrikeData;AsianFixedStrikeData;Spot()];
-portfolio=underlying_name|>FwdData
-portfolio+=underlying_name|>EUData
-portfolio+=underlying_name|>AMData
-portfolio+=underlying_name|>Spot()
-portfolio+=underlying_name|>BarrierData
-portfolio+=underlying_name|>AsianFloatingStrikeData
-portfolio+=underlying_name|>AsianFixedStrikeData
+portfolio=underlying_name→FwdData
+portfolio+=underlying_name→EUData
+portfolio+=underlying_name→AMData
+portfolio+=underlying_name→Spot()
+portfolio+=underlying_name→BarrierData
+portfolio+=underlying_name→AsianFloatingStrikeData
+portfolio+=underlying_name→AsianFixedStrikeData
 
 display(portfolio)
 

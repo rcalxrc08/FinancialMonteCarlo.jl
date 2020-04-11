@@ -1,4 +1,3 @@
-import Base.|>;
 import Base.+;
 
 const MarketDataSet=Dict{String,AbstractMonteCarloProcess};
@@ -6,13 +5,13 @@ export MarketDataSet;
 
 #Strategies Implementation
 
-function |>(x::String,y::AbstractMonteCarloProcess)
+function →(x::String,y::AbstractMonteCarloProcess)
 	out=MarketDataSet( x => y );
 
 	return out;
 end
 
-function |>(x::String,y::NDimensionalMonteCarloProcess)
+function →(x::String,y::NDimensionalMonteCarloProcess)
 	sep=findfirst("_",x);
 	if(isnothing(sep))
 		error("Nvariate process must follow the format: INDEX1_INDEX2");

@@ -7,7 +7,7 @@ Where:\n
 		models  =	the processes.
 		rho  = 	correlation matrix.
 """
-mutable struct GaussianCopulaNVariateLogProcess{ num3 <: Number} <: NDimensionalMonteCarloProcess
+mutable struct GaussianCopulaNVariateLogProcess{ num3 <: Number, numtype <: Number} <: NDimensionalMonteCarloProcess{numtype}
 	models::Tuple{Vararg{BaseProcess}}
 	rho::Matrix{num3}
 	function GaussianCopulaNVariateLogProcess(rho::Matrix{num3},models::BaseProcess...) where { num3 <: Number} 
@@ -15,7 +15,8 @@ mutable struct GaussianCopulaNVariateLogProcess{ num3 <: Number} <: NDimensional
 		@assert sz[1]==sz[2]
 		@assert length(models)==sz[1]
 		@assert isposdef(rho)
-		return new{num3}(models,rho);
+		zero_typed=predict_output_type_zero_(models...)+zero(num3);
+		return new{num3,typeof(zero_typed)}(models,rho);
 	end
 	function GaussianCopulaNVariateLogProcess(models::BaseProcess...) 
 		len_=length(models)
@@ -26,8 +27,10 @@ mutable struct GaussianCopulaNVariateLogProcess{ num3 <: Number} <: NDimensional
 		@assert isposdef(corr_matrix_)
 		return GaussianCopulaNVariateLogProcess(corr_matrix_,model1,model2);
 	end
-end
- 
+end 
+
+support_type(z::GaussianCopulaNVariateLogProcess{num,num1}) where {num <: Number, num1 <: Number}=zero(num)
+
 export GaussianCopulaNVariateLogProcess;
 
 function simulate!(S_Total,mcProcess::GaussianCopulaNVariateLogProcess,rfCurve::AbstractZeroRateCurve,mcBaseData::AbstractMonteCarloConfiguration,T::Number)

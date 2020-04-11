@@ -72,14 +72,14 @@ function delta(mcProcess::Dict{String,AbstractMonteCarloProcess},rfCurve::Abstra
 		model_=mcProcess_up[multi_name]
 		model_.models[idx_supp].underlying.S0+=dS;
 		delete!(mcProcess_up,multi_name)
-		tmp_mkt=multi_name|>model_;
+		tmp_mkt=multi_name→model_;
 		mcProcess_up=mcProcess_up+tmp_mkt
 		price2=pricer(mcProcess_up,rfCurve,mcConfig,dict_);
 	else
 		model=mcProcess_up[keys_mkt[idx_1]]
 		model.underlying.S0+=dS
 		delete!(mcProcess_up,keys_mkt[idx_1])
-		tmp_mkt=keys_mkt[idx_1]|>model;
+		tmp_mkt=keys_mkt[idx_1]→model;
 		mcProcess_up=mcProcess_up+tmp_mkt
 		price2=pricer(mcProcess_up,rfCurve,mcConfig,dict_);
 	

@@ -34,12 +34,12 @@ Model2=GaussianCopulaNVariateProcess([1.0 0.3 0.0;0.3 1.0 0.0; 0.0 0.0 1.0],Mode
 
 display(Model)
 
-mktdataset=underlying_|>Model
-mktdataset_dual=underlying_|>ModelDual
-mktdataset_aug=underlying_|>Model2
+mktdataset=underlying_→Model
+mktdataset_dual=underlying_→ModelDual
+mktdataset_aug=underlying_→Model2
 
 portfolio_=[EUData];
-portfolio=underlying_|>EUData
+portfolio=underlying_→EUData
 
 @btime price_mkt=pricer(mktdataset,rfCurve,mc,portfolio)
 @btime price_mkt=pricer(mktdataset_dual,rfCurve,mc,portfolio)

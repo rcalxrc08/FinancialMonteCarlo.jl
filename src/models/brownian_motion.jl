@@ -7,14 +7,15 @@ Where:\n
 		σ	=	volatility of the process.
 		μ	=	drift of the process.
 """
-mutable struct BrownianMotion{num <: Number, num1 <: Number} <: AbstractMonteCarloEngine
+mutable struct BrownianMotion{num <: Number, num1 <: Number, numtype <: Number} <: AbstractMonteCarloEngine{numtype}
 	σ::num
 	μ::num1
 	function BrownianMotion(σ::num,μ::num1) where {num <: Number, num1 <: Number}
-        if σ <= 0.0
+        if σ <= 0
             error("Volatility must be positive")
         else
-            return new{num,num1}(σ,μ)
+			zero_typed=zero(num)+zero(num1);
+            return new{num,num1,typeof(zero_typed)}(σ,μ)
         end
     end
 end
@@ -26,11 +27,11 @@ function simulate!(X,mcProcess::BrownianMotion,mcBaseData::MonteCarloConfigurati
 	Nstep=mcBaseData.Nstep;
 	σ=mcProcess.σ;
 	μ=mcProcess.μ;
-	@assert T>0.0
+	@assert T>0
 	dt=T/Nstep
 	mean_bm=μ*dt
 	stddev_bm=σ*sqrt(dt)
-	isDualZero=mean_bm*stddev_bm*0.0;
+	isDualZero=mean_bm*stddev_bm*0;
 	view(X,:,1).=isDualZero;	
 	@inbounds for j=1:Nstep
 		@inbounds for i=1:Nsim
@@ -43,18 +44,16 @@ function simulate!(X,mcProcess::BrownianMotion,mcBaseData::MonteCarloConfigurati
 
 end
 
-
-
 function simulate!(X,mcProcess::BrownianMotion,mcBaseData::MonteCarloConfiguration{type1,type2,type3,SerialMode,type5},T::numb) where {numb <: Number, type1 <: Integer, type2<: Integer, type3 <: AntitheticMC, type5 <: Random.AbstractRNG}
 	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;
 	σ=mcProcess.σ;
 	μ=mcProcess.μ;
-	@assert T>0.0
+	@assert T>0
 	dt=T/Nstep
 	mean_bm=μ*dt
 	stddev_bm=σ*sqrt(dt)
-	isDualZero=mean_bm*stddev_bm*0.0;
+	isDualZero=mean_bm*stddev_bm*0;
 	view(X,:,1).=isDualZero;
 	Nsim_2=div(Nsim,2)
 

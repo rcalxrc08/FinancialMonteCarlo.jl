@@ -10,7 +10,7 @@ Where:\n
 		λ₊ =	positive jump size.
 		λ₋ =	negative jump size.
 """
-mutable struct KouProcess{num <: Number, num1 <: Number,num2 <: Number,num3 <: Number,num4 <: Number, abstrUnderlying <: AbstractUnderlying}<:FiniteActivityProcess
+mutable struct KouProcess{num <: Number, num1 <: Number,num2 <: Number,num3 <: Number,num4 <: Number, abstrUnderlying <: AbstractUnderlying, numtype <: Number} <: FiniteActivityProcess{numtype}
 	σ::num
 	λ::num1
 	p::num2
@@ -18,18 +18,19 @@ mutable struct KouProcess{num <: Number, num1 <: Number,num2 <: Number,num3 <: N
 	λ₋::num4
 	underlying::abstrUnderlying
 	function KouProcess(σ::num,λ::num1,p::num2,λ₊::num3,λ₋::num4,underlying::abstrUnderlying) where {num <: Number, num1 <: Number,num2 <: Number,num3 <: Number,num4 <: Number, abstrUnderlying <: AbstractUnderlying}
-        if σ<=0.0
+        if σ<=0
 			error("volatility must be positive");
-		elseif λ<=0.0
+		elseif λ<=0
 			error("jump intensity must be positive");
-		elseif λ₊<=0.0
+		elseif λ₊<=0
 			error("positive λ must be positive");
-		elseif λ₋<=0.0
+		elseif λ₋<=0
 			error("negative λ must be positive");
 		elseif !(0<=p<=1)
 			error("p must be a probability")
         else
-            return new{num,num1,num2,num3,num4,abstrUnderlying}(σ,λ,p,λ₊,λ₋,underlying)
+			zero_typed=zero(num)+zero(num1)+zero(num2)+zero(num3)+zero(num4);
+            return new{num,num1,num2,num3,num4,abstrUnderlying,typeof(zero_typed)}(σ,λ,p,λ₊,λ₋,underlying)
         end
     end
 end

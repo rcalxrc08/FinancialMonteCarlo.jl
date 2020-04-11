@@ -8,7 +8,7 @@ Where:\n
 		K	=	Strike Price of the Option.
 		isCall  = true for CALL, false for PUT.
 """
-mutable struct BermudanOption{num1 <: Number,num2 <: Number}<:BermudanPayoff
+mutable struct BermudanOption{num1 <: Number,num2 <: Number, numtype <: Number} <: BermudanPayoff{numtype}
 	T::num1
 	T_ex::Array{num1}
 	K::num2
@@ -20,14 +20,15 @@ mutable struct BermudanOption{num1 <: Number,num2 <: Number}<:BermudanPayoff
             error("Strike Price must be positive")
         else
 			@assert issorted(T);
-            return new{num1,num2}(T[end],T,K,isCall)
+			zero_typed=zero(num1)+zero(num2)
+            return new{num1,num2,typeof(zero_typed)}(T[end],T,K,isCall)
         end
     end
 end
 
 export BermudanOption;
 
-function payout(Sti::numtype_,bmPayoff::BermudanOption) where {numtype_<:Number}
+function payout(Sti::numtype_,bmPayoff::BermudanOption) where {numtype_ <: Number}
 	iscall=bmPayoff.isCall ? 1 : -1
 	return ((Sti-bmPayoff.K)*iscall>0.0) ? (Sti-bmPayoff.K)*iscall : zero(numtype_);
 end

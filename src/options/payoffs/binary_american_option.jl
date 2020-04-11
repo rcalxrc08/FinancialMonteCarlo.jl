@@ -8,7 +8,7 @@ Where:\n
 		K	=	Strike Price of the Option.
 		isCall  = true for CALL, false for PUT.
 """
-mutable struct BinaryAmericanOption{num1 <: Number,num2 <: Number}<:AmericanPayoff
+mutable struct BinaryAmericanOption{num1 <: Number,num2 <: Number, numtype <: Number} <: AmericanPayoff{numtype}
 	T::num1
 	K::num2
 	isCall::Bool
@@ -18,14 +18,15 @@ mutable struct BinaryAmericanOption{num1 <: Number,num2 <: Number}<:AmericanPayo
         elseif K <= 0.0
             error("Strike Price must be positive")
         else
-            return new{num1,num2}(T,K,isCall)
+            zero_typed=zero(num1)+zero(num2)
+            return new{num1,num2,typeof(zero_typed)}(T,K,isCall)
         end
     end
 end
 
 export BinaryAmericanOption;
 
-function payout(Sti::numtype_,amPayoff::BinaryAmericanOption) where {numtype_<:Number}
+function payout(Sti::numtype_,amPayoff::BinaryAmericanOption) where {numtype_ <: Number}
 	iscall=amPayoff.isCall ? 1 : -1
 	return ((Sti-amPayoff.K)*iscall>0.0) ? one(numtype_) : zero(numtype_);
 end

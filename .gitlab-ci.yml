@@ -37,7 +37,7 @@ before_script:
 .test_template: &cov_definition
   script:
     - export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib/
-    - /usr/local/julia/bin/julia -e 'using Pkg; Pkg.add("Coverage"); using FinancialMonteCarlo; cd(joinpath(dirname(pathof(FinancialMonteCarlo)), ".."));
+    - /usr/local/julia/bin/julia --project=@. -e 'using Pkg; Pkg.add("Coverage"); import Pkg; Pkg.build(); using FinancialMonteCarlo;
       using Coverage; cl, tl = get_summary(process_folder());
       println("(", cl/tl*100, "%) covered")'
   artifacts:
@@ -53,7 +53,7 @@ before_script:
     - julia --project=benchmark -e 'using Pkg; Pkg.instantiate(); Pkg.develop(PackageSpec(path=pwd()))'
     - /usr/local/julia/bin/julia --project=benchmark -e 'using Pkg; Pkg.instantiate(); include("benchmark/benchmarks.jl");'
     - /usr/local/julia/bin/julia --project=benchmark -e 'using Pkg; Pkg.instantiate(); include("benchmark/bench_black_mn.jl");'
-    - /usr/local/julia/bin/julia -p4 -e 'using Pkg; Pkg.add("BenchmarkTools"); Pkg.instantiate(); include("benchmark/bench_black_mp.jl");'
+    - /usr/local/julia/bin/julia -p4 --project=benchmark -e '@everywhere(using Pkg);@everywhere(Pkg.add("BenchmarkTools")); @everywhere(Pkg.instantiate()); include("benchmark/bench_black_mp.jl");'
     - export JULIA_NUM_THREADS=4 && /usr/local/julia/bin/julia --project=benchmark -e 'using Pkg; Pkg.instantiate(); include("benchmark/bench_black_mt.jl");'
     
 ################################################################
@@ -69,9 +69,9 @@ before_script:
     - apt-get update && apt-get -y install fontconfig
     - apt-get update
     - apt-get -y install libfreeimage-dev libatlas3-base libfftw3-dev cmake libglfw3-dev mesa-utils
-    - wget -q http://arrayfire.s3.amazonaws.com/3.5.1/ArrayFire-v3.5.1_Linux_x86_64.sh
-    - chmod +x ArrayFire-v3.5.1_Linux_x86_64.sh
-    - ./ArrayFire-v3.5.1_Linux_x86_64.sh --exclude-subdir --prefix=/usr/local
+    - wget -q http://arrayfire.s3.amazonaws.com/3.7.1/ArrayFire-v3.7.1_Linux_x86_64.sh
+    - chmod +x ArrayFire-v3.7.1_Linux_x86_64.sh
+    - ./ArrayFire-v3.7.1_Linux_x86_64.sh --exclude-subdir --prefix=/usr/local
     - export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib/
     - ldconfig
 

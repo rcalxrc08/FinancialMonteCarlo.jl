@@ -37,13 +37,13 @@ Model=GaussianCopulaNVariateLogProcess(Model_enj,Model_abpl,0.0)
 
 display(Model)
 
-mktdataset=underlying_|>Model
-mktdataset_2=underlying_name|>Model_enj
-mktdataset+="notneeded"|>Model_n
+mktdataset=underlying_→Model
+mktdataset_2=underlying_name→Model_enj
+mktdataset+="notneeded"→Model_n
 
-portfolio=underlying_name|>1.0*EUData
-portfolio+=underlying_name|>1.0*AMData
-portfolio+=underlying_name|>-1.0*(-1.0)*BarrierData
+portfolio=underlying_name→1.0*EUData
+portfolio+=underlying_name→1.0*AMData
+portfolio+=underlying_name→-1.0*(-1.0)*BarrierData
 
 price_mkt=pricer(mktdataset,rfCurve,mc,portfolio)
 price_old=pricer(mktdataset_2,rfCurve,mc,portfolio)

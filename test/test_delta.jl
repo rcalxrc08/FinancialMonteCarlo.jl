@@ -35,20 +35,20 @@ Model=GaussianCopulaNVariateProcess(rho_1,Model_enj,Model_abpl,Model_tesl)
 
 display(Model)
 
-mktdataset=underlying_|>Model
-mktdataset_1=underlying_name|>Model_enj
+mktdataset=underlying_→Model
+mktdataset_1=underlying_name→Model_enj
 
 portfolio_=[EUData];
-portfolio=underlying_|>EUData
-portfolio_1=underlying_name|>AMData
+portfolio=underlying_→EUData
+portfolio_1=underlying_name→AMData
 price_mkt=FinancialMonteCarlo.delta(mktdataset,rfCurve,mc,portfolio,underlying_name,1e-7)
 price_mkt_1=FinancialMonteCarlo.delta(mktdataset_1,rfCurve,mc,portfolio_1,underlying_name,1e-7)
 
 Model_enj_dual=BlackScholesProcess(sigma,Underlying(dual(S0,1.0),d));
 Model_dual=GaussianCopulaNVariateProcess(rho_1,Model_enj_dual,Model_abpl,Model_tesl)
 
-mktdataset_dual=underlying_|>Model_dual
-mktdataset_1_dual=underlying_name|>Model_enj_dual
+mktdataset_dual=underlying_→Model_dual
+mktdataset_1_dual=underlying_name→Model_enj_dual
 price_mkt_dual=pricer(mktdataset_dual,rfCurve,mc,portfolio)
 price_mkt_1_dual=pricer(mktdataset_1_dual,rfCurve,mc,portfolio_1)
 
