@@ -1,30 +1,29 @@
-import Base.|>;
 import Base.+;
 
 #Strategies Implementation
 
 const Portfolio=Dict{String,Position};
 
-function |>(x::String,y::Position)
+function →(x::String,y::Position)
 	out=Portfolio( x => y );
 
 	return out;
 end
 
-function |>(x::String,y::SingleNamePayoff)
+function →(x::String,y::SingleNamePayoff)
 	sep=findfirst("_",x);
 	if(!isnothing(sep))
 		error("NO UNDERSCORE ALLOWED IN SINGLE NAME OPTIONS");
 	end
-	return x|>(1.0*y);
+	return x→(1.0*y);
 end
 
-function |>(x::String,y::BasketPayoff)
+function →(x::String,y::BasketPayoff)
 	sep=findfirst("_",x)[1];
 	if(isnothing(sep))
 		error("Bivariate payoff underlying must follow the format: INDEX1_INDEX2");
 	end
-	return x|>(1.0*y);
+	return x→(1.0*y);
 end
 
 
