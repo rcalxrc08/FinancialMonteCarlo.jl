@@ -7,7 +7,7 @@ General Interface for Computation of confidence interval of price
 	
 Where:\n
 		mcProcess          = Process to be simulated.
-		rfCurve  = Datas of the Spot.
+		rfCurve  = Zero Rate Data.
 		mcBaseData = Basic properties of MonteCarlo simulation
 		payoff_ = Payoff(s) to be priced
 		alpha [Optional, default to 99%] = confidence level

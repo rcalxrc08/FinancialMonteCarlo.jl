@@ -10,7 +10,5 @@ The following types of *Multivariate* are supported from the package using packa
 The following option structs are provided:
 ```@docs
 GaussianCopulaNVariateLogProcess
-GaussianCopulaBivariateProcess
-GaussianCopulaBivariateLogProcess
 GaussianCopulaNVariateProcess
 ```

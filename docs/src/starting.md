@@ -25,12 +25,12 @@ Nstep=30;
 σ=0.2;
 #Build the Structs
 mcConfig=MonteCarloConfiguration(Nsim,Nstep);
-rfCurve=ZeroRate(S0,r,d);
+rfCurve=ZeroRate(r);
 
 #Define The Options
 EU_payoff=EuropeanOption(T,K)
 #Define the Model
-Model=BlackScholesProcess(σ);
+Model=BlackScholesProcess(σ,Underlying(S0,d));
 #Price
 EuPrice=pricer(Model,rfCurve,mcConfig,EU_payoff)
 ```

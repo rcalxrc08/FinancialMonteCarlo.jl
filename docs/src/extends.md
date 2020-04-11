@@ -6,8 +6,8 @@ Generally, you don't have to implement every API method listed in the documentat
 
 ## Create a Model
 To use your model inside the package, you must implement a struct, that is inheriting from one of the abstract classes defined in the Type section.
-Such struct must contain the parameters of your model, then you have to implement a function called `simulate` that is representing how your model simulates.
-You can easily copy the signature of the function from one of the implementation in the models folder (beside subordinated brownian motion).
+Such struct must contain the parameters of your model, then you have to implement a function called `simulate` or `simulate!` that is representing how your model simulates.
+You can easily copy the signature of the function from one of the implementation in the models folder. Pay attention to the distinction between Engine and Model.
 
 ## Create a Payoff
 To use your payoff inside the package, you must implement a struct, that is inheriting from one of the abstract classes defined in the Type section.

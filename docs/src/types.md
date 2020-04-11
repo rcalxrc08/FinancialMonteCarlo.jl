@@ -4,9 +4,6 @@ All models, payoffs and modes provided in this package are organized into a type
 
 ## Models
 
-The root of this type hierarchy is a DifferentialEquations.jl abstract class `AbstractMonteCarloProblem`. 
-The abstract type `AbstractMonteCarloProblem` is used in order to guarantee the compatibility with DifferentialEquations.jl; 
-such type is used whenever it is not necessary to know exactly the model type, like in `payoff`,`pricer`, etc.
 Remember that each model must have a `simulate` method implemented that specifies the way that the model behaves.
 From that abstract class the followings are derived and decomposed as follows:
 

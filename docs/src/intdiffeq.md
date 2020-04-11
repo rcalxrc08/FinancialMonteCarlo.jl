@@ -47,6 +47,3 @@ Model = MonteCarloProblem(prob)
 @show AsianPrice1=pricer(Model,rfCurve,mcConfig,AsianFloatingStrike_payoff);
 @show AsianPrice2=pricer(Model,rfCurve,mcConfig,AsianFixedStrike_payoff);
 ```
-
-## Remarks
-Support for Jump Diffusion Processes from DifferentialEquations.jl is currently broken.

@@ -5,7 +5,7 @@ General Interface for Pricing
 	
 Where:\n
 		mcProcess          = Process to be simulated.
-		rfCurve  = Datas of the Spot.
+		rfCurve  = Zero Rate Data.
 		mcBaseData = Basic properties of MonteCarlo simulation
 		payoff_ = Payoff(s) to be priced
 		

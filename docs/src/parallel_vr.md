@@ -28,7 +28,7 @@ Keep in mind the following table when trying to use parallelization and automati
 
 **Element Type** | **Parallelization mode** | **Descriptions**
 --- | --- | ---
-`Float X` | `Serial` | Works with any type of Float
+`Float X` | `CPU (Serial,Threaded or Distributed)` | Works with any type of Float
 `Float X` | `GPU` | Works with any type of Float, best with Float32
-`num<:Number` | `Serial` | Works almost everywhere with any type of Number, like Duals,Complex,Hypers,etc.
+`num<:Number` | `CPU (Serial,Threaded or Distributed)` | Works almost everywhere with any type of Number, like Duals,Complex,Hypers,etc.
 `num<:Number` | `GPU` | Works just with Complex and ForwardDiff.Dual.
