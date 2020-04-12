@@ -1,5 +1,5 @@
-using Pkg;
-get(ENV, "CI", nothing) == "true" ? Pkg.instantiate() : nothing;
+using Pkg,FinancialMonteCarlo;
+#get(ENV, "CI", nothing) == "true" ? Pkg.instantiate() : nothing;
 path1=joinpath(dirname(pathof(FinancialMonteCarlo)),"..","benchmark")
 test_listTmp=readdir(path1);
 BlackList=["Project.toml","benchmarks.jl","runner.jl","cuda","af","Manifest.toml","bench_kou_rev_diff_grad.jl","bench_black_mp.jl","bench_black_mn.jl","bench_black_mt.jl"]
