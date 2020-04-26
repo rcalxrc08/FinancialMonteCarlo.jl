@@ -1,16 +1,13 @@
 abstract type AbstractCudaMode <: ParallelMode end
-struct CudaMode_2 <: AbstractCudaMode end
+struct CudaMode <: AbstractCudaMode end
 
 using .CuArrays
 include("../models/cuda/brownian_motion_cuda.cujl")
 include("../models/cuda/brownian_motion_cuda_aug.cujl")
-include("../models/cuda/brownian_motion_cuda_2.cujl")
-include("../models/cuda/brownian_motion_cuda_2_aug.cujl")
 include("../models/cuda/heston_cuda.cujl")
-include("../models/cuda/heston_cuda_2.cujl")
 include("../models/cuda/subordinated_brownian_motion_cuda.cujl")
 
-function set_seed(mcConfig::MonteCarloConfiguration{type1,type2,type3,type4,type5})  where {type1 <: Integer, type2<: Integer, type3 <: AbstractMonteCarloMethod, type4 <: AbstractCudaMode, type5 <: Random.AbstractRNG}
+function set_seed(mcConfig::MonteCarloConfiguration{type1,type2,type3,type4,type5})  where {type1 <: Integer, type2 <: Integer, type3 <: AbstractMonteCarloMethod, type4 <: AbstractCudaMode, type5 <: Random.AbstractRNG}
 
 	#CuArrays.CURAND.seed!(CuArrays.CURAND.generator(),mcConfig.seed)
 	
@@ -21,22 +18,19 @@ end
 #get_matrix_type(mcConfig::MonteCarloConfiguration{type1,type2,type3,type4,type5}) where {type1 <: Integer, type2<: Integer, type3 <: AbstractMonteCarloMethod, type4 <: AbstractCudaMode, type5 <: Random.AbstractRNG}=CuMatrix;
 #get_array_type(mcConfig::MonteCarloConfiguration{type1,type2,type3,type4,type5}) where {type1 <: Integer, type2<: Integer, type3 <: AbstractMonteCarloMethod, type4 <: AbstractCudaMode, type5 <: Random.AbstractRNG} =CuArray;
 
-get_matrix_type(mcConfig::MonteCarloConfiguration{<: Integer, <: Integer, <: AbstractMonteCarloMethod, <: AbstractCudaMode, <: Random.AbstractRNG},model::BaseProcess,price)=CuMatrix{typeof(price)};
+get_matrix_type(mcConfig::MonteCarloConfiguration{<: Integer, <: Integer, <: AbstractMonteCarloMethod, <: AbstractCudaMode, <: Random.AbstractRNG},model::BaseProcess,price)=CuMatrix{typeof(price)}(undef,mcConfig.Nsim,mcConfig.Nstep+1);
 get_array_type(mcConfig::MonteCarloConfiguration{<: Integer, <: Integer, <: AbstractMonteCarloMethod, <: AbstractCudaMode, <: Random.AbstractRNG},model::BaseProcess,price)=CuArray{typeof(price)};
 get_matrix_type(mcConfig::MonteCarloConfiguration{<: Integer, <: Integer, <: AbstractMonteCarloMethod, <: AbstractCudaMode, <: Random.AbstractRNG},model::VectorialMonteCarloProcess,price)=Array{CuMatrix{typeof(price)}};
-
-#function set_seed(mcConfig::MonteCarloConfiguration{type1,type2,type3,type4,type5})  where {type1 <: Integer, type2<: Integer, type3 <: AbstractMonteCarloMethod, type4 <: CudaMode_2, type5 <: Random.AbstractRNG}
-#
-#	#CuArrays.CURAND.seed!(mcConfig.seed)
-#	
-#	return;
-#	
-#end
-
 
 
 function payoff(S::CuMatrix{num},payoff_::PathDependentPayoff,rfCurve::AbstractZeroRateCurve,T1::num2=maturity(payoff_)) where{ num <: Number,num2 <: Number}
 	S_=collect(S);
 	
 	return payoff(S_,payoff_,rfCurve,T1);
+end
+
+function payoff!(X,S::CuMatrix{num},payoff_::PathDependentPayoff,rfCurve::AbstractZeroRateCurve,T1::num2=maturity(payoff_)) where{ num <: Number,num2 <: Number}
+	S_=collect(S);
+	
+	X.=payoff(S_,payoff_,rfCurve,T1);
 end
