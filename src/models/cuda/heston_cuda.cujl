@@ -1,8 +1,8 @@
 
 function simulate!(X,mcProcess::HestonProcess,spotData::ZeroRate,mcBaseData::MonteCarloConfiguration{type1,type2,type3,CudaMode,type5},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: StandardMC, type5 <: Random.AbstractRNG}
 	r=spotData.r;
-	S0=spotData.S0;
-	d=spotData.d;
+	S0=mcProcess.underlying.S0;
+	d=mcProcess.underlying.d;
 	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;
 	σ=mcProcess.σ;
@@ -17,26 +17,25 @@ function simulate!(X,mcProcess::HestonProcess,spotData::ZeroRate,mcBaseData::Mon
 	## Simulate
 	κ_s=κ+λ1;
 	θ_s=κ*θ/(κ+λ1);
+	r_d=r-d
 
 	dt=T/Nstep
 	isDualZero=zero(S0*T*r*σ_zero*κ*θ*λ1*σ*ρ);
-	ρ_f=Float32(ρ);
-	κ_s_f=Float32(κ_s);
-	θ_s_f=Float32(θ_s);
-	r_d_f=Float32(r-d)
-	dt_f=Float32(dt)
-	σ_f=Float32(σ)
-	X[:,1].=Float32(isDualZero);
-	v_m=zeros(CuArray{typeof(Float32(isDualZero))},Nsim).+σ_zero;
+	X[:,1].=isDualZero;
+	v_m=CUDA.zeros(Nsim).+σ_zero^2;
+	e1=CuArray{Float32}(undef,Nsim);
+	e2=CuArray{Float32}(undef,Nsim);
+	
 	for j in 1:Nstep
-		e1=CuArrays.CURAND.curandn(Float32,Nsim);
-		e2=CuArrays.CURAND.curandn(Float32,Nsim);
-		e2=e1.*ρ_f.+e2.*sqrt(1-ρ_f*ρ_f);
-		@inbounds X[:,j+1].=X[:,j]+((r_d_f).-0.5.*max.(v_m,0)).*dt_f+sqrt.(max.(v_m,0)).*sqrt(dt_f).*e1;
-		v_m+=κ_s_f.*(θ_s_f.-max.(v_m,0)).*dt_f+σ_f.*sqrt.(max.(v_m,0)).*sqrt(dt_f).*e2;
+		randn!(CURAND.generator(),e1);
+		randn!(CURAND.generator(),e2);
+		e2.=e1.*ρ.+e2.*sqrt(1-ρ*ρ);
+		@views @inbounds X[:,j+1].=X[:,j]+(r_d.-0.5.*v_m).*dt+sqrt.(v_m).*sqrt(dt).*e1;
+		v_m.+=κ_s.*(θ_s.-v_m).*dt+σ.*sqrt.(v_m).*sqrt(dt).*e2;
+		v_m.=max.(v_m,0);
 	end
 	## Conclude
-	X.=Float32(S0).*exp.(X);
+	X.=S0.*exp.(X);
 	return;
 end
 
@@ -59,29 +58,33 @@ function simulate!(X,mcProcess::HestonProcess,spotData::ZeroRate,mcBaseData::Mon
 	## Simulate
 	κ_s=κ+λ1;
 	θ_s=κ*θ/(κ+λ1);
+	r_d=r-d
 
 	dt=T/Nstep
 	isDualZero=zero(S0*T*r*σ_zero*κ*θ*λ1*σ*ρ);
-	ρ_f=Float32(ρ);
-	κ_s_f=Float32(κ_s);
-	θ_s_f=Float32(θ_s);
-	r_d_f=Float32(r-d)
-	dt_f=Float32(dt)
-	σ_f=Float32(σ)
-	X[:,1].=Float32(isDualZero);
-	v_m=zeros(CuArray{typeof(Float32(isDualZero))},Nsim).+σ_zero;
-	Nsim_2=Int(floor(Nsim/2))
+
+	X[:,1].=isDualZero;
+	Nsim_2=div(Nsim,2);
+	
+	e1=CuArray{Float32}(undef,Nsim_2);
+	e2=CuArray{Float32}(undef,Nsim_2);
+	
+	Xp=@views X[1:Nsim_2,:];
+	Xm=@views X[(Nsim_2+1):end,:];
+	
+	v_m_1=zeros(CuArray{typeof(Float32(isDualZero))},Nsim_2).+σ_zero;
+	v_m_2=zeros(CuArray{typeof(Float32(isDualZero))},Nsim_2).+σ_zero;
 
 	for j in 1:Nstep
-		e1=CuArrays.CURAND.curandn(Float32,Nsim_2);
-		e2=CuArrays.CURAND.curandn(Float32,Nsim_2);
-		e1=[e1;-e1];
-		e2=[e2;-e2];
-		e2=e1.*ρ_f.+e2.*sqrt(1-ρ_f*ρ_f);
-		X[:,j+1]=X[:,j]+((r_d_f).-0.5.*max.(v_m,0)).*dt_f+sqrt.(max.(v_m,0)).*sqrt(dt_f).*e1;
-		v_m+=κ_s_f.*(θ_s_f.-max.(v_m,0)).*dt_f+σ_f.*sqrt.(max.(v_m,0)).*sqrt(dt_f).*e2;
+		randn!(CURAND.generator(),e1);
+		randn!(CURAND.generator(),e2);
+		e2.= -(e1*ρ+e2.*sqrt(1-ρ*ρ));
+		@views Xp[:,j+1]=Xp[:,j]+(r_d=r-d-0.5*max.(v_m_1,isDualZero))*dt+sqrt.(max(v_m_1,isDualZero))*sqrt(dt)*e1;
+		@views Xm[:,j+1]=Xm[:,j]+(r_d=r-d-0.5*max.(v_m_2,isDualZero))*dt+sqrt.(max(v_m_2,isDualZero))*sqrt(dt)*(-e1);
+		v_m_1.+=κ_s.*(θ_s.-max.(v_m_1,isDualZero)).*dt.+σ.*sqrt.(max.(v_m_1,isDualZero)).*sqrt(dt).*e2;
+		v_m_2.+=κ_s.*(θ_s.-max.(v_m_2,isDualZero)).*dt.+σ.*sqrt.(max.(v_m_2,isDualZero)).*sqrt(dt).*(-e2);
 	end
 	## Conclude
-	X.=Float32(S0).*exp.(X);
+	X.=S0.*exp.(X);
 	return;
 end

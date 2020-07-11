@@ -1,10 +1,10 @@
 
 abstract type AbstractUnderlying end
 
-mutable struct Underlying{num <: Number, num2 <: Number} <: AbstractUnderlying
+mutable struct UnderlyingScalar{num <: Number, num2 <: Number} <: AbstractUnderlying
 	S0::num
 	d::num2
-	function Underlying(S0::num_,d::num_2=0.0) where {num_ <: Number, num_2 <: Number}
+	function UnderlyingScalar(S0::num_,d::num_2=0.0) where {num_ <: Number, num_2 <: Number}
 		if(S0<zero(num_))
 			error("Underlying starting value must be positive");
 		else
@@ -29,6 +29,9 @@ function Underlying(S0::num_,d::Curve{num2,num3}) where {num_ <: Number, num2 <:
 	return UnderlyingVec(S0,d)
 end
 
+function Underlying(S0::num_,d::num_2=0.0) where {num_ <: Number, num_2 <: Number}
+	return UnderlyingScalar(S0,d)
+end
+
 
 export Underlying;
-export UnderlyingVec;

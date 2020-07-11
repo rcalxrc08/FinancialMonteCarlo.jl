@@ -1,5 +1,5 @@
-using BenchmarkTools,FinancialMonteCarlo,CuArrays,ForwardDiff
-CuArrays.allowscalar(false)
+using BenchmarkTools,FinancialMonteCarlo,CUDA,ForwardDiff
+CUDA.allowscalar(false)
 S0=100.0;
 K=100.0;
 r=0.02;
@@ -12,7 +12,7 @@ Nstep=30;
 sigma=0.2
 mc=MonteCarloConfiguration(Nsim,Nstep);
 
-mc_2=MonteCarloConfiguration(Nsim,Nstep,FinancialMonteCarlo.CudaMode_2());
+mc_2=MonteCarloConfiguration(Nsim,Nstep,FinancialMonteCarlo.CudaMode());
 toll=1e-3;
 
 rfCurve=ZeroRate(r);

@@ -1,6 +1,6 @@
 using BenchmarkTools
-using FinancialMonteCarlo,CuArrays
-CuArrays.allowscalar(false)
+using FinancialMonteCarlo,CUDA
+CUDA.allowscalar(false)
 S0=100.0;
 K=100.0;
 r=0.02;

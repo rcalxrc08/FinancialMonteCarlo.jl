@@ -93,4 +93,3 @@ The portofolio is a dictionary as well but it carries the structure of the portf
 There are few things that you should keep in mind when using this library:
 - First Order Automatic Differentiation is enabled for any kind of option, also for such that there is no sense (e.g. Binary, Barriers).
 - Second Order Automatic Differentiation is enabled for any kind of option but the results are useless most of the time.
-- Automatic Differentiation is enabled but does not work for process that rely on the simulation of complicated random numbers distributions. If you try you will get a runtime exception.

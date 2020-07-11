@@ -65,9 +65,10 @@ function simulate!(X,mcProcess::HestonProcess,rfCurve::ZeroRate,mcBaseData::Mont
 		for j in 1:Nstep
 			e1=randn(mcBaseData.rng);
 			e2=e1*ρ+randn(mcBaseData.rng)*sqrt(1-ρ*ρ);
-			@views X[i,j+1]=X[i,j]+((r-d)-0.5*max(v_m,isDualZero))*dt+sqrt(max(v_m,isDualZero))*sqrt(dt)*e1;
+			@views X[i,j+1]=X[i,j]+((r-d)-0.5*v_m)*dt+sqrt(v_m)*sqrt(dt)*e1;
+			v_m+=κ_s*(θ_s-v_m)*dt+σ*sqrt(v_m)*sqrt(dt)*e2;
 			#when v_m = 0.0, the derivative becomes NaN
-			v_m+=κ_s*(θ_s-max.(v_m,isDualZero))*dt+σ*sqrt(max(v_m,isDualZero))*sqrt(dt)*e2;
+			v_m=max(v_m,isDualZero);
 		end
 	end
 	## Conclude
@@ -105,10 +106,12 @@ function simulate!(X,mcProcess::HestonProcess,rfCurve::ZeroRate,mcBaseData::Mont
 		for j in 1:Nstep
 			e1=randn(mcBaseData.rng);
 			e2= -(e1*ρ+randn(mcBaseData.rng)*sqrt(1-ρ*ρ));
-			@views X[2*i-1,j+1]=X[2*i-1,j]+((r-d)-0.5*max(v_m_1,isDualZero))*dt+sqrt(max(v_m_1,isDualZero))*sqrt(dt)*e1;
-			@views X[2*i,j+1]=X[2*i,j]+((r-d)-0.5*max(v_m_2,isDualZero))*dt+sqrt(max(v_m_2,isDualZero))*sqrt(dt)*(-e1);
-			v_m_1+=κ_s*(θ_s-max.(v_m_1,isDualZero))*dt+σ*sqrt(max(v_m_1,isDualZero))*sqrt(dt)*e2;
-			v_m_2+=κ_s*(θ_s-max.(v_m_2,isDualZero))*dt+σ*sqrt(max(v_m_2,isDualZero))*sqrt(dt)*(-e2);
+			@views X[2*i-1,j+1]=X[2*i-1,j]+((r-d)-0.5*v_m_1)*dt+sqrt(v_m_1)*sqrt(dt)*e1;
+			@views X[2*i,j+1]=X[2*i,j]+((r-d)-0.5*v_m_2)*dt+sqrt(v_m_2)*sqrt(dt)*(-e1);
+			v_m_1+=κ_s*(θ_s-v_m_1)*dt+σ*sqrt(v_m_1)*sqrt(dt)*e2;
+			v_m_2+=κ_s*(θ_s-v_m_2)*dt+σ*sqrt(v_m_2)*sqrt(dt)*(-e2);
+			v_m_1=max(v_m_1,isDualZero);
+			v_m_2=max(v_m_2,isDualZero);
 		end
 	end
 	## Conclude

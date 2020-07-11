@@ -3,7 +3,7 @@ import Base.insert!
 insert!(dic::Dict,k::Number,val::Number) = dic[k]=val; return nothing;
 using Dictionaries
 #const FinMCDict=Dict
-const FinMCDict=HashDictionary
+const FinMCDict=Dictionaries.Dictionary
 
 const Curve = FinMCDict{num1,num2} where {num1 <: Number,num2 <: Number}
 

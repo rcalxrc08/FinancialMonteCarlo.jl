@@ -1,6 +1,6 @@
 using BenchmarkTools
-using FinancialMonteCarlo,CuArrays
-CuArrays.allowscalar(false)
+using FinancialMonteCarlo,CUDA
+CUDA.allowscalar(false)
 
 S0=100.0;
 K=100.0;
@@ -17,7 +17,7 @@ mu1=0.03;
 sigma1=0.02;
 mc=MonteCarloConfiguration(Nsim,Nstep);
 
-mc_2=MonteCarloConfiguration(Nsim,Nstep,FinancialMonteCarlo.CudaMode_2());
+mc_2=MonteCarloConfiguration(Nsim,Nstep,FinancialMonteCarlo.CudaMode());
 toll=0.8;
 
 rfCurve=ZeroRate(r);

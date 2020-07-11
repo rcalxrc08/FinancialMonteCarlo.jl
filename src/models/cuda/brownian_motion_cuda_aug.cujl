@@ -10,7 +10,7 @@ function simulate!(X_cu,mcProcess::BrownianMotionVec,mcBaseData::MonteCarloConfi
 	mean_bm=μ*dt
 	stddev_bm=σ*sqrt(dt)
 	isDualZero=mean_bm*stddev_bm*0;
-	Z=CuArrays.zeros(Nsim);
+	Z=CuArray{Float32}(undef,Nsim);
 	for i=1:Nstep
 		X_pr=view(X_cu,:,i);
 		tmp_=μ((i-1)*dt,dt);
@@ -36,7 +36,7 @@ function simulate!(X_cu,mcProcess::BrownianMotionVec,mcBaseData::MonteCarloConfi
 
 	for i=1:Nstep
 		tmp_=μ((i-1)*dt,dt);
-		Z=CuArrays.CURAND.randn(Float32,Nsim_2);
+		Z=CUDA.CURAND.randn(Float32,Nsim_2);
 		Z=[Z;-Z];
 		X_cu[:,i+1]=X_cu[:,i]+(tmp_.+stddev_bm.*Z);
 	end
