@@ -24,8 +24,6 @@ function simulate!(S,mcProcess::BlackScholesProcess,rfCurve::AbstractZeroRateCur
 	@assert T>0.0
 	r=rfCurve.r;
 	d=dividend(mcProcess);
-	Nsim=mcBaseData.Nsim;
-	Nstep=mcBaseData.Nstep;
 	σ_gbm=mcProcess.σ;
 	mu_gbm=r-d;
 	

@@ -1,5 +1,4 @@
 using Test, FinancialMonteCarlo,DualNumbers,BenchmarkTools;
-@show "Black Scholes Model"
 S0=100.0;
 K=100.0;
 r=0.02;
@@ -32,7 +31,7 @@ Model=GaussianCopulaNVariateProcess(rho_1,Model_enj,Model_abpl,Model_tesl)
 ModelDual=GaussianCopulaNVariateProcess(rho_1,Model_enj_2,Model_abpl,Model_tesl)
 Model2=GaussianCopulaNVariateProcess([1.0 0.3 0.0;0.3 1.0 0.0; 0.0 0.0 1.0],Model_enj_2,Model_abpl,Model_tesl)
 
-display(Model)
+# display(Model)
 
 mktdataset=underlying_→Model
 mktdataset_dual=underlying_→ModelDual

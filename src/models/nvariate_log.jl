@@ -48,7 +48,7 @@ function simulate!(S_Total,mcProcess::GaussianCopulaNVariateLogProcess,rfCurve::
 	end
 	
 	rho=mcProcess.rho
-	if (rho[1,2:end]==zeros(len_-1))
+	if (isdiag(rho))
 		return;
 	end
 	for i in 1:len_

@@ -11,7 +11,6 @@ D=90.0;
 Nsim=10000;
 Nstep=30;
 sigma=0.2;
-#mc=MonteCarloConfiguration(Nsim,Nstep);
 mc=MonteCarloConfiguration(Nsim,Nstep,FinancialMonteCarlo.SobolMode());
 toll=0.8
 
@@ -26,12 +25,10 @@ BarrierData=BarrierOptionDownOut(T,K,D)
 AsianFloatingStrikeData=AsianFloatingStrikeOption(T)
 AsianFixedStrikeData=AsianFixedStrikeOption(T,K)
 Model=BlackScholesProcess(sigma,Underlying(S0,d));
-Model_=BlackScholesProcess(sigma,Underlying(S0,d));
 
 display(Model)
 
 @show FwdPrice=pricer(Model,spotData1,mc,FwdData);
-@show FwdPrice_=pricer(Model_,spotData1,mc,FwdData);
 @show EuPrice=pricer(Model,spotData1,mc,EUData);
 @show EuBinPrice=pricer(Model,spotData1,mc,EUBin);
 @show AmPrice=pricer(Model,spotData1,mc,AMData);

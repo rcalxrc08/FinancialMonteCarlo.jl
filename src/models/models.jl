@@ -14,6 +14,7 @@ include("geometric_brownian_motion_aug.jl")
 include("black_scholes.jl")
 include("heston.jl")
 include("heston_aug.jl")
+include("heston_sobol.jl")
 include("log_normal_mixture.jl")
 include("shifted_log_normal_mixture.jl")
 

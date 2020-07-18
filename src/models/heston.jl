@@ -54,7 +54,7 @@ function simulate!(X,mcProcess::HestonProcess,rfCurve::ZeroRate,mcBaseData::Mont
 	####Simulation
 	## Simulate
 	κ_s=κ+λ1;
-	θ_s=κ*θ/(κ+λ1);
+	θ_s=κ*θ/κ_s;
 
 	dt=T/Nstep
 	isDualZero=T*r*σ_zero*θ_s*κ_s*σ*ρ*0.0*S0;
@@ -94,7 +94,7 @@ function simulate!(X,mcProcess::HestonProcess,rfCurve::ZeroRate,mcBaseData::Mont
 	####Simulation
 	## Simulate
 	κ_s=κ+λ1;
-	θ_s=κ*θ/(κ+λ1);
+	θ_s=κ*θ/κ_s;
 
 	dt=T/Nstep
 	isDualZero=T*r*σ_zero*κ*θ*λ1*σ*ρ*0.0;

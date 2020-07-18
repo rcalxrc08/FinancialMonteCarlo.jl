@@ -21,15 +21,15 @@ end
 
 function pricer_macro_multiprocesses(model_type,payoff_type)
 	@eval begin
-		function pricer(mcProcess::$model_type,spotData::AbstractZeroRateCurve,mcConfig::MonteCarloConfiguration{<: Integer , <: Integer , <: AbstractMonteCarloMethod ,  <: MultiProcess, <: Random.AbstractRNG},abstractPayoff::$payoff_type)
-			zero_typed=predict_output_type_zero_(mcProcess,spotData,mcConfig,abstractPayoff);
+		function pricer(mcProcess::$model_type,rfCurve::AbstractZeroRateCurve,mcConfig::MonteCarloConfiguration{<: Integer , <: Integer , <: AbstractMonteCarloMethod ,  <: MultiProcess, <: Random.AbstractRNG},abstractPayoff::$payoff_type)
+			zero_typed=predict_output_type_zero_(mcProcess,rfCurve,mcConfig,abstractPayoff);
 			ns=mcConfig.parallelMode.ns;
 			#ns=100;
 			price::typeof(zero_typed) =@sync @distributed (+) for i in 1:ns
-				pricer(mcProcess,spotData,MonteCarloConfiguration(div(mcConfig.Nsim,ns),mcConfig.Nstep,mcConfig.monteCarloMethod,mcConfig.parallelMode.sub_mod,mcConfig.seed+1+i),abstractPayoff)::typeof(zero_typed);
+				pricer(mcProcess,rfCurve,MonteCarloConfiguration(div(mcConfig.Nsim,ns),mcConfig.Nstep,mcConfig.monteCarloMethod,mcConfig.parallelMode.sub_mod,mcConfig.seed+1+i),abstractPayoff)::typeof(zero_typed);
 			end
 			Out=price/ns;
-			#f(i)=pricer(mcProcess,spotData,MonteCarloConfiguration(div(mcConfig.Nsim,nworkers()),mcConfig.Nstep,mcConfig.monteCarloMethod,mcConfig.parallelMode.sub_mod,mcConfig.seed+1+i),abstractPayoff);
+			#f(i)=pricer(mcProcess,rfCurve,MonteCarloConfiguration(div(mcConfig.Nsim,nworkers()),mcConfig.Nstep,mcConfig.monteCarloMethod,mcConfig.parallelMode.sub_mod,mcConfig.seed+1+i),abstractPayoff);
 			#Price=pmap(f,1:nworkers());
 			#Out=sum(Price)/nworkers();
 			return Out;
@@ -43,7 +43,7 @@ pricer_macro_multiprocesses(VectorialMonteCarloProcess,Array{Dict{AbstractPayoff
 
 function pricer(mcProcess::BaseProcess,rfCurve::AbstractZeroRateCurve,mcConfig::MonteCarloConfiguration{<: Integer , <: Integer , <: AbstractMonteCarloMethod ,  <: MultiProcess, <: Random.AbstractRNG},abstractPayoffs::Array{abstractPayoff_}) where {abstractPayoff_ <: AbstractPayoff}
 	price = @distributed (+) for i in 1:nworkers()
-		pricer(mcProcess,spotData,MonteCarloConfiguration(div(mcConfig.Nsim,nworkers()),mcConfig.Nstep,mcConfig.monteCarloMethod,mcConfig.parallelMode.sub_mod,mcConfig.seed+1+i),abstractPayoff);
+		pricer(mcProcess,rfCurve,MonteCarloConfiguration(div(mcConfig.Nsim,nworkers()),mcConfig.Nstep,mcConfig.monteCarloMethod,mcConfig.parallelMode.sub_mod,mcConfig.seed+1+i),abstractPayoff);
 	end
 	Out=price./nworkers();
 	return Out;

@@ -23,20 +23,6 @@ AsianFloatingStrikeData=AsianFloatingStrikeOption(T*3.3)
 AsianFixedStrikeData=AsianFixedStrikeOption(T*1.2,K)
 Model=BlackScholesProcess(sigma,Underlying(S0,d));
 
-@show FwdPrice=pricer(Model,rfCurve,mc,FwdData);
-@show EuPrice=pricer(Model,rfCurve,mc,EUData);
-@show AmPrice=pricer(Model,rfCurve,mc,AMData);
-@show BarrierPrice=pricer(Model,rfCurve,mc,BarrierData);
-@show AsianPrice1=pricer(Model,rfCurve,mc,AsianFloatingStrikeData);
-@show AsianPrice2=pricer(Model,rfCurve,mc,AsianFixedStrikeData);
-
 optionDatas=[FwdData,EUData,AMData,BarrierData,AsianFloatingStrikeData,AsianFixedStrikeData]
 
-(FwdPrice,EuPrice,AMPrice,BarrierPrice,AsianPrice1,AsianPrice2)=pricer(Model,rfCurve,mc,optionDatas)
-@btime (FwdPrice,EuPrice,AMPrice,BarrierPrice,AsianPrice1,AsianPrice2)=pricer(Model,rfCurve,mc,optionDatas)
-@show FwdPrice
-@show EuPrice
-@show AmPrice
-@show BarrierPrice
-@show AsianPrice1
-@show AsianPrice2
+@btime (FwdPrice,EuPrice,AMPrice,BarrierPrice,AsianPrice1,AsianPrice2)=pricer(Model,rfCurve,mc,optionDatas);

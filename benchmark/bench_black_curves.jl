@@ -1,5 +1,4 @@
 using BenchmarkTools, FinancialMonteCarlo,Statistics;
-@show "Black Scholes Model"
 S0=100.0;
 K=100.0;
 r=[0.00,0.02];

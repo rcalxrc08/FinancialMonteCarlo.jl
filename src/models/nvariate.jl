@@ -44,7 +44,7 @@ function simulate!(S_total,mcProcess::GaussianCopulaNVariateProcess,rfCurve::Abs
 		simulate!(S_total[i],mcProcess.models[i],rfCurve,mcBaseData,T)
 	end
 	rho=mcProcess.rho
-	if (rho[1,2:end]==zeros(len_-1))
+	if (isdiag(rho))
 		return;
 	end
 	U_joint=Matrix{eltype(rho)}(undef,len_,Nsim);

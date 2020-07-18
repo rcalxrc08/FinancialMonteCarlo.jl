@@ -8,8 +8,8 @@ end
 function pricer_macro_multithreading(model_type,payoff_type)
 	@eval begin
 		function pricer(mcProcess::$model_type,rfCurve::AbstractZeroRateCurve,mcConfig::MonteCarloConfiguration{<: Integer , <: Integer , <: AbstractMonteCarloMethod ,  <: AbstractMultiThreading , <: Random.AbstractRNG},abstractPayoff::$payoff_type)
-			zero_typed=predict_output_type(mcProcess,rfCurve,mcConfig,abstractPayoff);
-			price=zeros(zero_typed,Threads.nthreads());
+			zero_typed=predict_output_type_zero_(mcProcess,rfCurve,mcConfig,abstractPayoff);
+			price=zeros(typeof(zero_typed),Threads.nthreads());
 			Threads.@threads for i in 1:Threads.nthreads()
 				price[i]=pricer(mcProcess,rfCurve,MonteCarloConfiguration(div(mcConfig.Nsim,Threads.nthreads()),mcConfig.Nstep,mcConfig.monteCarloMethod,mcConfig.parallelMode.sub_mod,mcConfig.seed),abstractPayoff);
 			end
@@ -25,8 +25,8 @@ pricer_macro_multithreading(Dict{String,AbstractMonteCarloProcess},Dict{String,D
 pricer_macro_multithreading(VectorialMonteCarloProcess,Array{Dict{AbstractPayoff,Number}})
 
 function pricer(mcProcess::BaseProcess,rfCurve::AbstractZeroRateCurve,mcConfig::MonteCarloConfiguration{<: Integer , <: Integer , <: AbstractMonteCarloMethod ,  <: AbstractMultiThreading, <: Random.AbstractRNG},abstractPayoffs::Array{abstractPayoff_}) where {abstractPayoff_ <: AbstractPayoff}
-	zero_typed=predict_output_type(mcProcess,rfCurve,mcConfig,abstractPayoffs);
-	price=zeros(zero_typed,length(abstractPayoffs),Threads.nthreads());
+	zero_typed=predict_output_type_zero_(mcProcess,rfCurve,mcConfig,abstractPayoffs);
+	price=zeros(typeof(zero_typed),length(abstractPayoffs),Threads.nthreads());
 	Threads.@threads for i in 1:Threads.nthreads()
 		price[:,i]=pricer(mcProcess,rfCurve,MonteCarloConfiguration(div(mcConfig.Nsim,Threads.nthreads()),mcConfig.Nstep,mcConfig.monteCarloMethod,mcConfig.parallelMode.sub_mod,mcConfig.seed),abstractPayoffs);
 	end
