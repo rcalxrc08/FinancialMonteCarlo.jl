@@ -41,8 +41,7 @@ function simulate!(X,mcProcess::VarianceGammaProcess,rfCurve::AbstractZeroRateCu
 	@assert T>0
 	
 	dt=T/Nstep;
-	#-1/p[3]*log(1+u*u*p[1]*p[1]*p[3]/2.0-1im*p[2]*p[3]*u);
-	psi1=-1/κ1*log(1-σ*σ*κ1/2-θ1*κ1);
+	psi1=-1/κ1*log(1-σ^2*κ1/2-θ1*κ1);
 	drift=r-d-psi1;
 	
 	gammaRandomVariable=Gamma(dt/κ1,κ1);

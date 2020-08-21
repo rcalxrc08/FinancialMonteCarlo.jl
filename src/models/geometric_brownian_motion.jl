@@ -31,7 +31,8 @@ function simulate!(X,mcProcess::GeometricBrownianMotion,mcBaseData::AbstractMont
 	μ_bm=mu_gbm-σ_gbm^2/2;
 	simulate!(X,BrownianMotion(σ_gbm,μ_bm),mcBaseData,T)
 	S0=mcProcess.x0;
-	@. X=S0*exp(X);
+	# @. X=S0*exp(X);
+	broadcast!(x->S0*exp(x),X,X);
 	
 	nothing;
 end

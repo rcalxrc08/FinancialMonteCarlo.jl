@@ -41,7 +41,6 @@ function simulate!(X,mcProcess::SubordinatedBrownianMotionVec,mcBaseData::MonteC
 	dt=T/Nstep;
 	zero_drift=drift(zero(type_sub),zero(type_sub)+dt)*0;
 	isDualZero=sigma*zero(type_sub)*0*zero_drift;
-	#X=Matrix{typeof(isDualZero)}(undef,Nsim,Nstep+1);
 	@views X[:,1].=isDualZero;
 	Z=Array{Float64}(undef,Nsim)
 	for i=1:Nstep
@@ -74,6 +73,7 @@ function simulate!(X,mcProcess::SubordinatedBrownianMotionVec,mcBaseData::MonteC
 	for i=1:Nstep
 		NsimAnti=div(Nsim,2)
 		Z=randn(mcBaseData.rng,NsimAnti);
+		#this is bad
 		Z=[Z;-Z];
 		rand!(mcBaseData.rng,mcProcess.subordinator_,dt_s);
 		tmp_drift=[drift(t_,dt_) for (t_,dt_) in zip(t_s,dt_s)];
