@@ -32,12 +32,12 @@ function simulate!(X,mcProcess::BrownianMotion,mcBaseData::MonteCarloConfigurati
 	mean_bm=μ*dt
 	stddev_bm=σ*sqrt(dt)
 	isDualZero=mean_bm*stddev_bm*0;
-	view(X,:,1).=isDualZero;	
+	view(X,:,1).=isDualZero;
+	zero_typed=predict_output_type_zero_(σ,μ);
+	Z=Array{typeof(get_rng_type(zero_typed))}(undef,Nsim);
 	@inbounds for j=1:Nstep
-		@inbounds for i=1:Nsim
-			x_i_j=@views X[i,j];
-			@views X[i,j+1]=x_i_j+mean_bm+stddev_bm*randn(mcBaseData.rng);
-		end
+		randn!(mcBaseData.rng,Z);
+		@. @views X[:,j+1].=X[:,j]+mean_bm+stddev_bm*Z
 	end
 
 	nothing;
@@ -56,13 +56,14 @@ function simulate!(X,mcProcess::BrownianMotion,mcBaseData::MonteCarloConfigurati
 	isDualZero=mean_bm*stddev_bm*0;
 	view(X,:,1).=isDualZero;
 	Nsim_2=div(Nsim,2)
-
-	@inbounds for j in 1:Nstep
-		@inbounds for i in 1:Nsim_2
-			Z=stddev_bm.*randn(mcBaseData.rng);
-			X[2*i-1,j+1]=X[2*i-1,j]+mean_bm.+Z;
-			X[2*i,j+1]  =X[2*i,j]  +mean_bm.-Z;
-		end
+	zero_typed=predict_output_type_zero_(σ,μ);
+	Z=Array{typeof(get_rng_type(zero_typed))}(undef,Nsim_2);
+	Xp=@views X[1:Nsim_2,:]
+	Xm=@views X[(Nsim_2+1):end,:]
+	@inbounds for j=1:Nstep
+		randn!(mcBaseData.rng,Z);
+		@. @views Xp[:,j+1].=Xp[:,j]+mean_bm+stddev_bm*Z
+		@. @views Xm[:,j+1].=Xm[:,j]+mean_bm-stddev_bm*Z
 	end
 
 	nothing;

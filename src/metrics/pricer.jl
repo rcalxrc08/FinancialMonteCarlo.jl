@@ -40,7 +40,7 @@ function pricer(mcProcess::BaseProcess,rfCurve::AbstractZeroRateCurve,mcConfig::
 	return Prices;
 end
 
-function pricer(mcProcess::BaseProcess,rfCurve::AbstractZeroRateCurve,mcConfig::MonteCarloConfiguration,dict_::Dict{AbstractPayoff,Number})
+function pricer(mcProcess::BaseProcess,rfCurve::AbstractZeroRateCurve,mcConfig::MonteCarloConfiguration,dict_::Position)
 	set_seed(mcConfig)
 	abstractPayoffs=keys(dict_);
 	maxT=maximum([maturity(abstractPayoff) for abstractPayoff in abstractPayoffs])
@@ -51,7 +51,7 @@ function pricer(mcProcess::BaseProcess,rfCurve::AbstractZeroRateCurve,mcConfig::
 end
 
 #####Pricer for multivariate
-function pricer(mcProcess::VectorialMonteCarloProcess,rfCurve::AbstractZeroRateCurve,mcConfig::MonteCarloConfiguration,special_array_payoff::Array{Dict{AbstractPayoff,Number}})
+function pricer(mcProcess::VectorialMonteCarloProcess,rfCurve::AbstractZeroRateCurve,mcConfig::MonteCarloConfiguration,special_array_payoff::Array{Position})
 	set_seed(mcConfig)
 	N_=length(mcProcess.models);
 	idx_=compute_indices(N_);
@@ -59,7 +59,7 @@ function pricer(mcProcess::VectorialMonteCarloProcess,rfCurve::AbstractZeroRateC
 	IND_=collect(1:length(special_array_payoff));
 	filter!(i->isassigned(special_array_payoff,i),IND_)
 	dict_cl=special_array_payoff[IND_];
-	
+	#Compute Maximum time to maturity, all of the underlyings will be simulated till maxT.
 	maxT=maximum([ maximum(maturity.(collect(keys(ar_el)))) for ar_el in dict_cl])
 	S=simulate(mcProcess,rfCurve,mcConfig,maxT)
 	#price=0.0;
@@ -75,7 +75,7 @@ function pricer(mcProcess::VectorialMonteCarloProcess,rfCurve::AbstractZeroRateC
 end
 
 
-function pricer(mcProcess::Dict{String,AbstractMonteCarloProcess},rfCurve::AbstractZeroRateCurve,mcConfig::MonteCarloConfiguration,dict_::Dict{String,Dict{AbstractPayoff,Number}})
+function pricer(mcProcess::MarketDataSet,rfCurve::AbstractZeroRateCurve,mcConfig::MonteCarloConfiguration,dict_::Portfolio)
 	set_seed(mcConfig)
 	underlyings_payoff=keys(dict_);
 	underlyings_payoff_cpl=complete_2(underlyings_payoff,keys(mcProcess));

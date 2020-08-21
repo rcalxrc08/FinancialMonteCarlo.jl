@@ -41,7 +41,6 @@ function simulate!(X,mcProcess::NormalInverseGaussianProcess,rfCurve::AbstractZe
 	@assert T>0
 	
 	dt=T/Nstep;
-	#psi1(v::Number)::Number=(1-sqrt(1.0+ ((σ*v)^2-2.0*1im*θ1*v)*κ1))/κ1;
 	psi1=(1-sqrt(1-(σ^2+2*θ1)*κ1))/κ1;
 	drift=r-d-psi1;
 	
