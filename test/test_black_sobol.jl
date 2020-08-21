@@ -35,10 +35,8 @@ display(Model)
 @show AmBinPrice=pricer(Model,spotData1,mc,AmBin);
 @show BarrierPrice=pricer(Model,spotData1,mc,BarrierData);
 @show AsianPrice1=pricer(Model,spotData1,mc,AsianFloatingStrikeData);
-@show AsianPrice2=pricer(Model,spotData1,mc,AsianFixedStrikeData);
 
 @test abs(FwdPrice-99.1078451563562)<toll
-@test abs(FwdPrice_-99.1078451563562)<toll
 @test abs(EuPrice-8.43005524824866)<toll
 @test abs(AmPrice-8.450489415187354)<toll
 @test abs(BarrierPrice-7.5008664470880735)<toll
