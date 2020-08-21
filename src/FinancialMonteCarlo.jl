@@ -16,9 +16,9 @@ module FinancialMonteCarlo
 	include("models.jl")
 	include("options.jl")
 	include("io_utils.jl")
+	include("operations.jl")
 	include("metrics.jl");
 	include("output_type.jl")
-	include("operations.jl")
 	include("multi_threading.jl");
 	export
 	    pricer,
