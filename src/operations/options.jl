@@ -5,7 +5,7 @@ import Base./;
 
 const Position=Dict{AbstractPayoff,Number};
 
-#Strategies Implementation
+# "sum" AbstractPayoff s
 function +(x::AbstractPayoff,y::AbstractPayoff)
 	out=Position( x => 1.0 );
 	if haskey(out,y)
@@ -16,6 +16,7 @@ function +(x::AbstractPayoff,y::AbstractPayoff)
 	return out;
 end
 
+# "sum" Position and AbstractPayoff
 function +(x::Position,y::AbstractPayoff)
 	out=copy(x);
 	if haskey(out,y)
@@ -26,6 +27,7 @@ function +(x::Position,y::AbstractPayoff)
 	return out;
 end
 
+# "sum" Position s
 function +(x::Position,y::Position)
 	out=copy(x);
 	y_keys=keys(y);
@@ -39,6 +41,8 @@ function +(x::Position,y::Position)
 	return out;
 end
 
+
+# scalar multiplication
 function *(x::Position,y::Number)
 	out=copy(x);
 	for a in keys(out)
@@ -47,6 +51,7 @@ function *(x::Position,y::Number)
 	return out;
 end
 
+# scalar multiplication
 function *(x::AbstractPayoff,y::Number)
 	return Position( x => y );
 end
@@ -70,11 +75,12 @@ end
 import Base.hash;
 import Base.isequal;
 
+# Needed for Dict
 hash(x::Payoff) where { Payoff <: AbstractPayoff }=sum(hash(get_parameters(x)))+hash(string(Payoff))
 isequal(x::Payoff1,y::Payoff2) where { Payoff1 <: AbstractPayoff , Payoff2 <: AbstractPayoff }=hash(x)==hash(y)
 
+# Overload for show
 import Base.show;
-
 function show(io::IO,p::Position)
 	keys_=collect(keys(p));
 	for idx_ in 1:length(keys_)

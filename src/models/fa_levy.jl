@@ -1,7 +1,6 @@
 
 function simulate!(X,mcProcess::finiteActivityProcess,rfCurve::AbstractZeroRateCurve,mcBaseData::MonteCarloConfiguration{type1,type2,type3,type4,type5},T::numb) where { finiteActivityProcess <: FiniteActivityProcess, numb <: Number, type1 <: Number, type2<: Number, type3 <: AbstractMonteCarloMethod, type4 <: BaseMode, type5 <: Random.AbstractRNG}
 	r=rfCurve.r;
-	S0=mcProcess.underlying.S0;
 	d=dividend(mcProcess);
 	Nsim=mcBaseData.Nsim;
 	Nstep=mcBaseData.Nstep;
@@ -13,7 +12,7 @@ function simulate!(X,mcProcess::finiteActivityProcess,rfCurve::AbstractZeroRateC
 	####Simulation
 	## Simulate
 	# r-d-psi(-i)
-	drift_RN=(r-d)-compute_drift(mcProcess);
+	drift_RN=(r-d)-σ^2/2-λ*compute_drift(mcProcess);
 	simulate!(X,BrownianMotion(σ,drift_RN),mcBaseData,T)
 
 	dt=T/Nstep;

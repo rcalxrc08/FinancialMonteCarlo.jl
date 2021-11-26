@@ -38,4 +38,4 @@ end
 export KouProcess;
 
 compute_jump_size(mcProcess::KouProcess,mcBaseData::MonteCarloConfiguration)=rand(mcBaseData.rng)<mcProcess.p ? quantile_exp(mcProcess.λ₊,rand(mcBaseData.rng)) : -quantile_exp(mcProcess.λ₋,rand(mcBaseData.rng))
-compute_drift(mcProcess::KouProcess)=-(-mcProcess.σ^2/2-mcProcess.λ*(mcProcess.p/(mcProcess.λ₊-1)-(1-mcProcess.p)/(mcProcess.λ₋+1)))
+compute_drift(mcProcess::KouProcess)=mcProcess.p/(mcProcess.λ₊-1)-(1-mcProcess.p)/(mcProcess.λ₋+1)

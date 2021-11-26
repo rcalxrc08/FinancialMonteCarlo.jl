@@ -4,12 +4,14 @@ import Base.+;
 
 const Portfolio=Dict{String,Position};
 
+#Link an underlying name to a Position
 function →(x::String,y::Position)
 	out=Portfolio( x => y );
 
 	return out;
 end
 
+#Link an underlying name to a SingleNamePayoff
 function →(x::String,y::SingleNamePayoff)
 	sep=findfirst("_",x);
 	if(!isnothing(sep))
@@ -18,6 +20,7 @@ function →(x::String,y::SingleNamePayoff)
 	return x→(1.0*y);
 end
 
+#Link an underlying name to a BasketPayoff
 function →(x::String,y::BasketPayoff)
 	sep=findfirst("_",x)[1];
 	if(isnothing(sep))
@@ -27,6 +30,7 @@ function →(x::String,y::BasketPayoff)
 end
 
 
+#Join Portfolio s
 function +(x::Portfolio,y::Portfolio)
 	out=copy(x);
 	y_keys=keys(y);
@@ -40,8 +44,8 @@ function +(x::Portfolio,y::Portfolio)
 	return out;
 end
 
+#Overload for display
 import Base.Multimedia.display;
-
 function display(p::Portfolio)
 	keys_=keys(p);
 	for key_ in keys_
@@ -52,6 +56,7 @@ function display(p::Portfolio)
 	println("")
 end
 
+#Overload for extraction, output needs particular shape.
 function extract_(x::String,dict_::Portfolio)
 	keys_=keys(dict_);
 	out=Position();

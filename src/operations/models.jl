@@ -3,21 +3,19 @@ import Base.+;
 const MarketDataSet=Dict{String,AbstractMonteCarloProcess};
 export MarketDataSet;
 
-#Strategies Implementation
-
+#Link an underlying to a single name model
 function →(x::String,y::AbstractMonteCarloProcess)
 	out=MarketDataSet( x => y );
-
 	return out;
 end
 
+#Link an multiname underlying to a multi variate model
 function →(x::String,y::NDimensionalMonteCarloProcess)
 	sep=findfirst("_",x);
 	if(isnothing(sep))
 		error("Nvariate process must follow the format: INDEX1_INDEX2");
 	end
 	len_=length(y.models);
-	
 	sep=split(x,"_");
 	@assert len_==length(sep)
 	out=MarketDataSet( x => y );
@@ -25,6 +23,7 @@ function →(x::String,y::NDimensionalMonteCarloProcess)
 	return out;
 end
 
+#Joins two different MarketDataSet s
 function +(x::MarketDataSet,y::MarketDataSet)
 	out=copy(x);
 	y_keys=keys(y);
