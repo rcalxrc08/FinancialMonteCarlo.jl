@@ -1,35 +1,35 @@
-using BenchmarkTools,FinancialMonteCarlo,ForwardDiff
+using BenchmarkTools, FinancialMonteCarlo, ForwardDiff
 
-S0=100.0;
-K=100.0;
-r=0.02;
-T=1.0;
-d=0.01;
-D=90.0;
+S0 = 100.0;
+K = 100.0;
+r = 0.02;
+T = 1.0;
+d = 0.01;
+D = 90.0;
 
-Nsim=10000;
-Nstep=30;
-sigma=ForwardDiff.Dual{Float64}(0.2,1.0)
-mc=MonteCarloConfiguration(Nsim,Nstep);
-toll=1e-3;
+Nsim = 10000;
+Nstep = 30;
+sigma = ForwardDiff.Dual{Float64}(0.2, 1.0)
+mc = MonteCarloConfiguration(Nsim, Nstep);
+toll = 1e-3;
 
-rfCurve=ZeroRate(r);
+rfCurve = ZeroRate(r);
 
-FwdData=Forward(T)
-EUData=EuropeanOption(T,K)
-AMData=AmericanOption(T,K)
-BarrierData=BarrierOptionDownOut(T,K,D)
-AsianFloatingStrikeData=AsianFloatingStrikeOption(T)
-AsianFixedStrikeData=AsianFixedStrikeOption(T,K)
-Model=BlackScholesProcess(sigma,Underlying(S0,d));
+FwdData = Forward(T)
+EUData = EuropeanOption(T, K)
+AMData = AmericanOption(T, K)
+BarrierData = BarrierOptionDownOut(T, K, D)
+AsianFloatingStrikeData = AsianFloatingStrikeOption(T)
+AsianFixedStrikeData = AsianFixedStrikeOption(T, K)
+Model = BlackScholesProcess(sigma, Underlying(S0, d));
 
-@btime FwdPrice=pricer(Model,rfCurve,mc,FwdData);
-@btime EuPrice=pricer(Model,rfCurve,mc,EUData);
-@btime AmPrice=pricer(Model,rfCurve,mc,AMData);
-@btime BarrierPrice=pricer(Model,rfCurve,mc,BarrierData);
-@btime AsianPrice1=pricer(Model,rfCurve,mc,AsianFloatingStrikeData);
-@btime AsianPrice2=pricer(Model,rfCurve,mc,AsianFixedStrikeData);
+@btime FwdPrice = pricer(Model, rfCurve, mc, FwdData);
+@btime EuPrice = pricer(Model, rfCurve, mc, EUData);
+@btime AmPrice = pricer(Model, rfCurve, mc, AMData);
+@btime BarrierPrice = pricer(Model, rfCurve, mc, BarrierData);
+@btime AsianPrice1 = pricer(Model, rfCurve, mc, AsianFloatingStrikeData);
+@btime AsianPrice2 = pricer(Model, rfCurve, mc, AsianFixedStrikeData);
 
-optionDatas=[FwdData,EUData,AMData,BarrierData,AsianFloatingStrikeData,AsianFixedStrikeData]
+optionDatas = [FwdData, EUData, AMData, BarrierData, AsianFloatingStrikeData, AsianFixedStrikeData]
 
-@btime (FwdPrice,EuPrice,AMPrice,BarrierPrice,AsianPrice1,AsianPrice2)=pricer(Model,rfCurve,mc,optionDatas)
+@btime (FwdPrice, EuPrice, AMPrice, BarrierPrice, AsianPrice1, AsianPrice2) = pricer(Model, rfCurve, mc, optionDatas)
