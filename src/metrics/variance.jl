@@ -13,21 +13,20 @@ Where:\n
 		variance_     = variance of the payoff of the derivative
 
 """
-function variance(mcProcess::BaseProcess,rfCurve::AbstractZeroRateCurve,mcConfig::MonteCarloConfiguration,abstractPayoff::AbstractPayoff)
-	set_seed(mcConfig)
-	T=maturity(abstractPayoff);
-	S=simulate(mcProcess,rfCurve,mcConfig,T)
-	Payoff=payoff(S,abstractPayoff,rfCurve);
-	variance_=var(Payoff);
-	return variance_;
+function variance(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration, abstractPayoff::AbstractPayoff)
+    set_seed(mcConfig)
+    T = maturity(abstractPayoff)
+    S = simulate(mcProcess, rfCurve, mcConfig, T)
+    Payoff = payoff(S, abstractPayoff, rfCurve)
+    variance_ = var(Payoff)
+    return variance_
 end
 
+function variance(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration, abstractPayoffs::Array{abstractPayoff_}) where {abstractPayoff_ <: AbstractPayoff}
+    set_seed(mcConfig)
+    maxT = maximum([maturity(abstractPayoff) for abstractPayoff in abstractPayoffs])
+    S = simulate(mcProcess, rfCurve, mcConfig, maxT)
+    variance_ = [var(payoff(S, abstractPayoff, rfCurve, maxT)) for abstractPayoff in abstractPayoffs]
 
-function variance(mcProcess::BaseProcess,rfCurve::AbstractZeroRateCurve,mcConfig::MonteCarloConfiguration,abstractPayoffs::Array{abstractPayoff_}) where {abstractPayoff_ <: AbstractPayoff}
-	set_seed(mcConfig)
-	maxT=maximum([maturity(abstractPayoff) for abstractPayoff in abstractPayoffs])
-	S=simulate(mcProcess,rfCurve,mcConfig,maxT)
-	variance_=[var(payoff(S,abstractPayoff,rfCurve,maxT)) for abstractPayoff in abstractPayoffs  ]
-	
-	return variance_;
+    return variance_
 end

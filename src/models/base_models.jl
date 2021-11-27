@@ -33,7 +33,6 @@ abstract type InfiniteActivityProcess{T <: Number} <: LevyProcess{T} end
 # Utility for dividends (implemented just for mono dimensional processes)
 dividend(x::mc) where {mc <: ScalarMonteCarloProcess} = x.underlying.d;
 
-
 """
 General Interface for Stochastic Process simulation
 
@@ -48,22 +47,22 @@ Where:\n
 		S      = Matrix with path of underlying.
 
 """
-function simulate(mcProcess::AbstractMonteCarloProcess,zeroCurve::AbstractZeroRateCurve,mcBaseData::AbstractMonteCarloConfiguration,T::Number)
-	price_type=predict_output_type_zero_(mcProcess,zeroCurve,mcBaseData,T);
-	S=get_matrix_type(mcBaseData,mcProcess,price_type);
-	simulate!(S,mcProcess,zeroCurve,mcBaseData,T)
-	return S;
+function simulate(mcProcess::AbstractMonteCarloProcess, zeroCurve::AbstractZeroRateCurve, mcBaseData::AbstractMonteCarloConfiguration, T::Number)
+    price_type = predict_output_type_zero_(mcProcess, zeroCurve, mcBaseData, T)
+    S = get_matrix_type(mcBaseData, mcProcess, price_type)
+    simulate!(S, mcProcess, zeroCurve, mcBaseData, T)
+    return S
 end
 
-function simulate(mcProcess::VectorialMonteCarloProcess,zeroCurve::AbstractZeroRateCurve,mcBaseData::AbstractMonteCarloConfiguration,T::Number)
-	price_type=predict_output_type_zero_(mcProcess,zeroCurve,mcBaseData,T);
-	matrix_type=get_matrix_type(mcBaseData,mcProcess,price_type);
-	S=matrix_type(undef,length(mcProcess.models));
-	for i=1:length(mcProcess.models)
-		S[i]=eltype(S)(undef,mcBaseData.Nsim,mcBaseData.Nstep+1);
-	end
-	simulate!(S,mcProcess,zeroCurve,mcBaseData,T)
-	return S;
+function simulate(mcProcess::VectorialMonteCarloProcess, zeroCurve::AbstractZeroRateCurve, mcBaseData::AbstractMonteCarloConfiguration, T::Number)
+    price_type = predict_output_type_zero_(mcProcess, zeroCurve, mcBaseData, T)
+    matrix_type = get_matrix_type(mcBaseData, mcProcess, price_type)
+    S = matrix_type(undef, length(mcProcess.models))
+    for i = 1:length(mcProcess.models)
+        S[i] = eltype(S)(undef, mcBaseData.Nsim, mcBaseData.Nstep + 1)
+    end
+    simulate!(S, mcProcess, zeroCurve, mcBaseData, T)
+    return S
 end
 
 """
@@ -79,10 +78,10 @@ Where:\n
 		S      = Matrix with path of underlying.
 
 """
-function simulate(mcProcess::AbstractMonteCarloEngine,mcBaseData::AbstractMonteCarloConfiguration,T::Number)
-	price_type=predict_output_type_zero_(mcProcess,mcBaseData,T);
-	matrix_type=get_matrix_type(mcBaseData,mcProcess,price_type);
-	S=matrix_type(undef,mcBaseData.Nsim,mcBaseData.Nstep+1);
-	simulate!(S,mcProcess,mcBaseData,T)
-	return S;
+function simulate(mcProcess::AbstractMonteCarloEngine, mcBaseData::AbstractMonteCarloConfiguration, T::Number)
+    price_type = predict_output_type_zero_(mcProcess, mcBaseData, T)
+    matrix_type = get_matrix_type(mcBaseData, mcProcess, price_type)
+    S = matrix_type(undef, mcBaseData.Nsim, mcBaseData.Nstep + 1)
+    simulate!(S, mcProcess, mcBaseData, T)
+    return S
 end

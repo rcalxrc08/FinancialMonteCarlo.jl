@@ -27,8 +27,8 @@ function simulate!(X,mcProcess::HestonProcess,spotData::ZeroRate,mcBaseData::Mon
 	e2=CuArray{Float32}(undef,Nsim);
 	
 	for j in 1:Nstep
-		randn!(CURAND.generator(),e1);
-		randn!(CURAND.generator(),e2);
+		randn!(CUDA.CURAND.default_rng(),e1);
+		randn!(CUDA.CURAND.default_rng(),e2);
 		e2.=e1.*ρ.+e2.*sqrt(1-ρ*ρ);
 		@views @inbounds X[:,j+1].=X[:,j]+(r_d.-0.5.*v_m).*dt+sqrt.(v_m).*sqrt(dt).*e1;
 		v_m.+=κ_s.*(θ_s.-v_m).*dt+σ.*sqrt.(v_m).*sqrt(dt).*e2;
@@ -76,13 +76,13 @@ function simulate!(X,mcProcess::HestonProcess,spotData::ZeroRate,mcBaseData::Mon
 	v_m_2=zeros(CuArray{typeof(Float32(isDualZero))},Nsim_2).+σ_zero;
 
 	for j in 1:Nstep
-		randn!(CURAND.generator(),e1);
-		randn!(CURAND.generator(),e2);
+		randn!(CUDA.CURAND.default_rng(),e1);
+		randn!(CUDA.CURAND.default_rng(),e2);
 		e2.= -(e1*ρ+e2.*sqrt(1-ρ*ρ));
 		@views Xp[:,j+1]=Xp[:,j]+(r_d=r-d-0.5*max.(v_m_1,isDualZero))*dt+sqrt.(max(v_m_1,isDualZero))*sqrt(dt)*e1;
-		@views Xm[:,j+1]=Xm[:,j]+(r_d=r-d-0.5*max.(v_m_2,isDualZero))*dt+sqrt.(max(v_m_2,isDualZero))*sqrt(dt)*(-e1);
+		@views Xm[:,j+1]=Xm[:,j]+(r_d=r-d-0.5*max.(v_m_2,isDualZero))*dt-sqrt.(max(v_m_2,isDualZero))*sqrt(dt)*e1;
 		v_m_1.+=κ_s.*(θ_s.-max.(v_m_1,isDualZero)).*dt.+σ.*sqrt.(max.(v_m_1,isDualZero)).*sqrt(dt).*e2;
-		v_m_2.+=κ_s.*(θ_s.-max.(v_m_2,isDualZero)).*dt.+σ.*sqrt.(max.(v_m_2,isDualZero)).*sqrt(dt).*(-e2);
+		v_m_2.+=κ_s.*(θ_s.-max.(v_m_2,isDualZero)).*dt.-σ.*sqrt.(max.(v_m_2,isDualZero)).*sqrt(dt).*e2;
 	end
 	## Conclude
 	X.=S0.*exp.(X);

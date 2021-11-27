@@ -12,11 +12,10 @@ Where:\n
 
 		Price     = Price of the derivative
 
-"""	
-function distribution(mcProcess::BaseProcess,rfCurve::AbstractZeroRateCurve,mcConfig::MonteCarloConfiguration,T::num_) where { num_ <: Number }
+"""
+function distribution(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration, T::num_) where {num_ <: Number}
+    set_seed(mcConfig)
+    S = simulate(mcProcess, rfCurve, mcConfig, T)
 
-	set_seed(mcConfig)
-	S=simulate(mcProcess,rfCurve,mcConfig,T)
-
-	return S[:,end];
+    return S[:, end]
 end

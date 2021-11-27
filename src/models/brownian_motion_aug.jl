@@ -7,69 +7,66 @@ Where:\n
 		σ	=	volatility of the process.
 		μ	=	drift of the process.
 """
-mutable struct BrownianMotionVec{num <: Number, num1 <: Number , num4 <: Number, numtype <: Number} <: AbstractMonteCarloEngine{numtype}
-	σ::num
-	μ::Curve{num1,num4}
-	function BrownianMotionVec(σ::num,μ::Curve{num1,num4}) where {num <: Number, num1 <: Number, num4 <: Number}
+mutable struct BrownianMotionVec{num <: Number, num1 <: Number, num4 <: Number, numtype <: Number} <: AbstractMonteCarloEngine{numtype}
+    σ::num
+    μ::Curve{num1, num4}
+    function BrownianMotionVec(σ::num, μ::Curve{num1, num4}) where {num <: Number, num1 <: Number, num4 <: Number}
         if σ <= 0
             error("Volatility must be positive")
         else
-			zero_typed=zero(num)+zero(num1)+zero(num4);
-            return new{num,num1,num4,typeof(zero_typed)}(σ,μ)
+            zero_typed = zero(num) + zero(num1) + zero(num4)
+            return new{num, num1, num4, typeof(zero_typed)}(σ, μ)
         end
     end
 end
 
-function BrownianMotion(σ::num,μ::Curve{num1,num4}) where {num <: Number, num1 <: Number, num4 <: Number}
-	return BrownianMotionVec(σ,μ)
+function BrownianMotion(σ::num, μ::Curve{num1, num4}) where {num <: Number, num1 <: Number, num4 <: Number}
+    return BrownianMotionVec(σ, μ)
 end
 
-function simulate!(X,mcProcess::BrownianMotionVec,mcBaseData::MonteCarloConfiguration{type1,type2,type3,SerialMode,type5},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: StandardMC, type5 <: Random.AbstractRNG}
-	Nsim=mcBaseData.Nsim;
-	Nstep=mcBaseData.Nstep;
-	σ=mcProcess.σ;
-	μ=mcProcess.μ;
-	@assert T>0
-	dt=T/Nstep
-	stddev_bm=σ*sqrt(dt)
-	zero_drift=μ(dt*0,dt);
-	isDualZero=stddev_bm*0*zero_drift;
-	view(X,:,1).=isDualZero;
-	@inbounds for j=1:Nstep
-		tmp_=μ((j-1)*dt,dt);
-		@inbounds for i=1:Nsim
-			x_i_j=@views X[i,j];
-			@views X[i,j+1]=x_i_j+tmp_+stddev_bm*randn(mcBaseData.rng);
-		end
-	end
+function simulate!(X, mcProcess::BrownianMotionVec, mcBaseData::MonteCarloConfiguration{type1, type2, type3, SerialMode, type5}, T::numb) where {numb <: Number, type1 <: Number, type2 <: Number, type3 <: StandardMC, type5 <: Random.AbstractRNG}
+    Nsim = mcBaseData.Nsim
+    Nstep = mcBaseData.Nstep
+    σ = mcProcess.σ
+    μ = mcProcess.μ
+    @assert T > 0
+    dt = T / Nstep
+    stddev_bm = σ * sqrt(dt)
+    zero_drift = μ(dt * 0, dt)
+    isDualZero = stddev_bm * 0 * zero_drift
+    view(X, :, 1) .= isDualZero
+    @inbounds for j = 1:Nstep
+        tmp_ = μ((j - 1) * dt, dt)
+        @inbounds for i = 1:Nsim
+            x_i_j = @views X[i, j]
+            @views X[i, j+1] = x_i_j + tmp_ + stddev_bm * randn(mcBaseData.rng)
+        end
+    end
 
-	nothing
-
+    nothing
 end
 
+function simulate!(X, mcProcess::BrownianMotionVec, mcBaseData::MonteCarloConfiguration{type1, type2, type3, SerialMode, type5}, T::numb) where {numb <: Number, type1 <: Number, type2 <: Number, type3 <: AntitheticMC, type5 <: Random.AbstractRNG}
+    Nsim = mcBaseData.Nsim
+    Nstep = mcBaseData.Nstep
+    σ = mcProcess.σ
+    μ = mcProcess.μ
+    @assert T > 0
+    dt = T / Nstep
+    stddev_bm = σ * sqrt(dt)
+    zero_drift = μ(dt * 0, dt)
+    isDualZero = stddev_bm * 0 * zero_drift
+    view(X, :, 1) .= isDualZero
+    Nsim_2 = div(Nsim, 2)
 
-function simulate!(X,mcProcess::BrownianMotionVec,mcBaseData::MonteCarloConfiguration{type1,type2,type3,SerialMode,type5},T::numb) where {numb <: Number, type1 <: Number, type2<: Number, type3 <: AntitheticMC, type5 <: Random.AbstractRNG}
-	Nsim=mcBaseData.Nsim;
-	Nstep=mcBaseData.Nstep;
-	σ=mcProcess.σ;
-	μ=mcProcess.μ;
-	@assert T>0
-	dt=T/Nstep
-	stddev_bm=σ*sqrt(dt)
-	zero_drift=μ(dt*0,dt);
-	isDualZero=stddev_bm*0*zero_drift;
-	view(X,:,1).=isDualZero;
-	Nsim_2=div(Nsim,2)
+    @inbounds for j = 1:Nstep
+        tmp_ = μ((j - 1) * dt, dt)
+        @inbounds for i = 1:Nsim_2
+            Z = stddev_bm * randn(mcBaseData.rng)
+            X[2*i-1, j+1] = X[2*i-1, j] + tmp_ + Z
+            X[2*i, j+1] = X[2*i, j] + tmp_ - Z
+        end
+    end
 
-	@inbounds for j in 1:Nstep
-		tmp_=μ((j-1)*dt,dt);
-		@inbounds for i in 1:Nsim_2
-			Z=stddev_bm*randn(mcBaseData.rng);
-			X[2*i-1,j+1]=X[2*i-1,j]+tmp_+Z;
-			X[2*i,j+1]  =X[2*i,j]  +tmp_-Z;
-		end
-	end
-
-	nothing
-
+    nothing
 end
