@@ -5,7 +5,7 @@ function simulate!(X, mcProcess::finiteActivityProcess, rfCurve::AbstractZeroRat
     Nsim = mcBaseData.Nsim
     Nstep = mcBaseData.Nstep
     σ = mcProcess.σ
-    λ1 = mcProcess.λ
+    λ = mcProcess.λ
 
     @assert T > 0.0
 
@@ -16,7 +16,7 @@ function simulate!(X, mcProcess::finiteActivityProcess, rfCurve::AbstractZeroRat
     simulate!(X, BrownianMotion(σ, drift_RN), mcBaseData, T)
 
     dt = T / Nstep
-    PoissonRV = Poisson(λ1 * T)
+    PoissonRV = Poisson(λ * T)
     NJumps = rand(mcBaseData.rng, PoissonRV, Nsim)
 
     for (index_, njumps_) in enumerate(NJumps)

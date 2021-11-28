@@ -32,7 +32,7 @@ jump = ConstantRateJump(rate, affect!)
 #Definition of the SDE
 prob = SDEProblem(dr_, g_1, u0, tspan, rng = mc.rng)
 jump_prob = JumpProblem(prob, Direct(), jump)
-monte_prob = MonteCarloProblem(jump_prob)
+monte_prob = EnsembleProblem(jump_prob)
 rfCurve = ZeroRate(r);
 func(x) = S0 * exp(x);
 model = FinancialMonteCarlo.MonteCarloDiffEqModel(monte_prob, func, Underlying(S0, d))
@@ -56,4 +56,4 @@ AsianFixedStrikeData = AsianFixedStrikeOption(T, K)
 Tneg = -T;
 tspanNeg = (0.0, Tneg)
 probNeg = SDEProblem(dr_, g_1, u0, tspanNeg, rng = mc.rng)
-monte_probNeg = MonteCarloProblem(probNeg)
+monte_probNeg = EnsembleProblem(probNeg)
