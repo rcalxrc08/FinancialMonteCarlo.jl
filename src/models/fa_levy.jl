@@ -16,23 +16,18 @@ function simulate!(X, mcProcess::finiteActivityProcess, rfCurve::AbstractZeroRat
     simulate!(X, BrownianMotion(σ, drift_RN), mcBaseData, T)
 
     dt = T / Nstep
-    PoissonRV = Poisson(λ * T)
-    NJumps = rand(mcBaseData.rng, PoissonRV, Nsim)
-
-    for (index_, njumps_) in enumerate(NJumps)
-        # Simulate the times of jump
-        @views tjumps = rand(mcBaseData.rng, njumps_) * T
-        for tjump in tjumps
-            # Add the jump size
-            idx1 = ceil(Int64, tjump / dt) + 1
-            #jump_size=compute_jump_size(mcProcess,mcBaseData);
-            @views X[index_, idx1:end] .+= compute_jump_size(mcProcess, mcBaseData)
+    for i = 1:Nsim
+        t_i = quantile_exp(λ, rand(mcBaseData.rng)) #or 1/λ?
+        while t_i < T
+            jump_size = compute_jump_size(mcProcess, mcBaseData)
+            jump_idx = ceil(UInt32, t_i / dt) + 1
+            @views X[i, jump_idx:end] .+= jump_size #add jump component
+            t_i += quantile_exp(λ, rand(mcBaseData.rng)) #or 1/λ?
         end
     end
+    # end
     ## Conclude
     S0 = mcProcess.underlying.S0
-    #f(x)=S0*exp(x);
     X .= S0 .* exp.(X)
-    #broadcast!(f,X,X)
     nothing
 end
