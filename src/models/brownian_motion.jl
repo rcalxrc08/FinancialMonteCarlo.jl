@@ -11,12 +11,9 @@ mutable struct BrownianMotion{num <: Number, num1 <: Number, numtype <: Number} 
     σ::num
     μ::num1
     function BrownianMotion(σ::num, μ::num1) where {num <: Number, num1 <: Number}
-        if σ <= 0
-            error("Volatility must be positive")
-        else
-            zero_typed = zero(num) + zero(num1)
-            return new{num, num1, typeof(zero_typed)}(σ, μ)
-        end
+        @assert σ > 0 "Volatility must be positive"
+        zero_typed = zero(num) + zero(num1)
+        return new{num, num1, typeof(zero_typed)}(σ, μ)
     end
 end
 

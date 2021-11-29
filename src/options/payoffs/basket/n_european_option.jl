@@ -13,20 +13,16 @@ mutable struct EuropeanOptionND{num1 <: Number, num2 <: Number, numtype <: Numbe
     K::num2
     isCall::Bool
     function EuropeanOptionND(T::num1, K::num2, isCall::Bool = true) where {num1 <: Number, num2 <: Number}
-        if T <= 0.0
-            error("Time to Maturity must be positive")
-        elseif K <= 0.0
-            error("Strike Price must be positive")
-        else
-            zero_typed = zero(num1) + zero(num2)
-            return new{num1, num2, typeof(zero_typed)}(T, K, isCall)
-        end
+        @assert T > 0 "Time to Maturity must be positive"
+        @assert K > 0 "Strike Price must be positive"
+        zero_typed = zero(num1) + zero(num2)
+        return new{num1, num2, typeof(zero_typed)}(T, K, isCall)
     end
 end
 
 export EuropeanOptionND;
 
-function payoff(S::Array{abstractMatrix}, euPayoff::EuropeanOptionND, rfCurve::abstractZeroRateCurve, T1::num2 = maturity(euPayoff)) where {abstractMatrix <: AbstractMatrix{num}, num2 <: Number} where {abstractZeroRateCurve <: AbstractZeroRateCurve, num <: Number}
+function payoff(S::Array{abstractMatrix}, euPayoff::EuropeanOptionND, rfCurve::abstractZeroRateCurve, T1::num2 = maturity(euPayoff)) where {abstractMatrix <: AbstractMatrix, num2 <: Number, abstractZeroRateCurve <: AbstractZeroRateCurve}
     r = rfCurve.r
     T = euPayoff.T
     iscall = euPayoff.isCall ? 1 : -1

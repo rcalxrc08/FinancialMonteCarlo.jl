@@ -14,16 +14,11 @@ mutable struct VarianceGammaProcess{num <: Number, num1 <: Number, num2 <: Numbe
     κ::num2
     underlying::abstrUnderlying
     function VarianceGammaProcess(σ::num, θ::num1, κ::num2, underlying::abstrUnderlying) where {num <: Number, num1 <: Number, num2 <: Number, abstrUnderlying <: AbstractUnderlying}
-        if σ <= 0
-            error("volatility must be positive")
-        elseif κ <= 0
-            error("κappa must be positive")
-        elseif 1 - σ * σ * κ / 2 - θ * κ < 0
-            error("Parameters with unfeasible values")
-        else
-            zero_typed = zero(num) + zero(num1) + zero(num2)
-            return new{num, num1, num2, abstrUnderlying, typeof(zero_typed)}(σ, θ, κ, underlying)
-        end
+        @assert σ > 0 "volatility must be positive"
+        @assert κ > 0 "κappa must be positive"
+        @assert 1 - σ * σ * κ / 2 - θ * κ >= 0 "Parameters with unfeasible values"
+        zero_typed = zero(num) + zero(num1) + zero(num2)
+        return new{num, num1, num2, abstrUnderlying, typeof(zero_typed)}(σ, θ, κ, underlying)
     end
 end
 

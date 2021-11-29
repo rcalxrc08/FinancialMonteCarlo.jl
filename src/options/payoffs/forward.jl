@@ -9,11 +9,8 @@ Where:\n
 mutable struct Forward{num <: Number} <: EuropeanPayoff{num}
     T::num
     function Forward(T::num) where {num <: Number}
-        if T <= 0.0
-            error("Time to Maturity must be positive")
-        else
-            return new{num}(T)
-        end
+        @assert T > 0 "Time to Maturity must be positive"
+        return new{num}(T)
     end
 end
 

@@ -13,8 +13,10 @@ function simulate!(X, mcProcess::BrownianMotion, mcBaseData::MonteCarloConfigura
     view(X, :, 1) .= isDualZero
     seq = SobolSeq(Nstep)
     skip(seq, Nstep * Nsim)
+    vec = Array{typeof(get_rng_type(isDualZero))}(undef, Nstep)
     @inbounds for i = 1:Nsim
-        vec = norminvcdf.(next!(seq))
+        next!(seq, vec)
+        vec .= norminvcdf.(vec)
         @inbounds for j = 1:Nstep
             @views X[i, j+1] = X[i, j] + mean_bm + stddev_bm * vec[j]
         end
@@ -35,9 +37,11 @@ function simulate!(X, mcProcess::BrownianMotionVec, mcBaseData::MonteCarloConfig
     view(X, :, 1) .= isDualZero
     seq = SobolSeq(Nstep)
     skip(seq, Nstep * Nsim)
+    vec = Array{typeof(get_rng_type(isDualZero))}(undef, Nstep)
     tmp_ = [μ((j - 1) * dt, dt) for j = 1:Nstep]
     @inbounds for i = 1:Nsim
-        vec = norminvcdf.(next!(seq))
+        next!(seq, vec)
+        vec .= norminvcdf.(vec)
         @inbounds for j = 1:Nstep
             @views X[i, j+1] = X[i, j] + tmp_[j] + stddev_bm * vec[j]
         end

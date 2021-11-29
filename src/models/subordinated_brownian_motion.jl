@@ -13,12 +13,9 @@ mutable struct SubordinatedBrownianMotion{num <: Number, num1 <: Number, Distr <
     drift::num1
     subordinator_::Distr
     function SubordinatedBrownianMotion(sigma::num, drift::num1, dist::Distr) where {num <: Number, num1 <: Number, Distr <: Distribution{Univariate, Continuous}}
-        if sigma <= 0.0
-            error("volatility must be positive")
-        else
-            zero_typed = zero(num) + zero(num1)
-            return new{num, num1, Distr, typeof(zero_typed)}(sigma, drift, dist)
-        end
+        @assert sigma > 0 "volatility must be positive"
+        zero_typed = zero(num) + zero(num1)
+        return new{num, num1, Distr, typeof(zero_typed)}(sigma, drift, dist)
     end
 end
 

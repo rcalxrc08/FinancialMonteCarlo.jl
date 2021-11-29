@@ -24,7 +24,7 @@ function predict_output_type_zero(und::AbstractUnderlying)::Number
     return predict_output_type_zero(und.S0) + predict_output_type_zero(und.d)
 end
 
-function predict_output_type_zero(und::Curve)::Number
+function predict_output_type_zero(und::CurveType)::Number
     return zero(eltype(keys_(und))) + zero(eltype(values_(und)))
 end
 

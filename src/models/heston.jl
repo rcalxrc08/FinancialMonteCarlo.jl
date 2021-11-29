@@ -20,18 +20,12 @@ mutable struct HestonProcess{num <: Number, num1 <: Number, num2 <: Number, num3
     θ::num5
     underlying::abstrUnderlying
     function HestonProcess(σ::num, σ_zero::num1, λ::num2, κ::num3, ρ::num4, θ::num5, underlying::abstrUnderlying) where {num <: Number, num1 <: Number, num2 <: Number, num3 <: Number, num4 <: Number, num5 <: Number, abstrUnderlying <: AbstractUnderlying}
-        if σ_zero <= 0.0
-            error("initial volatility must be positive")
-        elseif σ <= 0.0
-            error("volatility of volatility must be positive")
-        elseif abs(κ + λ) <= 1e-14
-            error("unfeasible parameters")
-        elseif !(-1.0 <= ρ <= 1.0)
-            error("ρ must be a correlation")
-        else
-            zero_typed = zero(num) + zero(num1) + zero(num2) + zero(num3) + zero(num4) + zero(num5)
-            return new{num, num1, num2, num3, num4, num5, abstrUnderlying, typeof(zero_typed)}(σ, σ_zero, λ, κ, ρ, θ, underlying)
-        end
+        @assert σ_zero > 0.0 "initial volatility must be positive"
+        @assert σ > 0.0 "volatility of volatility must be positive"
+        @assert abs(κ + λ) > 1e-14 "unfeasible parameters"
+        @assert (-1.0 <= ρ <= 1.0) "ρ must be a correlation"
+        zero_typed = zero(num) + zero(num1) + zero(num2) + zero(num3) + zero(num4) + zero(num5)
+        return new{num, num1, num2, num3, num4, num5, abstrUnderlying, typeof(zero_typed)}(σ, σ_zero, λ, κ, ρ, θ, underlying)
     end
 end
 

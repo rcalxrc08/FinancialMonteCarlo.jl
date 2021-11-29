@@ -20,41 +20,26 @@ mutable struct MonteCarloConfiguration{num1 <: Integer, num2 <: Integer, abstrac
     end
     #Most General, no default argument, offset is controllable from outside
     function GeneralMonteCarloConfiguration(Nsim::num1, Nstep::num2, monteCarloMethod::abstractMonteCarloMethod, parallelMethod::baseMode, seed::Number, rng::rngType_) where {num1 <: Integer, num2 <: Integer, abstractMonteCarloMethod <: AbstractMonteCarloMethod, baseMode <: BaseMode, rngType_ <: Random.AbstractRNG}
-        if Nsim <= zero(num1)
-            error("Number of Simulations must be positive")
-        elseif Nstep <= zero(num2)
-            error("Number of Steps must be positive")
-        else
-            return new{num1, num2, abstractMonteCarloMethod, baseMode, rngType_}(Nsim, Nstep, monteCarloMethod, parallelMethod, Int64(seed), 0, rng)
-        end
+        @assert Nsim > zero(num1) "Number of Simulations must be positive"
+        @assert Nstep > zero(num2) "Number of Steps must be positive"
+        return new{num1, num2, abstractMonteCarloMethod, baseMode, rngType_}(Nsim, Nstep, monteCarloMethod, parallelMethod, Int64(seed), 0, rng)
     end
     function GeneralMonteCarloConfiguration(Nsim::num1, Nstep::num2, monteCarloMethod::abstractMonteCarloMethod, parallelMethod::baseMode, seed::Number, rng::MersenneTwister, offset::Number) where {num1 <: Integer, num2 <: Integer, abstractMonteCarloMethod <: AbstractMonteCarloMethod, baseMode <: BaseMode}
-        if Nsim <= zero(num1)
-            error("Number of Simulations must be positive")
-        elseif Nstep <= zero(num2)
-            error("Number of Steps must be positive")
-        else
-            return new{num1, num2, abstractMonteCarloMethod, baseMode, MersenneTwister}(Nsim, Nstep, monteCarloMethod, parallelMethod, Int64(seed), offset, rng)
-        end
+        @assert Nsim > zero(num1) "Number of Simulations must be positive"
+        @assert Nstep > zero(num2) "Number of Steps must be positive"
+        return new{num1, num2, abstractMonteCarloMethod, baseMode, MersenneTwister}(Nsim, Nstep, monteCarloMethod, parallelMethod, Int64(seed), offset, rng)
     end
     function MonteCarloConfiguration(Nsim::num1, Nstep::num2, monteCarloMethod::abstractMonteCarloMethod, parallelMethod::baseMode, seed::Number, rng::MersenneTwister, offset::Number) where {num1 <: Integer, num2 <: Integer, abstractMonteCarloMethod <: AbstractMonteCarloMethod, baseMode <: BaseMode}
-        if Nsim <= zero(num1)
-            error("Number of Simulations must be positive")
-        elseif Nstep <= zero(num2)
-            error("Number of Steps must be positive")
-        else
-            return GeneralMonteCarloConfiguration(Nsim, Nstep, monteCarloMethod, parallelMethod, Int64(seed), offset, rng)
-        end
+        @assert Nsim > zero(num1) "Number of Simulations must be positive"
+        @assert Nstep > zero(num2) "Number of Steps must be positive"
+        return GeneralMonteCarloConfiguration(Nsim, Nstep, monteCarloMethod, parallelMethod, Int64(seed), offset, rng)
     end
     function MonteCarloConfiguration(Nsim::num1, Nstep::num2, monteCarloMethod::abstractMonteCarloMethod, parallelMethod::baseMode, seed::Number = 0, rng::rngType_ = MersenneTwister()) where {num1 <: Integer, num2 <: Integer, abstractMonteCarloMethod <: AbstractMonteCarloMethod, baseMode <: BaseMode, rngType_ <: Random.AbstractRNG}
         return GeneralMonteCarloConfiguration(Nsim, Nstep, monteCarloMethod, parallelMethod, Int64(seed), rng)
     end
     function MonteCarloConfiguration(Nsim::num1, Nstep::num2, monteCarloMethod::AntitheticMC, parallelMethod::baseMode, seed::Number = 0, rng::rngType_ = MersenneTwister()) where {num1 <: Integer, num2 <: Integer, baseMode <: BaseMode, rngType_ <: Random.AbstractRNG}
-        if div(Nsim, 2) * 2 != Nsim
-            error("Antithetic support only even number of simulations")
-        else
-            return GeneralMonteCarloConfiguration(Nsim, Nstep, monteCarloMethod, parallelMethod, Int64(seed), rng)
-        end
+        @assert div(Nsim, 2) * 2 == Nsim "Antithetic support only even number of simulations"
+        return GeneralMonteCarloConfiguration(Nsim, Nstep, monteCarloMethod, parallelMethod, Int64(seed), rng)
     end
 end
 

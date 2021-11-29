@@ -50,6 +50,6 @@ tollanti = 0.6;
 
 @show "Test Merton Parameters"
 
-@test_throws(ErrorException, MertonProcess(-sigma, lam, mu1, sigma1, Underlying(S0, d)))
-@test_throws(ErrorException, MertonProcess(sigma, lam, mu1, -sigma1, Underlying(S0, d)))
-@test_throws(ErrorException, MertonProcess(sigma, -lam, mu1, sigma1, Underlying(S0, d)))
+@test_throws(AssertionError, MertonProcess(-sigma, lam, mu1, sigma1, Underlying(S0, d)))
+@test_throws(AssertionError, MertonProcess(sigma, lam, mu1, -sigma1, Underlying(S0, d)))
+@test_throws(AssertionError, MertonProcess(sigma, -lam, mu1, sigma1, Underlying(S0, d)))

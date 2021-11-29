@@ -9,18 +9,15 @@ Where:\n
 """
 mutable struct BrownianMotionVec{num <: Number, num1 <: Number, num4 <: Number, numtype <: Number} <: AbstractMonteCarloEngine{numtype}
     σ::num
-    μ::Curve{num1, num4}
-    function BrownianMotionVec(σ::num, μ::Curve{num1, num4}) where {num <: Number, num1 <: Number, num4 <: Number}
-        if σ <= 0
-            error("Volatility must be positive")
-        else
-            zero_typed = zero(num) + zero(num1) + zero(num4)
-            return new{num, num1, num4, typeof(zero_typed)}(σ, μ)
-        end
+    μ::CurveType{num1, num4}
+    function BrownianMotionVec(σ::num, μ::CurveType{num1, num4}) where {num <: Number, num1 <: Number, num4 <: Number}
+        @assert σ > 0 "Volatility must be positive"
+        zero_typed = zero(num) + zero(num1) + zero(num4)
+        return new{num, num1, num4, typeof(zero_typed)}(σ, μ)
     end
 end
 
-function BrownianMotion(σ::num, μ::Curve{num1, num4}) where {num <: Number, num1 <: Number, num4 <: Number}
+function BrownianMotion(σ::num, μ::CurveType{num1, num4}) where {num <: Number, num1 <: Number, num4 <: Number}
     return BrownianMotionVec(σ, μ)
 end
 

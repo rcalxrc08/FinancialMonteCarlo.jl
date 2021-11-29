@@ -13,12 +13,9 @@ mutable struct GeometricBrownianMotion{num <: Number, num1 <: Number, num2 <: Nu
     μ::num1
     x0::num2
     function GeometricBrownianMotion(σ::num, μ::num1, x0::num2) where {num <: Number, num1 <: Number, num2 <: Number}
-        if σ <= 0
-            error("Volatility must be positive")
-        else
-            zero_typed = zero(num) + zero(num1)
-            return new{num, num1, num2, typeof(zero_typed)}(σ, μ, x0)
-        end
+        @assert σ > 0 "Volatility must be positive"
+        zero_typed = zero(num) + zero(num1)
+        return new{num, num1, num2, typeof(zero_typed)}(σ, μ, x0)
     end
 end
 

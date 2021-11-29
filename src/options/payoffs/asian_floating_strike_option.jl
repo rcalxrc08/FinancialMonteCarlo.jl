@@ -11,11 +11,8 @@ struct AsianFloatingStrikeOption{num <: Number} <: AsianPayoff{num}
     T::num
     isCall::Bool
     function AsianFloatingStrikeOption(T::num, isCall::Bool = true) where {num <: Number}
-        if T <= 0.0
-            error("Time to Maturity must be positive")
-        else
-            return new{num}(T, isCall)
-        end
+        @assert T > 0 "Time to Maturity must be positive"
+        return new{num}(T, isCall)
     end
 end
 

@@ -46,9 +46,7 @@ function delta(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig:
 end
 
 function delta(mcProcess::Dict{String, AbstractMonteCarloProcess}, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration, dict_::Dict{String, Dict{AbstractPayoff, Number}}, underl_::String, dS::Real = 1e-7)
-    if (!isnothing(findfirst("_", underl_)))
-        error("deltas are defined on single name")
-    end
+    @assert isnothing(findfirst("_", underl_)) "deltas are defined on single name"
     set_seed(mcConfig)
     underlyings_models = keys(mcProcess)
     underlyings_payoff = keys(dict_)

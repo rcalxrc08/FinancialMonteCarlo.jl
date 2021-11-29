@@ -49,6 +49,6 @@ Model = VarianceGammaProcess(sigma, theta1, k1, Underlying(S0, d));
 
 @show "Test Variance Gamma Parameters"
 
-@test_throws(ErrorException, VarianceGammaProcess(-sigma, theta1, k1, Underlying(S0, d)))
-@test_throws(ErrorException, VarianceGammaProcess(sigma, theta1, -k1, Underlying(S0, d)))
-@test_throws(ErrorException, VarianceGammaProcess(sigma, 10000.0, k1, Underlying(S0, d)))
+@test_throws(AssertionError, VarianceGammaProcess(-sigma, theta1, k1, Underlying(S0, d)))
+@test_throws(AssertionError, VarianceGammaProcess(sigma, theta1, -k1, Underlying(S0, d)))
+@test_throws(AssertionError, VarianceGammaProcess(sigma, 10000.0, k1, Underlying(S0, d)))

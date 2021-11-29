@@ -10,11 +10,8 @@ mutable struct BlackScholesProcess{num <: Number, abstrUnderlying <: AbstractUnd
     σ::num
     underlying::abstrUnderlying
     function BlackScholesProcess(σ::num, underlying::abstrUnderlying) where {num <: Number, abstrUnderlying <: AbstractUnderlying}
-        if σ <= 0.0
-            error("Volatility must be positive")
-        else
-            return new{num, abstrUnderlying}(σ, underlying)
-        end
+        @assert σ > 0 "Volatility must be positive"
+        return new{num, abstrUnderlying}(σ, underlying)
     end
 end
 

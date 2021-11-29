@@ -23,9 +23,11 @@ function simulate!(X, mcProcess::HestonProcess, rfCurve::ZeroRate, mcBaseData::M
     dt = T / Nstep
     isDualZero = T * r * σ_zero * θ_s * κ_s * σ * ρ * 0.0 * S0
     view(X, :, 1) .= isDualZero
+    vec = Array{typeof(get_rng_type(isDualZero))}(undef, 2 * Nstep)
     for i = 1:Nsim
         v_m = σ_zero^2
-        vec = norminvcdf.(next!(seq))
+        next!(seq, vec)
+        vec .= norminvcdf.(vec)
         for j = 1:Nstep
             @views e1 = vec[j]
             @views e2 = e1 * ρ + vec[Nstep+j] * sqrt(1 - ρ * ρ)
@@ -66,11 +68,12 @@ function simulate!(X, mcProcess::HestonProcess, rfCurve::ZeroRateCurve, mcBaseDa
     isDualZero = S0 * T * σ_zero * κ * θ * λ1 * σ * ρ * 0.0 * zero_drift
     #X=Matrix{typeof(isDualZero)}(undef,Nsim,Nstep+1);
     X[:, 1] .= isDualZero
+    vec = Array{typeof(get_rng_type(isDualZero))}(undef, 2 * Nstep)
     tmp_ = [r_d((j - 1) * dt, dt) for j = 1:Nstep]
     for i = 1:Nsim
         v_m = σ_zero^2
-        vec = norminvcdf.(next!(seq))
-
+        next!(seq, vec)
+        vec .= norminvcdf.(vec)
         for j = 1:Nstep
             @views e1 = vec[j]
             @views e2 = e1 * ρ + vec[Nstep+j] * sqrt(1 - ρ * ρ)

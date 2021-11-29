@@ -6,13 +6,14 @@ using Dictionaries
 #const FinMCDict=Dict
 const FinMCDict = Dictionaries.Dictionary
 
-const Curve = FinMCDict{num1, num2} where {num1 <: Number, num2 <: Number}
+#const Curve = FinMCDict{num1, num2} where {num1 <: Number, num2 <: Number}
+const CurveType = FinMCDict{num1, num2} where {num1 <: Number, num2 <: Number}
 
-function keys_(x::Curve{num1, num2}) where {num1 <: Number, num2 <: Number}
+function keys_(x::CurveType{num1, num2}) where {num1 <: Number, num2 <: Number}
     return sort(collect(keys(x)))
 end
 
-function values_(x::Curve{num1, num2}) where {num1 <: Number, num2 <: Number}
+function values_(x::CurveType{num1, num2}) where {num1 <: Number, num2 <: Number}
     T_d = collect(keys(x))
     idx_ = sortperm(T_d)
     return collect(values(x))[idx_]
@@ -60,7 +61,7 @@ function ImpliedCurve(r_::Array{num1}, T::num2) where {num1 <: Number, num2 <: N
     t_ = collect(dt_:dt_:T)
     return ImpliedCurve(r_, t_)
 end
-function (x::Curve)(t::Number, dt::Number)
+function (x::CurveType)(t::Number, dt::Number)
     T = collect(keys_(x))
     r = collect(values_(x))
     return intgral_2(t + dt, T, r) - intgral_2(t, T, r)

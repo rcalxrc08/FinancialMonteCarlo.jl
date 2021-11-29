@@ -1,5 +1,5 @@
 
-function payoff(S1::abstractMatrix, bmPayoff::BermudanPayoff, rfCurve::abstractZeroRateCurve, T1::num2 = maturity(bmPayoff)) where {abstractZeroRateCurve <: AbstractZeroRateCurve, abstractMatrix <: AbstractMatrix{num}} where {num <: Number, num2 <: Number}
+function payoff(S1::AbstractMatrix{num}, bmPayoff::BermudanPayoff, rfCurve::abstractZeroRateCurve, T1::num2 = maturity(bmPayoff)) where {abstractZeroRateCurve <: AbstractZeroRateCurve, num <: Number, num2 <: Number}
     T_opt = bmPayoff.T_ex
     T = maturity(bmPayoff)
     NStep = size(S1, 2) - 1

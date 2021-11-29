@@ -24,9 +24,9 @@ function pricer(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig
     return Price
 end
 
-get_matrix_type(mcConfig::MonteCarloConfiguration{<:Integer, <:Integer, <:AbstractMonteCarloMethod, <:BaseMode, <:Random.AbstractRNG}, model::BaseProcess, price) = Matrix{typeof(price)}(undef, mcConfig.Nsim, mcConfig.Nstep + 1);
-get_array_type(mcConfig::MonteCarloConfiguration{<:Integer, <:Integer, <:AbstractMonteCarloMethod, <:BaseMode, <:Random.AbstractRNG}, model::BaseProcess, price) = Array{typeof(price)}(undef, mcConfig.Nstep);
-get_matrix_type(mcConfig::MonteCarloConfiguration{<:Integer, <:Integer, <:AbstractMonteCarloMethod, <:BaseMode, <:Random.AbstractRNG}, model::VectorialMonteCarloProcess, price) = Array{Matrix{typeof(price)}};
+get_matrix_type(mcConfig::MonteCarloConfiguration{<:Integer, <:Integer, <:AbstractMonteCarloMethod, <:BaseMode, <:Random.AbstractRNG}, ::BaseProcess, price) = Matrix{typeof(price)}(undef, mcConfig.Nsim, mcConfig.Nstep + 1);
+get_array_type(mcConfig::MonteCarloConfiguration{<:Integer, <:Integer, <:AbstractMonteCarloMethod, <:BaseMode, <:Random.AbstractRNG}, ::BaseProcess, price) = Array{typeof(price)}(undef, mcConfig.Nstep);
+get_matrix_type(::MonteCarloConfiguration{<:Integer, <:Integer, <:AbstractMonteCarloMethod, <:BaseMode, <:Random.AbstractRNG}, ::VectorialMonteCarloProcess, price) = Array{Matrix{typeof(price)}};
 
 function pricer(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration, abstractPayoffs::Array{abstractPayoff_}) where {abstractPayoff_ <: AbstractPayoff}
     set_seed(mcConfig)

@@ -49,6 +49,6 @@ tollanti = 0.8;
 
 @show "Test NIG Parameters"
 
-@test_throws(ErrorException, NormalInverseGaussianProcess(-sigma, theta1, k1, Underlying(S0, d)))
-@test_throws(ErrorException, NormalInverseGaussianProcess(sigma, theta1, -k1, Underlying(S0, d)))
-@test_throws(ErrorException, NormalInverseGaussianProcess(sigma, 10000.0, k1, Underlying(S0, d)))
+@test_throws(AssertionError, NormalInverseGaussianProcess(-sigma, theta1, k1, Underlying(S0, d)))
+@test_throws(AssertionError, NormalInverseGaussianProcess(sigma, theta1, -k1, Underlying(S0, d)))
+@test_throws(AssertionError, NormalInverseGaussianProcess(sigma, 10000.0, k1, Underlying(S0, d)))

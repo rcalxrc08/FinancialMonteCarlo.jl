@@ -42,7 +42,7 @@ Where:\n
 		Payoff      = payoff of the Option.
 
 """
-function payoff(S::AbstractMatrix, optionData::AbstractPayoff, rfCurve::AbstractZeroRateCurve, T1::Number = optionData.T)
+function payoff(::AbstractMatrix, ::AbstractPayoff, ::AbstractZeroRateCurve, T1::Number = 0.0)
     error("Function used just for documentation")
 end
 

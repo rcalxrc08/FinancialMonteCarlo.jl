@@ -28,7 +28,6 @@ mutable struct GaussianCopulaNVariateProcess{num3 <: Number, numtype <: Number} 
         return GaussianCopulaNVariateProcess(corr_matrix_, model1, model2)
     end
 end
-support_type(z::GaussianCopulaNVariateProcess{num, num1}) where {num <: Number, num1 <: Number} = zero(num)
 
 export GaussianCopulaNVariateProcess;
 

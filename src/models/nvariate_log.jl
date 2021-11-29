@@ -29,8 +29,6 @@ mutable struct GaussianCopulaNVariateLogProcess{num3 <: Number, numtype <: Numbe
     end
 end
 
-support_type(z::GaussianCopulaNVariateLogProcess{num, num1}) where {num <: Number, num1 <: Number} = zero(num)
-
 export GaussianCopulaNVariateLogProcess;
 
 function simulate!(S_Total, mcProcess::GaussianCopulaNVariateLogProcess, rfCurve::AbstractZeroRateCurve, mcBaseData::AbstractMonteCarloConfiguration, T::Number)

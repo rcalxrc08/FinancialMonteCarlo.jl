@@ -10,19 +10,16 @@ Where:\n
 """
 mutable struct SubordinatedBrownianMotionVec{num <: Number, num1 <: Number, num4 <: Number, Distr <: Distribution{Univariate, Continuous}, numtype <: Number} <: AbstractMonteCarloProcess{numtype}
     sigma::num
-    drift::Curve{num1, num4}
+    drift::CurveType{num1, num4}
     subordinator_::Distr
-    function SubordinatedBrownianMotionVec(sigma::num, drift::Curve{num1, num4}, dist::Distr) where {num <: Number, num1 <: Number, num4 <: Number, Distr <: Distribution{Univariate, Continuous}}
-        if sigma <= 0
-            error("volatility must be positive")
-        else
-            zero_typed = zero(num) + zero(num1) + zero(num4)
-            return new{num, num1, num4, Distr, typeof(zero_typed)}(sigma, drift, dist)
-        end
+    function SubordinatedBrownianMotionVec(sigma::num, drift::CurveType{num1, num4}, dist::Distr) where {num <: Number, num1 <: Number, num4 <: Number, Distr <: Distribution{Univariate, Continuous}}
+        @assert sigma > 0 "volatility must be positive"
+        zero_typed = zero(num) + zero(num1) + zero(num4)
+        return new{num, num1, num4, Distr, typeof(zero_typed)}(sigma, drift, dist)
     end
 end
 
-function SubordinatedBrownianMotion(σ::num, drift::Curve{num1, num4}, subordinator_::Distr) where {num <: Number, num1 <: Number, num4 <: Number, Distr <: Distribution{Univariate, Continuous}}
+function SubordinatedBrownianMotion(σ::num, drift::CurveType{num1, num4}, subordinator_::Distr) where {num <: Number, num1 <: Number, num4 <: Number, Distr <: Distribution{Univariate, Continuous}}
     return SubordinatedBrownianMotionVec(σ, drift, subordinator_)
 end
 

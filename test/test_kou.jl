@@ -54,8 +54,8 @@ tollanti = 0.6
 
 @show "Test Kou Parameters"
 
-@test_throws(ErrorException, KouProcess(-sigma, lam, p, lamp, lamm, Underlying(S0, d)))
-@test_throws(ErrorException, KouProcess(sigma, -lam, p, lamp, lamm, Underlying(S0, d)))
-@test_throws(ErrorException, KouProcess(sigma, lam, -p, lamp, lamm, Underlying(S0, d)))
-@test_throws(ErrorException, KouProcess(sigma, lam, p, -lamp, lamm, Underlying(S0, d)))
-@test_throws(ErrorException, KouProcess(sigma, lam, p, lamp, -lamm, Underlying(S0, d)))
+@test_throws(AssertionError, KouProcess(-sigma, lam, p, lamp, lamm, Underlying(S0, d)))
+@test_throws(AssertionError, KouProcess(sigma, -lam, p, lamp, lamm, Underlying(S0, d)))
+@test_throws(AssertionError, KouProcess(sigma, lam, -p, lamp, lamm, Underlying(S0, d)))
+@test_throws(AssertionError, KouProcess(sigma, lam, p, -lamp, lamm, Underlying(S0, d)))
+@test_throws(AssertionError, KouProcess(sigma, lam, p, lamp, -lamm, Underlying(S0, d)))

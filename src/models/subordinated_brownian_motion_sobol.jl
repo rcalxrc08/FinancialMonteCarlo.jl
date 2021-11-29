@@ -12,8 +12,10 @@ function simulate(mcProcess::SubordinatedBrownianMotion, mcBaseData::MonteCarloC
     @views X[:, 1] .= isDualZero
     seq = SobolSeq(Nstep)
     skip(seq, Nstep * Nsim)
+    vec = Array{typeof(get_rng_type(isDualZero))}(undef, Nstep)
     @inbounds for i = 1:Nsim
-        vec = norminvcdf.(next!(seq))
+        next!(seq, vec)
+        vec .= norminvcdf.(vec)
         @inbounds for j = 1:Nstep
             dt_s = rand(mcBaseData.rng, mcProcess.subordinator_)
             @views X[i, j+1] .= X[i, j] .+ drift .* dt_s .+ sigma .* sqrt.(dt_s) .* vec[j]
@@ -36,9 +38,11 @@ function simulate(mcProcess::SubordinatedBrownianMotionVec, mcBaseData::MonteCar
     @views X[:, 1] .= isDualZero
     seq = SobolSeq(Nstep)
     skip(seq, Nstep * Nsim)
+    vec = Array{typeof(get_rng_type(isDualZero))}(undef, Nstep)
     @inbounds for i = 1:Nsim
         t_s = zero(type_sub)
-        vec = norminvcdf.(next!(seq))
+        next!(seq, vec)
+        vec .= norminvcdf.(vec)
         @inbounds for j = 1:Nstep
             dt_s = rand(mcBaseData.rng, mcProcess.subordinator_)
             tmp_drift = drift(t_s, dt_s)
