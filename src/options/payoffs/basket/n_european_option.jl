@@ -31,10 +31,11 @@ function payoff(S::Array{abstractMatrix}, euPayoff::EuropeanOptionND, rfCurve::a
     index1 = round(Int, T / T1 * NStep) + 1
     K = euPayoff.K
     #ST_all=[ sum(x_i[j,index1] for x_i in S) for j in 1:Nsim]
-    ST_all = S[1][:, index1]
-    for i = 2:length(S)
-        ST_all += S[i][:, index1]
-    end
+    # ST_all = S[1][:, index1]
+    # for i = 2:length(S)
+    #     ST_all += S[i][:, index1]
+    # end
+    ST_all = sum(S[i][:, index1] for i = 1:length(S))
     payoff2 = max.(iscall * (ST_all .- K), 0.0)
 
     return payoff2 * exp(-integral(r, T))

@@ -4,7 +4,7 @@ function predict_output_type(x...)::Type
     return typeof(zero_out_)
 end
 
-function predict_output_type_zero_(x...)::Number
+function predict_output_type_zero(x...)::Number
     zero_out_ = sum(y -> predict_output_type_zero(y), x)
 
     return zero_out_
@@ -25,7 +25,7 @@ function predict_output_type_zero(und::AbstractUnderlying)::Number
 end
 
 function predict_output_type_zero(und::CurveType)::Number
-    return zero(eltype(keys_(und))) + zero(eltype(values_(und)))
+    return zero(eltype(extract_keys(und))) + zero(eltype(extract_values(und)))
 end
 
 function predict_output_type_zero(rfCurve::AbstractZeroRateCurve)::Number

@@ -15,7 +15,7 @@ mutable struct GaussianCopulaNVariateProcess{num3 <: Number, numtype <: Number} 
         @assert sz[1] == sz[2]
         @assert length(models) == sz[1]
         @assert isposdef(rho)
-        zero_typed = predict_output_type_zero_(models...) + zero(num3)
+        zero_typed = predict_output_type_zero(models...) + zero(num3)
         return new{num3, typeof(zero_typed)}(models, rho)
     end
     function GaussianCopulaNVariateProcess(models::BaseProcess...)

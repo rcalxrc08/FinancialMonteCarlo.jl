@@ -3,14 +3,13 @@ include("utils.jl")
 """
 Low Level Interface for Pricing
 
-		Price=pricer(mcProcess,rfCurve,mcBaseData,payoff_)
+		Price=pricer(mcProcess,rfCurve,mcConfig,abstractPayoff)
 	
 Where:\n
 		mcProcess          = Process to be simulated.
 		rfCurve  = Zero Rate Data.
-		mcBaseData = Basic properties of MonteCarlo simulation
-		payoff_ = Payoff(s) to be priced
-		
+		mcConfig = Basic properties of MonteCarlo simulation
+		abstractPayoff = Payoff(s) to be priced
 
 		Price     = Price of the derivative
 
@@ -32,7 +31,7 @@ function pricer(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig
     set_seed(mcConfig)
     maxT = maximum(maturity.(abstractPayoffs))
     S = simulate(mcProcess, rfCurve, mcConfig, maxT)
-    zero_typed = predict_output_type_zero_(mcProcess, rfCurve, mcConfig, abstractPayoffs)
+    zero_typed = predict_output_type_zero(mcProcess, rfCurve, mcConfig, abstractPayoffs)
     Prices::Array{typeof(zero_typed)} = [mean(payoff(S, abstractPayoff, rfCurve, maxT)) for abstractPayoff in abstractPayoffs]
 
     return Prices
@@ -83,7 +82,7 @@ function pricer(mcProcess::MarketDataSet, rfCurve::AbstractZeroRateCurve, mcConf
     #	model=mcProcess[under_cpl]
     #	price=price+pricer(model,rfCurve,mcConfig,options);
     #end
-    zero_typed = predict_output_type_zero_(rfCurve, mcConfig, collect(keys(collect(values(dict_)))), collect(values(mcProcess)))
+    zero_typed = predict_output_type_zero(rfCurve, mcConfig, collect(keys(collect(values(dict_)))), collect(values(mcProcess)))
     price::typeof(zero_typed) = sum(pricer(mcProcess[under_cpl], rfCurve, mcConfig, extract_(under_cpl, dict_)) for under_cpl in unique(underlyings_payoff_cpl))
 
     return price

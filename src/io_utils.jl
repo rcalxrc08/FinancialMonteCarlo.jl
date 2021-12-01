@@ -37,7 +37,6 @@ function get_parameters(model::XProcess) where {XProcess <: AbstractPayoff}
     param_ = []
     for i = 1:N1
         tmp_ = getproperty(model, fields_[i])
-        #typeof(tmp_) <: Bool ? continue : nothing;
         append!(param_, tmp_)
     end
     if (N1 > 0)

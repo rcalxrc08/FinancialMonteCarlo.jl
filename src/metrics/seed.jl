@@ -4,7 +4,7 @@ randjump_(rng::MersenneTwister, num) = randjump(rng, num);
 randjump_(rng, num) = rng;
 
 inner_seed!(tmp_rng, seed) = Random.seed!(tmp_rng, seed)
-#inner_seed!(tmp_rng::VectorizedRNG.AbstractPCG,seed)= return nothing;
+#inner_seed!(tmp_rng::VectorizedRNG.AbstractPCG,seed)= VectorizedRNG.seed!(tmp_rng);
 
 function set_seed(mcConfig::MonteCarloConfiguration{type1, type2, type3, type4, type5}) where {type1 <: Integer, type2 <: Integer, type3 <: AbstractMonteCarloMethod, type4 <: SerialMode, type5 <: Random.AbstractRNG}
     tmp_rng = deepcopy(mcConfig.rng)

@@ -30,7 +30,7 @@ function simulate!(X, mcProcess::BrownianMotion, mcBaseData::MonteCarloConfigura
     stddev_bm = σ * sqrt(dt)
     isDualZero = mean_bm * stddev_bm * 0
     view(X, :, 1) .= isDualZero
-    zero_typed = predict_output_type_zero_(σ, μ)
+    zero_typed = predict_output_type_zero(σ, μ)
     Z = Array{typeof(get_rng_type(zero_typed))}(undef, Nsim)
     @inbounds for j = 1:Nstep
         randn!(mcBaseData.rng, Z)
@@ -52,7 +52,7 @@ function simulate!(X, mcProcess::BrownianMotion, mcBaseData::MonteCarloConfigura
     isDualZero = mean_bm * stddev_bm * 0
     view(X, :, 1) .= isDualZero
     Nsim_2 = div(Nsim, 2)
-    zero_typed = predict_output_type_zero_(σ, μ)
+    zero_typed = predict_output_type_zero(σ, μ)
     Z = Array{typeof(get_rng_type(zero_typed))}(undef, Nsim_2)
     Xp = @views X[1:Nsim_2, :]
     Xm = @views X[(Nsim_2+1):end, :]

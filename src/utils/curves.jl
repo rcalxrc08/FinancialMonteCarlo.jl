@@ -1,26 +1,27 @@
 ########### Curve Section
 import Base.insert!
-insert!(dic::Dict, k::Number, val::Number) = dic[k] = val;
-return nothing;
+function insert!(dic::Dict, k::Number, val::Number)
+    dic[k] = val
+    return nothing
+end
 using Dictionaries
-#const FinMCDict=Dict
-const FinMCDict = Dictionaries.Dictionary
 
-#const Curve = FinMCDict{num1, num2} where {num1 <: Number, num2 <: Number}
-const CurveType = FinMCDict{num1, num2} where {num1 <: Number, num2 <: Number}
+const DictTypeInternal = Dictionaries.Dictionary
 
-function keys_(x::CurveType{num1, num2}) where {num1 <: Number, num2 <: Number}
+const CurveType = DictTypeInternal{num1, num2} where {num1 <: Number, num2 <: Number}
+
+function extract_keys(x::CurveType{num1, num2}) where {num1 <: Number, num2 <: Number}
     return sort(collect(keys(x)))
 end
 
-function values_(x::CurveType{num1, num2}) where {num1 <: Number, num2 <: Number}
+function extract_values(x::CurveType{num1, num2}) where {num1 <: Number, num2 <: Number}
     T_d = collect(keys(x))
     idx_ = sortperm(T_d)
     return collect(values(x))[idx_]
 end
 
 function Curve(r_::Array{num1}, T::num2) where {num1 <: Number, num2 <: Number}
-    r = FinMCDict{num2, num1}()
+    r = DictTypeInternal{num2, num1}()
     Nstep = length(r_) - 1
     dt = T / Nstep
     for i = 1:length(r_)
@@ -31,8 +32,7 @@ end
 function Curve(r_::Array{num1}, T::Array{num2}) where {num1 <: Number, num2 <: Number}
     @assert length(r_) == length(T)
     @assert T == sort(T)
-    r = FinMCDict{num2, num1}()
-    Nstep = length(r_) - 1
+    r = DictTypeInternal{num2, num1}()
     for i = 1:length(r_)
         insert!(r, T[i], r_[i])
     end
@@ -43,8 +43,7 @@ function ImpliedCurve(r_::Array{num1}, T::Array{num2}) where {num1 <: Number, nu
     @assert length(r_) >= 1
     @assert T == sort(T)
 
-    r = FinMCDict{num2, num1}()
-    Nstep = length(r_) - 1
+    r = DictTypeInternal{num2, num1}()
     insert!(r, 0.0, 0.0)
     insert!(r, T[1], r_[1] * 2.0)
     prec_r = r_[1] * 2.0
@@ -57,20 +56,20 @@ function ImpliedCurve(r_::Array{num1}, T::Array{num2}) where {num1 <: Number, nu
 end
 function ImpliedCurve(r_::Array{num1}, T::num2) where {num1 <: Number, num2 <: Number}
     N = length(r_)
-    dt_ = T / (N)
+    dt_ = T / N
     t_ = collect(dt_:dt_:T)
     return ImpliedCurve(r_, t_)
 end
 function (x::CurveType)(t::Number, dt::Number)
-    T = collect(keys_(x))
-    r = collect(values_(x))
-    return intgral_2(t + dt, T, r) - intgral_2(t, T, r)
+    T = collect(extract_keys(x))
+    r = collect(extract_values(x))
+    return internal_definite_integral(t + dt, T, r) - internal_definite_integral(t, T, r)
 end
 
 using Interpolations
-function intgral_2(x::num, T::Array{num1}, r::Array{num2}) where {num <: Number, num1 <: Number, num2 <: Number}
+function internal_definite_integral(x::num, T::Array{num1}, r::Array{num2}) where {num <: Number, num1 <: Number, num2 <: Number}
     @assert length(T) == length(r)
-    if (x == 0.0)
+    if x == 0.0
         return 0.0
     end
     @assert x >= 0.0
@@ -86,10 +85,10 @@ function intgral_2(x::num, T::Array{num1}, r::Array{num2}) where {num <: Number,
     return out
 end
 
-function integral(r::FinMCDict{num1, num2}, t::Number) where {num1 <: Number, num2 <: Number}
-    T = collect(keys_(r))
-    r = collect(values_(r))
-    return intgral_2(t, T, r)
+function integral(r::DictTypeInternal{num1, num2}, t::Number) where {num1 <: Number, num2 <: Number}
+    T = collect(extract_keys(r))
+    r = collect(extract_values(r))
+    return internal_definite_integral(t, T, r)
 end
 integral(x::num1, t::num2) where {num1 <: Number, num2 <: Number} = x * t;
 

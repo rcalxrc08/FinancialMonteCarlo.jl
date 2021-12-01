@@ -1,15 +1,15 @@
 """
-General Interface for Pricing
+General Interface for Delta
 
-		Delta=delta(mcProcess,rfCurve,mcBaseData,payoff_)
+		Delta=delta(mcProcess,rfCurve,mcConfig,abstractPayoff,dS0)
 	
 Where:\n
 		mcProcess          = Process to be simulated.
 		rfCurve  = Zero Rate Data.
-		mcBaseData = Basic properties of MonteCarlo simulation
-		payoff_ = Payoff(s) to be priced
+		mcConfig = Basic properties of MonteCarlo simulation
+		abstractPayoff = Payoff(s) to be priced
+		dS0 [optional, default to 1e-7] = increment
 		
-
 		Delta     = Delta of the derivative
 
 """
