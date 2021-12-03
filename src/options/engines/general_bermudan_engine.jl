@@ -28,7 +28,8 @@ function payoff(S1::AbstractMatrix{num}, bmPayoff::BermudanPayoff, rfCurve::abst
             #- Linear Regression on Quadratic Form
             A = [ones(length(S_I)) S_I S_I .^ 2]
             #@views b=V[inMoneyIndexes].*exp.(-r*dt*(exerciseTimes[inMoneyIndexes].-j));
-            @views b = V[inMoneyIndexes] .* exp.(-[integral(r, dt * (exerciseTime - j)) for exerciseTime in exerciseTimes[inMoneyIndexes]])
+            @views b = V[inMoneyIndexes] .* exp.(-[integral(r, dt * (exerciseTime - j + 1)) for exerciseTime in exerciseTimes[inMoneyIndexes]])
+            #@views b = V[inMoneyIndexes] .* exp.(-1.0*integral.(r, dt .* (exerciseTimes[inMoneyIndexes]. - j + 1)))
             #MAT=A'*A;			
             LuMat = lu(A' * A)
             Btilde = A' * b

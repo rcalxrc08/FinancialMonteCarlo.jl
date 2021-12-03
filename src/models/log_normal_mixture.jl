@@ -29,13 +29,12 @@ function simulate!(S, mcProcess::LogNormalMixture, rfCurve::AbstractZeroRateCurv
     S0 = mcProcess.underlying.S0
     d = dividend(mcProcess)
     η_gbm = mcProcess.η
-    λ_gmb = mcProcess.λ
+    λ_gmb = copy(mcProcess.λ)
     push!(λ_gmb, 1.0 - sum(mcProcess.λ))
     mu_gbm = r - d
-    simulate!(S, GeometricBrownianMotion(η_gbm[1], mu_gbm, S0), mcBaseData, T)
-    S .*= λ_gmb[1]
+	S.=0.0;
     tmp_s = similar(S)
-    for (η_gbm_, λ_gmb_) in zip(η_gbm[2:end], λ_gmb[2:end])
+    for (η_gbm_, λ_gmb_) in zip(η_gbm, λ_gmb)
         simulate!(tmp_s, GeometricBrownianMotion(η_gbm_, mu_gbm, S0), mcBaseData, T)
         S .+= λ_gmb_ * tmp_s
     end
