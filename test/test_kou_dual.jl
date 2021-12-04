@@ -47,7 +47,7 @@ Model = KouProcess(sigma, lam, p, lamp, lamm, Underlying(S0, d));
 @show BarrierPrice = pricer(Model, rfCurve, mc1, BarrierData);
 @show AsianPrice1 = pricer(Model, rfCurve, mc1, AsianData1);
 @show AsianPrice2 = pricer(Model, rfCurve, mc1, AsianData2);
-tollanti = 0.6
+tollanti = 0.8
 @test abs(FwdPrice - 99.41332633109904) < tollanti
 @test abs(EuPrice - 10.347332240535199) < tollanti
 @test abs(BarrierPrice - 8.860123655599818) < tollanti

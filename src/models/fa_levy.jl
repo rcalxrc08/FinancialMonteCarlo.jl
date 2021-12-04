@@ -17,15 +17,14 @@ function simulate!(X, mcProcess::finiteActivityProcess, rfCurve::AbstractZeroRat
 
     dt = T / Nstep
     for i = 1:Nsim
-        t_i = quantile_exp(λ, rand(mcBaseData.rng)) #or 1/λ?
+        t_i = randexp(mcBaseData.rng) / λ
         while t_i < T
             jump_size = compute_jump_size(mcProcess, mcBaseData)
             jump_idx = ceil(UInt32, t_i / dt) + 1
             @views X[i, jump_idx:end] .+= jump_size #add jump component
-            t_i += quantile_exp(λ, rand(mcBaseData.rng)) #or 1/λ?
+            t_i += randexp(mcBaseData.rng) / λ
         end
     end
-    # end
     ## Conclude
     S0 = mcProcess.underlying.S0
     X .= S0 .* exp.(X)

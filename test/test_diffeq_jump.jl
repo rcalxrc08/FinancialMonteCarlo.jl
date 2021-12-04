@@ -1,4 +1,4 @@
-using Test, FinancialMonteCarlo, DifferentialEquations;
+using Test, FinancialMonteCarlo, DifferentialEquations, Random;
 @show "Differential Equation Junctor"
 Nsim = 10000;
 Nstep = 30;
@@ -26,7 +26,7 @@ g_1(u, p, t) = sigma
 #Time Window
 tspan = (0.0, T)
 rate(u, p, t) = lam * T
-affect!(integrator) = (integrator.u = integrator.u + ((rand(mc.rng) < p1) ? FinancialMonteCarlo.quantile_exp(lamp, rand(mc.rng)) : -FinancialMonteCarlo.quantile_exp(lamm, rand(mc.rng))))
+affect!(integrator) = (integrator.u = integrator.u + ((rand(mc.rng) < p1) ? randexp(mc.rng) / lamp : -randexp(mc.rng) / lamm))
 jump = ConstantRateJump(rate, affect!)
 
 #Definition of the SDE

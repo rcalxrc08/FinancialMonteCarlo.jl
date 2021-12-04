@@ -31,16 +31,16 @@ function simulate!(X, mcProcess::NormalInverseGaussianProcess, rfCurve::Abstract
     Nstep = mcBaseData.Nstep
 
     σ = mcProcess.σ
-    θ1 = mcProcess.θ
-    κ1 = mcProcess.κ
+    θ = mcProcess.θ
+    κ = mcProcess.κ
     @assert T > 0
 
     dt = T / Nstep
-    psi1 = (1 - sqrt(1 - (σ^2 + 2 * θ1) * κ1)) / κ1
-    drift = r - d - psi1
+    ψ = (1 - sqrt(1 - (σ^2 + 2 * θ) * κ)) / κ
+    drift = r - d - ψ
 
     #Define subordinator
-    IGRandomVariable = InverseGaussian(dt, dt * dt / κ1)
+    IGRandomVariable = InverseGaussian(dt, dt * dt / κ)
 
     #Call SubordinatedBrownianMotion
     simulate!(X, SubordinatedBrownianMotion(σ, drift, IGRandomVariable), mcBaseData, T)

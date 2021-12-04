@@ -29,7 +29,7 @@ function simulate!(X, mcProcess::SubordinatedBrownianMotionVec, mcBaseData::Mont
     sigma = mcProcess.sigma
     @assert T > 0
     type_sub = typeof(quantile(mcProcess.subordinator_, 0.5))
-    zero_drift = drift(zero(type_sub), zero(type_sub) + T / Nstep) * 0
+    zero_drift = incremental_integral(drift, zero(type_sub), zero(type_sub) + T / Nstep) * 0
     isDualZero = zero_drift * zero(type_sub) * 0
     @views X[:, 1] .= isDualZero
     seq = SobolSeq(Nstep)
@@ -41,7 +41,7 @@ function simulate!(X, mcProcess::SubordinatedBrownianMotionVec, mcBaseData::Mont
         vec .= norminvcdf.(vec)
         @inbounds for j = 1:Nstep
             dt_s = rand(mcBaseData.rng, mcProcess.subordinator_)
-            tmp_drift = drift(t_s, dt_s)
+            tmp_drift = incremental_integral(drift, t_s, dt_s)
             t_s += dt_s
             @views X[i, j+1] = X[i, j] + tmp_drift + sigma * sqrt(dt_s) * vec[j]
         end

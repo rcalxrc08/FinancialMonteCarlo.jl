@@ -1,11 +1,11 @@
 """
 Struct for Heston Process
 
-		hstProcess=HestonProcess(σ::num1,σ_zero::num2,λ::num3,κ::num4,ρ::num5,θ::num6) where {num1,num2,num3,num4,num5,num6 <: Number}
+		hstProcess=HestonProcess(σ::num1,σ₀::num2,λ::num3,κ::num4,ρ::num5,θ::num6) where {num1,num2,num3,num4,num5,num6 <: Number}
 	
 Where:\n
 		σ	=	volatility of volatility of the process.
-		σ_zero	= initial volatility of the process.
+		σ₀	= initial volatility of the process.
 		λ	=	??volatility of the process.
 		κ	=	??volatility of the process.
 		ρ	=	??volatility of the process.
@@ -13,19 +13,19 @@ Where:\n
 """
 mutable struct HestonProcess{num <: Number, num1 <: Number, num2 <: Number, num3 <: Number, num4 <: Number, num5 <: Number, abstrUnderlying <: AbstractUnderlying, numtype <: Number} <: ItoProcess{numtype}
     σ::num
-    σ_zero::num1
+    σ₀::num1
     λ::num2
     κ::num3
     ρ::num4
     θ::num5
     underlying::abstrUnderlying
-    function HestonProcess(σ::num, σ_zero::num1, λ::num2, κ::num3, ρ::num4, θ::num5, underlying::abstrUnderlying) where {num <: Number, num1 <: Number, num2 <: Number, num3 <: Number, num4 <: Number, num5 <: Number, abstrUnderlying <: AbstractUnderlying}
-        @assert σ_zero > 0.0 "initial volatility must be positive"
+    function HestonProcess(σ::num, σ₀::num1, λ::num2, κ::num3, ρ::num4, θ::num5, underlying::abstrUnderlying) where {num <: Number, num1 <: Number, num2 <: Number, num3 <: Number, num4 <: Number, num5 <: Number, abstrUnderlying <: AbstractUnderlying}
+        @assert σ₀ > 0.0 "initial volatility must be positive"
         @assert σ > 0.0 "volatility of volatility must be positive"
         @assert abs(κ + λ) > 1e-14 "unfeasible parameters"
         @assert (-1.0 <= ρ <= 1.0) "ρ must be a correlation"
         zero_typed = zero(num) + zero(num1) + zero(num2) + zero(num3) + zero(num4) + zero(num5)
-        return new{num, num1, num2, num3, num4, num5, abstrUnderlying, typeof(zero_typed)}(σ, σ_zero, λ, κ, ρ, θ, underlying)
+        return new{num, num1, num2, num3, num4, num5, abstrUnderlying, typeof(zero_typed)}(σ, σ₀, λ, κ, ρ, θ, underlying)
     end
 end
 
@@ -38,24 +38,22 @@ function simulate!(X, mcProcess::HestonProcess, rfCurve::ZeroRate, mcBaseData::M
     Nsim = mcBaseData.Nsim
     Nstep = mcBaseData.Nstep
     σ = mcProcess.σ
-    σ_zero = mcProcess.σ_zero
+    σ₀ = mcProcess.σ₀
     λ1 = mcProcess.λ
     κ = mcProcess.κ
     ρ = mcProcess.ρ
     θ = mcProcess.θ
     @assert T > 0.0
 
-    ####Simulation
     ## Simulate
     κ_s = κ + λ1
     θ_s = κ * θ / κ_s
 
     dt = T / Nstep
-    isDualZero = T * r * σ_zero * θ_s * κ_s * σ * ρ * 0.0 * S0
-    #X=Matrix{typeof(isDualZero)}(undef,Nsim,Nstep+1);
+    isDualZero = T * r * σ₀ * θ_s * κ_s * σ * ρ * 0.0 * S0
     view(X, :, 1) .= isDualZero
     for i = 1:Nsim
-        v_m = σ_zero^2
+        v_m = σ₀^2
         for j = 1:Nstep
             e1 = randn(mcBaseData.rng)
             e2 = e1 * ρ + randn(mcBaseData.rng) * sqrt(1 - ρ * ρ)
@@ -77,7 +75,7 @@ function simulate!(X, mcProcess::HestonProcess, rfCurve::ZeroRate, mcBaseData::M
     Nsim = mcBaseData.Nsim
     Nstep = mcBaseData.Nstep
     σ = mcProcess.σ
-    σ_zero = mcProcess.σ_zero
+    σ₀ = mcProcess.σ₀
     λ1 = mcProcess.λ
     κ = mcProcess.κ
     ρ = mcProcess.ρ
@@ -90,19 +88,21 @@ function simulate!(X, mcProcess::HestonProcess, rfCurve::ZeroRate, mcBaseData::M
     θ_s = κ * θ / κ_s
 
     dt = T / Nstep
-    isDualZero = T * r * σ_zero * κ * θ * λ1 * σ * ρ * 0.0
-    #X=Matrix{typeof(isDualZero)}(undef,Nsim,Nstep+1);
+    isDualZero = T * r * σ₀ * κ * θ * λ1 * σ * ρ * 0.0
     view(X, :, 1) .= isDualZero
+    Nsim_2 = div(Nsim, 2)
+    Xp = @views X[1:Nsim_2, :]
+    Xm = @views X[(Nsim_2+1):end, :]
     for i = 1:div(Nsim, 2)
-        v_m_1 = σ_zero^2
-        v_m_2 = σ_zero^2
+        v_m_1 = σ₀^2
+        v_m_2 = σ₀^2
         for j = 1:Nstep
             e1 = randn(mcBaseData.rng)
             e2 = -(e1 * ρ + randn(mcBaseData.rng) * sqrt(1 - ρ * ρ))
-            @views X[2*i-1, j+1] = X[2*i-1, j] + ((r - d) - 0.5 * v_m_1) * dt + sqrt(v_m_1) * sqrt(dt) * e1
-            @views X[2*i, j+1] = X[2*i, j] + ((r - d) - 0.5 * v_m_2) * dt + sqrt(v_m_2) * sqrt(dt) * (-e1)
+            @views Xp[i, j+1] = Xp[i, j] + ((r - d) - 0.5 * v_m_1) * dt + sqrt(v_m_1) * sqrt(dt) * e1
+            @views Xm[i, j+1] = Xm[i, j] + ((r - d) - 0.5 * v_m_2) * dt + sqrt(v_m_2) * sqrt(dt) * (-e1)
             v_m_1 += κ_s * (θ_s - v_m_1) * dt + σ * sqrt(v_m_1) * sqrt(dt) * e2
-            v_m_2 += κ_s * (θ_s - v_m_2) * dt + σ * sqrt(v_m_2) * sqrt(dt) * (-e2)
+            v_m_2 += κ_s * (θ_s - v_m_2) * dt - σ * sqrt(v_m_2) * sqrt(dt) * e2
             v_m_1 = max(v_m_1, isDualZero)
             v_m_2 = max(v_m_2, isDualZero)
         end

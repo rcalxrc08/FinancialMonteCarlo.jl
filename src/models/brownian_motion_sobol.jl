@@ -32,13 +32,13 @@ function simulate!(X, mcProcess::BrownianMotionVec, mcBaseData::MonteCarloConfig
     @assert T > 0
     dt = T / Nstep
     stddev_bm = σ * sqrt(dt)
-    zero_drift = μ(dt * 0, dt)
+    zero_drift = incremental_integral(μ, dt * 0, dt)
     isDualZero = stddev_bm * 0 * zero_drift
     view(X, :, 1) .= isDualZero
     seq = SobolSeq(Nstep)
     skip(seq, Nstep * Nsim)
     vec = Array{typeof(get_rng_type(isDualZero))}(undef, Nstep)
-    tmp_ = [μ((j - 1) * dt, dt) for j = 1:Nstep]
+    tmp_ = [incremental_integral(μ, (j - 1) * dt, dt) for j = 1:Nstep]
     @inbounds for i = 1:Nsim
         next!(seq, vec)
         vec .= norminvcdf.(vec)

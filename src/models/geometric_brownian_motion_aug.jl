@@ -7,7 +7,7 @@ Where:\n
 		σ	=	volatility of the process.
 		μ	=	drift of the process.
 """
-mutable struct GeometricBrownianMotionVec{num <: Number, num1 <: Number, num4 <: Number, num2 <: Number, numtype <: Number} <: ItoProcess{numtype}
+mutable struct GeometricBrownianMotionVec{num <: Number, num1 <: Number, num4 <: Number, num2 <: Number, numtype <: Number} <: AbstractGeometricBrownianMotion{numtype}
     σ::num
     μ::CurveType{num1, num4}
     x0::num2
@@ -23,15 +23,3 @@ function GeometricBrownianMotion(σ::num, μ::CurveType{num1, num4}, x0::num2) w
 end
 
 export GeometricBrownianMotionVec;
-
-function simulate!(X, mcProcess::GeometricBrownianMotionVec, mcBaseData::AbstractMonteCarloConfiguration, T::Number)
-    @assert T > 0
-    σ_gbm = mcProcess.σ
-    mu_gbm = mcProcess.μ
-    μ_bm = mu_gbm - (σ_gbm^2 / 2)
-    simulate!(X, BrownianMotion(σ_gbm, μ_bm), mcBaseData, T)
-    S0 = mcProcess.x0
-    f(x) = S0 * exp(x)
-    broadcast!(f, X, X)
-    nothing
-end

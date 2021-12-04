@@ -38,7 +38,7 @@ mutable struct MonteCarloConfiguration{num1 <: Integer, num2 <: Integer, abstrac
         return GeneralMonteCarloConfiguration(Nsim, Nstep, monteCarloMethod, parallelMethod, Int64(seed), rng)
     end
     function MonteCarloConfiguration(Nsim::num1, Nstep::num2, monteCarloMethod::AntitheticMC, parallelMethod::baseMode, seed::Number = 0, rng::rngType_ = MersenneTwister()) where {num1 <: Integer, num2 <: Integer, baseMode <: BaseMode, rngType_ <: Random.AbstractRNG}
-        @assert div(Nsim, 2) * 2 == Nsim "Antithetic support only even number of simulations"
+        @assert iseven(Nsim) "Antithetic support only even number of simulations"
         return GeneralMonteCarloConfiguration(Nsim, Nstep, monteCarloMethod, parallelMethod, Int64(seed), rng)
     end
 end

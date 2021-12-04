@@ -29,11 +29,11 @@ function simulate!(X, mcProcess::BrownianMotionVec, mcBaseData::MonteCarloConfig
     @assert T > 0
     dt = T / Nstep
     stddev_bm = σ * sqrt(dt)
-    zero_drift = μ(dt * 0, dt)
+    zero_drift = incremental_integral(μ, dt * 0, dt)
     isDualZero = stddev_bm * 0 * zero_drift
     view(X, :, 1) .= isDualZero
     @inbounds for j = 1:Nstep
-        tmp_ = μ((j - 1) * dt, dt)
+        tmp_ = incremental_integral(μ, (j - 1) * dt, dt)
         @inbounds for i = 1:Nsim
             x_i_j = @views X[i, j]
             @views X[i, j+1] = x_i_j + tmp_ + stddev_bm * randn(mcBaseData.rng)
@@ -51,13 +51,13 @@ function simulate!(X, mcProcess::BrownianMotionVec, mcBaseData::MonteCarloConfig
     @assert T > 0
     dt = T / Nstep
     stddev_bm = σ * sqrt(dt)
-    zero_drift = μ(dt * 0, dt)
+    zero_drift = incremental_integral(μ, dt * 0, dt)
     isDualZero = stddev_bm * 0 * zero_drift
     view(X, :, 1) .= isDualZero
     Nsim_2 = div(Nsim, 2)
 
     @inbounds for j = 1:Nstep
-        tmp_ = μ((j - 1) * dt, dt)
+        tmp_ = incremental_integral(μ, (j - 1) * dt, dt)
         @inbounds for i = 1:Nsim_2
             Z = stddev_bm * randn(mcBaseData.rng)
             X[2*i-1, j+1] = X[2*i-1, j] + tmp_ + Z

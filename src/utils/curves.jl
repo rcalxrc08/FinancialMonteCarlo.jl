@@ -60,9 +60,10 @@ function ImpliedCurve(r_::Array{num1}, T::num2) where {num1 <: Number, num2 <: N
     t_ = collect(dt_:dt_:T)
     return ImpliedCurve(r_, t_)
 end
-function (x::CurveType)(t::Number, dt::Number)
-    T = collect(extract_keys(x))
-    r = collect(extract_values(x))
+
+function incremental_integral(x::CurveType, t::Number, dt::Number)
+    T = extract_keys(x)
+    r = extract_values(x)
     return internal_definite_integral(t + dt, T, r) - internal_definite_integral(t, T, r)
 end
 
@@ -86,9 +87,9 @@ function internal_definite_integral(x::num, T::Array{num1}, r::Array{num2}) wher
 end
 
 function integral(r::DictTypeInternal{num1, num2}, t::Number) where {num1 <: Number, num2 <: Number}
-    T = collect(extract_keys(r))
-    r = collect(extract_values(r))
-    return internal_definite_integral(t, T, r)
+    T = extract_keys(r)
+    values = extract_values(r)
+    return internal_definite_integral(t, T, values)
 end
 integral(x::num1, t::num2) where {num1 <: Number, num2 <: Number} = x * t;
 

@@ -1,12 +1,12 @@
 function oper(+)
     @eval import Base.$+
     @eval function $+(r::DictTypeInternal{num1, num2}, d::DictTypeInternal{num1, num3}) where {num1 <: Number, num2 <: Number, num3 <: Number}
-        T_r = collect(extract_keys(r))
-        T_d = collect(extract_keys(d))
+        T_r = extract_keys(r)
+        T_d = extract_keys(d)
         if (length(T_d) > length(T_r))
             return $+(d, r)
         end
-        d_complete = complete_(T_r, d)
+        d_complete = complete_curve(T_r, d)
         #key_type=typeof(zero(num1));
         val_type = typeof(zero(num2) + zero(num3))
         out = DictTypeInternal{num1, val_type}()
@@ -40,11 +40,11 @@ oper(Symbol(*))
 oper2(Symbol(*))
 oper2(Symbol(+))
 
-function complete_(T::Array{num}, d::DictTypeInternal{num1, num2}) where {num <: Number, num1 <: Number, num2 <: Number}
-    T_d = collect(extract_keys(d))
+function complete_curve(T::Array{num}, d::DictTypeInternal{num1, num2}) where {num <: Number, num1 <: Number, num2 <: Number}
+    T_d = extract_keys(d)
     idx_ = sortperm(T_d)
     T_d = T_d[idx_]
-    d_val = collect(extract_values(d))
+    d_val = extract_values(d)
     d_val = d_val[idx_]
     out = DictTypeInternal{num1, num2}()
     itp = LinearInterpolation(T_d, d_val)
