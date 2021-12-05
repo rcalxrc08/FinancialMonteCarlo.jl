@@ -50,8 +50,10 @@ function simulate!(X, mcProcess::HestonProcess, rfCurve::ZeroRate, mcBaseData::M
     θ_s = κ * θ / κ_s
 
     dt = T / Nstep
-    isDualZero = T * r * σ₀ * θ_s * κ_s * σ * ρ * 0.0 * S0
+    isDualZeroVol = zero(T * r * σ₀ * θ_s * κ_s * σ * ρ)
+    isDualZero = isDualZeroVol * S0
     view(X, :, 1) .= isDualZero
+    isDualZero_eps = isDualZeroVol + eps(isDualZeroVol)
     for i = 1:Nsim
         v_m = σ₀^2
         for j = 1:Nstep
@@ -60,7 +62,7 @@ function simulate!(X, mcProcess::HestonProcess, rfCurve::ZeroRate, mcBaseData::M
             @views X[i, j+1] = X[i, j] + ((r - d) - 0.5 * v_m) * dt + sqrt(v_m) * sqrt(dt) * e1
             v_m += κ_s * (θ_s - v_m) * dt + σ * sqrt(v_m) * sqrt(dt) * e2
             #when v_m = 0.0, the derivative becomes NaN
-            v_m = max(v_m, isDualZero)
+            v_m = max(v_m, isDualZero_eps)
         end
     end
     ## Conclude
@@ -88,8 +90,10 @@ function simulate!(X, mcProcess::HestonProcess, rfCurve::ZeroRate, mcBaseData::M
     θ_s = κ * θ / κ_s
 
     dt = T / Nstep
-    isDualZero = T * r * σ₀ * κ * θ * λ1 * σ * ρ * 0.0
+    isDualZeroVol = zero(T * r * σ₀ * κ * θ * λ1 * σ * ρ)
+    isDualZero = isDualZeroVol * S0
     view(X, :, 1) .= isDualZero
+    isDualZero_eps = isDualZeroVol + eps(isDualZeroVol)
     Nsim_2 = div(Nsim, 2)
     Xp = @views X[1:Nsim_2, :]
     Xm = @views X[(Nsim_2+1):end, :]
@@ -103,8 +107,8 @@ function simulate!(X, mcProcess::HestonProcess, rfCurve::ZeroRate, mcBaseData::M
             @views Xm[i, j+1] = Xm[i, j] + ((r - d) - 0.5 * v_m_2) * dt + sqrt(v_m_2) * sqrt(dt) * (-e1)
             v_m_1 += κ_s * (θ_s - v_m_1) * dt + σ * sqrt(v_m_1) * sqrt(dt) * e2
             v_m_2 += κ_s * (θ_s - v_m_2) * dt - σ * sqrt(v_m_2) * sqrt(dt) * e2
-            v_m_1 = max(v_m_1, isDualZero)
-            v_m_2 = max(v_m_2, isDualZero)
+            v_m_1 = max(v_m_1, isDualZero_eps)
+            v_m_2 = max(v_m_2, isDualZero_eps)
         end
     end
     ## Conclude

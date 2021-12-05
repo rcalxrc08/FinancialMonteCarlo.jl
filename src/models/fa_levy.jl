@@ -16,12 +16,12 @@ function simulate!(X, mcProcess::finiteActivityProcess, rfCurve::AbstractZeroRat
     simulate!(X, BrownianMotion(σ, drift_RN), mcBaseData, T)
 
     dt = T / Nstep
-    for i = 1:Nsim
+    @inbounds for i = 1:Nsim
         t_i = randexp(mcBaseData.rng) / λ
         while t_i < T
             jump_size = compute_jump_size(mcProcess, mcBaseData)
             jump_idx = ceil(UInt32, t_i / dt) + 1
-            @views X[i, jump_idx:end] .+= jump_size #add jump component
+            @views @. X[i, jump_idx:end] += jump_size #add jump component
             t_i += randexp(mcBaseData.rng) / λ
         end
     end
