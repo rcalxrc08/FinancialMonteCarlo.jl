@@ -23,8 +23,6 @@ function SubordinatedBrownianMotion(σ::num, drift::CurveType{num1, num4}, subor
     return SubordinatedBrownianMotionVec(σ, drift, subordinator_)
 end
 
-export SubordinatedBrownianMotionVec;
-
 function simulate!(X, mcProcess::SubordinatedBrownianMotionVec, mcBaseData::MonteCarloConfiguration{type1, type2, type3, SerialMode, type5}, T::numb) where {numb <: Number, type1 <: Number, type2 <: Number, type3 <: StandardMC, type5 <: Random.AbstractRNG}
     Nsim = mcBaseData.Nsim
     Nstep = mcBaseData.Nstep
