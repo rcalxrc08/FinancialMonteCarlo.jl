@@ -42,8 +42,7 @@ function simulate!(X, mcProcess::VarianceGammaProcess, rfCurve::AbstractZeroRate
 
     simulate!(X, SubordinatedBrownianMotion(σ, drift, gammaRandomVariable), mcBaseData, T)
 
-    f(x) = S0 * exp(x)
-    broadcast!(f, X, X)
+    @. X = S0 * exp(X)
 
     nothing
 end

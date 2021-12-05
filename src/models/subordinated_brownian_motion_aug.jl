@@ -60,7 +60,6 @@ function simulate!(X, mcProcess::SubordinatedBrownianMotionVec, mcBaseData::Mont
     dt = T / Nstep
     zero_drift = incremental_integral(drift, zero(type_sub), zero(type_sub) + dt)
     isDualZero = sigma * zero(type_sub) * 0 * zero_drift
-    #X=Matrix{typeof(isDualZero)}(undef,Nsim,Nstep+1);
     @views X[:, 1] .= isDualZero
     Nsim_2 = div(Nsim, 2)
     dt_s = Array{type_sub}(undef, Nsim_2)
@@ -68,10 +67,11 @@ function simulate!(X, mcProcess::SubordinatedBrownianMotionVec, mcBaseData::Mont
     Xp = @views X[1:Nsim_2, :]
     Xm = @views X[(Nsim_2+1):end, :]
     Z = Array{typeof(get_rng_type(isDualZero))}(undef, Nsim_2)
+    tmp_drift = Array{typeof(zero_drift)}(undef, Nsim_2)
     @inbounds for i = 1:Nstep
         randn!(mcBaseData.rng, Z)
         rand!(mcBaseData.rng, mcProcess.subordinator_, dt_s)
-        tmp_drift = [incremental_integral(drift, t_, dt_) for (t_, dt_) in zip(t_s, dt_s)]
+        tmp_drift .= [incremental_integral(drift, t_, dt_) for (t_, dt_) in zip(t_s, dt_s)]
         @. t_s += dt_s
         # SUBORDINATED BROWNIAN MOTION (dt_s=time change)
         @. @views Xp[:, i+1] = Xp[:, i] + tmp_drift + sigma * sqrt(dt_s) * Z

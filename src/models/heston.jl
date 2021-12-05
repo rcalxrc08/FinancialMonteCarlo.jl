@@ -53,20 +53,22 @@ function simulate!(X, mcProcess::HestonProcess, rfCurve::ZeroRate, mcBaseData::M
     isDualZeroVol = zero(T * r * σ₀ * θ_s * κ_s * σ * ρ)
     isDualZero = isDualZeroVol * S0
     view(X, :, 1) .= isDualZero
+    v_m = [σ₀^2 + isDualZero for _ = 1:Nsim]
     isDualZero_eps = isDualZeroVol + eps(isDualZeroVol)
-    for i = 1:Nsim
-        v_m = σ₀^2
-        for j = 1:Nstep
-            e1 = randn(mcBaseData.rng)
-            e2 = e1 * ρ + randn(mcBaseData.rng) * sqrt(1 - ρ * ρ)
-            @views X[i, j+1] = X[i, j] + ((r - d) - 0.5 * v_m) * dt + sqrt(v_m) * sqrt(dt) * e1
-            v_m += κ_s * (θ_s - v_m) * dt + σ * sqrt(v_m) * sqrt(dt) * e2
-            #when v_m = 0.0, the derivative becomes NaN
-            v_m = max(v_m, isDualZero_eps)
-        end
+    e1 = Array{typeof(get_rng_type(isDualZero))}(undef, Nsim_2)
+    e2_rho = Array{typeof(get_rng_type(isDualZero))}(undef, Nsim_2)
+    e2 = Array{typeof(get_rng_type(isDualZero))}(undef, Nsim_2)
+    for j = 1:Nstep
+        randn(mcBaseData.rng, e1)
+        randn(mcBaseData.rng, e2_rho)
+        @. e2 = e1 * ρ + e2_rho * sqrt(1 - ρ * ρ)
+        @views @. X[:, j+1] = X[:, j] + ((r - d) - 0.5 * v_m) * dt + sqrt(v_m) * sqrt(dt) * e1
+        @. v_m += κ_s * (θ_s - v_m) * dt + σ * sqrt(v_m) * sqrt(dt) * e2
+        #when v_m = 0.0, the derivative becomes NaN
+        @. v_m = max(v_m, isDualZero_eps)
     end
     ## Conclude
-    X .= S0 .* exp.(X)
+    @. X = S0 * exp(X)
     return
 end
 
@@ -97,21 +99,23 @@ function simulate!(X, mcProcess::HestonProcess, rfCurve::ZeroRate, mcBaseData::M
     Nsim_2 = div(Nsim, 2)
     Xp = @views X[1:Nsim_2, :]
     Xm = @views X[(Nsim_2+1):end, :]
-    for i = 1:div(Nsim, 2)
-        v_m_1 = σ₀^2
-        v_m_2 = σ₀^2
-        for j = 1:Nstep
-            e1 = randn(mcBaseData.rng)
-            e2 = -(e1 * ρ + randn(mcBaseData.rng) * sqrt(1 - ρ * ρ))
-            @views Xp[i, j+1] = Xp[i, j] + ((r - d) - 0.5 * v_m_1) * dt + sqrt(v_m_1) * sqrt(dt) * e1
-            @views Xm[i, j+1] = Xm[i, j] + ((r - d) - 0.5 * v_m_2) * dt + sqrt(v_m_2) * sqrt(dt) * (-e1)
-            v_m_1 += κ_s * (θ_s - v_m_1) * dt + σ * sqrt(v_m_1) * sqrt(dt) * e2
-            v_m_2 += κ_s * (θ_s - v_m_2) * dt - σ * sqrt(v_m_2) * sqrt(dt) * e2
-            v_m_1 = max(v_m_1, isDualZero_eps)
-            v_m_2 = max(v_m_2, isDualZero_eps)
-        end
+    v_m_1 = [σ₀^2 + isDualZero for _ = 1:Nsim_2]
+    v_m_2 = [σ₀^2 + isDualZero for _ = 1:Nsim_2]
+    e1 = Array{typeof(get_rng_type(isDualZero))}(undef, Nsim_2)
+    e2_rho = Array{typeof(get_rng_type(isDualZero))}(undef, Nsim_2)
+    e2 = Array{typeof(get_rng_type(isDualZero))}(undef, Nsim_2)
+    for j = 1:Nstep
+        randn!(mcBaseData.rng, e1)
+        randn!(mcBaseData.rng, e2_rho)
+        @. e2 = -(e1 * ρ + e2_rho * sqrt(1 - ρ * ρ))
+        @views @. Xp[:, j+1] = Xp[:, j] + ((r - d) - 0.5 * v_m_1) * dt + sqrt(v_m_1) * sqrt(dt) * e1
+        @views @. Xm[:, j+1] = Xm[:, j] + ((r - d) - 0.5 * v_m_2) * dt - sqrt(v_m_2) * sqrt(dt) * e1
+        @. v_m_1 += κ_s * (θ_s - v_m_1) * dt + σ * sqrt(v_m_1) * sqrt(dt) * e2
+        @. v_m_2 += κ_s * (θ_s - v_m_2) * dt - σ * sqrt(v_m_2) * sqrt(dt) * e2
+        @. v_m_1 = max(v_m_1, isDualZero_eps)
+        @. v_m_2 = max(v_m_2, isDualZero_eps)
     end
     ## Conclude
-    X .= S0 .* exp.(X)
+    @. X = S0 * exp(X)
     return
 end

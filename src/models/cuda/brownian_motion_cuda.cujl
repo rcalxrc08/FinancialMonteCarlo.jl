@@ -2,7 +2,6 @@
 function simulate!(X_cu, mcProcess::BrownianMotion, mcBaseData::MonteCarloConfiguration{type1, type2, type3, CudaMode, type5}, T::numb) where {numb <: Number, type1 <: Integer, type2 <: Integer, type3 <: StandardMC, type5 <: Random.AbstractRNG}
     Nsim = mcBaseData.Nsim
     Nstep = mcBaseData.Nstep
-
     σ = mcProcess.σ
     μ = mcProcess.μ
     @assert T > 0
@@ -12,9 +11,9 @@ function simulate!(X_cu, mcProcess::BrownianMotion, mcBaseData::MonteCarloConfig
     isDualZero = mean_bm * stddev_bm * zero(Int8)
     @views fill!(X_cu[:, 1], isDualZero) #more efficient than @views X_cu[:, 1] .= isDualZero
     Z = CuArray{typeof(get_rng_type(isDualZero))}(undef, Nsim)
-    for i = 1:Nstep
+    @inbounds for i = 1:Nstep
         randn!(CUDA.CURAND.default_rng(), Z)
-        @views @inbounds @. X_cu[:, i+1] = X_cu[:, i] + mean_bm + stddev_bm * Z
+        @views @. X_cu[:, i+1] = X_cu[:, i] + mean_bm + stddev_bm * Z
     end
     return
 end

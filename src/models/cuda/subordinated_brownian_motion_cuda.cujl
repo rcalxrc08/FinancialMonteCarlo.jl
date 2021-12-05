@@ -14,7 +14,7 @@ function simulate!(X_cu, mcProcess::SubordinatedBrownianMotion, mcBaseData::Mont
     @inbounds for i = 1:Nstep
         # SUBORDINATED BROWNIAN MOTION (dt_s=time change)
         rand!(mcBaseData.rng, mcProcess.subordinator_, dt_s_cpu)
-        dt_s = cu(dt_s_cpu)
+        dt_s .= cu(dt_s_cpu)
         randn!(CUDA.CURAND.default_rng(), Z)
         @views @. X_cu[:, i+1] = X_cu[:, i] + drift * dt_s + sigma * sqrt(dt_s) * Z
     end

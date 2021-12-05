@@ -65,21 +65,23 @@ function simulate!(X, mcProcess::HestonProcess, rfCurve::ZeroRateCurve, mcBaseDa
     seq = SobolSeq(2 * Nstep)
     skip(seq, Nstep * Nsim)
     zero_drift = incremental_integral(r_d, dt * 0.0, dt)
-    isDualZero = S0 * T * σ₀ * κ * θ * λ1 * σ * ρ * 0.0 * zero_drift
+    isDualZeroVol = T * σ₀ * κ * θ * λ1 * σ * ρ * 0.0 * zero_drift
+    isDualZero = S0 * isDualZeroVol
     view(X, :, 1) .= isDualZero
     vec = Array{typeof(get_rng_type(isDualZero))}(undef, 2 * Nstep)
     tmp_ = [incremental_integral(r_d, (j - 1) * dt, dt) for j = 1:Nstep]
+    isDualZeroVol_eps = isDualZeroVol + eps(isDualZeroVol)
     for i = 1:Nsim
         v_m = σ₀^2
         next!(seq, vec)
-        vec .= norminvcdf.(vec)
+        @. vec = norminvcdf(vec)
         for j = 1:Nstep
             @views e1 = vec[j]
             @views e2 = e1 * ρ + vec[Nstep+j] * sqrt(1 - ρ * ρ)
             @views X[i, j+1] = X[i, j] + (tmp_[j] - 0.5 * v_m) * dt + sqrt(v_m) * sqrt(dt) * e1
             v_m += κ_s * (θ_s - v_m) * dt + σ * sqrt(v_m) * sqrt(dt) * e2
             #when v_m = 0.0, the derivative becomes NaN
-            v_m = max(v_m, isDualZero)
+            v_m = max(v_m, isDualZeroVol_eps)
         end
     end
     ## Conclude

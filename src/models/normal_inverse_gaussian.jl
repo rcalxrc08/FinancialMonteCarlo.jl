@@ -45,8 +45,7 @@ function simulate!(X, mcProcess::NormalInverseGaussianProcess, rfCurve::Abstract
     #Call SubordinatedBrownianMotion
     simulate!(X, SubordinatedBrownianMotion(σ, drift, IGRandomVariable), mcBaseData, T)
 
-    f(x) = S0 * exp(x)
-    broadcast!(f, X, X)
+    @. X = S0 * exp(X)
 
     return nothing
 end

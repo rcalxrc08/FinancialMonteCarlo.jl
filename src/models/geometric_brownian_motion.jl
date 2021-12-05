@@ -29,8 +29,7 @@ function simulate!(X, mcProcess::AbstractGeometricBrownianMotion, mcBaseData::Ab
     μ = mcProcess.μ - σ^2 / 2
     simulate!(X, BrownianMotion(σ, μ), mcBaseData, T)
     S0 = mcProcess.x0
-    # @. X=S0*exp(X);
-    broadcast!(x -> S0 * exp(x), X, X)
+    @. X = S0 * exp(X)
 
     nothing
 end

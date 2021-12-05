@@ -26,20 +26,21 @@ function simulate!(X, mcProcess::HestonProcess, spotData::ZeroRate, mcBaseData::
     v_m = CUDA.zeros(typeof(isDualZeroVol), Nsim) .+ σ_zero^2
 
     e1 = CuArray{typeof(get_rng_type(isDualZero))}(undef, Nsim)
+    e2_rho = CuArray{typeof(get_rng_type(isDualZero))}(undef, Nsim)
     e2 = CuArray{typeof(get_rng_type(isDualZero))}(undef, Nsim)
     isDualZero_eps = isDualZeroVol + eps(isDualZeroVol)
 
     for j = 1:Nstep
         randn!(CUDA.CURAND.default_rng(), e1)
-        randn!(CUDA.CURAND.default_rng(), e2)
-        @. e2 = e1 * ρ + e2 * sqrt(1 - ρ * ρ)
+        randn!(CUDA.CURAND.default_rng(), e2_rho)
+        @. e2 = e1 * ρ + e2_rho * sqrt(1 - ρ * ρ)
         @views @inbounds @. X[:, j+1] = X[:, j] + (r_d - 0.5 * v_m) * dt + sqrt(v_m) * sqrt(dt) * e1
         @. v_m += κ_s * (θ_s - v_m) * dt + σ * sqrt(v_m) * sqrt(dt) * e2
         #when v_m = 0.0, the derivative becomes NaN
         @. v_m = max(v_m, isDualZero_eps)
     end
     ## Conclude
-    X .= S0 .* exp.(X)
+    @. X = S0 * exp(X)
     return
 end
 
@@ -71,6 +72,7 @@ function simulate!(X, mcProcess::HestonProcess, spotData::ZeroRate, mcBaseData::
     Nsim_2 = div(Nsim, 2)
 
     e1 = CuArray{typeof(get_rng_type(isDualZero))}(undef, Nsim_2)
+    e2_rho = CuArray{typeof(get_rng_type(isDualZero))}(undef, Nsim_2)
     e2 = CuArray{typeof(get_rng_type(isDualZero))}(undef, Nsim_2)
 
     Xp = @views X[1:Nsim_2, :]
@@ -81,8 +83,8 @@ function simulate!(X, mcProcess::HestonProcess, spotData::ZeroRate, mcBaseData::
     isDualZero_eps = isDualZeroVol + eps(isDualZeroVol)
     @inbounds for j = 1:Nstep
         randn!(CUDA.CURAND.default_rng(), e1)
-        randn!(CUDA.CURAND.default_rng(), e2)
-        e2 .= -(e1 * ρ + e2 .* sqrt(1 - ρ * ρ))
+        randn!(CUDA.CURAND.default_rng(), e2_rho)
+        @. e2 = -(e1 * ρ + e2_rho * sqrt(1 - ρ * ρ))
         @views @. Xp[:, j+1] = Xp[:, j] + (r_d - 0.5 * v_m_1) * dt + sqrt(v_m_1) * sqrt(dt) * e1
         @views @. Xm[:, j+1] = Xm[:, j] + (r_d - 0.5 * v_m_2) * dt - sqrt(v_m_2) * sqrt(dt) * e1
         @. v_m_1 += κ_s * (θ_s - v_m_1) * dt + σ * sqrt(v_m_1) * sqrt(dt) * e2
@@ -91,6 +93,6 @@ function simulate!(X, mcProcess::HestonProcess, spotData::ZeroRate, mcBaseData::
         @. v_m_2 = max(v_m_2, isDualZero_eps)
     end
     ## Conclude
-    X .= S0 .* exp.(X)
+    @. X = S0 * exp(X)
     return
 end

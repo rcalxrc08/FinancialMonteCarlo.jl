@@ -36,7 +36,7 @@ function simulate!(S, mcProcess::LogNormalMixture, rfCurve::AbstractZeroRateCurv
     tmp_s = similar(S)
     for (η_gbm_, λ_gmb_) in zip(η_gbm, λ_gmb)
         simulate!(tmp_s, GeometricBrownianMotion(η_gbm_, mu_gbm, S0), mcBaseData, T)
-        S .+= λ_gmb_ .* tmp_s
+        @. S += λ_gmb_ * tmp_s
     end
     return nothing
 end
