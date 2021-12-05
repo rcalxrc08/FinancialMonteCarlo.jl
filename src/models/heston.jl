@@ -55,12 +55,12 @@ function simulate!(X, mcProcess::HestonProcess, rfCurve::ZeroRate, mcBaseData::M
     view(X, :, 1) .= isDualZero
     v_m = [σ₀^2 + isDualZero for _ = 1:Nsim]
     isDualZero_eps = isDualZeroVol + eps(isDualZeroVol)
-    e1 = Array{typeof(get_rng_type(isDualZero))}(undef, Nsim_2)
-    e2_rho = Array{typeof(get_rng_type(isDualZero))}(undef, Nsim_2)
-    e2 = Array{typeof(get_rng_type(isDualZero))}(undef, Nsim_2)
+    e1 = Array{typeof(get_rng_type(isDualZero))}(undef, Nsim)
+    e2_rho = Array{typeof(get_rng_type(isDualZero))}(undef, Nsim)
+    e2 = Array{typeof(get_rng_type(isDualZero))}(undef, Nsim)
     for j = 1:Nstep
-        randn(mcBaseData.rng, e1)
-        randn(mcBaseData.rng, e2_rho)
+        randn!(mcBaseData.rng, e1)
+        randn!(mcBaseData.rng, e2_rho)
         @. e2 = e1 * ρ + e2_rho * sqrt(1 - ρ * ρ)
         @views @. X[:, j+1] = X[:, j] + ((r - d) - 0.5 * v_m) * dt + sqrt(v_m) * sqrt(dt) * e1
         @. v_m += κ_s * (θ_s - v_m) * dt + σ * sqrt(v_m) * sqrt(dt) * e2
