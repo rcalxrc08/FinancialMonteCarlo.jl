@@ -22,13 +22,13 @@ function simulate!(X, mcProcess::HestonProcess, rfCurve::ZeroRateCurve, mcBaseDa
     isDualZero = S0 * T * σ₀ * κ * θ * λ1 * σ * ρ * 0.0 * zero_drift
     X[:, 1] .= isDualZero
     v_m = [σ₀^2 + isDualZero for _ = 1:Nsim]
-    for j = 1:Nstep
+    @inbounds for j = 1:Nstep
         e1 = randn(mcBaseData.rng, Nsim)
         e2 = randn(mcBaseData.rng, Nsim)
         e2 = e1 * ρ + e2 * sqrt(1 - ρ * ρ)
         tmp_ = incremental_integral(r_d, (j - 1) * dt, dt)
-        X[:, j+1] = X[:, j] + (tmp_ .- 0.5 * max.(v_m, 0) * dt) + sqrt.(max.(v_m, 0)) * sqrt(dt) .* e1
-        v_m += κ_s .* (θ_s .- max.(v_m, 0)) .* dt + σ .* sqrt.(max.(v_m, 0)) .* sqrt(dt) .* e2
+        @. @views X[:, j+1] = X[:, j] + (tmp_ - 0.5 * max(v_m, 0) * dt) + sqrt(max(v_m, 0)) * sqrt(dt) * e1
+        @. v_m += κ_s * (θ_s - max(v_m, 0)) * dt + σ * sqrt(max(v_m, 0)) * sqrt(dt) * e2
     end
     ## Conclude
     X .= S0 .* exp.(X)
@@ -71,10 +71,10 @@ function simulate!(X, mcProcess::HestonProcess, rfCurve::ZeroRateCurve, mcBaseDa
         randn!(mcBaseData.rng, e2)
         e2 = e1 .* ρ .+ e2 .* sqrt(1 - ρ * ρ)
         tmp_ = incremental_integral(r_d, (j - 1) * dt, dt)
-        @views Xp[:, j+1] = Xp[:, j] + (tmp_ .- 0.5 .* max.(v_mp, 0) .* dt) + sqrt.(max.(v_mp, 0)) .* sqrt(dt) .* e1
-        @views Xm[:, j+1] = Xm[:, j] + (tmp_ .- 0.5 .* max.(v_mm, 0) .* dt) - sqrt.(max.(v_mm, 0)) .* sqrt(dt) .* e1
-        v_mp += κ_s .* (θ_s .- max.(v_mp, 0)) .* dt + (σ * sqrt(dt)) .* sqrt.(max.(v_mp, 0)) .* e2
-        v_mm += κ_s .* (θ_s .- max.(v_mm, 0)) .* dt - (σ * sqrt(dt)) .* sqrt.(max.(v_mm, 0)) .* e2
+        @. @views Xp[:, j+1] = Xp[:, j] + (tmp_ - 0.5 * max(v_mp, 0) .* dt) + sqrt(max.(v_mp, 0)) * sqrt(dt) * e1
+        @. @views Xm[:, j+1] = Xm[:, j] + (tmp_ - 0.5 * max(v_mm, 0) .* dt) - sqrt(max.(v_mm, 0)) * sqrt(dt) * e1
+        @. v_mp += κ_s * (θ_s - max(v_mp, 0)) * dt + (σ * sqrt(dt)) * sqrt(max(v_mp, 0)) * e2
+        @. v_mm += κ_s * (θ_s - max(v_mm, 0)) * dt - (σ * sqrt(dt)) * sqrt(max(v_mm, 0)) * e2
     end
 
     ## Conclude

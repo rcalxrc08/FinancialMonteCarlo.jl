@@ -21,7 +21,7 @@ function simulate!(X, mcProcess::HestonProcess, spotData::ZeroRate, mcBaseData::
 
     dt = T / Nstep
     isDualZero = zero(S0 * T * r * σ_zero * κ * θ * λ1 * σ * ρ)
-    X[:, 1] .= isDualZero
+    @views fill!(X[:, 1], isDualZero) #more efficient than @views X_cu[:, 1] .= isDualZero
     v_m = CUDA.zeros(Nsim) .+ (σ_zero^2 + θ_s * κ_s * σ * dt * 0)
 
     e1 = CuArray{Float32}(undef, Nsim)
@@ -63,7 +63,7 @@ function simulate!(X, mcProcess::HestonProcess, spotData::ZeroRate, mcBaseData::
     dt = T / Nstep
     isDualZero = zero(S0 * T * r * σ_zero * κ * θ * λ1 * σ * ρ)
 
-    X[:, 1] .= isDualZero
+    @views fill!(X[:, 1], isDualZero) #more efficient than @views X_cu[:, 1] .= isDualZero
     Nsim_2 = div(Nsim, 2)
 
     e1 = CuArray{Float32}(undef, Nsim_2)

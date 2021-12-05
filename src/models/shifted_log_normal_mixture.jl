@@ -37,7 +37,9 @@ function simulate!(X, mcProcess::ShiftedLogNormalMixture, rfCurve::AbstractZeroR
     dt = T / Nstep
     A0 = S0 * (1 - mcProcess.α)
     simulate!(X, LogNormalMixture(η_gbm, λ_gmb, Underlying(A0, d)), rfCurve, mcBaseData, T)
-    tt = collect(0:dt:T)
-    X .= X .+ mcProcess.α .* S0 .* exp.(integral(mu_gbm, t_) for t_ in tt)'
+	zero_typed=zero(typeof(integral(mu_gbm, dt)*dt));
+    array_type = get_array_type(mcBaseData, mcProcess, zero_typed)
+    tmp_::typeof(array_type) = exp.(integral(mu_gbm, t_) for t_ in 0:dt:T)
+    @. X = X + mcProcess.α * S0 * (tmp_')
     return nothing
 end

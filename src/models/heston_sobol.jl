@@ -66,7 +66,7 @@ function simulate!(X, mcProcess::HestonProcess, rfCurve::ZeroRateCurve, mcBaseDa
     skip(seq, Nstep * Nsim)
     zero_drift = incremental_integral(r_d, dt * 0.0, dt)
     isDualZero = S0 * T * σ₀ * κ * θ * λ1 * σ * ρ * 0.0 * zero_drift
-    X[:, 1] .= isDualZero
+    view(X, :, 1) .= isDualZero
     vec = Array{typeof(get_rng_type(isDualZero))}(undef, 2 * Nstep)
     tmp_ = [incremental_integral(r_d, (j - 1) * dt, dt) for j = 1:Nstep]
     for i = 1:Nsim

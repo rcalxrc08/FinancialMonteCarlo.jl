@@ -35,7 +35,7 @@ function simulate!(X, mcProcess::SubordinatedBrownianMotion, mcBaseData::MonteCa
     Z = Array{typeof(get_rng_type(isDualZero))}(undef, Nsim)
     dt_s = Array{typeof(get_rng_type(isDualZero))}(undef, Nsim)
 
-    for i = 1:Nstep
+    @inbounds for i = 1:Nstep
         rand!(mcBaseData.rng, mcProcess.subordinator_, dt_s)
         randn!(mcBaseData.rng, Z)
         #@views X[:, i+1] .= X[:, i] .+ drift .* dt_s .+ sigma .* sqrt.(dt_s) .* Z
@@ -61,7 +61,7 @@ function simulate!(X, mcProcess::SubordinatedBrownianMotion, mcBaseData::MonteCa
     Z = Array{typeof(get_rng_type(isDualZero))}(undef, Nsim_2)
     dt_s = Array{typeof(get_rng_type(isDualZero))}(undef, Nsim_2)
 
-    for j = 1:Nstep
+    @inbounds for j = 1:Nstep
         rand!(mcBaseData.rng, mcProcess.subordinator_, dt_s)
         randn!(mcBaseData.rng, Z)
         sqrt_dt_s = sqrt.(dt_s)

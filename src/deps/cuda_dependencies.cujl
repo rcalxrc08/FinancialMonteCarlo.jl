@@ -16,7 +16,7 @@ function set_seed(mcConfig::MonteCarloConfiguration{type1,type2,type3,type4,type
 end
 
 get_matrix_type(mcConfig::MonteCarloConfiguration{<: Integer, <: Integer, <: AbstractMonteCarloMethod, <: AbstractCudaMode, <: Random.AbstractRNG},model::BaseProcess,price)=CuMatrix{typeof(price)}(undef,mcConfig.Nsim,mcConfig.Nstep+1);
-get_array_type(mcConfig::MonteCarloConfiguration{<: Integer, <: Integer, <: AbstractMonteCarloMethod, <: AbstractCudaMode, <: Random.AbstractRNG},model::BaseProcess,price)=CuArray{typeof(price)};
+get_array_type(mcConfig::MonteCarloConfiguration{<: Integer, <: Integer, <: AbstractMonteCarloMethod, <: AbstractCudaMode, <: Random.AbstractRNG},model::BaseProcess,price)=CuArray{typeof(price)}(undef,mcConfig.Nsim);
 get_matrix_type(mcConfig::MonteCarloConfiguration{<: Integer, <: Integer, <: AbstractMonteCarloMethod, <: AbstractCudaMode, <: Random.AbstractRNG},model::VectorialMonteCarloProcess,price)=Array{CuMatrix{typeof(price)}};
 
 

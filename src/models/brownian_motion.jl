@@ -34,7 +34,7 @@ function simulate!(X, mcProcess::BrownianMotion, mcBaseData::MonteCarloConfigura
     Z = Array{typeof(get_rng_type(zero_typed))}(undef, Nsim)
     @inbounds for j = 1:Nstep
         randn!(mcBaseData.rng, Z)
-        @. @views X[:, j+1] .= X[:, j] + mean_bm + stddev_bm * Z
+        @. @views X[:, j+1] = X[:, j] + mean_bm + stddev_bm * Z
     end
 
     nothing
@@ -58,8 +58,8 @@ function simulate!(X, mcProcess::BrownianMotion, mcBaseData::MonteCarloConfigura
     Xm = @views X[(Nsim_2+1):end, :]
     @inbounds for j = 1:Nstep
         randn!(mcBaseData.rng, Z)
-        @. @views Xp[:, j+1] .= Xp[:, j] + mean_bm + stddev_bm * Z
-        @. @views Xm[:, j+1] .= Xm[:, j] + mean_bm - stddev_bm * Z
+        @. @views Xp[:, j+1] = Xp[:, j] + mean_bm + stddev_bm * Z
+        @. @views Xm[:, j+1] = Xm[:, j] + mean_bm - stddev_bm * Z
     end
 
     nothing
