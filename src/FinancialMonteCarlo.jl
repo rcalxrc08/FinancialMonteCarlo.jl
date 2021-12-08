@@ -7,8 +7,6 @@ using Random # for randn! and related
 using LinearAlgebra # for Longstaff Schwartz
 function __init__()
     @require CUDA = "052768ef-5323-5732-b1bb-66c8b64840ba" include("deps/cuda_dependencies.cujl")
-    @require ArrayFire = "b19378d9-d87a-599a-927f-45f220a2c452" include("deps/af_dependencies.cujl")
-    @require DualNumbers = "fa6b7ba4-c1ee-5f82-b5fc-ecf0adba8f74" include("deps/dual_dependencies.jl")
     @require DifferentialEquations = "0c46a032-eb83-5123-abaf-570d42b7fbaa" include("deps/diffeq_dependencies.jl")
     @require VectorizedRNG = "33b4df10-0173-11e9-2a0c-851a7edac40e" include("deps/vectorizedrng_dependencies.jl")
     @require Distributed = "8ba89e20-285c-5b6f-9357-94700520ee1b" include("deps/distributed_dependencies.jl")

@@ -1,7 +1,7 @@
 #Number Type (just sigma tested) ---> Model type ----> Mode ---> zero rate type
 
 using Test, DualNumbers, FinancialMonteCarlo, VectorizedRNG, JLD2, CUDA
-rebase = true;
+rebase = false;
 sigma_dual = dual(0.2, 1.0);
 sigma_no_dual = 0.2;
 
@@ -67,7 +67,7 @@ create_str_lam(x...) = join([string(typeof(y)) for y in x], "_");
 for sigma in Number[sigma_no_dual, sigma_dual]
     for model_ in [bs(sigma), kou(sigma), hest(sigma), vg(sigma), merton(sigma), nig(sigma), log_mixture(sigma), shift_mixture(sigma)]
         for mode_ in [mc, mc_2]
-            for zero_ in [zr_scalar]
+            for zero_ in [zr_scalar, zr_imp]
                 for opt in [eur_opt_, EUBin, AMData, AmBin, BarrierData, AsianFloatingStrikeData, AsianFixedStrikeData, BinAMData, BarrierDataDI, BarrierDataUO, BermData, doubleBarrierOptionDownOut]
                     key_tmp1 = create_str_lam(sigma, model_, mode_.monteCarloMethod, mode_.rng, zero_, opt)
                     result = pricer(model_, zero_, mode_, opt)

@@ -42,12 +42,12 @@ Where:\n
 		Payoff      = payoff of the Option.
 
 """
-function payoff(::AbstractMatrix, ::AbstractPayoff, ::AbstractZeroRateCurve, T1::Number = 0.0)
+function payoff(::AbstractMatrix, ::AbstractPayoff, ::AbstractZeroRateCurve, ::AbstractMonteCarloConfiguration, T1::Number = 0.0)
     error("Function used just for documentation")
 end
 
-function payoff(S::Array{Array{num, 2}, 1}, optionData::SingleNamePayoff, rfCurve::abstractZeroRateCurve, T1::num2 = optionData.T) where {abstractZeroRateCurve <: AbstractZeroRateCurve, num <: Number, num2 <: Number}
+function payoff(S::Array{Array{num, 2}, 1}, optionData::SingleNamePayoff, rfCurve::abstractZeroRateCurve, mcBaseData::AbstractMonteCarloConfiguration, T1::num2 = optionData.T) where {abstractZeroRateCurve <: AbstractZeroRateCurve, num <: Number, num2 <: Number}
     #switch to only in julia 1.4
     @assert length(S) == 1
-    return payoff(S[1], optionData, rfCurve, T1)
+    return payoff(S[1], optionData, rfCurve, mcBaseData, T1)
 end

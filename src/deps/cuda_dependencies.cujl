@@ -10,27 +10,19 @@ include("../models/cuda/fa_levy_cuda.cujl")
 include("../models/cuda/subordinated_brownian_motion_cuda.cujl")
 include("../models/cuda/subordinated_brownian_motion_aug_cuda.cujl")
 
-function set_seed(mcConfig::MonteCarloConfiguration{type1,type2,type3,type4,type5})  where {type1 <: Integer, type2 <: Integer, type3 <: AbstractMonteCarloMethod, type4 <: AbstractCudaMode, type5 <: Random.AbstractRNG}
+function set_seed(mcConfig::MonteCarloConfiguration{type1, type2, type3, type4, type5}) where {type1 <: Integer, type2 <: Integer, type3 <: AbstractMonteCarloMethod, type4 <: AbstractCudaMode, type5 <: Random.AbstractRNG}
 
-	#CUDA.CURAND.seed!(CUDA.CURAND.generator(),mcConfig.seed)
-	
-	nothing;
-	
+    #CUDA.CURAND.seed!(CUDA.CURAND.generator(),mcConfig.seed)
+
+    nothing
 end
 
-get_matrix_type(mcConfig::MonteCarloConfiguration{<: Integer, <: Integer, <: AbstractMonteCarloMethod, <: AbstractCudaMode, <: Random.AbstractRNG},model::BaseProcess,price)=CuMatrix{typeof(price)}(undef,mcConfig.Nsim,mcConfig.Nstep+1);
-get_array_type(mcConfig::MonteCarloConfiguration{<: Integer, <: Integer, <: AbstractMonteCarloMethod, <: AbstractCudaMode, <: Random.AbstractRNG},model::BaseProcess,price)=CuArray{typeof(price)}(undef,mcConfig.Nsim);
-get_matrix_type(mcConfig::MonteCarloConfiguration{<: Integer, <: Integer, <: AbstractMonteCarloMethod, <: AbstractCudaMode, <: Random.AbstractRNG},model::VectorialMonteCarloProcess,price)=Array{CuMatrix{typeof(price)}};
+get_matrix_type(mcConfig::MonteCarloConfiguration{<:Integer, <:Integer, <:AbstractMonteCarloMethod, <:AbstractCudaMode, <:Random.AbstractRNG}, ::BaseProcess, price) = CuMatrix{typeof(price)}(undef, mcConfig.Nsim, mcConfig.Nstep + 1);
+get_array_type(mcConfig::MonteCarloConfiguration{<:Integer, <:Integer, <:AbstractMonteCarloMethod, <:AbstractCudaMode, <:Random.AbstractRNG}, ::BaseProcess, price) = CuArray{typeof(price)}(undef, mcConfig.Nsim);
+get_matrix_type(::MonteCarloConfiguration{<:Integer, <:Integer, <:AbstractMonteCarloMethod, <:AbstractCudaMode, <:Random.AbstractRNG}, ::VectorialMonteCarloProcess, price) = Array{CuMatrix{typeof(price)}};
 
+function payoff(S::CuMatrix{num}, payoff_::PathDependentPayoff, rfCurve::AbstractZeroRateCurve, mcBaseData::AbstractMonteCarloConfiguration, T1::num2 = maturity(payoff_)) where {num <: Number, num2 <: Number}
+    S_ = collect(S)
 
-function payoff(S::CuMatrix{num},payoff_::PathDependentPayoff,rfCurve::AbstractZeroRateCurve,T1::num2=maturity(payoff_)) where{ num <: Number,num2 <: Number}
-	S_=collect(S);
-	
-	return payoff(S_,payoff_,rfCurve,T1);
-end
-
-function payoff!(X,S::CuMatrix{num},payoff_::PathDependentPayoff,rfCurve::AbstractZeroRateCurve,T1::num2=maturity(payoff_)) where{ num <: Number,num2 <: Number}
-	S_=collect(S);
-	
-	X.=payoff(S_,payoff_,rfCurve,T1);
+    return payoff(S_, payoff_, rfCurve, mcBaseData, T1)
 end

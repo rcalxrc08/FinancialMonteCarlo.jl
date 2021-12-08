@@ -22,12 +22,11 @@ end
 
 export EuropeanOptionND;
 
-function payoff(S::Array{abstractMatrix}, euPayoff::EuropeanOptionND, rfCurve::abstractZeroRateCurve, T1::num2 = maturity(euPayoff)) where {abstractMatrix <: AbstractMatrix, num2 <: Number, abstractZeroRateCurve <: AbstractZeroRateCurve}
+function payoff(S::Array{abstractMatrix}, euPayoff::EuropeanOptionND, rfCurve::abstractZeroRateCurve, mcBaseData::AbstractMonteCarloConfiguration, T1::num2 = maturity(euPayoff)) where {abstractMatrix <: AbstractMatrix, num2 <: Number, abstractZeroRateCurve <: AbstractZeroRateCurve}
     r = rfCurve.r
     T = euPayoff.T
     iscall = euPayoff.isCall ? 1 : -1
-    (Nsim, NStep) = size(S[1])
-    NStep -= 1
+    NStep = mcBaseData.Nstep
     index1 = round(Int, T / T1 * NStep) + 1
     K = euPayoff.K
     #ST_all=[ sum(x_i[j,index1] for x_i in S) for j in 1:Nsim]

@@ -18,7 +18,7 @@ function pricer(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig
     set_seed(mcConfig)
     T = maturity(abstractPayoff)
     S = simulate(mcProcess, rfCurve, mcConfig, T)
-    Payoff = payoff(S, abstractPayoff, rfCurve)
+    Payoff = payoff(S, abstractPayoff, rfCurve, mcConfig)
     Price = mean(Payoff)
     return Price
 end
@@ -32,7 +32,7 @@ function pricer(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig
     maxT = maximum(maturity.(abstractPayoffs))
     S = simulate(mcProcess, rfCurve, mcConfig, maxT)
     zero_typed = predict_output_type_zero(mcProcess, rfCurve, mcConfig, abstractPayoffs)
-    Prices::Array{typeof(zero_typed)} = [mean(payoff(S, abstractPayoff, rfCurve, maxT)) for abstractPayoff in abstractPayoffs]
+    Prices::Array{typeof(zero_typed)} = [mean(payoff(S, abstractPayoff, rfCurve, mcConfig, maxT)) for abstractPayoff in abstractPayoffs]
 
     return Prices
 end
@@ -42,7 +42,7 @@ function pricer(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig
     abstractPayoffs = keys(dict_)
     maxT = maximum([maturity(abstractPayoff) for abstractPayoff in abstractPayoffs])
     S = simulate(mcProcess, rfCurve, mcConfig, maxT)
-    price = sum(weight_ * mean(payoff(S, abstractPayoff, rfCurve, maxT)) for (abstractPayoff, weight_) in dict_)
+    price = sum(weight_ * mean(payoff(S, abstractPayoff, rfCurve, mcConfig, maxT)) for (abstractPayoff, weight_) in dict_)
 
     return price
 end
@@ -66,7 +66,7 @@ function pricer(mcProcess::VectorialMonteCarloProcess, rfCurve::AbstractZeroRate
     #	price+=sum(weight_*mean(payoff(S[idx_tmp],abstractPayoff,rfCurve,maxT)) for (abstractPayoff,weight_) in special_array_payoff[i])
     #end
 
-    price = sum(sum(weight_ * mean(payoff(S[idx_[i]], abstractPayoff, rfCurve, maxT)) for (abstractPayoff, weight_) in special_array_payoff[i]) for i in IND_)
+    price = sum(sum(weight_ * mean(payoff(S[idx_[i]], abstractPayoff, rfCurve, mcConfig, maxT)) for (abstractPayoff, weight_) in special_array_payoff[i]) for i in IND_)
 
     return price
 end
@@ -74,16 +74,16 @@ end
 function pricer(mcProcess::MarketDataSet, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration, dict_::Portfolio)
     set_seed(mcConfig)
     underlyings_payoff = keys(dict_)
-    underlyings_payoff_cpl = complete_2(underlyings_payoff, keys(mcProcess))
+    underlyings_payoff_cpl = get_underlyings_identifier(underlyings_payoff, keys(mcProcess))
     #price=0.0;
     #for under_cpl in unique(underlyings_payoff_cpl)
     #	#options=dict_[under_]
-    #	options=extract_(under_cpl,dict_)
+    #	options=extract_option_from_portfolio(under_cpl,dict_)
     #	model=mcProcess[under_cpl]
     #	price=price+pricer(model,rfCurve,mcConfig,options);
     #end
     zero_typed = predict_output_type_zero(rfCurve, mcConfig, collect(keys(collect(values(dict_)))), collect(values(mcProcess)))
-    price::typeof(zero_typed) = sum(pricer(mcProcess[under_cpl], rfCurve, mcConfig, extract_(under_cpl, dict_)) for under_cpl in unique(underlyings_payoff_cpl))
+    price::typeof(zero_typed) = sum(pricer(mcProcess[under_cpl], rfCurve, mcConfig, extract_option_from_portfolio(under_cpl, dict_)) for under_cpl in unique(underlyings_payoff_cpl))
 
     return price
 end

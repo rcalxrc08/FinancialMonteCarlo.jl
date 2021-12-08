@@ -16,7 +16,7 @@ function variance(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConf
     set_seed(mcConfig)
     T = maturity(abstractPayoff)
     S = simulate(mcProcess, rfCurve, mcConfig, T)
-    Payoff = payoff(S, abstractPayoff, rfCurve)
+    Payoff = payoff(S, abstractPayoff, rfCurve, mcConfig)
     variance_ = var(Payoff)
     return variance_
 end
@@ -25,7 +25,7 @@ function variance(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConf
     set_seed(mcConfig)
     maxT = maximum([maturity(abstractPayoff) for abstractPayoff in abstractPayoffs])
     S = simulate(mcProcess, rfCurve, mcConfig, maxT)
-    variance_ = [var(payoff(S, abstractPayoff, rfCurve, maxT)) for abstractPayoff in abstractPayoffs]
+    variance_ = [var(payoff(S, abstractPayoff, rfCurve, mcConfig, maxT)) for abstractPayoff in abstractPayoffs]
 
     return variance_
 end

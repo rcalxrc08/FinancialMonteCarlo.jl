@@ -6,8 +6,8 @@ function pricer(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig
     @assert maturity(abstractPayoff) == variate_payoff.T
     T = maturity(abstractPayoff)
     S_var = simulate(mcProcess, rfCurve, variate_conf, T)
-    Payoff_var = payoff(S_var, variate_payoff, rfCurve)
-    Payoff_opt_var = payoff(S_var, abstractPayoff, rfCurve)
+    Payoff_var = payoff(S_var, variate_payoff, rfCurve, variate_conf)
+    Payoff_opt_var = payoff(S_var, abstractPayoff, rfCurve, variate_conf)
     #c=-cov(Payoff_var,Payoff_opt_var)/var(Payoff_var)[1];
     c = -collect(cov(Payoff_var, Payoff_opt_var) / var(Payoff_var))[1]
     price_var = mean(Payoff_var)
@@ -27,8 +27,8 @@ function pricer(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig
     @assert maturity(abstractPayoff) == variate_payoff.T
     T = maturity(abstractPayoff)
     S_var = simulate(mcProcess, rfCurve, variate_conf, T)
-    Payoff_var = payoff(S_var, variate_payoff, rfCurve)
-    Payoff_opt_var = payoff(S_var, abstractPayoff, rfCurve)
+    Payoff_var = payoff(S_var, variate_payoff, rfCurve, variate_conf)
+    Payoff_opt_var = payoff(S_var, abstractPayoff, rfCurve, variate_conf)
     c = -collect(cov(Payoff_var, Payoff_opt_var) / var(Payoff_var))[1]
     price_var = mcProcess.underlying.S0 * exp(-integral(mcProcess.underlying.d, T))
     mcConfig_mod = MonteCarloConfiguration(mcConfig.Nsim, mcConfig.Nstep, variate_conf.monteCarloMethod, mcConfig.parallelMode, mcConfig.seed + 3)

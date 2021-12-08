@@ -16,10 +16,10 @@ end
 
 export Forward;
 
-function payoff(S::AbstractMatrix{num}, optionData::Forward, rfCurve::AbstractZeroRateCurve, T1::num2 = maturity(optionData)) where {num <: Number, num2 <: Number}
+function payoff(S::AbstractMatrix{num}, optionData::Forward, rfCurve::AbstractZeroRateCurve, mcBaseData::AbstractMonteCarloConfiguration, T1::num2 = maturity(optionData)) where {num <: Number, num2 <: Number}
     r = rfCurve.r
     T = optionData.T
-    NStep = size(S, 2) - 1
+    NStep = mcBaseData.Nstep
     index1 = round(Int, T / T1 * NStep) + 1
     @views ST = S[:, index1]
 

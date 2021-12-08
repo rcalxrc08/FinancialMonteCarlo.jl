@@ -1,12 +1,11 @@
 
-function payoff(S1::AbstractMatrix{num}, amPayoff::AmericanPayoff, rfCurve::abstractZeroRateCurve, T1::num2 = maturity(amPayoff)) where {abstractZeroRateCurve <: AbstractZeroRateCurve, num <: Number, num2 <: Number}
+function payoff(S1::AbstractMatrix{num}, amPayoff::AmericanPayoff, rfCurve::abstractZeroRateCurve, mcBaseData::AbstractMonteCarloConfiguration, T1::num2 = maturity(amPayoff)) where {abstractZeroRateCurve <: AbstractZeroRateCurve, num <: Number, num2 <: Number}
     T = amPayoff.T
-    NStep = size(S1, 2) - 1
+    NStep = mcBaseData.Nstep
+    Nsim = mcBaseData.Nsim
     index1 = round(Int, T / T1 * NStep) + 1
     S = collect(S1[:, 1:index1])
-    S0 = first(S)
-    (Nsim, Nstep) = size(S)
-    Nstep -= 1
+    Nstep = index1 - 1
     r = rfCurve.r
     dt = T / Nstep
     # initialize vectors

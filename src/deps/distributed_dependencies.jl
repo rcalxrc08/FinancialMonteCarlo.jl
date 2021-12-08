@@ -17,16 +17,12 @@ end
 function pricer_macro_multiprocesses(model_type, payoff_type)
     @eval begin
         function pricer(mcProcess::$model_type, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration{<:Integer, <:Integer, <:AbstractMonteCarloMethod, <:MultiProcess, <:Random.AbstractRNG}, abstractPayoff::$payoff_type)
-            zero_typed = predict_output_type_zero_(mcProcess, rfCurve, mcConfig, abstractPayoff)
+            zero_typed = predict_output_type_zero(mcProcess, rfCurve, mcConfig, abstractPayoff)
             nbatches = mcConfig.parallelMode.nbatches
-            #nbatches=100;
             price::typeof(zero_typed) = @sync @distributed (+) for i = 1:nbatches
                 pricer(mcProcess, rfCurve, MonteCarloConfiguration(div(mcConfig.Nsim, nbatches), mcConfig.Nstep, mcConfig.monteCarloMethod, mcConfig.parallelMode.sub_mod, mcConfig.seed + 1 + i), abstractPayoff)::typeof(zero_typed)
             end
             Out = price / nbatches
-            #f(i)=pricer(mcProcess,rfCurve,MonteCarloConfiguration(div(mcConfig.Nsim,nworkers()),mcConfig.Nstep,mcConfig.monteCarloMethod,mcConfig.parallelMode.sub_mod,mcConfig.seed+1+i),abstractPayoff);
-            #Price=pmap(f,1:nworkers());
-            #Out=sum(Price)/nworkers();
             return Out
         end
     end

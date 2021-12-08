@@ -52,7 +52,7 @@ function display(p::Portfolio)
 end
 
 #Overload for extraction, output needs particular shape.
-function extract_(x::String, dict_::Portfolio)
+function extract_option_from_portfolio(x::String, dict_::Portfolio)
     keys_ = keys(dict_)
     out = Position()
     out_vec = Position[]

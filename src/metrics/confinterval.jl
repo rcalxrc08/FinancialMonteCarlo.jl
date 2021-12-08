@@ -20,7 +20,7 @@ function confinter(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcCon
     T = maturity(abstractPayoff)
     Nsim = mcConfig.Nsim
     S = simulate(mcProcess, rfCurve, mcConfig, T)
-    Payoff = payoff(S, abstractPayoff, rfCurve)
+    Payoff = payoff(S, abstractPayoff, rfCurve, mcConfig)
     mean1 = mean(Payoff)
     var1 = var(Payoff)
     alpha_ = 1 - alpha
@@ -35,8 +35,8 @@ function confinter(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcCon
     maxT = maximum([maturity(abstractPayoff) for abstractPayoff in abstractPayoffs])
     Nsim = mcConfig.Nsim
     S = simulate(mcProcess, rfCurve, mcConfig, maxT)
-    Means = [mean(payoff(S, abstractPayoff, rfCurve, maxT)) for abstractPayoff in abstractPayoffs]
-    Vars = [var(payoff(S, abstractPayoff, rfCurve, maxT)) for abstractPayoff in abstractPayoffs]
+    Means = [mean(payoff(S, abstractPayoff, rfCurve, mcConfig, maxT)) for abstractPayoff in abstractPayoffs]
+    Vars = [var(payoff(S, abstractPayoff, rfCurve, mcConfig, maxT)) for abstractPayoff in abstractPayoffs]
     alpha_ = 1 - alpha
     dist1 = Distributions.TDist(Nsim)
     tstar = quantile(dist1, 1 - alpha_ / 2.0)
