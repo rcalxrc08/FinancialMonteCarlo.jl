@@ -38,7 +38,7 @@ function simulate!(X, mcProcess::HestonProcess, rfCurve::ZeroRate, mcBaseData::M
         end
     end
     ## Conclude
-    X .= S0 .* exp.(X)
+    @. X = S0 * exp(X)
     return
 end
 
@@ -85,6 +85,6 @@ function simulate!(X, mcProcess::HestonProcess, rfCurve::ZeroRateCurve, mcBaseDa
         end
     end
     ## Conclude
-    X .= S0 .* exp.(X)
+    @. X = S0 * exp(X)
     return
 end

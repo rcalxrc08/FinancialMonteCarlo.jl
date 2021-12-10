@@ -11,7 +11,7 @@ function pricer_macro_multithreading(model_type, payoff_type)
             zero_typed = predict_output_type_zero(mcProcess, rfCurve, mcConfig, abstractPayoff)
             price = zeros(typeof(zero_typed), Threads.nthreads())
             Threads.@threads for i = 1:Threads.nthreads()
-                price[i] = pricer(mcProcess, rfCurve, MonteCarloConfiguration(div(mcConfig.Nsim, Threads.nthreads()), mcConfig.Nstep, mcConfig.monteCarloMethod, mcConfig.parallelMode.sub_mod, mcConfig.seed), abstractPayoff)
+                price[i] = pricer(mcProcess, rfCurve, MonteCarloConfiguration(div(mcConfig.Nsim, Threads.nthreads()), mcConfig.Nstep, mcConfig.monteCarloMethod, mcConfig.parallelMode.sub_mod, mcConfig.seed, mcConfig.rng), abstractPayoff)
             end
             Out = sum(price) / Threads.nthreads()
             return Out

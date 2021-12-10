@@ -35,7 +35,7 @@ function simulate!(X, mcProcess::SubordinatedBrownianMotionVec, mcBaseData::Mont
     t_s = zeros(type_sub, Nsim)
     dt = T / Nstep
     zero_drift = incremental_integral(drift, zero(type_sub), zero(type_sub) + dt) * 0
-    isDualZero = sigma * zero(type_sub) * 0 * zero_drift
+    isDualZero = sigma * zero(type_sub) * zero_drift
     @views X[:, 1] .= isDualZero
     Z = Array{Float64}(undef, Nsim)
     @inbounds for i = 1:Nstep
@@ -58,8 +58,8 @@ function simulate!(X, mcProcess::SubordinatedBrownianMotionVec, mcBaseData::Mont
     sigma = mcProcess.sigma
     @assert T > 0
     dt = T / Nstep
-    zero_drift = incremental_integral(drift, zero(type_sub), zero(type_sub) + dt)
-    isDualZero = sigma * zero(type_sub) * 0 * zero_drift
+    zero_drift = incremental_integral(drift, zero(type_sub), zero(type_sub) + dt) * 0
+    isDualZero = sigma * zero(type_sub) * zero_drift
     @views X[:, 1] .= isDualZero
     Nsim_2 = div(Nsim, 2)
     dt_s = Array{type_sub}(undef, Nsim_2)

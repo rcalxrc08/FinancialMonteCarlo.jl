@@ -61,7 +61,7 @@ function ImpliedCurve(r_::Array{num1}, T::num2) where {num1 <: Number, num2 <: N
     return ImpliedCurve(r_, t_)
 end
 
-function incremental_integral(x::CurveType, t::Number, dt::Number)
+function incremental_integral(x::CurveType{num1, num2}, t::Number, dt::Number) where {num1 <: Number, num2 <: Number}
     T = extract_keys(x)
     r = extract_values(x)
     return internal_definite_integral(t + dt, T, r) - internal_definite_integral(t, T, r)

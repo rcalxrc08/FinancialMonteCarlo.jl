@@ -39,7 +39,6 @@ function simulate!(S_Total, mcProcess::GaussianCopulaNVariateLogProcess, rfCurve
     ####Simulation
     ## Simulate
     len_ = length(mcProcess.models)
-    #S_Total::Array{Matrix{Number}}=[log.(simulate(model_i,rfCurve,mcBaseData,T)./model_i.underlying.S0) for model_i in mcProcess.models];
 
     for i = 1:len_
         simulate!(S_Total[i], mcProcess.models[i], rfCurve, mcBaseData, T)

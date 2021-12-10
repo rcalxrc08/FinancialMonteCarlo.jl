@@ -1,7 +1,8 @@
 #Number Type (just sigma tested) ---> Model type ----> Mode ---> zero rate type
 
-using BenchmarkTools, DualNumbers, FinancialMonteCarlo, VectorizedRNG
+using BenchmarkTools, DualNumbers, FinancialMonteCarlo, VectorizedRNG, JLD2
 
+rebase = true;
 const sigma_dual = dual(0.2, 1.0);
 const sigma_no_dual = 0.2;
 
@@ -63,3 +64,10 @@ for sigma in Number[sigma_no_dual, sigma_dual]
 end
 #loadparams!(suite, BenchmarkTools.load("params.json")[1], :evals, :samples);
 results = run(suite_num, verbose = true)
+median_current = median(results);
+if rebase
+    save_object("median_old.jld2", median_current)
+end
+median_old = load("median_old.jld2")["single_stored_object"]
+judgement_ = judge(median_current, median_old)
+[println(judgement_el.first, "    ", judgement_el.second) for judgement_el in judgement_];

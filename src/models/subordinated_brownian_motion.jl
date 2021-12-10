@@ -38,7 +38,6 @@ function simulate!(X, mcProcess::SubordinatedBrownianMotion, mcBaseData::MonteCa
     @inbounds for i = 1:Nstep
         rand!(mcBaseData.rng, mcProcess.subordinator_, dt_s)
         randn!(mcBaseData.rng, Z)
-        #@views X[:, i+1] .= X[:, i] .+ drift .* dt_s .+ sigma .* sqrt.(dt_s) .* Z
         @views @. X[:, i+1] = X[:, i] + drift * dt_s + sigma * sqrt(dt_s) * Z
     end
 end

@@ -36,7 +36,7 @@ function simulate!(X, mcProcess::BrownianMotionVec, mcBaseData::MonteCarloConfig
     @inbounds for j = 1:Nstep
         tmp_ = incremental_integral(μ, (j - 1) * dt, dt)
         randn!(mcBaseData.rng, Z)
-        @views @inbounds @. X[:, j+1] = X[:, j] + tmp_ + stddev_bm * Z
+        @views @. X[:, j+1] = X[:, j] + tmp_ + stddev_bm * Z
     end
 
     nothing

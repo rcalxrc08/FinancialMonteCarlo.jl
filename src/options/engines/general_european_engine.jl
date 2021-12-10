@@ -6,7 +6,7 @@ function payoff(S::AbstractMatrix{num}, euPayoff::EuropeanPayoff, rfCurve::abstr
     index1 = round(UInt, T / T1 * NStep) + 1
     @views ST = S[:, index1]
     phi(Sti::numtype_) where {numtype_ <: Number} = payout(Sti, euPayoff)
-    payoff2 = phi.(ST)
+    payoff2 = @. phi(ST)
 
     return payoff2 * exp(-integral(r, T))
 end

@@ -9,7 +9,7 @@ function add_jump_matrix!(X, mcProcess::finiteActivityProcess, mcBaseData::Monte
         while t_i < T
             jump_size = compute_jump_size(mcProcess, mcBaseData)
             jump_idx = ceil(UInt32, t_i / dt) + 1
-            @views X[i, jump_idx:end] .+= jump_size #add jump component
+            @views @. X[i, jump_idx:end] += jump_size #add jump component
             t_i += randexp(mcBaseData.rng) / λ
         end
     end

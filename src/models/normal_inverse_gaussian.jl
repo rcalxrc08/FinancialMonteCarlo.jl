@@ -16,7 +16,7 @@ mutable struct NormalInverseGaussianProcess{num <: Number, num1 <: Number, num2 
     function NormalInverseGaussianProcess(σ::num, θ::num1, κ::num2, underlying::abstrUnderlying) where {num <: Number, num1 <: Number, num2 <: Number, abstrUnderlying <: AbstractUnderlying}
         @assert σ > 0 "volatility must be positive"
         @assert κ > 0 "κappa must be positive"
-        @assert 1.0 - (σ^2 + 2.0 * θ) * κ > 0 "Parameters with unfeasible values"
+        @assert 1 - (σ^2 + 2 * θ) * κ > 0 "Parameters with unfeasible values"
         zero_typed = zero(num) + zero(num1) + zero(num2)
         return new{num, num1, num2, abstrUnderlying, typeof(zero_typed)}(σ, θ, κ, underlying)
     end
@@ -40,7 +40,7 @@ function simulate!(X, mcProcess::NormalInverseGaussianProcess, rfCurve::Abstract
     drift = r - d - ψ
 
     #Define subordinator
-    IGRandomVariable = InverseGaussian(dt, dt * dt / κ)
+    IGRandomVariable = InverseGaussian(dt, (dt^2) / κ)
 
     #Call SubordinatedBrownianMotion
     simulate!(X, SubordinatedBrownianMotion(σ, drift, IGRandomVariable), mcBaseData, T)
