@@ -16,5 +16,5 @@ rfCurve2 = ZeroRate([0.00, 0.02], T);
 
 @show "Test Subordinated Brownian Motion Parameters"
 drift = 0.0;
-@test_throws(ErrorException, SubordinatedBrownianMotion(-sigma, drift, InverseGaussian(1.0, 1.0)))
-@test_throws(ErrorException, SubordinatedBrownianMotion(-sigma, rfCurve2.r, InverseGaussian(1.0, 1.0)))
+@test_throws(AssertionError, SubordinatedBrownianMotion(-sigma, drift, InverseGaussian(1.0, 1.0)))
+@test_throws(AssertionError, SubordinatedBrownianMotion(-sigma, rfCurve2.r, InverseGaussian(1.0, 1.0)))

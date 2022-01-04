@@ -10,11 +10,8 @@ mutable struct BlackScholesProcess{num <: Number, abstrUnderlying <: AbstractUnd
     σ::num
     underlying::abstrUnderlying
     function BlackScholesProcess(σ::num, underlying::abstrUnderlying) where {num <: Number, abstrUnderlying <: AbstractUnderlying}
-        if σ <= 0.0
-            error("Volatility must be positive")
-        else
-            return new{num, abstrUnderlying}(σ, underlying)
-        end
+        @assert σ > 0 "Volatility must be positive"
+        return new{num, abstrUnderlying}(σ, underlying)
     end
 end
 
@@ -24,10 +21,10 @@ function simulate!(S, mcProcess::BlackScholesProcess, rfCurve::AbstractZeroRateC
     @assert T > 0.0
     r = rfCurve.r
     d = dividend(mcProcess)
-    σ_gbm = mcProcess.σ
-    mu_gbm = r - d
+    σ = mcProcess.σ
+    μ = r - d
 
-    simulate!(S, GeometricBrownianMotion(σ_gbm, mu_gbm, mcProcess.underlying.S0), mcBaseData, T)
+    simulate!(S, GeometricBrownianMotion(σ, μ, mcProcess.underlying.S0), mcBaseData, T)
 
     nothing
 end

@@ -31,7 +31,7 @@ FinancialMonteCarlo.set_parameters!(Model, param_)
 
 display(Model)
 
-@test_throws(ErrorException, FinancialMonteCarlo.set_parameters!(Model, [1, 2]))
+@test_throws(AssertionError, FinancialMonteCarlo.set_parameters!(Model, [1, 2]))
 
 @show FwdPrice = pricer(Model, rfCurve, mc, FwdData);
 @show EuPrice = pricer(Model, rfCurve, mc, EUData);
@@ -49,7 +49,7 @@ display(Model)
 @show "Test LogNormalMixture Parameters"
 eta = [0.2, 0.2]
 lam11 = [0.9999]
-@test_throws(ErrorException, ShiftedLogNormalMixture(-0.2 * ones(3), 0.1 * ones(2), 0.0, Underlying(S0, d)))
-@test_throws(ErrorException, ShiftedLogNormalMixture(0.2 * ones(3), -0.1 * ones(2), 0.0, Underlying(S0, d)))
-@test_throws(ErrorException, ShiftedLogNormalMixture(0.2 * ones(3), ones(2), 0.0, Underlying(S0, d)))
-@test_throws(ErrorException, ShiftedLogNormalMixture(0.2 * ones(3), 0.2 * ones(3), 0.0, Underlying(S0, d)))
+@test_throws(AssertionError, ShiftedLogNormalMixture(-0.2 * ones(3), 0.1 * ones(2), 0.0, Underlying(S0, d)))
+@test_throws(AssertionError, ShiftedLogNormalMixture(0.2 * ones(3), -0.1 * ones(2), 0.0, Underlying(S0, d)))
+@test_throws(AssertionError, ShiftedLogNormalMixture(0.2 * ones(3), ones(2), 0.0, Underlying(S0, d)))
+@test_throws(AssertionError, ShiftedLogNormalMixture(0.2 * ones(3), 0.2 * ones(3), 0.0, Underlying(S0, d)))

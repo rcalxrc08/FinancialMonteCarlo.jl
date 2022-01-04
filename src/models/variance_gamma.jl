@@ -14,16 +14,11 @@ mutable struct VarianceGammaProcess{num <: Number, num1 <: Number, num2 <: Numbe
     κ::num2
     underlying::abstrUnderlying
     function VarianceGammaProcess(σ::num, θ::num1, κ::num2, underlying::abstrUnderlying) where {num <: Number, num1 <: Number, num2 <: Number, abstrUnderlying <: AbstractUnderlying}
-        if σ <= 0
-            error("volatility must be positive")
-        elseif κ <= 0
-            error("κappa must be positive")
-        elseif 1 - σ * σ * κ / 2 - θ * κ < 0
-            error("Parameters with unfeasible values")
-        else
-            zero_typed = zero(num) + zero(num1) + zero(num2)
-            return new{num, num1, num2, abstrUnderlying, typeof(zero_typed)}(σ, θ, κ, underlying)
-        end
+        @assert σ > 0 "volatility must be positive"
+        @assert κ > 0 "κappa must be positive"
+        @assert 1 - σ * σ * κ / 2 - θ * κ >= 0 "Parameters with unfeasible values"
+        zero_typed = zero(num) + zero(num1) + zero(num2)
+        return new{num, num1, num2, abstrUnderlying, typeof(zero_typed)}(σ, θ, κ, underlying)
     end
 end
 
@@ -35,20 +30,19 @@ function simulate!(X, mcProcess::VarianceGammaProcess, rfCurve::AbstractZeroRate
     d = dividend(mcProcess)
     Nstep = mcBaseData.Nstep
     σ = mcProcess.σ
-    θ1 = mcProcess.θ
-    κ1 = mcProcess.κ
+    θ = mcProcess.θ
+    κ = mcProcess.κ
     @assert T > 0
 
     dt = T / Nstep
-    psi1 = -1 / κ1 * log(1 - σ^2 * κ1 / 2 - θ1 * κ1)
-    drift = r - d - psi1
+    ψ = -1 / κ * log(1 - σ^2 * κ / 2 - θ * κ)
+    drift = r - d - ψ
 
-    gammaRandomVariable = Gamma(dt / κ1, κ1)
+    gammaRandomVariable = Gamma(dt / κ, κ)
 
     simulate!(X, SubordinatedBrownianMotion(σ, drift, gammaRandomVariable), mcBaseData, T)
 
-    f(x) = S0 * exp(x)
-    broadcast!(f, X, X)
+    @. X = S0 * exp(X)
 
     nothing
 end

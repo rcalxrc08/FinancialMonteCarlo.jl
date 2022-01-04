@@ -26,6 +26,7 @@ include("merton.jl")
 ### Infinite Activity Levy Processes
 include("subordinated_brownian_motion.jl")
 include("subordinated_brownian_motion_aug.jl")
+include("subordinated_brownian_motion_sobol.jl")
 include("variance_gamma.jl")
 include("normal_inverse_gaussian.jl")
 

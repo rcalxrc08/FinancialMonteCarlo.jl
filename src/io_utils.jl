@@ -5,12 +5,12 @@ import Base.Multimedia.print;
 
 function print(p::Union{AbstractMonteCarloProcess, AbstractPayoff})
     fldnames = collect(fieldnames(typeof(p)))
-    print(typeof(p), "(")
+    Base.print(typeof(p), "(")
     if (length(fldnames) > 0)
-        print(fldnames[1], "=", getfield(p, fldnames[1]))
+        Base.print(fldnames[1], "=", getfield(p, fldnames[1]))
         popfirst!(fldnames)
         for name in fldnames
-            print(",", name, "=", getfield(p, name))
+            Base.print(",", name, "=", getfield(p, name))
         end
     end
     print(")")
@@ -18,12 +18,12 @@ end
 
 function display(p::Union{AbstractMonteCarloProcess, AbstractPayoff})
     fldnames = collect(fieldnames(typeof(p)))
-    print(typeof(p), "(")
+    Base.print(typeof(p), "(")
     if (length(fldnames) > 0)
-        print(fldnames[1], "=", getfield(p, fldnames[1]))
+        Base.print(fldnames[1], "=", getfield(p, fldnames[1]))
         popfirst!(fldnames)
         for name in fldnames
-            print(",", name, "=", getfield(p, name))
+            Base.print(",", name, "=", getfield(p, name))
         end
     end
     println(")")
@@ -37,7 +37,6 @@ function get_parameters(model::XProcess) where {XProcess <: AbstractPayoff}
     param_ = []
     for i = 1:N1
         tmp_ = getproperty(model, fields_[i])
-        #typeof(tmp_) <: Bool ? continue : nothing;
         append!(param_, tmp_)
     end
     if (N1 > 0)
@@ -81,9 +80,7 @@ end
 function set_parameters!(model::XProcess, param::Array{num}) where {XProcess <: BaseProcess, num <: Number}
     fields_ = fieldnames(XProcess)
     N1 = length(fields_) - 1
-    if N1 != length(param)
-        error("Check number of parameters of the model")
-    end
+    @assert N1 == length(param) "Check number of parameters of the model"
 
     for (symb, nval) in zip(fields_, param)
         if (symb != :underlying)
@@ -94,9 +91,7 @@ end
 
 function set_parameters!(model::LogNormalMixture, param::Array{num}) where {num <: Number}
     N1 = div(length(param) + 1, 2)
-    if N1 * 2 != length(param) + 1 || N1 < 2
-        error("Check number of parameters of the model")
-    end
+    @assert !(N1 * 2 != length(param) + 1 || N1 < 2) "Check number of parameters of the model"
     eta = param[1:N1]
     lam = param[(N1+1):end]
     fields_ = fieldnames(LogNormalMixture)
@@ -107,9 +102,7 @@ end
 
 function set_parameters!(model::ShiftedLogNormalMixture, param::Array{num}) where {num <: Number}
     N1 = div(length(param), 2)
-    if N1 * 2 != length(param) || N1 < 2
-        error("Check number of parameters of the model")
-    end
+    @assert !(N1 * 2 != length(param) || N1 < 2) "Check number of parameters of the model"
     eta = param[1:N1]
     lam = param[(N1+1):(2*N1-1)]
     alfa = param[end]

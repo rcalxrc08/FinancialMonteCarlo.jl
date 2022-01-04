@@ -15,7 +15,7 @@ mutable struct GaussianCopulaNVariateLogProcess{num3 <: Number, numtype <: Numbe
         @assert sz[1] == sz[2]
         @assert length(models) == sz[1]
         @assert isposdef(rho)
-        zero_typed = predict_output_type_zero_(models...) + zero(num3)
+        zero_typed = predict_output_type_zero(models...) + zero(num3)
         return new{num3, typeof(zero_typed)}(models, rho)
     end
     function GaussianCopulaNVariateLogProcess(models::BaseProcess...)
@@ -29,8 +29,6 @@ mutable struct GaussianCopulaNVariateLogProcess{num3 <: Number, numtype <: Numbe
     end
 end
 
-support_type(z::GaussianCopulaNVariateLogProcess{num, num1}) where {num <: Number, num1 <: Number} = zero(num)
-
 export GaussianCopulaNVariateLogProcess;
 
 function simulate!(S_Total, mcProcess::GaussianCopulaNVariateLogProcess, rfCurve::AbstractZeroRateCurve, mcBaseData::AbstractMonteCarloConfiguration, T::Number)
@@ -41,7 +39,6 @@ function simulate!(S_Total, mcProcess::GaussianCopulaNVariateLogProcess, rfCurve
     ####Simulation
     ## Simulate
     len_ = length(mcProcess.models)
-    #S_Total::Array{Matrix{Number}}=[log.(simulate(model_i,rfCurve,mcBaseData,T)./model_i.underlying.S0) for model_i in mcProcess.models];
 
     for i = 1:len_
         simulate!(S_Total[i], mcProcess.models[i], rfCurve, mcBaseData, T)

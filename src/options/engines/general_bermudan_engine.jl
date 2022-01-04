@@ -1,13 +1,12 @@
 
-function payoff(S1::abstractMatrix, bmPayoff::BermudanPayoff, rfCurve::abstractZeroRateCurve, T1::num2 = maturity(bmPayoff)) where {abstractZeroRateCurve <: AbstractZeroRateCurve, abstractMatrix <: AbstractMatrix{num}} where {num <: Number, num2 <: Number}
+function payoff(S1::AbstractMatrix{num}, bmPayoff::BermudanPayoff, rfCurve::abstractZeroRateCurve, mcBaseData::AbstractMonteCarloConfiguration, T1::num2 = maturity(bmPayoff)) where {abstractZeroRateCurve <: AbstractZeroRateCurve, num <: Number, num2 <: Number}
     T_opt = bmPayoff.T_ex
     T = maturity(bmPayoff)
-    NStep = size(S1, 2) - 1
+    NStep = mcBaseData.Nstep
+    Nsim = mcBaseData.Nsim
     index1 = round(Int, T / T1 * NStep) + 1
     S = collect(S1[:, 1:index1])
-    S0 = first(S)
-    (Nsim, Nstep) = size(S)
-    Nstep -= 1
+    Nstep = index1 - 1
     r = rfCurve.r
     dt = T / Nstep
     # initialize 
@@ -28,7 +27,8 @@ function payoff(S1::abstractMatrix, bmPayoff::BermudanPayoff, rfCurve::abstractZ
             #- Linear Regression on Quadratic Form
             A = [ones(length(S_I)) S_I S_I .^ 2]
             #@views b=V[inMoneyIndexes].*exp.(-r*dt*(exerciseTimes[inMoneyIndexes].-j));
-            @views b = V[inMoneyIndexes] .* exp.(-[integral(r, dt * (exerciseTime - j)) for exerciseTime in exerciseTimes[inMoneyIndexes]])
+            @views b = V[inMoneyIndexes] .* exp.(-[integral(r, dt * (exerciseTime - j + 1)) for exerciseTime in exerciseTimes[inMoneyIndexes]])
+            #@views b = V[inMoneyIndexes] .* exp.(-1.0*integral.(r, dt .* (exerciseTimes[inMoneyIndexes]. - j + 1)))
             #MAT=A'*A;			
             LuMat = lu(A' * A)
             Btilde = A' * b

@@ -46,4 +46,4 @@ display(Model)
 
 @show "Test Black Scholes Parameters"
 
-@test_throws(ErrorException, BlackScholesProcess(-sigma, Underlying(S0, d)))
+@test_throws(AssertionError, BlackScholesProcess(-sigma, Underlying(S0, d)))

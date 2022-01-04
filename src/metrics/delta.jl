@@ -1,15 +1,15 @@
 """
-General Interface for Pricing
+General Interface for Delta
 
-		Delta=delta(mcProcess,rfCurve,mcBaseData,payoff_)
+		Delta=delta(mcProcess,rfCurve,mcConfig,abstractPayoff,dS0)
 	
 Where:\n
 		mcProcess          = Process to be simulated.
 		rfCurve  = Zero Rate Data.
-		mcBaseData = Basic properties of MonteCarlo simulation
-		payoff_ = Payoff(s) to be priced
+		mcConfig = Basic properties of MonteCarlo simulation
+		abstractPayoff = Payoff(s) to be priced
+		dS0 [optional, default to 1e-7] = increment
 		
-
 		Delta     = Delta of the derivative
 
 """
@@ -46,17 +46,12 @@ function delta(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig:
 end
 
 function delta(mcProcess::Dict{String, AbstractMonteCarloProcess}, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration, dict_::Dict{String, Dict{AbstractPayoff, Number}}, underl_::String, dS::Real = 1e-7)
-    if (!isnothing(findfirst("_", underl_)))
-        error("deltas are defined on single name")
-    end
+    @assert isnothing(findfirst("_", underl_)) "deltas are defined on single name"
     set_seed(mcConfig)
-    underlyings_models = keys(mcProcess)
-    underlyings_payoff = keys(dict_)
     price0 = pricer(mcProcess, rfCurve, mcConfig, dict_)
     price2 = 0.0
     set_seed(mcConfig)
     mcProcess_up = deepcopy(mcProcess)
-    delta_ = 0.0
     keys_mkt = collect(keys(mcProcess_up))
     idx_supp = 0
     idx_1 = findfirst(y -> y == underl_, keys_mkt)

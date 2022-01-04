@@ -2,7 +2,7 @@ name = "FinancialMonteCarlo"
 uuid = "078f23cc-2637-5a1d-aba6-8a9ba9a6ff83"
 license = "MIT"
 author = ["rcalxrc08"]
-version = "0.2.0"
+version = "0.1.0"
 
 [deps]
 DelimitedFiles = "8bb1440f-4735-579b-a4ab-409b98df4dab"
@@ -21,7 +21,20 @@ Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
 StatsFuns = "4c63d2b9-4356-54db-8cca-17b64c39e42c"
 
 [compat]
-julia = "≥ 1.0.0"
+Dictionaries = "0.3"
+DifferentialEquations = "5, 6, 7"
+Distributions = "0.16, 0.17, 0.18, 0.19.1, 0.20, 0.21, 0.22, 0.23, 0.24, 0.25"
+DistributionsAD = "0.4, 0.5, 0.6"
+DualNumbers = "0.6"
+ForwardDiff = "0.10"
+Interpolations = "0.12, 0.13"
+IterTools = "1"
+Requires = "1"
+ReverseDiff = "1"
+Sobol = "1.0.2"
+SpecialFunctions = "1, 2"
+StatsFuns = "0.7, 0.8, 0.9"
+julia = "1"
 
 [extras]
 DifferentialEquations = "0c46a032-eb83-5123-abaf-570d42b7fbaa"

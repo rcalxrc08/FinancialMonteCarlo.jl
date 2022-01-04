@@ -3,15 +3,14 @@ using Distributions
 """
 General Interface for Computation of confidence interval of price
 
-		IC=confinter(mcProcess,rfCurve,mcBaseData,payoff_,alpha)
+		IC=confinter(mcProcess,rfCurve,mcConfig,abstractPayoff,alpha)
 	
 Where:\n
 		mcProcess          = Process to be simulated.
 		rfCurve  = Zero Rate Data.
-		mcBaseData = Basic properties of MonteCarlo simulation
-		payoff_ = Payoff(s) to be priced
+		mcConfig = Basic properties of MonteCarlo simulation
+		abstractPayoff = Payoff(s) to be priced
 		alpha [Optional, default to 99%] = confidence level
-		
 
 		Price     = Price of the derivative
 
@@ -21,7 +20,7 @@ function confinter(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcCon
     T = maturity(abstractPayoff)
     Nsim = mcConfig.Nsim
     S = simulate(mcProcess, rfCurve, mcConfig, T)
-    Payoff = payoff(S, abstractPayoff, rfCurve)
+    Payoff = payoff(S, abstractPayoff, rfCurve, mcConfig)
     mean1 = mean(Payoff)
     var1 = var(Payoff)
     alpha_ = 1 - alpha
@@ -36,8 +35,8 @@ function confinter(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcCon
     maxT = maximum([maturity(abstractPayoff) for abstractPayoff in abstractPayoffs])
     Nsim = mcConfig.Nsim
     S = simulate(mcProcess, rfCurve, mcConfig, maxT)
-    Means = [mean(payoff(S, abstractPayoff, rfCurve, maxT)) for abstractPayoff in abstractPayoffs]
-    Vars = [var(payoff(S, abstractPayoff, rfCurve, maxT)) for abstractPayoff in abstractPayoffs]
+    Means = [mean(payoff(S, abstractPayoff, rfCurve, mcConfig, maxT)) for abstractPayoff in abstractPayoffs]
+    Vars = [var(payoff(S, abstractPayoff, rfCurve, mcConfig, maxT)) for abstractPayoff in abstractPayoffs]
     alpha_ = 1 - alpha
     dist1 = Distributions.TDist(Nsim)
     tstar = quantile(dist1, 1 - alpha_ / 2.0)

@@ -40,7 +40,7 @@ end
 
 #Following function returns the names (duplicated as well) of the underlying names that must simulate.
 #An underlying to be simulated must have an option in the portfolio that is referred to it (directly or in a basket).
-function complete_2(payoffs_underlyings, models_underlyings)
+function get_underlyings_identifier(payoffs_underlyings, models_underlyings)
     out = String[]
     for x_ in payoffs_underlyings
         for y_ in models_underlyings

@@ -1,16 +1,15 @@
 """
-General Interface for Pricing
+General Interface for distribution
 
-		Price=pricer(mcProcess,rfCurve,mcBaseData,payoff_)
+		S=distribution(mcProcess,rfCurve,mcConfig,payoff_)
 	
 Where:\n
 		mcProcess          = Process to be simulated.
 		rfCurve  = Zero Rate Data.
-		mcBaseData = Basic properties of MonteCarlo simulation
-		payoff_ = Payoff(s) to be priced
-		
+		mcConfig = Basic properties of MonteCarlo simulation
+		T = Time of simulation
 
-		Price     = Price of the derivative
+		S     = distribution
 
 """
 function distribution(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration, T::num_) where {num_ <: Number}

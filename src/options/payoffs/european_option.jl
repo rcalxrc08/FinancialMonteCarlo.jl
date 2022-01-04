@@ -13,14 +13,10 @@ struct EuropeanOption{num1 <: Number, num2 <: Number, numtype <: Number} <: Euro
     K::num2
     isCall::Bool
     function EuropeanOption(T::num1, K::num2, isCall::Bool = true) where {num1 <: Number, num2 <: Number}
-        if T <= 0.0
-            error("Time to Maturity must be positive")
-        elseif K <= 0.0
-            error("Strike Price must be positive")
-        else
-            zero_typed = zero(num1) + zero(num2)
-            return new{num1, num2, typeof(zero_typed)}(T, K, isCall)
-        end
+        @assert T > 0 "Time to Maturity must be positive"
+        @assert K > 0 "Strike Price must be positive"
+        zero_typed = zero(num1) + zero(num2)
+        return new{num1, num2, typeof(zero_typed)}(T, K, isCall)
     end
 end
 

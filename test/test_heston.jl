@@ -53,7 +53,7 @@ tollanti = 0.8
 @test abs(BarrierPrice - 7.006564636309922) < tollanti
 @test abs(AsianPrice1 - 4.242256952013707) < tollanti
 
-@test_throws(ErrorException, HestonProcess(-sigma, sigma_zero, lambda, kappa, rho_, theta, Underlying(S0, d)))
-@test_throws(ErrorException, HestonProcess(sigma, -sigma_zero, lambda, kappa, rho_, theta, Underlying(S0, d)))
-@test_throws(ErrorException, HestonProcess(sigma, sigma_zero, lambda, kappa, -5.0, theta, Underlying(S0, d)))
-@test_throws(ErrorException, HestonProcess(sigma, sigma_zero, 1e-16, 1e-16, rho_, theta, Underlying(S0, d)))
+@test_throws(AssertionError, HestonProcess(-sigma, sigma_zero, lambda, kappa, rho_, theta, Underlying(S0, d)))
+@test_throws(AssertionError, HestonProcess(sigma, -sigma_zero, lambda, kappa, rho_, theta, Underlying(S0, d)))
+@test_throws(AssertionError, HestonProcess(sigma, sigma_zero, lambda, kappa, -5.0, theta, Underlying(S0, d)))
+@test_throws(AssertionError, HestonProcess(sigma, sigma_zero, 1e-16, 1e-16, rho_, theta, Underlying(S0, d)))

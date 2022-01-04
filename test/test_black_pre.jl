@@ -75,7 +75,7 @@ tollPut = 0.6;
 @test abs(AsianPrice1 - 4.230547012372306) < tollPut
 @test abs(AsianPrice2 - 4.236220218194027) < tollPut
 
-@test_throws(ErrorException, MonteCarloConfiguration(Nsim + 1, Nstep, FinancialMonteCarlo.AntitheticMC()));
+@test_throws(AssertionError, MonteCarloConfiguration(Nsim + 1, Nstep, FinancialMonteCarlo.AntitheticMC()));
 
 mc1 = MonteCarloConfiguration(Nsim, Nstep, FinancialMonteCarlo.AntitheticMC());
 @test variance(Model, rfCurve, mc, EUDataPut) > variance(Model, rfCurve, mc1, EUDataPut);
@@ -110,4 +110,4 @@ doubleBarrierOptionDownOut = DoubleBarrierOption(T, K, K / 10.0, 1.2 * K)
 
 @show "Test Black Scholes Parameters"
 
-@test_throws(ErrorException, BlackScholesProcess(-sigma, Underlying(S0, d)))
+@test_throws(AssertionError, BlackScholesProcess(-sigma, Underlying(S0, d)))

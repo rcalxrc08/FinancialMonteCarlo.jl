@@ -12,12 +12,12 @@ end
 
 #Curve
 struct ZeroRateCurve{num1 <: Number, num2 <: Number} <: AbstractZeroRateCurve
-    r::Curve{num1, num2}
+    r::CurveType{num1, num2}
     function ZeroRateCurve(r_::Array{num1}, T::num2) where {num1 <: Number, num2 <: Number}
         new{num2, num1}(Curve(r_, T))
     end
 
-    function ZeroRateCurve(r_::Curve{num1, num2}) where {num1 <: Number, num2 <: Number}
+    function ZeroRateCurve(r_::CurveType{num1, num2}) where {num1 <: Number, num2 <: Number}
         new{num2, num1}(r_)
     end
 end

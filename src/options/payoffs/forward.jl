@@ -9,20 +9,17 @@ Where:\n
 mutable struct Forward{num <: Number} <: EuropeanPayoff{num}
     T::num
     function Forward(T::num) where {num <: Number}
-        if T <= 0.0
-            error("Time to Maturity must be positive")
-        else
-            return new{num}(T)
-        end
+        @assert T > 0 "Time to Maturity must be positive"
+        return new{num}(T)
     end
 end
 
 export Forward;
 
-function payoff(S::AbstractMatrix{num}, optionData::Forward, rfCurve::AbstractZeroRateCurve, T1::num2 = maturity(optionData)) where {num <: Number, num2 <: Number}
+function payoff(S::AbstractMatrix{num}, optionData::Forward, rfCurve::AbstractZeroRateCurve, mcBaseData::AbstractMonteCarloConfiguration, T1::num2 = maturity(optionData)) where {num <: Number, num2 <: Number}
     r = rfCurve.r
     T = optionData.T
-    NStep = size(S, 2) - 1
+    NStep = mcBaseData.Nstep
     index1 = round(Int, T / T1 * NStep) + 1
     @views ST = S[:, index1]
 
