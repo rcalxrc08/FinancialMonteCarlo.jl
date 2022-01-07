@@ -29,7 +29,7 @@ function delta(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig:
     mcProcess_up = deepcopy(mcProcess)
     mcProcess_up.underlying.S0 += dS0
     PricesUp = pricer(mcProcess_up, rfCurve, mcConfig, abstractPayoffs)
-    Delta = (PricesUp .- Prices) ./ dS0
+    Delta = @. (PricesUp - Prices) / dS0
 
     return Delta
 end
@@ -40,7 +40,7 @@ function delta(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig:
     mcProcess_up.underlying.S0 += dS0
     set_seed(mcConfig)
     PricesUp = pricer(mcProcess_up, rfCurve, mcConfig, abstractPayoffs)
-    Delta = (PricesUp .- Prices) ./ dS0
+    Delta = @. (PricesUp - Prices) / dS0
 
     return Delta
 end

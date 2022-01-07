@@ -26,7 +26,7 @@ function rho(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig::M
     Prices = pricer(mcProcess, rfCurve, mcConfig, abstractPayoffs)
     rfCurve_1 = ZeroRate(rfCurve.r + dr)
     PricesUp = pricer(mcProcess, rfCurve_1, mcConfig, abstractPayoffs)
-    rho = (PricesUp .- Prices) ./ dr
+    rho = @. (PricesUp - Prices) / dr
 
     return rho
 end

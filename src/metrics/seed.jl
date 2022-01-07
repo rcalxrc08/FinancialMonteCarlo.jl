@@ -9,7 +9,6 @@ function set_seed(mcConfig::MonteCarloConfiguration{type1, type2, type3, type4, 
     tmp_rng = deepcopy(mcConfig.rng)
     inner_seed!(tmp_rng, mcConfig.seed)
     mcConfig.rng = randjump_(tmp_rng, mcConfig.offset)
-    #Random.seed!(mcConfig.seed * 10 + 10)
 
     return
 end
