@@ -14,6 +14,7 @@ It currently contains the following capabilities:
     - Variance Gamma
     - Heston
     - LogNormal Mixture
+    - Shifted LogNormal Mixture
 - Support for Multivariate processes through Gaussian Copula
 - Support for non costant zero rates and dividends
 - Support for the following Option families:
@@ -23,8 +24,7 @@ It currently contains the following capabilities:
     - Bermudan Options (Using Longstaff-Schwartz)
     - American Options (Using Longstaff-Schwartz)
 - Partial Support for the following Parallelization:
-    - CUDA using  [CuArrays.jl](https://github.com/JuliaGPU/CuArrays.jl)
-    - ArrayFire using  [ArrayFire.jl](https://github.com/JuliaComputing/ArrayFire.jl)
+    - CUDA using  [CUDA.jl](https://github.com/JuliaGPU/CUDA.jl)
     - Thread based (Native julia)
 	- Process based (Native julia)
 
@@ -36,7 +36,7 @@ for Automatic Differentiation (where it makes sense).
 ## How to Install
 To install the package simply type on the Julia REPL the following:
 ```julia
-] add https://gitlab.com/rcalxrc08/FinancialMonteCarlo.jl
+] add FinancialMonteCarlo
 ```
 ## How to Test
 After the installation, to test the package type on the Julia REPL the following:
