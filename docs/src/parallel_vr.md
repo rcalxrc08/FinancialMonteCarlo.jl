@@ -7,7 +7,6 @@ The package provides the BaseMode type to represent the type of parallel process
 
 * `SerialMode`: classical serial mode with no parallelization
 * `CudaMode`: support for CUDA using CuArrays.jl
-* `AFMode`: support for ArrayFire using ArrayFire.jl
 * `ThreadMode`: Thread parallelization with julia built in costructs
 * `ProcMode`: Proc parallelization with julia built in costructs
 

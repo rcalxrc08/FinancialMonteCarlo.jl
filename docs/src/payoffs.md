@@ -10,9 +10,9 @@ The following type of *Payoff* are supported from the package:
 
 ## Common Interface
 
-Each payoff must implement its own *payout* method; the general interface is the following:
+Each payoff must implement its own *payout* method; that will be called by the following general interface:
 ```@docs
-payout(S,optionData::FinancialMonteCarlo.AbstractPayoff,spotData::FinancialMonteCarlo.AbstractZeroRateCurve,T1::num2=optionData.T) where{num <: Number,num2 <: Number}
+payoff(S::AbstractMatrix, p::FinancialMonteCarlo.AbstractPayoff, r::FinancialMonteCarlo.AbstractZeroRateCurve, mc::FinancialMonteCarlo.AbstractMonteCarloConfiguration, T1::Number = p.T)
 ```
 Depending on the type of AbstractPayoff, a different type of S must be specified. Look into the engines for more details.
 The following option structs are provided:
@@ -31,4 +31,5 @@ BarrierOptionDownIn
 AmericanOption
 Spot
 EuropeanOptionND
+FinancialMonteCarlo.BermudanOption
 ```
