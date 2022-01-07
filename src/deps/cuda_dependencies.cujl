@@ -11,9 +11,9 @@ include("../models/cuda/subordinated_brownian_motion_cuda.cujl")
 include("../models/cuda/subordinated_brownian_motion_aug_cuda.cujl")
 
 function set_seed(mcConfig::MonteCarloConfiguration{type1, type2, type3, type4, type5}) where {type1 <: Integer, type2 <: Integer, type3 <: AbstractMonteCarloMethod, type4 <: AbstractCudaMode, type5 <: Random.AbstractRNG}
-
-    #CUDA.CURAND.seed!(CUDA.CURAND.generator(),mcConfig.seed)
-
+    tmp_rng = deepcopy(mcConfig.rng)
+    inner_seed!(tmp_rng, mcConfig.seed)
+    mcConfig.rng = tmp_rng
     nothing
 end
 
