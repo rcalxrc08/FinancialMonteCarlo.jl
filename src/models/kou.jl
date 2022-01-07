@@ -31,10 +31,9 @@ end
 export KouProcess;
 
 function compute_jump_size(mcProcess::KouProcess, mcBaseData::MonteCarloConfiguration)
-    return if rand(mcBaseData.rng) < mcProcess.p
-        randexp(mcBaseData.rng) / mcProcess.λ₊
-    else
-        -randexp(mcBaseData.rng) / mcProcess.λ₋
+    if rand(mcBaseData.rng) < mcProcess.p
+        return randexp(mcBaseData.rng) / mcProcess.λ₊
     end
+    return -randexp(mcBaseData.rng) / mcProcess.λ₋
 end
 compute_drift(mcProcess::KouProcess) = mcProcess.p / (mcProcess.λ₊ - 1) - (1 - mcProcess.p) / (mcProcess.λ₋ + 1)

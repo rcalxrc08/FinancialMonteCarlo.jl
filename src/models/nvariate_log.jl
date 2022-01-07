@@ -40,19 +40,19 @@ function simulate!(S_Total, mcProcess::GaussianCopulaNVariateLogProcess, rfCurve
     ## Simulate
     len_ = length(mcProcess.models)
 
-    for i = 1:len_
-        simulate!(S_Total[i], mcProcess.models[i], rfCurve, mcBaseData, T)
+    @inbounds for i = 1:len_
+        @views simulate!(S_Total[i], mcProcess.models[i], rfCurve, mcBaseData, T)
     end
 
     rho = mcProcess.rho
     if (isdiag(rho))
         return
     end
-    for i = 1:len_
-        S_Total[i] .= log.(S_Total[i] ./ mcProcess.models[i].underlying.S0)
+    @inbounds for i = 1:len_
+        @. S_Total[i] = log(S_Total[i] / mcProcess.models[i].underlying.S0)
     end
     U_joint = Matrix{eltype(rho)}(undef, len_, Nsim)
-    for j = 1:Nstep
+    @inbounds for j = 1:Nstep
         gausscopulagen2!(U_joint, rho, mcBaseData)
         for i = 1:len_
             @views tmp_ = S_Total[i][:, j+1]

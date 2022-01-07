@@ -14,7 +14,7 @@ function simulate!(X, mcProcess::SubordinatedBrownianMotion, mcBaseData::MonteCa
     vec = Array{typeof(get_rng_type(isDualZero))}(undef, Nstep)
     @inbounds for i = 1:Nsim
         next!(seq, vec)
-        vec .= norminvcdf.(vec)
+        @. vec = norminvcdf(vec)
         @inbounds for j = 1:Nstep
             dt_s = rand(mcBaseData.rng, mcProcess.subordinator_)
             @views X[i, j+1] = X[i, j] + drift * dt_s + sigma * sqrt(dt_s) * vec[j]
@@ -38,7 +38,7 @@ function simulate!(X, mcProcess::SubordinatedBrownianMotionVec, mcBaseData::Mont
     @inbounds for i = 1:Nsim
         t_s = zero(type_sub)
         next!(seq, vec)
-        vec .= norminvcdf.(vec)
+        @. vec = norminvcdf(vec)
         @inbounds for j = 1:Nstep
             dt_s = rand(mcBaseData.rng, mcProcess.subordinator_)
             tmp_drift = incremental_integral(drift, t_s, dt_s)

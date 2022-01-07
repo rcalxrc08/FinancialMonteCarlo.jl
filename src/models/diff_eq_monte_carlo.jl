@@ -22,6 +22,6 @@ function simulate!(X, mcProcess::MonteCarloDiffEqModel, rfCurve::ZeroRate, mcBas
     sol = solve(diffeqmodel, SOSRI(), EnsembleThreads(), trajectories = Nsim, dt = Dt, adaptive = false)
     X .= [path.u[j] for path in sol.u, j = 1:(Nstep+1)]
     f(x) = mcProcess.final_trasform(x)
-    broadcast!(f, X, X)
+    @. X = f(X)
     nothing
 end

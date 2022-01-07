@@ -30,7 +30,7 @@ function simulate!(X, mcProcess::SubordinatedBrownianMotion, mcBaseData::MonteCa
     @assert T > 0.0
 
     type_sub = typeof(rand(mcBaseData.rng, mcProcess.subordinator_))
-    isDualZero = drift * zero(type_sub) * 0.0
+    isDualZero = drift * zero(type_sub)
     @views X[:, 1] .= isDualZero
     Z = Array{typeof(get_rng_type(isDualZero))}(undef, Nsim)
     dt_s = Array{typeof(get_rng_type(isDualZero))}(undef, Nsim)
