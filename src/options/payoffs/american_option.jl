@@ -24,5 +24,6 @@ export AmericanOption;
 
 function payout(Sti::numtype_, amPayoff::AmericanOption) where {numtype_ <: Number}
     iscall = amPayoff.isCall ? 1 : -1
-    return ((Sti - amPayoff.K) * iscall > 0.0) ? (Sti - amPayoff.K) * iscall : zero(numtype_)
+    zero_typed = zero(Sti) * amPayoff.K
+    return max(iscall * (Sti - amPayoff.K), zero_typed)
 end
