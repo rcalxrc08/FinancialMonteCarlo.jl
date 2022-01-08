@@ -1,7 +1,7 @@
 #Number Type (just sigma tested) ---> Model type ----> Mode ---> zero rate type
 
 using Test, DualNumbers, FinancialMonteCarlo, VectorizedRNG, JLD2
-rebase = false;
+rebase = true;
 sigma_dual = dual(0.2, 1.0);
 sigma_no_dual = 0.2;
 
@@ -35,6 +35,7 @@ anti_mc = MonteCarloConfiguration(Nsim, Nstep, FinancialMonteCarlo.AntitheticMC(
 sobol_mc = MonteCarloConfiguration(Nsim, Nstep, FinancialMonteCarlo.SobolMode());
 cv_mc = MonteCarloConfiguration(Nsim, Nstep, FinancialMonteCarlo.ControlVariates(Forward(T), MonteCarloConfiguration(100, 3)));
 vect_mc = MonteCarloConfiguration(Nsim, Nstep, FinancialMonteCarlo.SerialMode(), 10, local_rng());
+mc_modes = [std_mc, anti_mc, sobol_mc, cv_mc, vect_mc]
 
 r = 0.02;
 r_prev = 0.019999;
@@ -56,6 +57,7 @@ BarrierDataUI = BarrierOptionUpIn(T, K, D)
 BarrierDataUO = BarrierOptionUpOut(T, K, D)
 BermData = BermudanOption(collect(0.2:0.1:T), K);
 doubleBarrierOptionDownOut = DoubleBarrierOption(T, K, K / 10.0, 1.2 * K)
+opt_vec = [eur_opt_, EUBin, AMData, AmBin, BarrierData, AsianFloatingStrikeData, AsianFixedStrikeData, BinAMData, BarrierDataDI, BarrierDataUO, BermData, doubleBarrierOptionDownOut];
 
 bs(sigma) = BlackScholesProcess(sigma, und)
 kou(sigma) = KouProcess(sigma, lam, p, lamp, lamm, und);
@@ -69,9 +71,9 @@ create_str_lam(x...) = join([string(typeof(y)) for y in x], "_");
 
 for sigma in Number[sigma_no_dual, sigma_dual]
     for model_ in [bs(sigma), kou(sigma), hest(sigma), vg(sigma), merton(sigma), nig(sigma), log_mixture(sigma), shift_mixture(sigma)]
-        for mode_ in [std_mc, anti_mc, sobol_mc, cv_mc, vect_mc]
+        for mode_ in mc_modes
             for zero_ in [zr_scalar, zr_imp]
-                for opt in [eur_opt_, EUBin, AMData, AmBin, BarrierData, AsianFloatingStrikeData, AsianFixedStrikeData, BinAMData, BarrierDataDI, BarrierDataUO, BermData, doubleBarrierOptionDownOut]
+                for opt in opt_vec
                     key_tmp1 = create_str_lam(sigma, model_, mode_.monteCarloMethod, mode_.rng, zero_, opt)
                     result = pricer(model_, zero_, mode_, opt)
                     @assert !isnan(result) "Result for provided simulation is nan $(result)  $(key_tmp1)\n"
@@ -81,12 +83,12 @@ for sigma in Number[sigma_no_dual, sigma_dual]
         end
     end
 end
-
+OUTPUT = joinpath(@__DIR__, "test_results.jld2")
 if rebase
-    save("test_results.jld2", suite_num)
+    save(OUTPUT, suite_num)
 end
-suite_num_old_results = load("test_results.jld2")
-toll = 1.0
+suite_num_old_results = load(OUTPUT)
+toll = 0.4
 
 for key_tmp in unique([collect(keys(suite_num_old_results)); collect(keys(suite_num))])
     @test abs(suite_num[key_tmp] - suite_num_old_results[key_tmp]) < toll
