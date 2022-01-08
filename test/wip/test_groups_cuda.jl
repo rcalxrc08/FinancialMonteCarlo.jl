@@ -79,10 +79,11 @@ for sigma in Number[sigma_no_dual, sigma_dual]
     end
 end
 
+OUTPUT = joinpath(@__DIR__, "test_results_cuda.jld2")
 if rebase
-    save("test_results_cuda.jld2", suite_num)
+    save(OUTPUT, suite_num)
 end
-suite_num_old_results = load("test_results_cuda.jld2")
+suite_num_old_results = load(OUTPUT)
 toll = 1.0
 
 for key_tmp in unique([collect(keys(suite_num_old_results)); collect(keys(suite_num))])
