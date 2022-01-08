@@ -3,14 +3,15 @@ General Interface for Rho computation
 
 		Rho=rho(mcProcess,rfCurve,mcConfig,abstractPayoff,dr)
 	
-Where:\n
-		mcProcess          = Process to be simulated.
-		rfCurve  = Zero Rate Data.
-		mcConfig = Basic properties of MonteCarlo simulation
-		abstractPayoff = Payoff(s) to be priced
-		dr [optional, default to 1e-7] = increment
+Where:
 
-		Rho     = Rho of the derivative
+		mcProcess      = Process to be simulated.
+		rfCurve        = Zero Rate Data.
+		mcConfig       = Basic properties of MonteCarlo simulation
+		abstractPayoff = Payoff(s) to be priced
+		dr             = increment [optional, default to 1e-7]
+
+		Rho            = Rho of the derivative
 
 """
 function rho(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration, abstractPayoff::AbstractPayoff, dr::Real = 1e-7)

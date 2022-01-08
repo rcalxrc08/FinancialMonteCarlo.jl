@@ -3,7 +3,8 @@ Struct for Black Scholes Process
 
 		bsProcess=BlackScholesProcess(σ::num1) where {num1 <: Number}
 	
-Where:\n
+Where:
+
 		σ	=	volatility of the process.
 """
 mutable struct BlackScholesProcess{num <: Number, abstrUnderlying <: AbstractUnderlying} <: ItoProcess{num}

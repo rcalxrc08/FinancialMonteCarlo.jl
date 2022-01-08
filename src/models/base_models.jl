@@ -38,13 +38,14 @@ General Interface for Stochastic Process simulation
 
 		S=simulate(mcProcess,zeroCurve,mcBaseData,T)
 	
-Where:\n
-		mcProcess          = Process to be simulated.
-		zeroCurve  = Datas of the Zero Rate Curve.
-		mcBaseData = Basic properties of MonteCarlo simulation
-		T = Final time of the process
+Where:
 
-		S      = Matrix with path of underlying.
+		mcProcess   = Process to be simulated.
+		zeroCurve   = Datas of the Zero Rate Curve.
+		mcBaseData  = Basic properties of MonteCarlo simulation
+		T           = Final time of the process
+
+		S           = Matrix with path of underlying.
 
 """
 function simulate(mcProcess::AbstractMonteCarloProcess, zeroCurve::AbstractZeroRateCurve, mcBaseData::AbstractMonteCarloConfiguration, T::Number)
@@ -70,12 +71,13 @@ General Interface for Stochastic Engine simulation
 
 		S=simulate(mcProcess,mcBaseData,T)
 	
-Where:\n
-		mcProcess          = Process to be simulated.
-		mcBaseData = Basic properties of MonteCarlo simulation
-		T = Final time of the process
+Where:
 
-		S      = Matrix with path of underlying.
+		mcProcess  = Process to be simulated.
+		mcBaseData = Basic properties of MonteCarlo simulation
+		T          = Final time of the process
+
+		S          = Matrix with path of underlying.
 
 """
 function simulate(mcProcess::AbstractMonteCarloEngine, mcBaseData::AbstractMonteCarloConfiguration, T::Number)

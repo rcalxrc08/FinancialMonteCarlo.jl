@@ -3,7 +3,8 @@ Struct for SubordinatedBrownianMotion
 
 		subordinatedBrownianMotion=SubordinatedBrownianMotion(sigma::num,drift::num1)
 	
-Where:\n
+Where:
+
 		sigma       =	Volatility.
 		drift       = 	drift.
 		underlying  = 	underlying.

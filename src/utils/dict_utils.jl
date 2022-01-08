@@ -7,7 +7,6 @@ function oper(+)
             return $+(d, r)
         end
         d_complete = complete_curve(T_r, d)
-        #key_type=typeof(zero(num1));
         val_type = typeof(zero(num2) + zero(num3))
         out = DictTypeInternal{num1, val_type}()
         for t in T_r

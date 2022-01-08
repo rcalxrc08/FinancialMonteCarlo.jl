@@ -3,10 +3,11 @@ Struct for Barrier Down and Out Option
 
 		barOption=BarrierOptionDownOut(T::num1,K::num2,barrier::num3,isCall::Bool=true) where {num1 <: Number,num2 <: Number,num3 <: Number}
 	
-Where:\n
-		T	=	Time to maturity of the Option.
-		K	=	Strike Price of the Option.
-		barrier	=	Down Barrier of the Option.
+Where:
+
+		T	    = Time to maturity of the Option.
+		K	    = Strike Price of the Option.
+		barrier	= Down Barrier of the Option.
 		isCall  = true for CALL, false for PUT.
 """
 struct BarrierOptionDownOut{num1 <: Number, num2 <: Number, num3 <: Number, numtype <: Number} <: BarrierPayoff{numtype}

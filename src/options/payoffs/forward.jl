@@ -3,7 +3,8 @@ Class for Dispatching Forward Payoff
 
 		forward=Forward(T::num) where {num <: Number}
 	
-Where:\n
+Where:
+
 		T	=	Time to maturity of the Forward.
 """
 mutable struct Forward{num <: Number} <: EuropeanPayoff{num}
