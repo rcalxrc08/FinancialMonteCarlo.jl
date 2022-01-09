@@ -22,7 +22,8 @@ FinancialMonteCarlo.jl contains the following capabilities:
 - Partial Support for the following Parallelization:
     - CUDA using  [CUDA.jl](https://github.com/JuliaGPU/CUDA.jl)
     - Thread based (Native julia)
-	- Process based (Native julia)
+    - Process based (Native julia)
+
 
 It also supports the pricing directly from the definition of the Stochastic Differential Equation, using the package [DifferentiatialEquations.jl](https://github.com/JuliaDiffEq/DifferentialEquations.jl).
 
