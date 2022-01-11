@@ -2,13 +2,7 @@ abstract type AbstractCudaMode <: ParallelMode end
 struct CudaMode <: AbstractCudaMode end
 
 using .CUDA
-include("../models/cuda/brownian_motion_cuda.cujl")
-include("../models/cuda/brownian_motion_cuda_aug.cujl")
-include("../models/cuda/heston_cuda.cujl")
-include("../models/cuda/heston_aug_cuda.cujl")
-include("../models/cuda/fa_levy_cuda.cujl")
-include("../models/cuda/subordinated_brownian_motion_cuda.cujl")
-include("../models/cuda/subordinated_brownian_motion_aug_cuda.cujl")
+include("../models/cuda/cuda_models.jl")
 
 function set_seed(mcConfig::MonteCarloConfiguration{type1, type2, type3, type4, type5}) where {type1 <: Integer, type2 <: Integer, type3 <: AbstractMonteCarloMethod, type4 <: AbstractCudaMode, type5 <: Random.AbstractRNG}
     tmp_rng = deepcopy(mcConfig.rng)

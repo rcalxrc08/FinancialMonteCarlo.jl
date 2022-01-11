@@ -1,0 +1,7 @@
+include("brownian_motion_cuda.jl")
+include("brownian_motion_cuda_aug.jl")
+include("heston_cuda.jl")
+include("heston_aug_cuda.jl")
+include("fa_levy_cuda.jl")
+include("subordinated_brownian_motion_cuda.jl")
+include("subordinated_brownian_motion_aug_cuda.jl")
