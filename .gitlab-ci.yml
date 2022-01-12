@@ -40,7 +40,7 @@ before_script:
     - /usr/local/julia/bin/julia --project=@. -e 'using Pkg; Pkg.add("Coverage"); import Pkg; Pkg.build(); using FinancialMonteCarlo;
       using Coverage; cl, tl = get_summary(process_folder());
       println("(", cl/tl*100, "%) covered");
-      using Pkg; cd(Pkg.dir("FinancialMonteCarlo")); Codecov.submit(Codecov.process_folder())'
+      using Pkg; cd(Pkg.dir("FinancialMonteCarlo")); Codecov.submit_local(Codecov.process_folder())'
   artifacts:
     when: on_success
     paths:
