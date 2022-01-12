@@ -1,5 +1,5 @@
 
-function simulate!(X, mcProcess::HestonProcess, rfCurve::ZeroRateCurve, mcBaseData::MonteCarloConfiguration{type1, type2, type3, SerialMode, type5}, T::numb) where {numb <: Number, type1 <: Integer, type2 <: Integer, type3 <: StandardMC, type5 <: Random.AbstractRNG}
+function simulate!(X, mcProcess::HestonProcess, rfCurve::ZeroRateCurve, mcBaseData::SerialMonteCarloConfig, T::numb) where {numb <: Number}
     r = rfCurve.r
     S0 = mcProcess.underlying.S0
     d = dividend(mcProcess)
@@ -28,8 +28,8 @@ function simulate!(X, mcProcess::HestonProcess, rfCurve::ZeroRateCurve, mcBaseDa
     e2_rho = Array{typeof(get_rng_type(isDualZero))}(undef, Nsim)
     e2 = Array{typeof(get_rng_type(isDualZero))}(undef, Nsim)
     @inbounds for j = 1:Nstep
-        randn!(mcBaseData.rng, e1)
-        randn!(mcBaseData.rng, e2_rho)
+        randn!(mcBaseData.parallelMode.rng, e1)
+        randn!(mcBaseData.parallelMode.rng, e2_rho)
         @. e2 = e1 * ρ + e2_rho * sqrt(1 - ρ * ρ)
         tmp_ = incremental_integral(r_d, (j - 1) * dt, dt)
         @. @views X[:, j+1] = X[:, j] + (tmp_ - 0.5 * v_m * dt) + sqrt(v_m) * sqrt(dt) * e1
@@ -41,7 +41,7 @@ function simulate!(X, mcProcess::HestonProcess, rfCurve::ZeroRateCurve, mcBaseDa
     return
 end
 
-function simulate!(X, mcProcess::HestonProcess, rfCurve::ZeroRateCurve, mcBaseData::MonteCarloConfiguration{type1, type2, type3, SerialMode, type5}, T::numb) where {numb <: Number, type1 <: Integer, type2 <: Integer, type3 <: AntitheticMC, type5 <: Random.AbstractRNG}
+function simulate!(X, mcProcess::HestonProcess, rfCurve::ZeroRateCurve, mcBaseData::SerialAntitheticMonteCarloConfig, T::numb) where {numb <: Number}
     r = rfCurve.r
     S0 = mcProcess.underlying.S0
     d = dividend(mcProcess)
@@ -76,8 +76,8 @@ function simulate!(X, mcProcess::HestonProcess, rfCurve::ZeroRateCurve, mcBaseDa
     e2 = Array{typeof(get_rng_type(isDualZero))}(undef, Nsim_2)
     isDualZeroVol_eps = isDualZeroVol + eps(isDualZeroVol)
     for j = 1:Nstep
-        randn!(mcBaseData.rng, e1)
-        randn!(mcBaseData.rng, e2_rho)
+        randn!(mcBaseData.parallelMode.rng, e1)
+        randn!(mcBaseData.parallelMode.rng, e2_rho)
         @. e2 = e1 * ρ + e2_rho * sqrt(1 - ρ * ρ)
         tmp_ = incremental_integral(r_d, (j - 1) * dt, dt)
         @. @views Xp[:, j+1] = Xp[:, j] + (tmp_ - 0.5 * v_mp * dt) + sqrt(v_mp) * sqrt(dt) * e1

@@ -13,7 +13,7 @@ end
 
 export MonteCarloDiffeEqModel;
 
-function simulate!(X, mcProcess::MonteCarloDiffEqModel, rfCurve::ZeroRate, mcBaseData::MonteCarloConfiguration{type1, type2, type3, type4, type5}, T::numb) where {numb <: Number, type1 <: Number, type2 <: Number, type3 <: AbstractMonteCarloMethod, type4 <: BaseMode, type5 <: Random.AbstractRNG}
+function simulate!(X, mcProcess::MonteCarloDiffEqModel, rfCurve::ZeroRate, mcBaseData::MonteCarloConfiguration{type1, type2, type3, type4}, T::numb) where {numb <: Number, type1 <: Number, type2 <: Number, type3 <: AbstractMonteCarloMethod, type4 <: BaseMode}
     Nsim = mcBaseData.Nsim
     Nstep = mcBaseData.Nstep
     Dt = T / Nstep

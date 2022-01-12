@@ -1,19 +1,30 @@
 abstract type AbstractCudaMode <: ParallelMode end
-struct CudaMode <: AbstractCudaMode end
+# struct CudaMode <: AbstractCudaMode end
+mutable struct CudaMode{rngType <: Random.AbstractRNG} <: AbstractCudaMode
+    seed_cpu::Int64
+    seed_gpu::Int64
+    rng::rngType
+    function CudaMode(seed_cpu::num = 0, seed_gpu::num2 = 0, rng::rngType = MersenneTwister()) where {num <: Integer, num2 <: Integer, rngType <: Random.AbstractRNG}
+        return new{rngType}(Int64(seed_cpu), Int64(seed_gpu), rng)
+    end
+end
+CudaMonteCarloConfig = MonteCarloConfiguration{num1, num2, num3, ser_mode} where {num1 <: Integer, num2 <: Integer, num3 <: FinancialMonteCarlo.StandardMC, ser_mode <: FinancialMonteCarlo.CudaMode{rng_}} where {rng_ <: Random.AbstractRNG}
+CudaAntitheticMonteCarloConfig = MonteCarloConfiguration{num1, num2, num3, ser_mode} where {num1 <: Integer, num2 <: Integer, num3 <: FinancialMonteCarlo.AntitheticMC, ser_mode <: FinancialMonteCarlo.CudaMode{rng_}} where {rng_ <: Random.AbstractRNG}
 
 using .CUDA
 include("../models/cuda/cuda_models.jl")
 
-function set_seed(mcConfig::MonteCarloConfiguration{type1, type2, type3, type4, type5}) where {type1 <: Integer, type2 <: Integer, type3 <: AbstractMonteCarloMethod, type4 <: AbstractCudaMode, type5 <: Random.AbstractRNG}
-    tmp_rng = deepcopy(mcConfig.rng)
-    inner_seed!(tmp_rng, mcConfig.seed)
-    mcConfig.rng = tmp_rng
+function set_seed(mcConfig::MonteCarloConfiguration{type1, type2, type3, type4}) where {type1 <: Integer, type2 <: Integer, type3 <: AbstractMonteCarloMethod, type4 <: AbstractCudaMode}
+    tmp_rng = deepcopy(mcConfig.parallelMode.rng)
+    inner_seed!(tmp_rng, mcConfig.parallelMode.seed_cpu)
+    CUDA.CURAND.seed!(mcConfig.parallelMode.seed_gpu)
+    mcConfig.parallelMode.rng = tmp_rng
     nothing
 end
 
-get_matrix_type(mcConfig::MonteCarloConfiguration{<:Integer, <:Integer, <:AbstractMonteCarloMethod, <:AbstractCudaMode, <:Random.AbstractRNG}, ::BaseProcess, price) = CuMatrix{typeof(price)}(undef, mcConfig.Nsim, mcConfig.Nstep + 1);
-get_array_type(mcConfig::MonteCarloConfiguration{<:Integer, <:Integer, <:AbstractMonteCarloMethod, <:AbstractCudaMode, <:Random.AbstractRNG}, ::BaseProcess, price) = CuArray{typeof(price)}(undef, mcConfig.Nsim);
-get_matrix_type(::MonteCarloConfiguration{<:Integer, <:Integer, <:AbstractMonteCarloMethod, <:AbstractCudaMode, <:Random.AbstractRNG}, ::VectorialMonteCarloProcess, price) = Array{CuMatrix{typeof(price)}};
+get_matrix_type(mcConfig::MonteCarloConfiguration{<:Integer, <:Integer, <:AbstractMonteCarloMethod, <:AbstractCudaMode}, ::BaseProcess, price) = CuMatrix{typeof(price)}(undef, mcConfig.Nsim, mcConfig.Nstep + 1);
+get_array_type(mcConfig::MonteCarloConfiguration{<:Integer, <:Integer, <:AbstractMonteCarloMethod, <:AbstractCudaMode}, ::BaseProcess, price) = CuArray{typeof(price)}(undef, mcConfig.Nsim);
+get_matrix_type(::MonteCarloConfiguration{<:Integer, <:Integer, <:AbstractMonteCarloMethod, <:AbstractCudaMode}, ::VectorialMonteCarloProcess, price) = Array{CuMatrix{typeof(price)}};
 
 function payoff(S::CuMatrix{num}, payoff_::PathDependentPayoff, rfCurve::AbstractZeroRateCurve, mcBaseData::AbstractMonteCarloConfiguration, T1::num2 = maturity(payoff_)) where {num <: Number, num2 <: Number}
     S_ = collect(S)

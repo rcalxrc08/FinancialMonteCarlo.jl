@@ -20,7 +20,7 @@ end
 
 export BrownianMotion;
 
-function simulate!(X, mcProcess::BrownianMotion, mcBaseData::MonteCarloConfiguration{type1, type2, type3, SerialMode, type5}, T::numb) where {numb <: Number, type1 <: Integer, type2 <: Integer, type3 <: StandardMC, type5 <: Random.AbstractRNG}
+function simulate!(X, mcProcess::BrownianMotion, mcBaseData::SerialMonteCarloConfig, T::numb) where {numb <: Number}
     Nsim = mcBaseData.Nsim
     Nstep = mcBaseData.Nstep
     σ = mcProcess.σ
@@ -33,13 +33,13 @@ function simulate!(X, mcProcess::BrownianMotion, mcBaseData::MonteCarloConfigura
     view(X, :, 1) .= isDualZero
     Z = Array{typeof(get_rng_type(isDualZero))}(undef, Nsim)
     @inbounds for j = 1:Nstep
-        randn!(mcBaseData.rng, Z)
+        randn!(mcBaseData.parallelMode.rng, Z)
         @views @. X[:, j+1] = X[:, j] + mean_bm + stddev_bm * Z
     end
     return
 end
 
-function simulate!(X, mcProcess::BrownianMotion, mcBaseData::MonteCarloConfiguration{type1, type2, type3, SerialMode, type5}, T::numb) where {numb <: Number, type1 <: Integer, type2 <: Integer, type3 <: AntitheticMC, type5 <: Random.AbstractRNG}
+function simulate!(X, mcProcess::BrownianMotion, mcBaseData::SerialAntitheticMonteCarloConfig, T::numb) where {numb <: Number}
     Nsim = mcBaseData.Nsim
     Nstep = mcBaseData.Nstep
     σ = mcProcess.σ
@@ -56,7 +56,7 @@ function simulate!(X, mcProcess::BrownianMotion, mcBaseData::MonteCarloConfigura
     Xp = @views X[1:Nsim_2, :]
     Xm = @views X[(Nsim_2+1):end, :]
     @inbounds for j = 1:Nstep
-        randn!(mcBaseData.rng, Z)
+        randn!(mcBaseData.parallelMode.rng, Z)
         @. @views Xp[:, j+1] = Xp[:, j] + mean_bm + stddev_bm * Z
         @. @views Xm[:, j+1] = Xm[:, j] + mean_bm - stddev_bm * Z
     end

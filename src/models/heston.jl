@@ -32,7 +32,7 @@ end
 
 export HestonProcess;
 
-function simulate!(X, mcProcess::HestonProcess, rfCurve::ZeroRate, mcBaseData::MonteCarloConfiguration{type1, type2, type3, SerialMode, type5}, T::numb) where {numb <: Number, type1 <: Integer, type2 <: Integer, type3 <: StandardMC, type5 <: Random.AbstractRNG}
+function simulate!(X, mcProcess::HestonProcess, rfCurve::ZeroRate, mcBaseData::SerialMonteCarloConfig, T::numb) where {numb <: Number}
     r = rfCurve.r
     S0 = mcProcess.underlying.S0
     d = dividend(mcProcess)
@@ -57,12 +57,15 @@ function simulate!(X, mcProcess::HestonProcess, rfCurve::ZeroRate, mcBaseData::M
     v_m = [σ₀^2 + isDualZero for _ = 1:Nsim]
     isDualZero_eps = isDualZeroVol + eps(isDualZeroVol)
     e1 = Array{typeof(get_rng_type(isDualZero))}(undef, Nsim)
+    #Wrong, is dual zero shouldn't have rho
     e2_rho = Array{typeof(get_rng_type(isDualZero))}(undef, Nsim)
-    e2 = Array{typeof(get_rng_type(isDualZero))}(undef, Nsim)
+    e2 = Array{typeof(get_rng_type(isDualZero) + zero(ρ))}(undef, Nsim)
+    tmp_cost = sqrt(1 - ρ * ρ)
+    #TODO: acnaoicna
     for j = 1:Nstep
-        randn!(mcBaseData.rng, e1)
-        randn!(mcBaseData.rng, e2_rho)
-        @. e2 = e1 * ρ + e2_rho * sqrt(1 - ρ * ρ)
+        randn!(mcBaseData.parallelMode.rng, e1)
+        randn!(mcBaseData.parallelMode.rng, e2_rho)
+        @. e2 = e1 * ρ + e2_rho * tmp_cost
         @views @. X[:, j+1] = X[:, j] + ((r - d) - 0.5 * v_m) * dt + sqrt(v_m) * sqrt(dt) * e1
         @. v_m += κ_s * (θ_s - v_m) * dt + σ * sqrt(v_m) * sqrt(dt) * e2
         #when v_m = 0.0, the derivative becomes NaN
@@ -73,7 +76,7 @@ function simulate!(X, mcProcess::HestonProcess, rfCurve::ZeroRate, mcBaseData::M
     return
 end
 
-function simulate!(X, mcProcess::HestonProcess, rfCurve::ZeroRate, mcBaseData::MonteCarloConfiguration{type1, type2, type3, SerialMode, type5}, T::numb) where {numb <: Number, type1 <: Integer, type2 <: Integer, type3 <: AntitheticMC, type5 <: Random.AbstractRNG}
+function simulate!(X, mcProcess::HestonProcess, rfCurve::ZeroRate, mcBaseData::SerialAntitheticMonteCarloConfig, T::numb) where {numb <: Number}
     r = rfCurve.r
     S0 = mcProcess.underlying.S0
     d = dividend(mcProcess)
@@ -106,8 +109,8 @@ function simulate!(X, mcProcess::HestonProcess, rfCurve::ZeroRate, mcBaseData::M
     e2_rho = Array{typeof(get_rng_type(isDualZero))}(undef, Nsim_2)
     e2 = Array{typeof(get_rng_type(isDualZero))}(undef, Nsim_2)
     for j = 1:Nstep
-        randn!(mcBaseData.rng, e1)
-        randn!(mcBaseData.rng, e2_rho)
+        randn!(mcBaseData.parallelMode.rng, e1)
+        randn!(mcBaseData.parallelMode.rng, e2_rho)
         @. e2 = -(e1 * ρ + e2_rho * sqrt(1 - ρ * ρ))
         @views @. Xp[:, j+1] = Xp[:, j] + ((r - d) - 0.5 * v_m_1) * dt + sqrt(v_m_1) * sqrt(dt) * e1
         @views @. Xm[:, j+1] = Xm[:, j] + ((r - d) - 0.5 * v_m_2) * dt - sqrt(v_m_2) * sqrt(dt) * e1

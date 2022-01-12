@@ -1,6 +1,6 @@
 using Sobol, StatsFuns
 
-function simulate!(X, mcProcess::HestonProcess, rfCurve::ZeroRate, mcBaseData::MonteCarloConfiguration{type1, type2, type3, SerialMode, type5}, T::numb) where {numb <: Number, type1 <: Integer, type2 <: Integer, type3 <: SobolMode, type5 <: Random.AbstractRNG}
+function simulate!(X, mcProcess::HestonProcess, rfCurve::ZeroRate, mcBaseData::SerialSobolMonteCarloConfig, T::numb) where {numb <: Number}
     r = rfCurve.r
     S0 = mcProcess.underlying.S0
     d = dividend(mcProcess)
@@ -42,7 +42,7 @@ function simulate!(X, mcProcess::HestonProcess, rfCurve::ZeroRate, mcBaseData::M
     return
 end
 
-function simulate!(X, mcProcess::HestonProcess, rfCurve::ZeroRateCurve, mcBaseData::MonteCarloConfiguration{type1, type2, type3, SerialMode, type5}, T::numb) where {numb <: Number, type1 <: Integer, type2 <: Integer, type3 <: SobolMode, type5 <: Random.AbstractRNG}
+function simulate!(X, mcProcess::HestonProcess, rfCurve::ZeroRateCurve, mcBaseData::SerialSobolMonteCarloConfig, T::numb) where {numb <: Number}
     r = rfCurve.r
     S0 = mcProcess.underlying.S0
     d = dividend(mcProcess)

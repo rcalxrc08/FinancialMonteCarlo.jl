@@ -1,5 +1,5 @@
 
-function simulate!(X_cu, mcProcess::BrownianMotion, mcBaseData::MonteCarloConfiguration{type1, type2, type3, CudaMode, type5}, T::numb) where {numb <: Number, type1 <: Integer, type2 <: Integer, type3 <: StandardMC, type5 <: Random.AbstractRNG}
+function simulate!(X_cu, mcProcess::BrownianMotion, mcBaseData::CudaMonteCarloConfig, T::numb) where {numb <: Number}
     Nsim = mcBaseData.Nsim
     Nstep = mcBaseData.Nstep
     σ = mcProcess.σ
@@ -18,7 +18,7 @@ function simulate!(X_cu, mcProcess::BrownianMotion, mcBaseData::MonteCarloConfig
     return
 end
 
-function simulate!(X_cu, mcProcess::BrownianMotion, mcBaseData::MonteCarloConfiguration{type1, type2, type3, CudaMode, type5}, T::numb) where {numb <: Number, type1 <: Integer, type2 <: Integer, type3 <: AntitheticMC, type5 <: Random.AbstractRNG}
+function simulate!(X_cu, mcProcess::BrownianMotion, mcBaseData::CudaAntitheticMonteCarloConfig, T::numb) where {numb <: Number}
     Nsim = mcBaseData.Nsim
     Nstep = mcBaseData.Nstep
 

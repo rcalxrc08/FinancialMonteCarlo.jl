@@ -1,5 +1,5 @@
 
-function simulate!(X_cu, mcProcess::SubordinatedBrownianMotion, mcBaseData::MonteCarloConfiguration{type1, type2, type3, CudaMode, type5}, T::numb) where {numb <: Number, type1 <: Number, type2 <: Number, type3 <: StandardMC, type5 <: Random.AbstractRNG}
+function simulate!(X_cu, mcProcess::SubordinatedBrownianMotion, mcBaseData::CudaMonteCarloConfig, T::numb) where {numb <: Number}
     Nsim = mcBaseData.Nsim
     Nstep = mcBaseData.Nstep
     drift = mcProcess.drift
@@ -13,7 +13,7 @@ function simulate!(X_cu, mcProcess::SubordinatedBrownianMotion, mcBaseData::Mont
     Z = CuArray{typeof(get_rng_type(isDualZero))}(undef, Nsim)
     @inbounds for i = 1:Nstep
         # SUBORDINATED BROWNIAN MOTION (dt_s=time change)
-        rand!(mcBaseData.rng, mcProcess.subordinator_, dt_s_cpu)
+        rand!(mcBaseData.parallelMode.rng, mcProcess.subordinator_, dt_s_cpu)
         dt_s .= cu(dt_s_cpu)
         randn!(CUDA.CURAND.default_rng(), Z)
         @views @. X_cu[:, i+1] = X_cu[:, i] + drift * dt_s + sigma * sqrt(dt_s) * Z
@@ -21,7 +21,7 @@ function simulate!(X_cu, mcProcess::SubordinatedBrownianMotion, mcBaseData::Mont
     return
 end
 
-function simulate!(X_cu, mcProcess::SubordinatedBrownianMotion, mcBaseData::MonteCarloConfiguration{type1, type2, type3, CudaMode, type5}, T::numb) where {numb <: Number, type1 <: Number, type2 <: Number, type3 <: AntitheticMC, type5 <: Random.AbstractRNG}
+function simulate!(X_cu, mcProcess::SubordinatedBrownianMotion, mcBaseData::CudaAntitheticMonteCarloConfig, T::numb) where {numb <: Number}
     Nsim = mcBaseData.Nsim
     Nstep = mcBaseData.Nstep
     drift = mcProcess.drift
@@ -39,7 +39,7 @@ function simulate!(X_cu, mcProcess::SubordinatedBrownianMotion, mcBaseData::Mont
     @inbounds for i = 1:Nstep
         randn!(CUDA.CURAND.default_rng(), Z)
         # SUBORDINATED BROWNIAN MOTION (dt_s=time change)
-        rand!(mcBaseData.rng, mcProcess.subordinator_, dt_s_cpu)
+        rand!(mcBaseData.parallelMode.rng, mcProcess.subordinator_, dt_s_cpu)
         dt_s .= cu(dt_s_cpu)
         @views @. X_cu_p[:, i+1] = X_cu_p[:, i] + drift * dt_s + sigma * sqrt(dt_s) * Z
         @views @. X_cu_m[:, i+1] = X_cu_m[:, i] + drift * dt_s - sigma * sqrt(dt_s) * Z

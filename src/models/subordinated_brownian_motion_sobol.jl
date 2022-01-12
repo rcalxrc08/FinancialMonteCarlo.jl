@@ -1,6 +1,6 @@
 using Sobol, StatsFuns
 
-function simulate!(X, mcProcess::SubordinatedBrownianMotion, mcBaseData::MonteCarloConfiguration{type1, type2, type3, SerialMode, type5}, T::numb) where {numb <: Number, type1 <: Number, type2 <: Number, type3 <: SobolMode, type5 <: Random.AbstractRNG}
+function simulate!(X, mcProcess::SubordinatedBrownianMotion, mcBaseData::SerialSobolMonteCarloConfig, T::numb) where {numb <: Number}
     Nsim = mcBaseData.Nsim
     Nstep = mcBaseData.Nstep
     drift = mcProcess.drift
@@ -16,13 +16,13 @@ function simulate!(X, mcProcess::SubordinatedBrownianMotion, mcBaseData::MonteCa
         next!(seq, vec)
         @. vec = norminvcdf(vec)
         @inbounds for j = 1:Nstep
-            dt_s = rand(mcBaseData.rng, mcProcess.subordinator_)
+            dt_s = rand(mcBaseData.parallelMode.rng, mcProcess.subordinator_)
             @views X[i, j+1] = X[i, j] + drift * dt_s + sigma * sqrt(dt_s) * vec[j]
         end
     end
 end
 
-function simulate!(X, mcProcess::SubordinatedBrownianMotionVec, mcBaseData::MonteCarloConfiguration{type1, type2, type3, SerialMode, type5}, T::numb) where {numb <: Number, type1 <: Number, type2 <: Number, type3 <: SobolMode, type5 <: Random.AbstractRNG}
+function simulate!(X, mcProcess::SubordinatedBrownianMotionVec, mcBaseData::SerialSobolMonteCarloConfig, T::numb) where {numb <: Number}
     Nsim = mcBaseData.Nsim
     Nstep = mcBaseData.Nstep
     drift = mcProcess.drift
@@ -40,7 +40,7 @@ function simulate!(X, mcProcess::SubordinatedBrownianMotionVec, mcBaseData::Mont
         next!(seq, vec)
         @. vec = norminvcdf(vec)
         @inbounds for j = 1:Nstep
-            dt_s = rand(mcBaseData.rng, mcProcess.subordinator_)
+            dt_s = rand(mcBaseData.parallelMode.rng, mcProcess.subordinator_)
             tmp_drift = incremental_integral(drift, t_s, dt_s)
             t_s += dt_s
             @views X[i, j+1] = X[i, j] + tmp_drift + sigma * sqrt(dt_s) * vec[j]

@@ -11,7 +11,7 @@ function pricer(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig
     #c=-cov(Payoff_var,Payoff_opt_var)/var(Payoff_var)[1];
     c = -collect(cov(Payoff_var, Payoff_opt_var) / var(Payoff_var))[1]
     price_var = mean(Payoff_var)
-    mcConfig_mod = MonteCarloConfiguration(mcConfig.Nsim, mcConfig.Nstep, variate_conf.monteCarloMethod, mcConfig.parallelMode, mcConfig.seed * 2)
+    mcConfig_mod = MonteCarloConfiguration(mcConfig.Nsim, mcConfig.Nstep, variate_handl.curr_method, mcConfig.parallelMode)
     #END OF VARIATE SECTION
     Prices = pricer(mcProcess, rfCurve, mcConfig_mod, [abstractPayoff, variate_payoff])
     Price = Prices[1] + c * (Prices[2] - price_var)
@@ -19,7 +19,7 @@ function pricer(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig
     return Price
 end
 
-function pricer(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration{<:Integer, <:Integer, <:ControlVariates{Forward{num}}, <:BaseMode}, abstractPayoff::AbstractPayoff) where {num <: Number}
+function pricer(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration{<:Integer, <:Integer, <:ControlVariates{Forward{num}, <:AbstractMonteCarloConfiguration, <:AbstractMonteCarloMethod}, <:BaseMode}, abstractPayoff::AbstractPayoff) where {num <: Number}
     set_seed(mcConfig)
     variate_handl = mcConfig.monteCarloMethod
     variate_conf = variate_handl.conf_variate
@@ -31,7 +31,7 @@ function pricer(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig
     Payoff_opt_var = payoff(S_var, abstractPayoff, rfCurve, variate_conf)
     c = -collect(cov(Payoff_var, Payoff_opt_var) / var(Payoff_var))[1]
     price_var = mcProcess.underlying.S0 * exp(-integral(mcProcess.underlying.d, T))
-    mcConfig_mod = MonteCarloConfiguration(mcConfig.Nsim, mcConfig.Nstep, variate_conf.monteCarloMethod, mcConfig.parallelMode, mcConfig.seed + 3)
+    mcConfig_mod = MonteCarloConfiguration(mcConfig.Nsim, mcConfig.Nstep, variate_handl.curr_method, mcConfig.parallelMode)
     #END OF VARIATE SECTION
     Prices = pricer(mcProcess, rfCurve, mcConfig_mod, [abstractPayoff, variate_payoff])
     Price = Prices[1] - c * (Prices[2] - price_var)

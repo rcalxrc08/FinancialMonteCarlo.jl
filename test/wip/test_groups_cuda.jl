@@ -1,6 +1,6 @@
 #Number Type (just sigma tested) ---> Model type ----> Mode ---> zero rate type
 
-using Test, DualNumbers, FinancialMonteCarlo, VectorizedRNG, JLD2, CUDA
+using Test, DualNumbers, FinancialMonteCarlo, JLD2, CUDA
 rebase = false;
 sigma_dual = dual(0.2, 1.0);
 sigma_no_dual = 0.2;
@@ -69,7 +69,7 @@ for sigma in Number[sigma_no_dual, sigma_dual]
         for mode_ in [mc, mc_2]
             for zero_ in [zr_scalar, zr_imp]
                 for opt in [eur_opt_, EUBin, AMData, AmBin, BarrierData, AsianFloatingStrikeData, AsianFixedStrikeData, BinAMData, BarrierDataDI, BarrierDataUO, BermData, doubleBarrierOptionDownOut]
-                    key_tmp1 = create_str_lam(sigma, model_, mode_.monteCarloMethod, mode_.rng, zero_, opt)
+                    key_tmp1 = create_str_lam(sigma, model_, mode_.monteCarloMethod, mode_.parallelMode.rng, zero_, opt)
                     result = pricer(model_, zero_, mode_, opt)
                     @assert !isnan(result) "Result for provided simulation is nan $(key_tmp1)"
                     suite_num[key_tmp1] = result
