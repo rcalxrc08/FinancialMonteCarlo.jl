@@ -24,7 +24,7 @@ function SubordinatedBrownianMotion(σ::num, drift::CurveType{num1, num4}, subor
     return SubordinatedBrownianMotionVec(σ, drift, subordinator_)
 end
 
-function simulate!(X, mcProcess::SubordinatedBrownianMotionVec, mcBaseData::MonteCarloConfiguration{type1, type2, type3, SerialMode, type5}, T::numb) where {numb <: Number, type1 <: Number, type2 <: Number, type3 <: StandardMC, type5 <: Random.AbstractRNG}
+function simulate!(X, mcProcess::SubordinatedBrownianMotionVec, mcBaseData::SerialMonteCarloConfig, T::numb) where {numb <: Number}
     Nsim = mcBaseData.Nsim
     Nstep = mcBaseData.Nstep
 
@@ -40,8 +40,8 @@ function simulate!(X, mcProcess::SubordinatedBrownianMotionVec, mcBaseData::Mont
     @views X[:, 1] .= isDualZero
     Z = Array{Float64}(undef, Nsim)
     @inbounds for i = 1:Nstep
-        randn!(mcBaseData.rng, Z)
-        rand!(mcBaseData.rng, mcProcess.subordinator_, dt_s)
+        randn!(mcBaseData.parallelMode.rng, Z)
+        rand!(mcBaseData.parallelMode.rng, mcProcess.subordinator_, dt_s)
         tmp_drift = [incremental_integral(drift, t_, dt_) for (t_, dt_) in zip(t_s, dt_s)]
         @. t_s += dt_s
         # SUBORDINATED BROWNIAN MOTION (dt_s=time change)
@@ -51,7 +51,7 @@ function simulate!(X, mcProcess::SubordinatedBrownianMotionVec, mcBaseData::Mont
     return
 end
 
-function simulate!(X, mcProcess::SubordinatedBrownianMotionVec, mcBaseData::MonteCarloConfiguration{type1, type2, type3, SerialMode, type5}, T::numb) where {numb <: Number, type1 <: Number, type2 <: Number, type3 <: AntitheticMC, type5 <: Random.AbstractRNG}
+function simulate!(X, mcProcess::SubordinatedBrownianMotionVec, mcBaseData::SerialAntitheticMonteCarloConfig, T::numb) where {numb <: Number}
     Nsim = mcBaseData.Nsim
     Nstep = mcBaseData.Nstep
     type_sub = typeof(quantile(mcProcess.subordinator_, 0.5))
@@ -70,8 +70,8 @@ function simulate!(X, mcProcess::SubordinatedBrownianMotionVec, mcBaseData::Mont
     Z = Array{typeof(get_rng_type(isDualZero))}(undef, Nsim_2)
     tmp_drift = Array{typeof(zero_drift)}(undef, Nsim_2)
     @inbounds for i = 1:Nstep
-        randn!(mcBaseData.rng, Z)
-        rand!(mcBaseData.rng, mcProcess.subordinator_, dt_s)
+        randn!(mcBaseData.parallelMode.rng, Z)
+        rand!(mcBaseData.parallelMode.rng, mcProcess.subordinator_, dt_s)
         tmp_drift .= [incremental_integral(drift, t_, dt_) for (t_, dt_) in zip(t_s, dt_s)]
         @. t_s += dt_s
         # SUBORDINATED BROWNIAN MOTION (dt_s=time change)

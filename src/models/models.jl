@@ -7,7 +7,6 @@ include("utils.jl")
 ### Ito Processes
 include("brownian_motion.jl")
 include("brownian_motion_aug.jl")
-include("brownian_motion_prescribed.jl")
 include("brownian_motion_sobol.jl")
 include("geometric_brownian_motion.jl")
 include("geometric_brownian_motion_aug.jl")

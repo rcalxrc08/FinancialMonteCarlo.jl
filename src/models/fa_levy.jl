@@ -1,21 +1,21 @@
 
-function add_jump_matrix!(X, mcProcess::finiteActivityProcess, mcBaseData::MonteCarloConfiguration{type1, type2, type3, type4, type5}, T::numb) where {finiteActivityProcess <: FiniteActivityProcess, numb <: Number, type1 <: Number, type2 <: Number, type3 <: AbstractMonteCarloMethod, type4 <: BaseMode, type5 <: Random.AbstractRNG}
+function add_jump_matrix!(X, mcProcess::finiteActivityProcess, mcBaseData::AbstractMonteCarloConfiguration, T::numb) where {finiteActivityProcess <: FiniteActivityProcess, numb <: Number}
     Nsim = mcBaseData.Nsim
     Nstep = mcBaseData.Nstep
     λ = mcProcess.λ
     dt = T / Nstep
     @inbounds for i = 1:Nsim
-        t_i = randexp(mcBaseData.rng) / λ
+        t_i = randexp(mcBaseData.parallelMode.rng) / λ
         while t_i < T
             jump_size = compute_jump_size(mcProcess, mcBaseData)
             jump_idx = ceil(UInt32, t_i / dt) + 1
             @views @. X[i, jump_idx:end] += jump_size #add jump component
-            t_i += randexp(mcBaseData.rng) / λ
+            t_i += randexp(mcBaseData.parallelMode.rng) / λ
         end
     end
 end
 
-function simulate!(X, mcProcess::finiteActivityProcess, rfCurve::AbstractZeroRateCurve, mcBaseData::MonteCarloConfiguration{type1, type2, type3, type4, type5}, T::numb) where {finiteActivityProcess <: FiniteActivityProcess, numb <: Number, type1 <: Number, type2 <: Number, type3 <: AbstractMonteCarloMethod, type4 <: BaseMode, type5 <: Random.AbstractRNG}
+function simulate!(X, mcProcess::finiteActivityProcess, rfCurve::AbstractZeroRateCurve, mcBaseData::AbstractMonteCarloConfiguration, T::numb) where {finiteActivityProcess <: FiniteActivityProcess, numb <: Number}
     r = rfCurve.r
     d = dividend(mcProcess)
     σ = mcProcess.σ

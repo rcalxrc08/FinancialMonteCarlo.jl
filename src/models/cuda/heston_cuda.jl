@@ -1,5 +1,5 @@
 
-function simulate!(X, mcProcess::HestonProcess, spotData::ZeroRate, mcBaseData::MonteCarloConfiguration{type1, type2, type3, CudaMode, type5}, T::numb) where {numb <: Number, type1 <: Number, type2 <: Number, type3 <: StandardMC, type5 <: Random.AbstractRNG}
+function simulate!(X, mcProcess::HestonProcess, spotData::ZeroRate, mcBaseData::CudaMonteCarloConfig, T::numb) where {numb <: Number}
     r = spotData.r
     S0 = mcProcess.underlying.S0
     d = mcProcess.underlying.d
@@ -44,7 +44,7 @@ function simulate!(X, mcProcess::HestonProcess, spotData::ZeroRate, mcBaseData::
     return
 end
 
-function simulate!(X, mcProcess::HestonProcess, spotData::ZeroRate, mcBaseData::MonteCarloConfiguration{type1, type2, type3, CudaMode, type5}, T::numb) where {numb <: Number, type1 <: Number, type2 <: Number, type3 <: AntitheticMC, type5 <: Random.AbstractRNG}
+function simulate!(X, mcProcess::HestonProcess, spotData::ZeroRate, mcBaseData::CudaAntitheticMonteCarloConfig, T::numb) where {numb <: Number}
     r = spotData.r
     S0 = mcProcess.underlying.S0
     d = mcProcess.underlying.d

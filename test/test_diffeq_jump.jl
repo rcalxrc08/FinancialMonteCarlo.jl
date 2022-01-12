@@ -26,11 +26,11 @@ g_1(u, p, t) = sigma
 #Time Window
 tspan = (0.0, T)
 rate(u, p, t) = lam * T
-affect!(integrator) = (integrator.u = integrator.u + ((rand(mc.rng) < p1) ? randexp(mc.rng) / lamp : -randexp(mc.rng) / lamm))
+affect!(integrator) = (integrator.u = integrator.u + ((rand(mc.parallelMode.rng) < p1) ? randexp(mc.parallelMode.rng) / lamp : -randexp(mc.parallelMode.rng) / lamm))
 jump = ConstantRateJump(rate, affect!)
 
 #Definition of the SDE
-prob = SDEProblem(dr_, g_1, u0, tspan, rng = mc.rng)
+prob = SDEProblem(dr_, g_1, u0, tspan, rng = mc.parallelMode.rng)
 jump_prob = JumpProblem(prob, Direct(), jump)
 monte_prob = EnsembleProblem(jump_prob)
 rfCurve = ZeroRate(r);
@@ -55,5 +55,5 @@ AsianFixedStrikeData = AsianFixedStrikeOption(T, K)
 
 Tneg = -T;
 tspanNeg = (0.0, Tneg)
-probNeg = SDEProblem(dr_, g_1, u0, tspanNeg, rng = mc.rng)
+probNeg = SDEProblem(dr_, g_1, u0, tspanNeg, rng = mc.parallelMode.rng)
 monte_probNeg = EnsembleProblem(probNeg)

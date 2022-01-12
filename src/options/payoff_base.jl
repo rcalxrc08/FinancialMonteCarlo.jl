@@ -1,11 +1,12 @@
 ## Payoffs
 abstract type AbstractPayoff{numtype <: Number} end
 
-struct ControlVariates{abstractPayoff <: AbstractPayoff{<:Number}} <: AbstractMonteCarloMethod
-    variate::AbstractPayoff
-    conf_variate::MonteCarloConfiguration{<:Integer, <:Integer, <:AbstractMonteCarloMethod, <:BaseMode}
-    function ControlVariates(variate::T1, conf_variate::MonteCarloConfiguration) where {T1 <: AbstractPayoff{<:Number}}
-        return new{T1}(variate, conf_variate)
+struct ControlVariates{abstractPayoff <: AbstractPayoff{<:Number}, abstractMonteCarloConfiguration <: AbstractMonteCarloConfiguration, abstractMonteCarloMethod <: AbstractMonteCarloMethod} <: AbstractMonteCarloMethod
+    variate::abstractPayoff
+    conf_variate::abstractMonteCarloConfiguration
+    curr_method::abstractMonteCarloMethod
+    function ControlVariates(variate::T1, conf_variate::abstractMonteCarloConfiguration, curr_method::abstractMonteCarloMethod = StandardMC()) where {T1 <: AbstractPayoff{<:Number}, abstractMonteCarloConfiguration <: AbstractMonteCarloConfiguration, abstractMonteCarloMethod <: AbstractMonteCarloMethod}
+        return new{T1, abstractMonteCarloConfiguration, abstractMonteCarloMethod}(variate, conf_variate, curr_method)
     end
 end
 

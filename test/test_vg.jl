@@ -12,7 +12,7 @@ Nstep = 30;
 sigma = 0.2;
 theta1 = 0.01;
 k1 = 0.03;
-mc = MonteCarloConfiguration(Nsim, Nstep, FinancialMonteCarlo.SerialMode(), 1, RandomNumbers.Xorshifts.Xoroshiro128Plus());
+mc = MonteCarloConfiguration(Nsim, Nstep, FinancialMonteCarlo.SerialMode(1, RandomNumbers.Xorshifts.Xoroshiro128Plus()));
 mc1 = MonteCarloConfiguration(Nsim, Nstep, FinancialMonteCarlo.AntitheticMC());
 toll = 0.8;
 

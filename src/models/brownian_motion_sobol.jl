@@ -1,6 +1,6 @@
 using Sobol, StatsFuns
 
-function simulate!(X, mcProcess::BrownianMotion, mcBaseData::MonteCarloConfiguration{type1, type2, type3, SerialMode, type5}, T::numb) where {numb <: Number, type1 <: Number, type2 <: Number, type3 <: SobolMode, type5 <: Random.AbstractRNG}
+function simulate!(X, mcProcess::BrownianMotion, mcBaseData::SerialSobolMonteCarloConfig, T::numb) where {numb <: Number}
     Nsim = mcBaseData.Nsim
     Nstep = mcBaseData.Nstep
     σ = mcProcess.σ
@@ -24,7 +24,7 @@ function simulate!(X, mcProcess::BrownianMotion, mcBaseData::MonteCarloConfigura
     nothing
 end
 
-function simulate!(X, mcProcess::BrownianMotionVec, mcBaseData::MonteCarloConfiguration{type1, type2, type3, SerialMode, type5}, T::numb) where {numb <: Number, type1 <: Number, type2 <: Number, type3 <: SobolMode, type5 <: Random.AbstractRNG}
+function simulate!(X, mcProcess::BrownianMotionVec, mcBaseData::SerialSobolMonteCarloConfig, T::numb) where {numb <: Number}
     Nsim = mcBaseData.Nsim
     Nstep = mcBaseData.Nstep
     σ = mcProcess.σ

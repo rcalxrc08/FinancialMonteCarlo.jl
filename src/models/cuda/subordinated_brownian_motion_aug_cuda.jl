@@ -1,5 +1,5 @@
 
-function simulate!(X, mcProcess::SubordinatedBrownianMotionVec, mcBaseData::MonteCarloConfiguration{type1, type2, type3, CudaMode, type5}, T::numb) where {numb <: Number, type1 <: Number, type2 <: Number, type3 <: StandardMC, type5 <: Random.AbstractRNG}
+function simulate!(X, mcProcess::SubordinatedBrownianMotionVec, mcBaseData::CudaMonteCarloConfig, T::numb) where {numb <: Number}
     Nsim = mcBaseData.Nsim
     Nstep = mcBaseData.Nstep
 
@@ -19,7 +19,7 @@ function simulate!(X, mcProcess::SubordinatedBrownianMotionVec, mcBaseData::Mont
     tmp_drift_gpu = CuArray{typeof(zero_drift)}(undef, Nsim)
     @inbounds for i = 1:Nstep
         randn!(CUDA.CURAND.default_rng(), Z)
-        rand!(mcBaseData.rng, mcProcess.subordinator_, dt_s_cpu)
+        rand!(mcBaseData.parallelMode.rng, mcProcess.subordinator_, dt_s_cpu)
         tmp_drift .= [incremental_integral(drift, t_, dt_) for (t_, dt_) in zip(t_s, dt_s_cpu)]
         tmp_drift_gpu .= cu(tmp_drift)
         @. t_s += dt_s_cpu
@@ -31,7 +31,7 @@ function simulate!(X, mcProcess::SubordinatedBrownianMotionVec, mcBaseData::Mont
     return
 end
 
-function simulate!(X, mcProcess::SubordinatedBrownianMotionVec, mcBaseData::MonteCarloConfiguration{type1, type2, type3, CudaMode, type5}, T::numb) where {numb <: Number, type1 <: Number, type2 <: Number, type3 <: AntitheticMC, type5 <: Random.AbstractRNG}
+function simulate!(X, mcProcess::SubordinatedBrownianMotionVec, mcBaseData::CudaAntitheticMonteCarloConfig, T::numb) where {numb <: Number}
     Nsim = mcBaseData.Nsim
     Nstep = mcBaseData.Nstep
     type_sub = typeof(quantile(mcProcess.subordinator_, 0.5))
@@ -53,7 +53,7 @@ function simulate!(X, mcProcess::SubordinatedBrownianMotionVec, mcBaseData::Mont
     Z = CuArray{typeof(get_rng_type(isDualZero))}(undef, Nsim_2)
     @inbounds for i = 1:Nstep
         randn!(CUDA.CURAND.default_rng(), Z)
-        rand!(mcBaseData.rng, mcProcess.subordinator_, dt_s_cpu)
+        rand!(mcBaseData.parallelMode.rng, mcProcess.subordinator_, dt_s_cpu)
         tmp_drift .= [incremental_integral(drift, t_, dt_) for (t_, dt_) in zip(t_s, dt_s_cpu)]
         @. t_s += dt_s_cpu
         dt_s .= cu(dt_s_cpu)

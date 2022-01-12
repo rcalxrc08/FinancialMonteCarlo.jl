@@ -1,7 +1,7 @@
 #Number Type (just sigma tested) ---> Model type ----> Mode ---> zero rate type
 
 using Test, DualNumbers, FinancialMonteCarlo, VectorizedRNG, JLD2
-rebase = true;
+rebase = false;
 sigma_dual = dual(0.2, 1.0);
 sigma_no_dual = 0.2;
 
@@ -34,8 +34,9 @@ std_mc = MonteCarloConfiguration(Nsim, Nstep);
 anti_mc = MonteCarloConfiguration(Nsim, Nstep, FinancialMonteCarlo.AntitheticMC());
 sobol_mc = MonteCarloConfiguration(Nsim, Nstep, FinancialMonteCarlo.SobolMode());
 cv_mc = MonteCarloConfiguration(Nsim, Nstep, FinancialMonteCarlo.ControlVariates(Forward(T), MonteCarloConfiguration(100, 3)));
-vect_mc = MonteCarloConfiguration(Nsim, Nstep, FinancialMonteCarlo.SerialMode(), 10, local_rng());
-mc_modes = [std_mc, anti_mc, sobol_mc, cv_mc, vect_mc]
+cv_mc_2 = MonteCarloConfiguration(Nsim, Nstep, FinancialMonteCarlo.ControlVariates(AsianFloatingStrikeOption(T), MonteCarloConfiguration(100, 3)));
+vect_mc = MonteCarloConfiguration(Nsim, Nstep, FinancialMonteCarlo.SerialMode(10, local_rng()));
+mc_modes = [std_mc, anti_mc, sobol_mc, cv_mc, cv_mc_2, vect_mc]
 
 r = 0.02;
 r_prev = 0.019999;
@@ -74,7 +75,7 @@ for sigma in Number[sigma_no_dual, sigma_dual]
         for mode_ in mc_modes
             for zero_ in [zr_scalar, zr_imp]
                 for opt in opt_vec
-                    key_tmp1 = create_str_lam(sigma, model_, mode_.monteCarloMethod, mode_.rng, zero_, opt)
+                    key_tmp1 = create_str_lam(sigma, model_, mode_.monteCarloMethod, mode_.parallelMode.rng, zero_, opt)
                     result = pricer(model_, zero_, mode_, opt)
                     @assert !isnan(result) "Result for provided simulation is nan $(result)  $(key_tmp1)\n"
                     suite_num[key_tmp1] = result

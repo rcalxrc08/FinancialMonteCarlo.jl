@@ -22,7 +22,7 @@ end
 
 export SubordinatedBrownianMotion;
 
-function simulate!(X, mcProcess::SubordinatedBrownianMotion, mcBaseData::MonteCarloConfiguration{type1, type2, type3, SerialMode, type5}, T::numb) where {numb <: Number, type1 <: Integer, type2 <: Integer, type3 <: StandardMC, type5 <: Random.AbstractRNG}
+function simulate!(X, mcProcess::SubordinatedBrownianMotion, mcBaseData::SerialMonteCarloConfig, T::numb) where {numb <: Number}
     Nsim = mcBaseData.Nsim
     Nstep = mcBaseData.Nstep
     drift = mcProcess.drift
@@ -30,20 +30,20 @@ function simulate!(X, mcProcess::SubordinatedBrownianMotion, mcBaseData::MonteCa
 
     @assert T > 0.0
 
-    type_sub = typeof(rand(mcBaseData.rng, mcProcess.subordinator_))
+    type_sub = typeof(rand(mcBaseData.parallelMode.rng, mcProcess.subordinator_))
     isDualZero = drift * zero(type_sub)
     @views X[:, 1] .= isDualZero
     Z = Array{typeof(get_rng_type(isDualZero))}(undef, Nsim)
     dt_s = Array{typeof(get_rng_type(isDualZero))}(undef, Nsim)
 
     @inbounds for i = 1:Nstep
-        rand!(mcBaseData.rng, mcProcess.subordinator_, dt_s)
-        randn!(mcBaseData.rng, Z)
+        rand!(mcBaseData.parallelMode.rng, mcProcess.subordinator_, dt_s)
+        randn!(mcBaseData.parallelMode.rng, Z)
         @views @. X[:, i+1] = X[:, i] + drift * dt_s + sigma * sqrt(dt_s) * Z
     end
 end
 
-function simulate!(X, mcProcess::SubordinatedBrownianMotion, mcBaseData::MonteCarloConfiguration{type1, type2, type3, SerialMode, type5}, T::numb) where {numb <: Number, type1 <: Integer, type2 <: Integer, type3 <: AntitheticMC, type5 <: Random.AbstractRNG}
+function simulate!(X, mcProcess::SubordinatedBrownianMotion, mcBaseData::SerialAntitheticMonteCarloConfig, T::numb) where {numb <: Number}
     Nsim = mcBaseData.Nsim
     Nstep = mcBaseData.Nstep
     drift = mcProcess.drift
@@ -62,8 +62,8 @@ function simulate!(X, mcProcess::SubordinatedBrownianMotion, mcBaseData::MonteCa
     dt_s = Array{typeof(get_rng_type(isDualZero))}(undef, Nsim_2)
 
     @inbounds for j = 1:Nstep
-        rand!(mcBaseData.rng, mcProcess.subordinator_, dt_s)
-        randn!(mcBaseData.rng, Z)
+        rand!(mcBaseData.parallelMode.rng, mcProcess.subordinator_, dt_s)
+        randn!(mcBaseData.parallelMode.rng, Z)
         sqrt_dt_s = sqrt.(dt_s)
         @views @. Xp[:, j+1] = Xp[:, j] + dt_s * drift + sqrt_dt_s * Z * sigma
         @views @. Xm[:, j+1] = Xm[:, j] + dt_s * drift - sqrt_dt_s * Z * sigma

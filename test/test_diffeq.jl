@@ -20,7 +20,7 @@ g_1(u, p, t) = sigma * u
 #Time Window
 tspan = (0.0, T)
 #Definition of the SDE
-prob = SDEProblem(dr_, g_1, u0, tspan, rng = mc.rng)
+prob = SDEProblem(dr_, g_1, u0, tspan, rng = mc.parallelMode.rng)
 monte_prob = EnsembleProblem(prob)
 rfCurve = ZeroRate(r);
 model = FinancialMonteCarlo.MonteCarloDiffEqModel(monte_prob, Underlying(S0, d))
@@ -46,5 +46,5 @@ AsianFixedStrikeData = AsianFixedStrikeOption(T, K)
 
 Tneg = -T;
 tspanNeg = (0.0, Tneg)
-probNeg = SDEProblem(dr_, g_1, u0, tspanNeg, rng = mc.rng)
+probNeg = SDEProblem(dr_, g_1, u0, tspanNeg, rng = mc.parallelMode.rng)
 monte_probNeg = EnsembleProblem(probNeg)
