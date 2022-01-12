@@ -39,7 +39,8 @@ before_script:
     - export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib/
     - /usr/local/julia/bin/julia --project=@. -e 'using Pkg; Pkg.add("Coverage"); import Pkg; Pkg.build(); using FinancialMonteCarlo;
       using Coverage; cl, tl = get_summary(process_folder());
-      println("(", cl/tl*100, "%) covered")'
+      println("(", cl/tl*100, "%) covered");
+      using Pkg; cd(Pkg.dir("FinancialMonteCarlo")); Codecov.submit(Codecov.process_folder())'
   artifacts:
     when: on_success
     paths:
