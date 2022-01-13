@@ -13,7 +13,7 @@ Where:\n
 
 """
 function distribution(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration, T::num_) where {num_ <: Number}
-    set_seed(mcConfig)
+    set_seed!(mcConfig)
     S = simulate(mcProcess, rfCurve, mcConfig, T)
 
     return S[:, end]

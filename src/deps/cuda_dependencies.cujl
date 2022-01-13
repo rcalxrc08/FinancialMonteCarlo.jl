@@ -14,7 +14,7 @@ CudaAntitheticMonteCarloConfig = MonteCarloConfiguration{num1, num2, num3, ser_m
 using .CUDA
 include("../models/cuda/cuda_models.jl")
 
-function set_seed(mcConfig::MonteCarloConfiguration{type1, type2, type3, type4}) where {type1 <: Integer, type2 <: Integer, type3 <: AbstractMonteCarloMethod, type4 <: AbstractCudaMode}
+function set_seed!(mcConfig::MonteCarloConfiguration{type1, type2, type3, type4}) where {type1 <: Integer, type2 <: Integer, type3 <: AbstractMonteCarloMethod, type4 <: AbstractCudaMode}
     tmp_rng = deepcopy(mcConfig.parallelMode.rng)
     inner_seed!(tmp_rng, mcConfig.parallelMode.seed_cpu)
     CUDA.CURAND.seed!(mcConfig.parallelMode.seed_gpu)

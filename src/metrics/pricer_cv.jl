@@ -1,5 +1,5 @@
 function pricer(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration{<:Integer, <:Integer, <:ControlVariates, <:BaseMode}, abstractPayoff::AbstractPayoff)
-    set_seed(mcConfig)
+    set_seed!(mcConfig)
     variate_handl = mcConfig.monteCarloMethod
     variate_conf = variate_handl.conf_variate
     variate_payoff = variate_handl.variate
@@ -20,7 +20,7 @@ function pricer(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig
 end
 
 function pricer(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration{<:Integer, <:Integer, <:ControlVariates{Forward{num}, <:AbstractMonteCarloConfiguration, <:AbstractMonteCarloMethod}, <:BaseMode}, abstractPayoff::AbstractPayoff) where {num <: Number}
-    set_seed(mcConfig)
+    set_seed!(mcConfig)
     variate_handl = mcConfig.monteCarloMethod
     variate_conf = variate_handl.conf_variate
     variate_payoff = variate_handl.variate

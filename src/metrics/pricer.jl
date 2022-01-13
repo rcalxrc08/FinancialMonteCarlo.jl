@@ -16,7 +16,7 @@ Where:
 
 """
 function pricer(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig::AbstractMonteCarloConfiguration, abstractPayoff::AbstractPayoff)
-    set_seed(mcConfig)
+    set_seed!(mcConfig)
     T = maturity(abstractPayoff)
     S = simulate(mcProcess, rfCurve, mcConfig, T)
     Payoff = payoff(S, abstractPayoff, rfCurve, mcConfig)
@@ -29,7 +29,7 @@ get_array_type(mcConfig::MonteCarloConfiguration{<:Integer, <:Integer, <:Abstrac
 get_matrix_type(::MonteCarloConfiguration{<:Integer, <:Integer, <:AbstractMonteCarloMethod, <:BaseMode}, ::VectorialMonteCarloProcess, price) = Array{Matrix{typeof(price)}};
 
 function pricer(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration, abstractPayoffs::Array{abstractPayoff_}) where {abstractPayoff_ <: AbstractPayoff}
-    set_seed(mcConfig)
+    set_seed!(mcConfig)
     maxT = maximum(maturity.(abstractPayoffs))
     S = simulate(mcProcess, rfCurve, mcConfig, maxT)
     zero_typed = predict_output_type_zero(mcProcess, rfCurve, mcConfig, abstractPayoffs)
@@ -39,7 +39,7 @@ function pricer(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig
 end
 
 function pricer(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration, dict_::Position)
-    set_seed(mcConfig)
+    set_seed!(mcConfig)
     abstractPayoffs = keys(dict_)
     maxT = maximum([maturity(abstractPayoff) for abstractPayoff in abstractPayoffs])
     S = simulate(mcProcess, rfCurve, mcConfig, maxT)
@@ -50,7 +50,7 @@ end
 
 #####Pricer for multivariate
 function pricer(mcProcess::VectorialMonteCarloProcess, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration, special_array_payoff::Array{Position})
-    set_seed(mcConfig)
+    set_seed!(mcConfig)
     N_ = length(mcProcess.models)
     idx_ = compute_indices(N_)
     ## Filter special_array_payoff for undef
@@ -66,7 +66,7 @@ function pricer(mcProcess::VectorialMonteCarloProcess, rfCurve::AbstractZeroRate
 end
 
 function pricer(mcProcess::MarketDataSet, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration, dict_::Portfolio)
-    set_seed(mcConfig)
+    set_seed!(mcConfig)
     underlyings_payoff = keys(dict_)
     underlyings_payoff_cpl = get_underlyings_identifier(underlyings_payoff, keys(mcProcess))
     zero_typed = predict_output_type_zero(rfCurve, mcConfig, collect(keys(collect(values(dict_)))), collect(values(mcProcess)))

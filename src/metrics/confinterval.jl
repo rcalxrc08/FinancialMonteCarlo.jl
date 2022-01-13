@@ -16,7 +16,7 @@ Where:\n
 
 """
 function confinter(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration, abstractPayoff::AbstractPayoff, alpha::Real = 0.99)
-    set_seed(mcConfig)
+    set_seed!(mcConfig)
     T = maturity(abstractPayoff)
     Nsim = mcConfig.Nsim
     S = simulate(mcProcess, rfCurve, mcConfig, T)
@@ -31,7 +31,7 @@ function confinter(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcCon
 end
 
 function confinter(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration, abstractPayoffs::Array{abstractPayoff_}, alpha::Real = 0.99) where {abstractPayoff_ <: AbstractPayoff}
-    set_seed(mcConfig)
+    set_seed!(mcConfig)
     maxT = maximum([maturity(abstractPayoff) for abstractPayoff in abstractPayoffs])
     Nsim = mcConfig.Nsim
     S = simulate(mcProcess, rfCurve, mcConfig, maxT)

@@ -17,7 +17,7 @@ function delta(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig:
     Price = pricer(mcProcess, rfCurve, mcConfig, abstractPayoff)
     mcProcess_up = deepcopy(mcProcess)
     mcProcess_up.underlying.S0 += dS0
-    set_seed(mcConfig)
+    set_seed!(mcConfig)
     PriceUp = pricer(mcProcess_up, rfCurve, mcConfig, abstractPayoff)
     Delta = (PriceUp - Price) / dS0
 
@@ -38,7 +38,7 @@ function delta(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig:
     Prices = pricer(mcProcess, rfCurve, mcConfig, abstractPayoffs)
     mcProcess_up = deepcopy(mcProcess)
     mcProcess_up.underlying.S0 += dS0
-    set_seed(mcConfig)
+    set_seed!(mcConfig)
     PricesUp = pricer(mcProcess_up, rfCurve, mcConfig, abstractPayoffs)
     Delta = @. (PricesUp - Prices) / dS0
 
@@ -47,10 +47,10 @@ end
 
 function delta(mcProcess::Dict{String, AbstractMonteCarloProcess}, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration, dict_::Dict{String, Dict{AbstractPayoff, Number}}, underl_::String, dS::Real = 1e-7)
     @assert isnothing(findfirst("_", underl_)) "deltas are defined on single name"
-    set_seed(mcConfig)
+    set_seed!(mcConfig)
     price0 = pricer(mcProcess, rfCurve, mcConfig, dict_)
     price2 = 0.0
-    set_seed(mcConfig)
+    set_seed!(mcConfig)
     mcProcess_up = deepcopy(mcProcess)
     keys_mkt = collect(keys(mcProcess_up))
     idx_supp = 0
