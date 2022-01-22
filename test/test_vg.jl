@@ -31,10 +31,10 @@ Model = VarianceGammaProcess(sigma, theta1, k1, Underlying(S0, d));
 @show BarrierPrice = pricer(Model, rfCurve, mc, BarrierData);
 @show AsianPrice = pricer(Model, rfCurve, mc, AsianData);
 
-@test abs(FwdPrice - 97.94751460264095) < toll
-@test abs(EuPrice - 7.738298817933206) < toll
-@test abs(BarrierPrice - 6.886023820038332) < toll
-@test abs(AsianPrice - 4.414948846776423) < toll
+@test abs(FwdPrice - 99.09861035102614) < toll
+@test abs(EuPrice - 8.368903690692187) < toll
+@test abs(BarrierPrice - 7.469024475794258) < toll
+@test abs(AsianPrice - 4.779663836736272) < toll
 
 @show FwdPrice = pricer(Model, rfCurve, mc1, FwdData);
 @show EuPrice = pricer(Model, rfCurve, mc1, EUData);
@@ -42,10 +42,10 @@ Model = VarianceGammaProcess(sigma, theta1, k1, Underlying(S0, d));
 @show BarrierPrice = pricer(Model, rfCurve, mc1, BarrierData);
 @show AsianPrice = pricer(Model, rfCurve, mc1, AsianData);
 
-@test abs(FwdPrice - 97.94751460264095) < toll
-@test abs(EuPrice - 7.738298817933206) < toll
-@test abs(BarrierPrice - 6.886023820038332) < toll
-@test abs(AsianPrice - 4.414948846776423) < toll
+@test abs(FwdPrice - 99.09861035102614) < toll
+@test abs(EuPrice - 8.368903690692187) < toll
+@test abs(BarrierPrice - 7.469024475794258) < toll
+@test abs(AsianPrice - 4.779663836736272) < toll
 
 @show "Test Variance Gamma Parameters"
 

@@ -44,7 +44,7 @@ function simulate!(X, mcProcess::NormalInverseGaussianProcess, rfCurve::Abstract
     IGRandomVariable = InverseGaussian(dt, (dt^2) / κ)
 
     #Call SubordinatedBrownianMotion
-    simulate!(X, SubordinatedBrownianMotion(σ, drift, IGRandomVariable), mcBaseData, T)
+    simulate!(X, SubordinatedBrownianMotion(σ, drift, θ, IGRandomVariable), mcBaseData, T)
 
     @. X = S0 * exp(X)
 

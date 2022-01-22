@@ -34,14 +34,13 @@ function simulate!(X, mcProcess::VarianceGammaProcess, rfCurve::AbstractZeroRate
     θ = mcProcess.θ
     κ = mcProcess.κ
     @assert T > 0
-
     dt = T / Nstep
     ψ = -1 / κ * log(1 - σ^2 * κ / 2 - θ * κ)
     drift = r - d - ψ
 
     gammaRandomVariable = Gamma(dt / κ, κ)
 
-    simulate!(X, SubordinatedBrownianMotion(σ, drift, gammaRandomVariable), mcBaseData, T)
+    simulate!(X, SubordinatedBrownianMotion(σ, drift, θ, gammaRandomVariable), mcBaseData, T)
 
     @. X = S0 * exp(X)
 

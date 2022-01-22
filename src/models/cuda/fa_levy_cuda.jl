@@ -10,8 +10,8 @@ function simulate!(X, mcProcess::finiteActivityProcess, rfCurve::AbstractZeroRat
     @assert T > 0.0
     ## Simulate
     # r-d-psi(-i)
-    drift_RN = (r - d) - σ^2 / 2 - λ * compute_drift(mcProcess)
-    simulate!(X, BrownianMotion(σ, drift_RN), mcBaseData, T)
+    drift_rn = (r - d) - σ^2 / 2 - λ * compute_drift(mcProcess)
+    simulate!(X, BrownianMotion(σ, drift_rn), mcBaseData, T)
     X_incr = zeros(Nsim, Nstep + 1)
     add_jump_matrix!(X_incr, mcProcess, mcBaseData, T)
     ## Conclude

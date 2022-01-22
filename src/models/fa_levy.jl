@@ -26,8 +26,8 @@ function simulate!(X, mcProcess::finiteActivityProcess, rfCurve::AbstractZeroRat
     ####Simulation
     ## Simulate
     # r-d-psi(-i)
-    drift_RN = (r - d) - σ^2 / 2 - λ * compute_drift(mcProcess)
-    simulate!(X, BrownianMotion(σ, drift_RN), mcBaseData, T)
+    drift_rn = (r - d) - σ^2 / 2 - λ * compute_drift(mcProcess)
+    simulate!(X, BrownianMotion(σ, drift_rn), mcBaseData, T)
     add_jump_matrix!(X, mcProcess, mcBaseData, T)
     ## Conclude
     S0 = mcProcess.underlying.S0

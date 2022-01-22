@@ -31,10 +31,10 @@ Model = NormalInverseGaussianProcess(sigma, theta1, k1, Underlying(S0, d));
 @show BarrierPrice = pricer(Model, rfCurve, mc, BarrierData);
 @show AsianPrice = pricer(Model, rfCurve, mc, AsianData);
 
-@test abs(FwdPrice - 97.95852227697686) < toll
-@test abs(EuPrice - 7.738298817933206) < toll
-@test abs(BarrierPrice - 6.886023820038332) < toll
-@test abs(AsianPrice - 4.414948846776423) < toll
+@test abs(FwdPrice - 99.16322764791194) < toll
+@test abs(EuPrice - 8.578451710277706) < toll
+@test abs(BarrierPrice - 7.561814171846508) < toll
+@test abs(AsianPrice - 4.86386704425551) < toll
 
 @show FwdPrice = pricer(Model, rfCurve, mc1, FwdData);
 @show EuPrice = pricer(Model, rfCurve, mc1, EUData);
@@ -42,10 +42,10 @@ Model = NormalInverseGaussianProcess(sigma, theta1, k1, Underlying(S0, d));
 @show BarrierPrice = pricer(Model, rfCurve, mc1, BarrierData);
 @show AsianPrice = pricer(Model, rfCurve, mc1, AsianData);
 tollanti = 0.8;
-@test abs(FwdPrice - 97.95852227697686) < tollanti
-@test abs(EuPrice - 7.738298817933206) < tollanti
-@test abs(BarrierPrice - 6.886023820038332) < tollanti
-@test abs(AsianPrice - 4.414948846776423) < tollanti
+@test abs(FwdPrice - 99.16322764791194) < tollanti
+@test abs(EuPrice - 8.578451710277706) < tollanti
+@test abs(BarrierPrice - 7.561814171846508) < tollanti
+@test abs(AsianPrice - 4.86386704425551) < tollanti
 
 @show "Test NIG Parameters"
 
