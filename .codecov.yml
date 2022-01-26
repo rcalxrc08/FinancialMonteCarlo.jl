@@ -1,1 +1,4 @@
 comment: false
+ignore:
+  - "src/models/cuda/*"  # ignore folders and all its contents
+  - "src/deps/cuda_dependencies.jl"       # wildcards accepted

@@ -7,10 +7,10 @@ Where:
 
 		σ	=	volatility of volatility of the process.
 		σ₀	=   initial volatility of the process.
-		λ	=	??volatility of the process.
+		λ	=	shift value of the process.
 		κ	=	mean reversion of the process.
 		ρ	=	correlation between brownian motions.
-		θ	=	??drift of the process.
+		θ	=	long value of square of volatility of the process.
 """
 mutable struct HestonProcess{num<:Number,num1<:Number,num2<:Number,num3<:Number,num4<:Number,num5<:Number,abstrUnderlying<:AbstractUnderlying,numtype<:Number} <: ItoProcess{numtype}
     σ::num
