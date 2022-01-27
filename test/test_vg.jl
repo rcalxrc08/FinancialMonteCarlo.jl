@@ -46,7 +46,8 @@ Model = VarianceGammaProcess(sigma, theta1, k1, Underlying(S0, d));
 @test abs(EuPrice - 8.368903690692187) < toll
 @test abs(BarrierPrice - 7.469024475794258) < toll
 @test abs(AsianPrice - 4.779663836736272) < toll
-
+print(Model);
+println("");
 @show "Test Variance Gamma Parameters"
 
 @test_throws(AssertionError, VarianceGammaProcess(-sigma, theta1, k1, Underlying(S0, d)))

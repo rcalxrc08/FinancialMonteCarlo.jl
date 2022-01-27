@@ -1,4 +1,4 @@
-using FinancialMonteCarlo, Test
+using FinancialMonteCarlo, VectorizedRNG
 S0 = 100.0;
 K = 100.0;
 r = 0.02;
@@ -8,7 +8,7 @@ D = 90.0;
 Nsim = 10000;
 Nstep = 30;
 sigma = 0.2;
-mc = MonteCarloConfiguration(Nsim, Nstep, FinancialMonteCarlo.MultiThreading());
+mc = MonteCarloConfiguration(Nsim, Nstep, FinancialMonteCarlo.SerialMode(), 10, local_rng());
 toll = 1.0;
 rfCurve = ZeroRate(r);
 FwdData = Forward(T)

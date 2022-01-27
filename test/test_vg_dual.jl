@@ -1,4 +1,4 @@
-using Test, DualNumbers, FinancialMonteCarlo
+using Test, DualNumbers, FinancialMonteCarlo, Sobol
 @show "VarianceGammaProcess"
 S0 = 100.0;
 K = 100.0;
@@ -15,6 +15,7 @@ k1 = 0.03;
 sigma1 = 0.02;
 mc = MonteCarloConfiguration(Nsim, Nstep);
 mc1 = MonteCarloConfiguration(Nsim, Nstep, FinancialMonteCarlo.AntitheticMC());
+mc2 = MonteCarloConfiguration(Nsim, Nstep, FinancialMonteCarlo.SobolMode());
 toll = 0.8;
 
 rfCurve = ZeroRate(r);
@@ -47,3 +48,6 @@ Model = VarianceGammaProcess(sigma, theta1, k1, Underlying(S0, d));
 @test abs(EuPrice - 8.368903690692187) < toll
 @test abs(BarrierPrice - 7.469024475794258) < toll
 @test abs(AsianPrice - 4.779663836736272) < toll
+
+@show FwdPrice = pricer(Model, rfCurve, mc2, FwdData);
+@show FwdPrice = pricer(VarianceGammaProcess(sigma, theta1, k1, Underlying(S0, FinancialMonteCarlo.Curve([0.009999, 0.01], T))), rfCurve, mc2, FwdData);

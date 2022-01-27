@@ -19,5 +19,6 @@ AsianFloatingStrikeData = AsianFloatingStrikeOption(T)
 AsianFixedStrikeData = AsianFixedStrikeOption(T, K)
 Model = BlackScholesProcess(sigma, Underlying(S0, d));
 EuPrice = pricer(Model, rfCurve, mc, EUData);
+pricer(Model, rfCurve, mc, [EUData, EUData]);
 
 @test abs(EuPrice - 8.43005524824866) < toll

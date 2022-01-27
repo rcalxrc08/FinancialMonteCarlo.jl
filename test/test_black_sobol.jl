@@ -41,3 +41,5 @@ display(Model)
 @test abs(AmPrice - 8.450489415187354) < toll
 @test abs(BarrierPrice - 7.5008664470880735) < toll
 @test abs(AsianPrice1 - 4.774451704549382) < toll
+
+@show FwdPrice = pricer(BlackScholesProcess(sigma, Underlying(S0, d_)), spotData1, mc, FwdData);

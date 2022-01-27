@@ -19,3 +19,4 @@ rfCurve = ZeroRate(r);
 drift = 0.0
 @test_throws(AssertionError, BrownianMotion(-sigma, drift))
 @test_throws(AssertionError, BrownianMotion(-sigma, rfCurve2.r))
+S=simulate(BrownianMotion(0.2, 0.01),mc1,1.0);
