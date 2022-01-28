@@ -1,8 +1,3 @@
-function predict_output_type(x...)::Type
-    zero_out_ = predict_output_type_zero(x...)
-
-    return typeof(zero_out_)
-end
 
 function predict_output_type_zero(x...)::Number
     zero_out_ = sum(y -> predict_output_type_zero(y), x)

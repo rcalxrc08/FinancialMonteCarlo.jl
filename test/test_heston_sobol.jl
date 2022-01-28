@@ -40,3 +40,4 @@ Model = HestonProcess(sigma, sigma_zero, lambda, kappa, rho_, theta, Underlying(
 @test abs(EuPrice - 7.9813557592924) < toll
 @test abs(BarrierPrice - 7.006564636309922) < toll
 @test abs(AsianPrice1 - 4.242256952013707) < toll
+@show FwdPrice = pricer(Model, rfCurve, MonteCarloConfiguration(Nsim, Nstep, FinancialMonteCarlo.SobolMode()), FwdData);
