@@ -29,7 +29,7 @@ Model = GaussianCopulaNVariateProcess(Model_enj, Model_abpl, 0.4)
 @test GaussianCopulaNVariateProcess(Model_enj, Model_abpl).rho == GaussianCopulaNVariateProcess(Model_enj, Model_abpl, 0.0).rho
 
 display(Model)
-get_parameters(Model)
+FinancialMonteCarlo.get_parameters(Model)
 
 mktdataset = underlying_ → Model
 
