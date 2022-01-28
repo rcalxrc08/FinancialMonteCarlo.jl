@@ -1,4 +1,4 @@
-using Test, DualNumbers, FinancialMonteCarlo, Sobol
+using Test, DualNumbers, FinancialMonteCarlo
 @show "VarianceGammaProcess"
 S0 = 100.0;
 K = 100.0;
