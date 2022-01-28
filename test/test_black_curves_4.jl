@@ -4,7 +4,7 @@ S0 = 100.0;
 K = 100.0;
 r = [0.00, 0.02];
 T = 1.0;
-d = FinancialMonteCarlo.Curve([0.019, 0.02], T);
+d = FinancialMonteCarlo.Curve([0.019, 0.019, 0.02], T);
 D = 90.0;
 
 Nsim = 100000;

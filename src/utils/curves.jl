@@ -1,9 +1,4 @@
 ########### Curve Section
-import Base.insert!
-function insert!(dic::Dict, k::Number, val::Number)
-    dic[k] = val
-    return nothing
-end
 using Dictionaries
 
 const DictTypeInternal = Dictionaries.Dictionary
