@@ -1,7 +1,7 @@
 # FinancialMonteCarlo.jl <img src="etc/logo.png" width="40">  
 
 [![](https://img.shields.io/badge/docs-dev-blue.svg)](https://rcalxrc08.gitlab.io/FinancialMonteCarlo.jl/)
-[![Build Status](https://travis-ci.com/rcalxrc08/FinancialMonteCarlo.jl.svg?branch=master)](https://travis-ci.com/rcalxrc08/FinancialMonteCarlo.jl)[![pipeline status](https://gitlab.com/rcalxrc08/FinancialMonteCarlo.jl/badges/master/pipeline.svg)](https://gitlab.com/rcalxrc08/FinancialMonteCarlo.jl/commits/master) [![codecov](https://codecov.io/gl/rcalxrc08/FinancialMonteCarlo.jl/branch/master/graph/badge.svg?token=PypZinZKqB)](https://codecov.io/gl/rcalxrc08/FinancialMonteCarlo.jl)
+[![pipeline status](https://gitlab.com/rcalxrc08/FinancialMonteCarlo.jl/badges/master/pipeline.svg)](https://gitlab.com/rcalxrc08/FinancialMonteCarlo.jl/commits/master) [![codecov](https://codecov.io/gl/rcalxrc08/FinancialMonteCarlo.jl/branch/master/graph/badge.svg?token=PypZinZKqB)](https://codecov.io/gl/rcalxrc08/FinancialMonteCarlo.jl)
 ##### This is a Julia package containing some useful Financial function for Pricing and Risk Management for Equity products.
 
 It currently contains the following capabilities:
