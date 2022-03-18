@@ -6,9 +6,9 @@ The package provides functionalities regarding variance reduction and parallel m
 The package provides the BaseMode type to represent the type of parallel processe that is going to simulate:
 
 * `SerialMode`: classical serial mode with no parallelization
-* `CudaMode`: support for CUDA using CuArrays.jl
-* `ThreadMode`: Thread parallelization with julia built in costructs
-* `ProcMode`: Proc parallelization with julia built in costructs
+* `CudaMode`: support for CUDA using CUDA.jl
+* `MultiThreading`: Threads parallelization with julia built in costructs
+* `MultiProcess`: Processes parallelization with julia built in costructs
 
 ## Random Number Generator and seed control
 You can provide your own rng (that must inherit from Base.AbstractRNG), or choose the built in one controlling the seed.
@@ -21,13 +21,3 @@ The variance reduction is achieved using antithetic variables approach and contr
 ## How to
 
 In order to impose a particular parallel mode, rng or variance reduction tecnique you should provide additional parameters to MonteCarloConfiguration constructor.
-
-## Parallelization vs Number Type
-Keep in mind the following table when trying to use parallelization and automatic differentiation / complex numbers
-
-**Element Type** | **Parallelization mode** | **Descriptions**
---- | --- | ---
-`Float X` | `CPU (Serial,Threaded or Distributed)` | Works with any type of Float
-`Float X` | `GPU` | Works with any type of Float, best with Float32
-`num<:Number` | `CPU (Serial,Threaded or Distributed)` | Works almost everywhere with any type of Number, like Duals,Complex,Hypers,etc.
-`num<:Number` | `GPU` | Works just with Complex and ForwardDiff.Dual.

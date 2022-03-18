@@ -1,4 +1,4 @@
-# Interaction with [DifferentialEquations.jl](http://en.wikipedia.org/wiki/Mixture_model)
+# Interaction with [DifferentialEquations.jl](https://diffeq.sciml.ai/stable/)
 
 The following example shows how to price different kind of options with underlying varying according to the Black Scholes Model, simulated using DifferentialEquations.jl.
 ```julia
