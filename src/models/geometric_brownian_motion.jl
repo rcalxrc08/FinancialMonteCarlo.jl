@@ -1,5 +1,5 @@
 # Abstract type for GeometricBrownianMotion, an Ito process is always a Levy
-abstract type AbstractGeometricBrownianMotion{T <: Number} <: ItoProcess{T} end
+abstract type AbstractGeometricBrownianMotion{T <: Number} <: AbstractMonteCarloEngine{T} end
 """
 Struct for Geometric Brownian Motion
 
