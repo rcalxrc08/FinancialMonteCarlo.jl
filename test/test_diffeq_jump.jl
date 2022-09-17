@@ -30,8 +30,8 @@ affect!(integrator) = (integrator.u = integrator.u + ((rand(mc.parallelMode.rng)
 jump = ConstantRateJump(rate, affect!)
 
 #Definition of the SDE
-prob = SDEProblem(dr_, g_1, u0, tspan, rng = mc.parallelMode.rng)
-jump_prob = JumpProblem(prob, Direct(), jump)
+prob = SDEProblem(dr_, g_1, u0, tspan)
+jump_prob = JumpProblem(prob, Direct(), jump, rng = mc.parallelMode.rng)
 monte_prob = EnsembleProblem(jump_prob)
 rfCurve = ZeroRate(r);
 func(x) = S0 * exp(x);
