@@ -50,5 +50,5 @@ Model = VarianceGammaProcess(sigma, theta1, k1, Underlying(S0, d));
 @test abs(AsianPrice - 4.779663836736272) < toll
 
 @show FwdPrice = pricer(Model, rfCurve, mc2, FwdData);
-@show FwdPrice = pricer(VarianceGammaProcess(sigma, theta1, k1, Underlying(S0, FinancialMonteCarlo.Curve([0.009999, 0.01], T))), FinancialMonteCarlo.ImpliedZeroRate([0.01], [1.0]), mc2, FwdData);
-@show FwdPrice = pricer.([VarianceGammaProcess(sigma, theta1, k1, Underlying(S0, FinancialMonteCarlo.Curve([0.009999, 0.01], T))), Model], rfCurve, mc2, FwdData);
+# @show FwdPrice = pricer(VarianceGammaProcess(sigma, theta1, k1, Underlying(S0, FinancialMonteCarlo.Curve([0.009999, 0.01], T))), FinancialMonteCarlo.ImpliedZeroRate([0.01], [1.0]), mc2, FwdData);
+# @show FwdPrice = pricer.([VarianceGammaProcess(sigma, theta1, k1, Underlying(S0, FinancialMonteCarlo.Curve([0.009999, 0.01], T))), Model], rfCurve, mc2, FwdData);
