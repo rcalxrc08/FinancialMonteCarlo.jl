@@ -48,9 +48,4 @@ function predict_output_type_zero(::baseProcess) where {baseProcess <: Vectorial
 end
 
 ##Vectorization "utils"
-import Base.iterate
-iterate(x::Union{BaseProcess, AbstractZeroRateCurve, AbstractPayoff, AbstractMonteCarloConfiguration}) = (x, nothing)
-iterate(::Union{BaseProcess, AbstractZeroRateCurve, AbstractPayoff, AbstractMonteCarloConfiguration}, p::Nothing) = nothing
-
-import Base.length
-length(x::Union{BaseProcess, AbstractZeroRateCurve, AbstractPayoff, AbstractMonteCarloConfiguration}) = 1
+Base.broadcastable(x::Union{BaseProcess, AbstractZeroRateCurve, AbstractPayoff, AbstractMonteCarloConfiguration}) = Ref(x)
