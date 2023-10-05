@@ -10,7 +10,7 @@ Where:
 		μ_jump =	jumps mean.
 		σ_jump =	jumps variance.
 """
-mutable struct MertonProcess{num <: Number, num1 <: Number, num2 <: Number, num3 <: Number, abstrUnderlying <: AbstractUnderlying, numtype <: Number} <: FiniteActivityProcess{numtype}
+struct MertonProcess{num <: Number, num1 <: Number, num2 <: Number, num3 <: Number, abstrUnderlying <: AbstractUnderlying, numtype <: Number} <: FiniteActivityProcess{numtype}
     σ::num
     λ::num1
     μ_jump::num2

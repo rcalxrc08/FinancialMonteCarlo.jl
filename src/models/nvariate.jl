@@ -8,16 +8,24 @@ Where:
 		models  = the processes.
 		rho     = correlation matrix.
 """
-mutable struct GaussianCopulaNVariateProcess{num3 <: Number, numtype <: Number} <: NDimensionalMonteCarloProcess{numtype}
-    models::Tuple{Vararg{BaseProcess}}
+struct GaussianCopulaNVariateProcess{num3 <: Number, numtype <: Number} <: NDimensionalMonteCarloProcess{numtype}
     rho::Matrix{num3}
+	models::Tuple{Vararg{BaseProcess}}
+	function GaussianCopulaNVariateProcess(rho::Matrix{num3}, models::Tuple) where {num3 <: Number}
+        sz = size(rho)
+        @assert sz[1] == sz[2]
+        @assert length(models) == sz[1]
+        @assert isposdef(rho)
+        zero_typed = predict_output_type_zero(models...) + zero(num3)
+        return new{num3, typeof(zero_typed)}(rho,models)
+    end
     function GaussianCopulaNVariateProcess(rho::Matrix{num3}, models::BaseProcess...) where {num3 <: Number}
         sz = size(rho)
         @assert sz[1] == sz[2]
         @assert length(models) == sz[1]
         @assert isposdef(rho)
         zero_typed = predict_output_type_zero(models...) + zero(num3)
-        return new{num3, typeof(zero_typed)}(models, rho)
+        return new{num3, typeof(zero_typed)}(rho,models)
     end
     function GaussianCopulaNVariateProcess(models::BaseProcess...)
         len_ = length(models)

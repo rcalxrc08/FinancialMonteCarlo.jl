@@ -1,11 +1,12 @@
 
 abstract type AbstractMonteCarloConfiguration end
 
-mutable struct MonteCarloConfiguration{num1 <: Integer, num2 <: Integer, abstractMonteCarloMethod <: AbstractMonteCarloMethod, baseMode <: BaseMode} <: AbstractMonteCarloConfiguration
+struct MonteCarloConfiguration{num1 <: Integer, num2 <: Integer, abstractMonteCarloMethod <: AbstractMonteCarloMethod, baseMode <: BaseMode} <: AbstractMonteCarloConfiguration
     Nsim::num1
     Nstep::num2
     monteCarloMethod::abstractMonteCarloMethod
     parallelMode::baseMode
+    init_rng::Bool
     function MonteCarloConfiguration(Nsim::num1, Nstep::num2, seed::Number) where {num1 <: Integer, num2 <: Integer}
         return MonteCarloConfiguration(Nsim, Nstep, StandardMC(), SerialMode(seed))
     end
@@ -16,10 +17,15 @@ mutable struct MonteCarloConfiguration{num1 <: Integer, num2 <: Integer, abstrac
         return MonteCarloConfiguration(Nsim, Nstep, StandardMC(), parallelMethod)
     end
     #Most General, no default argument
-    function GeneralMonteCarloConfiguration(Nsim::num1, Nstep::num2, monteCarloMethod::abstractMonteCarloMethod, parallelMethod::baseMode) where {num1 <: Integer, num2 <: Integer, abstractMonteCarloMethod <: AbstractMonteCarloMethod, baseMode <: BaseMode}
+    function GeneralMonteCarloConfiguration(Nsim::num1, Nstep::num2, monteCarloMethod::abstractMonteCarloMethod, parallelMethod::baseMode, init_rng::Bool = true) where {num1 <: Integer, num2 <: Integer, abstractMonteCarloMethod <: AbstractMonteCarloMethod, baseMode <: BaseMode}
         @assert Nsim > zero(num1) "Number of Simulations must be positive"
         @assert Nstep > zero(num2) "Number of Steps must be positive"
-        return new{num1, num2, abstractMonteCarloMethod, baseMode}(Nsim, Nstep, monteCarloMethod, parallelMethod)
+        return new{num1, num2, abstractMonteCarloMethod, baseMode}(Nsim, Nstep, monteCarloMethod, parallelMethod, init_rng)
+    end
+    function MonteCarloConfiguration(Nsim::num1, Nstep::num2, monteCarloMethod::abstractMonteCarloMethod, parallelMethod::baseMode, init_rng::Bool) where {num1 <: Integer, num2 <: Integer, abstractMonteCarloMethod <: AbstractMonteCarloMethod, baseMode <: BaseMode}
+        @assert Nsim > zero(num1) "Number of Simulations must be positive"
+        @assert Nstep > zero(num2) "Number of Steps must be positive"
+        return GeneralMonteCarloConfiguration(Nsim, Nstep, monteCarloMethod, parallelMethod, init_rng)
     end
     function MonteCarloConfiguration(Nsim::num1, Nstep::num2, monteCarloMethod::abstractMonteCarloMethod, parallelMethod::baseMode) where {num1 <: Integer, num2 <: Integer, abstractMonteCarloMethod <: AbstractMonteCarloMethod, baseMode <: BaseMode}
         return GeneralMonteCarloConfiguration(Nsim, Nstep, monteCarloMethod, parallelMethod)

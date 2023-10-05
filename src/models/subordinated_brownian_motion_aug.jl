@@ -9,7 +9,7 @@ Where:
 		drift       = 	drift.
 		underlying  = 	underlying.
 """
-mutable struct SubordinatedBrownianMotionVec{num <: Number, num1 <: Number, num4 <: Number, num2 <: Number, Distr <: Distribution{Univariate, Continuous}, numtype <: Number} <: AbstractMonteCarloProcess{numtype}
+struct SubordinatedBrownianMotionVec{num <: Number, num1 <: Number, num4 <: Number, num2 <: Number, Distr <: Distribution{Univariate, Continuous}, numtype <: Number} <: AbstractMonteCarloProcess{numtype}
     sigma::num
     drift::CurveType{num1, num4}
     θ::num2

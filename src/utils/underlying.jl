@@ -3,7 +3,7 @@
 abstract type AbstractUnderlying end
 
 #Scalar dividend
-mutable struct UnderlyingScalar{num <: Number, num2 <: Number} <: AbstractUnderlying
+struct UnderlyingScalar{num <: Number, num2 <: Number} <: AbstractUnderlying
     S0::num
     d::num2
     function UnderlyingScalar(S0::num_, d::num_2 = 0.0) where {num_ <: Number, num_2 <: Number}
@@ -12,7 +12,7 @@ mutable struct UnderlyingScalar{num <: Number, num2 <: Number} <: AbstractUnderl
     end
 end
 #Curve dividend
-mutable struct UnderlyingVec{num <: Number, num2 <: Number, num3 <: Number} <: AbstractUnderlying
+struct UnderlyingVec{num <: Number, num2 <: Number, num3 <: Number} <: AbstractUnderlying
     S0::num
     d::CurveType{num2, num3}
     function UnderlyingVec(S0::num_, d::CurveType{num2, num3}) where {num_ <: Number, num2 <: Number, num3 <: Number}

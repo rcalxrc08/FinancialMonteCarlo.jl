@@ -46,7 +46,7 @@ function complete_curve(T::Array{num}, d::DictTypeInternal{num1, num2}) where {n
     d_val = extract_values(d)
     d_val = d_val[idx_]
     out = DictTypeInternal{num1, num2}()
-    itp = LinearInterpolation(T_d, d_val)
+    itp = linear_interpolation(T_d, d_val)
     for t in T
         insert!(out, t, itp(t))
     end

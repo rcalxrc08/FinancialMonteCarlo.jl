@@ -17,8 +17,8 @@ function pricer_macro_multithreading(model_type, payoff_type)
             price = zeros(typeof(zero_typed), numberOfBatch)
             Threads.@threads for i = 1:numberOfBatch
                 mc_config_i = MonteCarloConfiguration(div(mcConfig.Nsim, numberOfBatch), mcConfig.Nstep, mcConfig.monteCarloMethod, mcConfig.parallelMode.sub_mod)
-                mc_config_i.parallelMode.seed = mcConfig.parallelMode.seeds[i]
-                price[i] = pricer(mcProcess, rfCurve, mc_config_i, abstractPayoff)
+                mc_config_i = @views @set mc_config_i.parallelMode.seed = mcConfig.parallelMode.seeds[i]
+                @views price[i] = pricer(mcProcess, rfCurve, mc_config_i, abstractPayoff)
             end
             Out = sum(price) / numberOfBatch
             return Out
@@ -37,7 +37,7 @@ function pricer(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig
     price = zeros(typeof(zero_typed), length(abstractPayoffs), numberOfBatch)
     mc_configs = [MonteCarloConfiguration(div(mcConfig.Nsim, numberOfBatch), mcConfig.Nstep, mcConfig.monteCarloMethod, mcConfig.parallelMode.sub_mod) for _ = 1:numberOfBatch]
     for i = 1:numberOfBatch
-        mc_configs[i].parallelMode.seed = mcConfig.parallelMode.seeds[i]
+        mc_configs[i] = @views @set mc_configs[i].parallelMode.seed = mcConfig.parallelMode.seeds[i]
     end
     Threads.@threads for i = 1:numberOfBatch
         price[:, i] = pricer(mcProcess, rfCurve, mc_configs[i], abstractPayoffs)

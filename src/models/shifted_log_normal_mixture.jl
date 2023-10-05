@@ -9,7 +9,7 @@ Where:
 		λ  = 	Array of weights.
 		α  = 	shift.
 """
-mutable struct ShiftedLogNormalMixture{num <: Number, num2 <: Number, num3 <: Number, abstrUnderlying <: AbstractUnderlying, numtype <: Number} <: ItoProcess{numtype}
+struct ShiftedLogNormalMixture{num <: Number, num2 <: Number, num3 <: Number, abstrUnderlying <: AbstractUnderlying, numtype <: Number} <: ItoProcess{numtype}
     η::Array{num, 1}
     λ::Array{num2, 1}
     α::num3

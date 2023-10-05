@@ -84,9 +84,11 @@ function set_parameters!(model::XProcess, param::Array{num}) where {XProcess <: 
 
     for (symb, nval) in zip(fields_, param)
         if (symb != :underlying)
-            setproperty!(model, symb, nval)
+            new_lens = PropertyLens{symb}()
+            model = Accessors.set(model, new_lens, nval)
         end
     end
+    return model
 end
 
 function set_parameters!(model::LogNormalMixture, param::Array{num}) where {num <: Number}
@@ -95,9 +97,11 @@ function set_parameters!(model::LogNormalMixture, param::Array{num}) where {num 
     eta = param[1:N1]
     lam = param[(N1+1):end]
     fields_ = fieldnames(LogNormalMixture)
-    setproperty!(model, fields_[1], eta)
-    setproperty!(model, fields_[2], lam)
-    return
+    # setproperty!(model, fields_[1], eta)
+    model = Accessors.set(model, PropertyLens{fields_[1]}(), eta)
+    model = Accessors.set(model, PropertyLens{fields_[2]}(), lam)
+    # setproperty!(model, fields_[2], lam)
+    return model
 end
 
 function set_parameters!(model::ShiftedLogNormalMixture, param::Array{num}) where {num <: Number}
@@ -107,8 +111,8 @@ function set_parameters!(model::ShiftedLogNormalMixture, param::Array{num}) wher
     lam = param[(N1+1):(2*N1-1)]
     alfa = param[end]
     fields_ = fieldnames(ShiftedLogNormalMixture)
-    setproperty!(model, fields_[1], eta)
-    setproperty!(model, fields_[2], lam)
-    setproperty!(model, fields_[3], alfa)
-    return
+    model = Accessors.set(model, PropertyLens{fields_[1]}(), eta)
+    model = Accessors.set(model, PropertyLens{fields_[2]}(), lam)
+    model = Accessors.set(model, PropertyLens{fields_[3]}(), alfa)
+    return model
 end

@@ -86,3 +86,24 @@ function simulate(mcProcess::AbstractMonteCarloEngine, mcBaseData::AbstractMonte
     simulate!(S, mcProcess, mcBaseData, T)
     return S
 end
+
+# function simulate_per_path(Nsim,Nstep,rn)
+# S0=100.0;
+# X=Matrix{Float64}(undef,Nsim,Nstep+1);
+# for i=1:Nsim
+# @views simulate_path!(X[i,:],rn)
+# end
+
+# return X;
+# end
+
+# function simulate_per_path(mcProcess::AbstractMonteCarloProcess, zeroCurve::AbstractZeroRateCurve, mcBaseData::AbstractMonteCarloConfiguration, T::Number)
+#     price_type = predict_output_type_zero(mcProcess, zeroCurve, mcBaseData, T)
+#     S = get_matrix_type(mcBaseData, mcProcess, price_type)
+#     #simulate!(S, mcProcess, zeroCurve, mcBaseData, T)
+# 	for i=1:mcBaseData.Nsim
+# 		# @views simulate_path!(X[i,:],rn)
+# 		@views simulate_path!(S[i,:], mcProcess, zeroCurve, mcBaseData, T)
+# 	end
+#     return S
+# end

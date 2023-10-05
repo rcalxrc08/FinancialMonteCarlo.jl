@@ -18,7 +18,7 @@ function pricer_macro_multiprocesses(model_type, payoff_type)
             nbatches = mcConfig.parallelMode.nbatches
             mc_configs = [MonteCarloConfiguration(div(mcConfig.Nsim, nbatches), mcConfig.Nstep, mcConfig.monteCarloMethod, mcConfig.parallelMode.sub_mod) for _ = 1:nbatches]
             for i = 1:nbatches
-                mc_configs[i].parallelMode.seed = mcConfig.parallelMode.seeds[i]
+                @set mc_configs[i].parallelMode.seed = mcConfig.parallelMode.seeds[i]
             end
             price::typeof(zero_typed) = @sync @distributed (+) for i = 1:nbatches
                 pricer(mcProcess, rfCurve, mc_configs[i], abstractPayoff)::typeof(zero_typed)
@@ -37,7 +37,7 @@ function pricer(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig
     nbatches = mcConfig.parallelMode.nbatches
     mc_configs = [MonteCarloConfiguration(div(mcConfig.Nsim, nbatches), mcConfig.Nstep, mcConfig.monteCarloMethod, mcConfig.parallelMode.sub_mod) for _ = 1:nbatches]
     for i = 1:nbatches
-        mc_configs[i].parallelMode.seed = mcConfig.parallelMode.seeds[i]
+        @set mc_configs[i].parallelMode.seed = mcConfig.parallelMode.seeds[i]
     end
     price = @distributed (+) for i = 1:nbatches
         pricer(mcProcess, rfCurve, mc_configs[i], abstractPayoffs)

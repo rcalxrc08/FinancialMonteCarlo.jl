@@ -11,7 +11,7 @@ Where:
 		μ	=	drift of the process.
 		x0	=	initial value.
 """
-mutable struct GeometricBrownianMotion{num <: Number, num1 <: Number, num2 <: Number, numtype <: Number} <: AbstractGeometricBrownianMotion{numtype}
+struct GeometricBrownianMotion{num <: Number, num1 <: Number, num2 <: Number, numtype <: Number} <: AbstractGeometricBrownianMotion{numtype}
     σ::num
     μ::num1
     x0::num2
@@ -34,3 +34,14 @@ function simulate!(X, mcProcess::AbstractGeometricBrownianMotion, mcBaseData::Ab
 
     nothing
 end
+
+# function simulate_path!(X, mcProcess::AbstractGeometricBrownianMotion, mcBaseData::AbstractMonteCarloConfiguration, T::Number)
+#     @assert T > 0
+#     σ = mcProcess.σ
+#     μ = mcProcess.μ - σ^2 / 2
+#     simulate_path!(X, BrownianMotion(σ, μ), mcBaseData, T)
+#     S0 = mcProcess.x0
+#     @. X = S0 * exp(X)
+
+#     nothing
+# end

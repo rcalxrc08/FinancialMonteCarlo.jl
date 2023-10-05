@@ -31,8 +31,8 @@ param_ = FinancialMonteCarlo.get_parameters(Model)
 
 @test param_[1] == 0.1
 
-FinancialMonteCarlo.set_parameters!(Model, [sigma])
-
+Model = FinancialMonteCarlo.set_parameters!(Model, [sigma])
+@test Model.σ == sigma
 display(Model)
 @show spot = pricer(Model, rfCurve, mc, Spot());
 @show FwdPrice = pricer(Model, rfCurve, mc, FwdData);

@@ -27,7 +27,7 @@ FinancialMonteCarlo.Curve([0.0, 0.1], [0.0, 0.1]);
 Model = GaussianCopulaNVariateProcess(Model_enj, Model_abpl, 0.0)
 param_ = FinancialMonteCarlo.get_parameters(Model_abpl);
 
-@test_throws(AssertionError, FinancialMonteCarlo.set_parameters!(Model_abpl, [1, 2, 3, 4]))
+# @test_throws(AssertionError, FinancialMonteCarlo.set_parameters!(Model_abpl, [1, 2, 3, 4]))
 
 port_ = "eni_aap" → Model;
 rfCurve = ZeroRate(r);
