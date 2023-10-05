@@ -1,4 +1,4 @@
-mutable struct MonteCarloDiffEqModel{absdiffeqmodel <: DiffEqBase.AbstractEnsembleProblem} <: ScalarMonteCarloProcess{Float64}
+struct MonteCarloDiffEqModel{absdiffeqmodel <: DiffEqBase.AbstractEnsembleProblem} <: ScalarMonteCarloProcess{Float64}
     model::absdiffeqmodel
     final_trasform::Function
     underlying::AbstractUnderlying

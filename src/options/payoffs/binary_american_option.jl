@@ -9,7 +9,7 @@ Where:
 		K	    = Strike Price of the Option.
 		isCall  = true for CALL, false for PUT.
 """
-mutable struct BinaryAmericanOption{num1 <: Number, num2 <: Number, numtype <: Number} <: AmericanPayoff{numtype}
+struct BinaryAmericanOption{num1 <: Number, num2 <: Number, numtype <: Number} <: AmericanPayoff{numtype}
     T::num1
     K::num2
     isCall::Bool

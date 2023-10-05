@@ -8,7 +8,7 @@ Where:
 		η  = Array of volatilities.
 		λ  = Array of weights.
 """
-mutable struct LogNormalMixture{num <: Number, num2 <: Number, abstrUnderlying <: AbstractUnderlying, numtype <: Number} <: ItoProcess{numtype}
+struct LogNormalMixture{num <: Number, num2 <: Number, abstrUnderlying <: AbstractUnderlying, numtype <: Number} <: ItoProcess{numtype}
     η::Array{num, 1}
     λ::Array{num2, 1}
     underlying::abstrUnderlying

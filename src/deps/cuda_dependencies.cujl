@@ -1,6 +1,6 @@
 abstract type AbstractCudaMode <: ParallelMode end
 # struct CudaMode <: AbstractCudaMode end
-mutable struct CudaMode{rngType <: Random.AbstractRNG} <: AbstractCudaMode
+struct CudaMode{rngType <: Random.AbstractRNG} <: AbstractCudaMode
     seed_cpu::Int64
     seed_gpu::Int64
     rng::rngType
@@ -15,11 +15,10 @@ using .CUDA
 include("../models/cuda/cuda_models.jl")
 
 function set_seed!(mcConfig::MonteCarloConfiguration{type1, type2, type3, type4}) where {type1 <: Integer, type2 <: Integer, type3 <: AbstractMonteCarloMethod, type4 <: AbstractCudaMode}
-    tmp_rng = deepcopy(mcConfig.parallelMode.rng)
-    inner_seed!(tmp_rng, mcConfig.parallelMode.seed_cpu)
-    CUDA.CURAND.seed!(mcConfig.parallelMode.seed_gpu)
-    mcConfig.parallelMode.rng = tmp_rng
-    nothing
+    if mcConfig.init_rng
+        inner_seed!(mcConfig.parallelMode.rng, mcConfig.parallelMode.seed_cpu)
+        CUDA.CURAND.seed!(mcConfig.parallelMode.seed_gpu)
+    end
 end
 
 get_matrix_type(mcConfig::MonteCarloConfiguration{<:Integer, <:Integer, <:AbstractMonteCarloMethod, <:AbstractCudaMode}, ::BaseProcess, price) = CuMatrix{typeof(price)}(undef, mcConfig.Nsim, mcConfig.Nstep + 1);

@@ -12,7 +12,7 @@ Where:
 		ρ	=	correlation between brownian motions.
 		θ	=	long value of square of volatility of the process.
 """
-mutable struct HestonProcess{num<:Number,num1<:Number,num2<:Number,num3<:Number,num4<:Number,num5<:Number,abstrUnderlying<:AbstractUnderlying,numtype<:Number} <: ItoProcess{numtype}
+struct HestonProcess{num <: Number, num1 <: Number, num2 <: Number, num3 <: Number, num4 <: Number, num5 <: Number, abstrUnderlying <: AbstractUnderlying, numtype <: Number} <: ItoProcess{numtype}
     σ::num
     σ₀::num1
     λ::num2
@@ -20,19 +20,19 @@ mutable struct HestonProcess{num<:Number,num1<:Number,num2<:Number,num3<:Number,
     ρ::num4
     θ::num5
     underlying::abstrUnderlying
-    function HestonProcess(σ::num, σ₀::num1, λ::num2, κ::num3, ρ::num4, θ::num5, underlying::abstrUnderlying) where {num<:Number,num1<:Number,num2<:Number,num3<:Number,num4<:Number,num5<:Number,abstrUnderlying<:AbstractUnderlying}
+    function HestonProcess(σ::num, σ₀::num1, λ::num2, κ::num3, ρ::num4, θ::num5, underlying::abstrUnderlying) where {num <: Number, num1 <: Number, num2 <: Number, num3 <: Number, num4 <: Number, num5 <: Number, abstrUnderlying <: AbstractUnderlying}
         @assert σ₀ > 0.0 "initial volatility must be positive"
         @assert σ > 0.0 "volatility of volatility must be positive"
         @assert abs(κ + λ) > 1e-14 "unfeasible parameters"
         @assert (-1.0 <= ρ <= 1.0) "ρ must be a correlation"
         zero_typed = zero(num) + zero(num1) + zero(num2) + zero(num3) + zero(num4) + zero(num5)
-        return new{num,num1,num2,num3,num4,num5,abstrUnderlying,typeof(zero_typed)}(σ, σ₀, λ, κ, ρ, θ, underlying)
+        return new{num, num1, num2, num3, num4, num5, abstrUnderlying, typeof(zero_typed)}(σ, σ₀, λ, κ, ρ, θ, underlying)
     end
 end
 
 export HestonProcess;
 
-function simulate!(X, mcProcess::HestonProcess, rfCurve::ZeroRate, mcBaseData::SerialMonteCarloConfig, T::numb) where {numb<:Number}
+function simulate!(X, mcProcess::HestonProcess, rfCurve::ZeroRate, mcBaseData::SerialMonteCarloConfig, T::numb) where {numb <: Number}
     r = rfCurve.r
     S0 = mcProcess.underlying.S0
     d = dividend(mcProcess)
@@ -76,7 +76,7 @@ function simulate!(X, mcProcess::HestonProcess, rfCurve::ZeroRate, mcBaseData::S
     return
 end
 
-function simulate!(X, mcProcess::HestonProcess, rfCurve::ZeroRate, mcBaseData::SerialAntitheticMonteCarloConfig, T::numb) where {numb<:Number}
+function simulate!(X, mcProcess::HestonProcess, rfCurve::ZeroRate, mcBaseData::SerialAntitheticMonteCarloConfig, T::numb) where {numb <: Number}
     r = rfCurve.r
     S0 = mcProcess.underlying.S0
     d = dividend(mcProcess)

@@ -8,7 +8,7 @@ Where:
 		σ	=	volatility of the process.
 		μ	=	drift of the process.
 """
-mutable struct GeometricBrownianMotionVec{num <: Number, num1 <: Number, num4 <: Number, num2 <: Number, numtype <: Number} <: AbstractGeometricBrownianMotion{numtype}
+struct GeometricBrownianMotionVec{num <: Number, num1 <: Number, num4 <: Number, num2 <: Number, numtype <: Number} <: AbstractGeometricBrownianMotion{numtype}
     σ::num
     μ::CurveType{num1, num4}
     x0::num2

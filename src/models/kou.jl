@@ -11,7 +11,7 @@ Where:
 		λ₊ =	positive jump size.
 		λ₋ =	negative jump size.
 """
-mutable struct KouProcess{num <: Number, num1 <: Number, num2 <: Number, num3 <: Number, num4 <: Number, abstrUnderlying <: AbstractUnderlying, numtype <: Number} <: FiniteActivityProcess{numtype}
+struct KouProcess{num <: Number, num1 <: Number, num2 <: Number, num3 <: Number, num4 <: Number, abstrUnderlying <: AbstractUnderlying, numtype <: Number} <: FiniteActivityProcess{numtype}
     σ::num
     λ::num1
     p::num2

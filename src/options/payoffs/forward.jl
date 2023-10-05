@@ -7,7 +7,7 @@ Where:
 
 		T	=	Time to maturity of the Forward.
 """
-mutable struct Forward{num <: Number} <: EuropeanPayoff{num}
+struct Forward{num <: Number} <: EuropeanPayoff{num}
     T::num
     function Forward(T::num) where {num <: Number}
         @assert T > 0 "Time to Maturity must be positive"

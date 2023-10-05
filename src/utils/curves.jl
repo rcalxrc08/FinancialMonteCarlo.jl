@@ -72,7 +72,7 @@ function internal_definite_integral(x::num, T::Array{num1}, r::Array{num2}) wher
     idx_ = findlast(y -> y < x, T)
     out = sum([(r[i] + r[i+1]) * 0.5 * (T[i+1] - T[i]) for i = 1:(idx_-1)])
     if x <= T[end]
-        itp = LinearInterpolation([T[idx_], T[idx_+1]], [r[idx_], r[idx_+1]], extrapolation_bc = Flat())
+        itp = linear_interpolation([T[idx_], T[idx_+1]], [r[idx_], r[idx_+1]], extrapolation_bc = Flat())
         out = out + (r[idx_] + itp(x)) * 0.5 * (x - T[idx_])
     else
         #continuation

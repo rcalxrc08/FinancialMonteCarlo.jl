@@ -8,7 +8,7 @@ Where:
 		models  = the processes.
 		rho     = correlation matrix.
 """
-mutable struct GaussianCopulaNVariateLogProcess{num3 <: Number, numtype <: Number} <: NDimensionalMonteCarloProcess{numtype}
+struct GaussianCopulaNVariateLogProcess{num3 <: Number, numtype <: Number} <: NDimensionalMonteCarloProcess{numtype}
     models::Tuple{Vararg{BaseProcess}}
     rho::Matrix{num3}
     function GaussianCopulaNVariateLogProcess(rho::Matrix{num3}, models::BaseProcess...) where {num3 <: Number}

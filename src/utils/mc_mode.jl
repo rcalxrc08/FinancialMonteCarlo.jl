@@ -1,6 +1,6 @@
 #Parallel Modes
 abstract type BaseMode end
-mutable struct SerialMode{rngType <: Random.AbstractRNG} <: BaseMode
+struct SerialMode{rngType <: Random.AbstractRNG} <: BaseMode
     seed::Int64
     rng::rngType
     function SerialMode(seed::num = 0, rng::rngType = MersenneTwister()) where {num <: Integer, rngType <: Random.AbstractRNG}

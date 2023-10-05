@@ -8,7 +8,7 @@ Where:
 		σ	=	volatility of the process.
 		μ	=	drift of the process.
 """
-mutable struct BrownianMotion{num <: Number, num1 <: Number, numtype <: Number} <: AbstractMonteCarloEngine{numtype}
+struct BrownianMotion{num <: Number, num1 <: Number, numtype <: Number} <: AbstractMonteCarloEngine{numtype}
     σ::num
     μ::num1
     function BrownianMotion(σ::num, μ::num1) where {num <: Number, num1 <: Number}
@@ -19,6 +19,22 @@ mutable struct BrownianMotion{num <: Number, num1 <: Number, numtype <: Number} 
 end
 
 export BrownianMotion;
+
+# function simulate_path!(X, mcProcess::BrownianMotion, mcBaseData::SerialMonteCarloConfig, T::numb) where {numb <: Number}
+#     Nstep = mcBaseData.Nstep
+#     σ = mcProcess.σ
+#     μ = mcProcess.μ
+#     @assert T > 0
+#     dt = T / Nstep
+#     mean_bm = μ * dt
+#     stddev_bm = σ * sqrt(dt)
+#     isDualZero = mean_bm * stddev_bm * 0
+#     @views X[1] = isDualZero
+#     @inbounds for j = 1:Nstep
+#         @views X[j+1] = X[j] + mean_bm + stddev_bm * randn(mcBaseData.parallelMode.rng)
+#     end
+#     return
+# end
 
 function simulate!(X, mcProcess::BrownianMotion, mcBaseData::SerialMonteCarloConfig, T::numb) where {numb <: Number}
     Nsim = mcBaseData.Nsim

@@ -9,7 +9,7 @@ Where:
 		θ = variance of volatility.
 		κ =	skewness of volatility.
 """
-mutable struct NormalInverseGaussianProcess{num <: Number, num1 <: Number, num2 <: Number, abstrUnderlying <: AbstractUnderlying, numtype <: Number} <: InfiniteActivityProcess{numtype}
+struct NormalInverseGaussianProcess{num <: Number, num1 <: Number, num2 <: Number, abstrUnderlying <: AbstractUnderlying, numtype <: Number} <: InfiniteActivityProcess{numtype}
     σ::num
     θ::num1
     κ::num2
