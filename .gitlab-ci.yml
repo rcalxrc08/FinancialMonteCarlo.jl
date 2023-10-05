@@ -70,7 +70,6 @@ test:1.8:
 benchmark:1.8:
   stage: benchmark
   image: julia:1.8
-  when: manual
   <<: *bench_definition
   
 coverage:1.8:
