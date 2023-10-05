@@ -13,6 +13,7 @@ before_script:
     - apt-get update && apt-get -y install gcc
     - apt-get update && apt-get -y install g++
     - apt-get update && apt-get -y install bzip2
+    - apt-get update && apt-get -y install git
 
 # Below is the template to run your tests in Julia
 
@@ -69,6 +70,7 @@ test:1.8:
 benchmark:1.8:
   stage: benchmark
   image: julia:1.8
+  when: manual
   <<: *bench_definition
   
 coverage:1.8:
@@ -78,9 +80,9 @@ coverage:1.8:
 
 pages:
   stage: deploy
-  image: julia:1.8
+  image: julia:1.9
   script:
-    - julia --project=docs -e 'using Pkg; Pkg.instantiate(); Pkg.develop(PackageSpec(path=pwd()))'
+    - julia --project=docs -e 'using Pkg; Pkg.develop(PackageSpec(path=pwd())); Pkg.instantiate()'
     - julia --project=docs --color=yes docs/make.jl
     - mv docs/build public
   artifacts:
