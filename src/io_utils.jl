@@ -80,7 +80,7 @@ end
 function set_parameters!(model::XProcess, param::Array{num}) where {XProcess <: BaseProcess, num <: Number}
     fields_ = fieldnames(XProcess)
     N1 = length(fields_) - 1
-    @assert N1 == length(param) "Check number of parameters of the model"
+    ChainRulesCore.@ignore_derivatives @assert N1 == length(param) "Check number of parameters of the model"
 
     for (symb, nval) in zip(fields_, param)
         if (symb != :underlying)
@@ -93,7 +93,7 @@ end
 
 function set_parameters!(model::LogNormalMixture, param::Array{num}) where {num <: Number}
     N1 = div(length(param) + 1, 2)
-    @assert !(N1 * 2 != length(param) + 1 || N1 < 2) "Check number of parameters of the model"
+    ChainRulesCore.@ignore_derivatives @assert !(N1 * 2 != length(param) + 1 || N1 < 2) "Check number of parameters of the model"
     eta = param[1:N1]
     lam = param[(N1+1):end]
     fields_ = fieldnames(LogNormalMixture)
@@ -106,7 +106,7 @@ end
 
 function set_parameters!(model::ShiftedLogNormalMixture, param::Array{num}) where {num <: Number}
     N1 = div(length(param), 2)
-    @assert !(N1 * 2 != length(param) || N1 < 2) "Check number of parameters of the model"
+    ChainRulesCore.@ignore_derivatives @assert !(N1 * 2 != length(param) || N1 < 2) "Check number of parameters of the model"
     eta = param[1:N1]
     lam = param[(N1+1):(2*N1-1)]
     alfa = param[end]

@@ -50,6 +50,6 @@ end
 
 function payoff(S::Array{Array{num, 2}, 1}, optionData::SingleNamePayoff, rfCurve::abstractZeroRateCurve, mcBaseData::AbstractMonteCarloConfiguration, T1::num2 = optionData.T) where {abstractZeroRateCurve <: AbstractZeroRateCurve, num <: Number, num2 <: Number}
     #switch to only in julia 1.4
-    @assert length(S) == 1
+    ChainRulesCore.@ignore_derivatives @assert length(S) == 1
     return payoff(S[1], optionData, rfCurve, mcBaseData, T1)
 end

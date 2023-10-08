@@ -5,7 +5,7 @@ function simulate!(X_cu, mcProcess::BrownianMotionVec, mcBaseData::CudaMonteCarl
 
     σ = mcProcess.σ
     μ = mcProcess.μ
-    @assert T > 0
+    ChainRulesCore.@ignore_derivatives @assert T > 0
     dt = T / Nstep
     stddev_bm = σ * sqrt(dt)
     zero_drift = incremental_integral(μ, dt * 0, dt)
@@ -26,7 +26,7 @@ function simulate!(X_cu, mcProcess::BrownianMotionVec, mcBaseData::CudaAntitheti
 
     σ = mcProcess.σ
     μ = mcProcess.μ
-    @assert T > 0
+    ChainRulesCore.@ignore_derivatives @assert T > 0
     dt = T / Nstep
     stddev_bm = σ * sqrt(dt)
     zero_drift = incremental_integral(μ, dt * 0, dt)

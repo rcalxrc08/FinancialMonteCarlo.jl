@@ -16,8 +16,8 @@ struct GeometricBrownianMotion{num <: Number, num1 <: Number, num2 <: Number, nu
     μ::num1
     x0::num2
     function GeometricBrownianMotion(σ::num, μ::num1, x0::num2) where {num <: Number, num1 <: Number, num2 <: Number}
-        @assert σ > 0 "Volatility must be positive"
-        zero_typed = zero(num) + zero(num1)
+        ChainRulesCore.@ignore_derivatives @assert σ > 0 "Volatility must be positive"
+        zero_typed = ChainRulesCore.@ignore_derivatives zero(num) + zero(num1)
         return new{num, num1, num2, typeof(zero_typed)}(σ, μ, x0)
     end
 end
@@ -25,7 +25,7 @@ end
 export GeometricBrownianMotion;
 
 function simulate!(X, mcProcess::AbstractGeometricBrownianMotion, mcBaseData::AbstractMonteCarloConfiguration, T::Number)
-    @assert T > 0
+    ChainRulesCore.@ignore_derivatives @assert T > 0
     σ = mcProcess.σ
     μ = mcProcess.μ - σ^2 / 2
     simulate!(X, BrownianMotion(σ, μ), mcBaseData, T)
@@ -36,7 +36,7 @@ function simulate!(X, mcProcess::AbstractGeometricBrownianMotion, mcBaseData::Ab
 end
 
 # function simulate_path!(X, mcProcess::AbstractGeometricBrownianMotion, mcBaseData::AbstractMonteCarloConfiguration, T::Number)
-#     @assert T > 0
+# ChainRulesCore.@ignore_derivatives @assert T > 0
 #     σ = mcProcess.σ
 #     μ = mcProcess.μ - σ^2 / 2
 #     simulate_path!(X, BrownianMotion(σ, μ), mcBaseData, T)

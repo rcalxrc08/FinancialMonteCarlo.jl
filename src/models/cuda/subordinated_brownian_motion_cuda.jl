@@ -4,7 +4,7 @@ function simulate!(X_cu, mcProcess::SubordinatedBrownianMotion, mcBaseData::Cuda
     Nstep = mcBaseData.Nstep
     drift = mcProcess.drift * T / Nstep
     sigma = mcProcess.sigma
-    @assert T > 0
+    ChainRulesCore.@ignore_derivatives @assert T > 0
     type_sub = typeof(Float32(quantile(mcProcess.subordinator_, 0.5)))
     dt_s = CuArray{type_sub}(undef, Nsim)
     dt_s_cpu = Array{type_sub}(undef, Nsim)
@@ -27,7 +27,7 @@ function simulate!(X_cu, mcProcess::SubordinatedBrownianMotion, mcBaseData::Cuda
     Nstep = mcBaseData.Nstep
     drift = mcProcess.drift
     sigma = mcProcess.sigma
-    @assert T > 0
+    ChainRulesCore.@ignore_derivatives @assert T > 0
     type_sub = typeof(Float32(quantile(mcProcess.subordinator_, 0.5)))
     Nsim_2 = div(Nsim, 2)
     dt_s = CuArray{type_sub}(undef, Nsim_2)

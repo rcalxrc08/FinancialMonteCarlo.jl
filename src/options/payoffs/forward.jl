@@ -10,7 +10,7 @@ Where:
 struct Forward{num <: Number} <: EuropeanPayoff{num}
     T::num
     function Forward(T::num) where {num <: Number}
-        @assert T > 0 "Time to Maturity must be positive"
+        ChainRulesCore.@ignore_derivatives @assert T > 0 "Time to Maturity must be positive"
         return new{num}(T)
     end
 end

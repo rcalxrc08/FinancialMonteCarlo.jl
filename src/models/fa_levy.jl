@@ -21,7 +21,7 @@ function simulate!(X, mcProcess::finiteActivityProcess, rfCurve::AbstractZeroRat
     σ = mcProcess.σ
     λ = mcProcess.λ
 
-    @assert T > 0.0
+    ChainRulesCore.@ignore_derivatives @assert T > 0.0
 
     ####Simulation
     ## Simulate

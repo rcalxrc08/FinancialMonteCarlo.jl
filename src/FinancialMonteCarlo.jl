@@ -6,6 +6,7 @@ using Requires # for conditional dependencies
 using Random # for randn! and related
 using LinearAlgebra # for Longstaff Schwartz
 using Accessors # setting fields
+using ChainRulesCore
 function __init__()
     @require CUDA = "052768ef-5323-5732-b1bb-66c8b64840ba" include("deps/cuda_dependencies.cujl")
     @require DifferentialEquations = "0c46a032-eb83-5123-abaf-570d42b7fbaa" include("deps/diffeq_dependencies.jl")

@@ -5,7 +5,7 @@ function simulate!(X, mcProcess::SubordinatedBrownianMotionVec, mcBaseData::Cuda
 
     drift = mcProcess.drift
     sigma = mcProcess.sigma
-    @assert T > 0
+    ChainRulesCore.@ignore_derivatives @assert T > 0
     type_sub = typeof(quantile(mcProcess.subordinator_, 0.5))
     dt_s_cpu = Array{type_sub}(undef, Nsim)
     dt_s = CuArray{type_sub}(undef, Nsim)
@@ -39,7 +39,7 @@ function simulate!(X, mcProcess::SubordinatedBrownianMotionVec, mcBaseData::Cuda
     type_sub = typeof(quantile(mcProcess.subordinator_, 0.5))
     drift = mcProcess.drift
     sigma = mcProcess.sigma
-    @assert T > 0
+    ChainRulesCore.@ignore_derivatives @assert T > 0
     dt = T / Nstep
     zero_drift = incremental_integral(drift, zero(type_sub), zero(type_sub) + dt)
     isDualZero = sigma * zero(type_sub) * 0 * zero_drift

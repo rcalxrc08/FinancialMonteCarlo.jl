@@ -21,11 +21,11 @@ struct HestonProcess{num <: Number, num1 <: Number, num2 <: Number, num3 <: Numb
     θ::num5
     underlying::abstrUnderlying
     function HestonProcess(σ::num, σ₀::num1, λ::num2, κ::num3, ρ::num4, θ::num5, underlying::abstrUnderlying) where {num <: Number, num1 <: Number, num2 <: Number, num3 <: Number, num4 <: Number, num5 <: Number, abstrUnderlying <: AbstractUnderlying}
-        @assert σ₀ > 0.0 "initial volatility must be positive"
-        @assert σ > 0.0 "volatility of volatility must be positive"
-        @assert abs(κ + λ) > 1e-14 "unfeasible parameters"
-        @assert (-1.0 <= ρ <= 1.0) "ρ must be a correlation"
-        zero_typed = zero(num) + zero(num1) + zero(num2) + zero(num3) + zero(num4) + zero(num5)
+        ChainRulesCore.@ignore_derivatives @assert σ₀ > 0.0 "initial volatility must be positive"
+        ChainRulesCore.@ignore_derivatives @assert σ > 0.0 "volatility of volatility must be positive"
+        ChainRulesCore.@ignore_derivatives @assert abs(κ + λ) > 1e-14 "unfeasible parameters"
+        ChainRulesCore.@ignore_derivatives @assert (-1.0 <= ρ <= 1.0) "ρ must be a correlation"
+        zero_typed = ChainRulesCore.@ignore_derivatives zero(num) + zero(num1) + zero(num2) + zero(num3) + zero(num4) + zero(num5)
         return new{num, num1, num2, num3, num4, num5, abstrUnderlying, typeof(zero_typed)}(σ, σ₀, λ, κ, ρ, θ, underlying)
     end
 end
@@ -44,7 +44,7 @@ function simulate!(X, mcProcess::HestonProcess, rfCurve::ZeroRate, mcBaseData::S
     κ = mcProcess.κ
     ρ = mcProcess.ρ
     θ = mcProcess.θ
-    @assert T > 0.0
+    ChainRulesCore.@ignore_derivatives @assert T > 0.0
 
     ## Simulate
     κ_s = κ + λ1
@@ -88,7 +88,7 @@ function simulate!(X, mcProcess::HestonProcess, rfCurve::ZeroRate, mcBaseData::S
     κ = mcProcess.κ
     ρ = mcProcess.ρ
     θ = mcProcess.θ
-    @assert T > 0.0
+    ChainRulesCore.@ignore_derivatives @assert T > 0.0
 
     ####Simulation
     ## Simulate

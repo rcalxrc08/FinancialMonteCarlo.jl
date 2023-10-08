@@ -15,10 +15,10 @@ struct NormalInverseGaussianProcess{num <: Number, num1 <: Number, num2 <: Numbe
     κ::num2
     underlying::abstrUnderlying
     function NormalInverseGaussianProcess(σ::num, θ::num1, κ::num2, underlying::abstrUnderlying) where {num <: Number, num1 <: Number, num2 <: Number, abstrUnderlying <: AbstractUnderlying}
-        @assert σ > 0 "volatility must be positive"
-        @assert κ > 0 "κappa must be positive"
-        @assert 1 - (σ^2 + 2 * θ) * κ > 0 "Parameters with unfeasible values"
-        zero_typed = zero(num) + zero(num1) + zero(num2)
+        ChainRulesCore.@ignore_derivatives @assert σ > 0 "volatility must be positive"
+        ChainRulesCore.@ignore_derivatives @assert κ > 0 "κappa must be positive"
+        ChainRulesCore.@ignore_derivatives @assert 1 - (σ^2 + 2 * θ) * κ > 0 "Parameters with unfeasible values"
+        zero_typed = ChainRulesCore.@ignore_derivatives zero(num) + zero(num1) + zero(num2)
         return new{num, num1, num2, abstrUnderlying, typeof(zero_typed)}(σ, θ, κ, underlying)
     end
 end
@@ -34,7 +34,7 @@ function simulate!(X, mcProcess::NormalInverseGaussianProcess, rfCurve::Abstract
     σ = mcProcess.σ
     θ = mcProcess.θ
     κ = mcProcess.κ
-    @assert T > 0
+    ChainRulesCore.@ignore_derivatives @assert T > 0
 
     dt = T / Nstep
     ψ = (1 - sqrt(1 - (σ^2 + 2 * θ) * κ)) / κ

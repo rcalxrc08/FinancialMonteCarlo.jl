@@ -4,7 +4,7 @@ struct MultiThreading{abstractMode <: BaseMode} <: AbstractMultiThreading
     sub_mod::abstractMode
     seeds::Array{Int64}
     function MultiThreading(sub_mod::abstractMode = SerialMode(), numberOfBatch::Int64 = Int64(Threads.nthreads()), seeds::Array{Int64} = collect(1:Threads.nthreads())) where {abstractMode <: BaseMode}
-        @assert length(seeds) == numberOfBatch
+        ChainRulesCore.@ignore_derivatives @assert length(seeds) == numberOfBatch
         return new{abstractMode}(numberOfBatch, sub_mod, seeds)
     end
 end

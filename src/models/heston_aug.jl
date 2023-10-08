@@ -11,7 +11,7 @@ function simulate!(X, mcProcess::HestonProcess, rfCurve::ZeroRateCurve, mcBaseDa
     κ = mcProcess.κ
     ρ = mcProcess.ρ
     θ = mcProcess.θ
-    @assert T > 0.0
+    ChainRulesCore.@ignore_derivatives @assert T > 0.0
 
     ## Simulate
     κ_s = κ + λ1
@@ -53,7 +53,7 @@ function simulate!(X, mcProcess::HestonProcess, rfCurve::ZeroRateCurve, mcBaseDa
     κ = mcProcess.κ
     ρ = mcProcess.ρ
     θ = mcProcess.θ
-    @assert T > 0.0
+    ChainRulesCore.@ignore_derivatives @assert T > 0.0
 
     ####Simulation
     ## Simulate

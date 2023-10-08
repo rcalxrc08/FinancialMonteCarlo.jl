@@ -12,8 +12,8 @@ struct BrownianMotionVec{num <: Number, num1 <: Number, num4 <: Number, numtype 
     σ::num
     μ::CurveType{num1, num4}
     function BrownianMotionVec(σ::num, μ::CurveType{num1, num4}) where {num <: Number, num1 <: Number, num4 <: Number}
-        @assert σ > 0 "Volatility must be positive"
-        zero_typed = zero(num) + zero(num1) + zero(num4)
+        ChainRulesCore.@ignore_derivatives @assert σ > 0 "Volatility must be positive"
+        zero_typed = ChainRulesCore.@ignore_derivatives zero(num) + zero(num1) + zero(num4)
         return new{num, num1, num4, typeof(zero_typed)}(σ, μ)
     end
 end
@@ -27,7 +27,7 @@ function simulate!(X, mcProcess::BrownianMotionVec, mcBaseData::SerialMonteCarlo
     Nstep = mcBaseData.Nstep
     σ = mcProcess.σ
     μ = mcProcess.μ
-    @assert T > 0
+    ChainRulesCore.@ignore_derivatives @assert T > 0
     dt = T / Nstep
     stddev_bm = σ * sqrt(dt)
     zero_drift = incremental_integral(μ, dt * 0, dt)
@@ -48,7 +48,7 @@ function simulate!(X, mcProcess::BrownianMotionVec, mcBaseData::SerialAntithetic
     Nstep = mcBaseData.Nstep
     σ = mcProcess.σ
     μ = mcProcess.μ
-    @assert T > 0
+    ChainRulesCore.@ignore_derivatives @assert T > 0
     dt = T / Nstep
     stddev_bm = σ * sqrt(dt)
     zero_drift = incremental_integral(μ, dt * 0, dt)

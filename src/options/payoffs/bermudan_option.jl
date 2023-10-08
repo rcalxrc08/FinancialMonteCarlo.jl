@@ -15,10 +15,10 @@ struct BermudanOption{num1 <: Number, num2 <: Number, numtype <: Number} <: Berm
     K::num2
     isCall::Bool
     function BermudanOption(T::AbstractArray{num1}, K::num2, isCall::Bool = true) where {num1 <: Number, num2 <: Number}
-        @assert minimum(T) > 0 "Times to Maturity must be positive"
-        @assert K > 0 "Strike Price must be positive"
-        @assert issorted(T) "Times to Maturity must be sorted"
-        zero_typed = zero(num1) + zero(num2)
+        ChainRulesCore.@ignore_derivatives @assert minimum(T) > 0 "Times to Maturity must be positive"
+        ChainRulesCore.@ignore_derivatives @assert K > 0 "Strike Price must be positive"
+        ChainRulesCore.@ignore_derivatives @assert issorted(T) "Times to Maturity must be sorted"
+        zero_typed = ChainRulesCore.@ignore_derivatives zero(num1) + zero(num2)
         return new{num1, num2, typeof(zero_typed)}(T[end], T, K, isCall)
     end
 end
@@ -26,6 +26,6 @@ end
 export BermudanOption;
 
 function payout(Sti::numtype_, bmPayoff::BermudanOption) where {numtype_ <: Number}
-    iscall = bmPayoff.isCall ? 1 : -1
-    return ((Sti - bmPayoff.K) * iscall > 0.0) ? (Sti - bmPayoff.K) * iscall : zero(numtype_)
+    iscall = ChainRulesCore.@ignore_derivatives ifelse(bmPayoff.isCall, Int8(1), Int8(-1))
+    return max((Sti - bmPayoff.K) * iscall, zero(numtype_))
 end

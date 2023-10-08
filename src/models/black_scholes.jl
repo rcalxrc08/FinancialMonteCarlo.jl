@@ -11,7 +11,7 @@ struct BlackScholesProcess{num <: Number, abstrUnderlying <: AbstractUnderlying}
     σ::num
     underlying::abstrUnderlying
     function BlackScholesProcess(σ::num, underlying::abstrUnderlying) where {num <: Number, abstrUnderlying <: AbstractUnderlying}
-        @assert σ > 0 "Volatility must be positive"
+        ChainRulesCore.@ignore_derivatives @assert σ > 0 "Volatility must be positive"
         return new{num, abstrUnderlying}(σ, underlying)
     end
 end
@@ -19,7 +19,7 @@ end
 export BlackScholesProcess;
 
 function simulate!(S, mcProcess::BlackScholesProcess, rfCurve::AbstractZeroRateCurve, mcBaseData::AbstractMonteCarloConfiguration, T::Number)
-    @assert T > 0.0
+    ChainRulesCore.@ignore_derivatives @assert T > 0.0
     r = rfCurve.r
     d = dividend(mcProcess)
     σ = mcProcess.σ
@@ -31,7 +31,7 @@ function simulate!(S, mcProcess::BlackScholesProcess, rfCurve::AbstractZeroRateC
 end
 
 # function simulate_path!(S, mcProcess::BlackScholesProcess, rfCurve::AbstractZeroRateCurve, mcBaseData::AbstractMonteCarloConfiguration, T::Number)
-#     @assert T > 0.0
+# ChainRulesCore.@ignore_derivatives @assert T > 0.0
 #     r = rfCurve.r
 #     d = dividend(mcProcess)
 #     σ = mcProcess.σ

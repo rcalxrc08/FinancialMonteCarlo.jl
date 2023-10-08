@@ -81,7 +81,7 @@ isequal(x::Payoff1, y::Payoff2) where {Payoff1 <: AbstractPayoff, Payoff2 <: Abs
 import Base.show;
 function show(io::IO, p::Position)
     keys_ = collect(keys(p))
-    for idx_ = 1:length(keys_)
+    for idx_ in eachindex(keys_)
         key_ = keys_[idx_]
         val_ = p[key_]
         iszero(val_) ? continue : nothing

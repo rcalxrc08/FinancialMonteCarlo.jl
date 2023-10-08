@@ -13,9 +13,9 @@ struct GaussianCopulaNVariateLogProcess{num3 <: Number, numtype <: Number} <: ND
     rho::Matrix{num3}
     function GaussianCopulaNVariateLogProcess(rho::Matrix{num3}, models::BaseProcess...) where {num3 <: Number}
         sz = size(rho)
-        @assert sz[1] == sz[2]
-        @assert length(models) == sz[1]
-        @assert isposdef(rho)
+        ChainRulesCore.@ignore_derivatives @assert sz[1] == sz[2]
+        ChainRulesCore.@ignore_derivatives @assert length(models) == sz[1]
+        ChainRulesCore.@ignore_derivatives @assert isposdef(rho)
         zero_typed = predict_output_type_zero(models...) + zero(num3)
         return new{num3, typeof(zero_typed)}(models, rho)
     end
@@ -25,7 +25,7 @@ struct GaussianCopulaNVariateLogProcess{num3 <: Number, numtype <: Number} <: ND
     end
     function GaussianCopulaNVariateLogProcess(model1::BaseProcess, model2::BaseProcess, rho::num3) where {num3 <: Number}
         corr_matrix_ = [1.0 rho; rho 1.0]
-        @assert isposdef(corr_matrix_)
+        ChainRulesCore.@ignore_derivatives @assert isposdef(corr_matrix_)
         return GaussianCopulaNVariateLogProcess(corr_matrix_, model1, model2)
     end
 end
@@ -35,7 +35,7 @@ export GaussianCopulaNVariateLogProcess;
 function simulate!(S_Total, mcProcess::GaussianCopulaNVariateLogProcess, rfCurve::AbstractZeroRateCurve, mcBaseData::AbstractMonteCarloConfiguration, T::Number)
     Nsim = mcBaseData.Nsim
     Nstep = mcBaseData.Nstep
-    @assert T > 0.0
+    ChainRulesCore.@ignore_derivatives @assert T > 0.0
 
     ####Simulation
     ## Simulate

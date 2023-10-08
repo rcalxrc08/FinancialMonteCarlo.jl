@@ -3,7 +3,7 @@ function pricer(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig
     variate_handl = mcConfig.monteCarloMethod
     variate_conf = variate_handl.conf_variate
     variate_payoff = variate_handl.variate
-    @assert maturity(abstractPayoff) == variate_payoff.T
+    ChainRulesCore.@ignore_derivatives @assert maturity(abstractPayoff) == variate_payoff.T
     T = maturity(abstractPayoff)
     S_var = simulate(mcProcess, rfCurve, variate_conf, T)
     Payoff_var = payoff(S_var, variate_payoff, rfCurve, variate_conf)
@@ -24,7 +24,7 @@ function pricer(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig
     variate_handl = mcConfig.monteCarloMethod
     variate_conf = variate_handl.conf_variate
     variate_payoff = variate_handl.variate
-    @assert maturity(abstractPayoff) == variate_payoff.T
+    ChainRulesCore.@ignore_derivatives @assert maturity(abstractPayoff) == variate_payoff.T
     T = maturity(abstractPayoff)
     S_var = simulate(mcProcess, rfCurve, variate_conf, T)
     Payoff_var = payoff(S_var, variate_payoff, rfCurve, variate_conf)

@@ -25,8 +25,8 @@ function Curve(r_::Array{num1}, T::num2) where {num1 <: Number, num2 <: Number}
     return r
 end
 function Curve(r_::Array{num1}, T::Array{num2}) where {num1 <: Number, num2 <: Number}
-    @assert length(r_) == length(T)
-    @assert T == sort(T)
+    ChainRulesCore.@ignore_derivatives @assert length(r_) == length(T)
+    ChainRulesCore.@ignore_derivatives @assert T == sort(T)
     r = DictTypeInternal{num2, num1}()
     for i = 1:length(r_)
         insert!(r, T[i], r_[i])
@@ -34,9 +34,9 @@ function Curve(r_::Array{num1}, T::Array{num2}) where {num1 <: Number, num2 <: N
     return r
 end
 function ImpliedCurve(r_::Array{num1}, T::Array{num2}) where {num1 <: Number, num2 <: Number}
-    @assert length(r_) == length(T)
-    @assert length(r_) >= 1
-    @assert T == sort(T)
+    ChainRulesCore.@ignore_derivatives @assert length(r_) == length(T)
+    ChainRulesCore.@ignore_derivatives @assert length(r_) >= 1
+    ChainRulesCore.@ignore_derivatives @assert T == sort(T)
 
     r = DictTypeInternal{num2, num1}()
     insert!(r, 0.0, 0.0)
@@ -64,11 +64,11 @@ end
 
 using Interpolations
 function internal_definite_integral(x::num, T::Array{num1}, r::Array{num2}) where {num <: Number, num1 <: Number, num2 <: Number}
-    @assert length(T) == length(r)
+    ChainRulesCore.@ignore_derivatives @assert length(T) == length(r)
     if x == 0.0
         return 0.0
     end
-    @assert x >= 0.0
+    ChainRulesCore.@ignore_derivatives @assert x >= 0.0
     idx_ = findlast(y -> y < x, T)
     out = sum([(r[i] + r[i+1]) * 0.5 * (T[i+1] - T[i]) for i = 1:(idx_-1)])
     if x <= T[end]

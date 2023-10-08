@@ -4,7 +4,7 @@ function simulate!(X_cu, mcProcess::BrownianMotion, mcBaseData::CudaMonteCarloCo
     Nstep = mcBaseData.Nstep
     σ = mcProcess.σ
     μ = mcProcess.μ
-    @assert T > 0
+    ChainRulesCore.@ignore_derivatives @assert T > 0
     dt = T / Nstep
     mean_bm = μ * dt
     stddev_bm = σ * sqrt(dt)
@@ -24,7 +24,7 @@ function simulate!(X_cu, mcProcess::BrownianMotion, mcBaseData::CudaAntitheticMo
 
     σ = mcProcess.σ
     μ = mcProcess.μ
-    @assert T > 0
+    ChainRulesCore.@ignore_derivatives @assert T > 0
     dt = T / Nstep
     mean_bm = μ * dt
     stddev_bm = σ * sqrt(dt)

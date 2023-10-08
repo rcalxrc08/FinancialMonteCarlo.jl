@@ -15,8 +15,8 @@ struct SubordinatedBrownianMotion{num <: Number, num1 <: Number, num2 <: Number,
     θ::num2
     subordinator_::Distr
     function SubordinatedBrownianMotion(sigma::num, drift::num1, θ::num2, dist::Distr) where {num <: Number, num1 <: Number, num2 <: Number, Distr <: Distribution{Univariate, Continuous}}
-        @assert sigma > 0 "volatility must be positive"
-        zero_typed = zero(num) + zero(num1)
+        ChainRulesCore.@ignore_derivatives @assert sigma > 0 "volatility must be positive"
+        zero_typed = ChainRulesCore.@ignore_derivatives zero(num) + zero(num1)
         return new{num, num1, num2, Distr, typeof(zero_typed)}(sigma, drift, θ, dist)
     end
 end
@@ -30,7 +30,7 @@ function simulate!(X, mcProcess::SubordinatedBrownianMotion, mcBaseData::SerialM
     drift = mcProcess.drift * dt
     sigma = mcProcess.sigma
 
-    @assert T > 0.0
+    ChainRulesCore.@ignore_derivatives @assert T > 0.0
 
     type_sub = typeof(rand(mcBaseData.parallelMode.rng, mcProcess.subordinator_))
     isDualZero = drift * zero(type_sub)
@@ -52,7 +52,7 @@ function simulate!(X, mcProcess::SubordinatedBrownianMotion, mcBaseData::SerialA
     drift = mcProcess.drift * dt
     sigma = mcProcess.sigma
 
-    @assert T > 0.0
+    ChainRulesCore.@ignore_derivatives @assert T > 0.0
 
     type_sub = typeof(quantile(mcProcess.subordinator_, 0.5))
     isDualZero = drift * sigma * zero(type_sub) * 0.0

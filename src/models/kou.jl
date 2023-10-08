@@ -19,11 +19,11 @@ struct KouProcess{num <: Number, num1 <: Number, num2 <: Number, num3 <: Number,
     λ₋::num4
     underlying::abstrUnderlying
     function KouProcess(σ::num, λ::num1, p::num2, λ₊::num3, λ₋::num4, underlying::abstrUnderlying) where {num <: Number, num1 <: Number, num2 <: Number, num3 <: Number, num4 <: Number, abstrUnderlying <: AbstractUnderlying}
-        @assert σ > 0 "volatility must be positive"
-        @assert λ > 0 "λ, i.e. jump intensity, must be positive"
-        @assert 0 <= p <= 1 "p must be a probability"
-        @assert λ₊ > 0 "λ₊ must be positive"
-        @assert λ₋ > 0 "λ₋ must be positive"
+        ChainRulesCore.@ignore_derivatives @assert σ > 0 "volatility must be positive"
+        ChainRulesCore.@ignore_derivatives @assert λ > 0 "λ, i.e. jump intensity, must be positive"
+        ChainRulesCore.@ignore_derivatives @assert 0 <= p <= 1 "p must be a probability"
+        ChainRulesCore.@ignore_derivatives @assert λ₊ > 0 "λ₊ must be positive"
+        ChainRulesCore.@ignore_derivatives @assert λ₋ > 0 "λ₋ must be positive"
         zero_typed = promote_type(num, num1, num2, num3, num4)
         return new{num, num1, num2, num3, num4, abstrUnderlying, zero_typed}(σ, λ, p, λ₊, λ₋, underlying)
     end

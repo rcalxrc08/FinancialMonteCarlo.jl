@@ -17,10 +17,10 @@ struct MertonProcess{num <: Number, num1 <: Number, num2 <: Number, num3 <: Numb
     σ_jump::num3
     underlying::abstrUnderlying
     function MertonProcess(σ::num, λ::num1, μ_jump::num2, σ_jump::num3, underlying::abstrUnderlying) where {num <: Number, num1 <: Number, num2 <: Number, num3 <: Number, abstrUnderlying <: AbstractUnderlying}
-        @assert σ > 0 "volatility must be positive"
-        @assert λ > 0 "jump intensity must be positive"
-        @assert σ_jump > 0 "positive λ must be positive"
-        zero_typed = zero(num) + zero(num1) + zero(num2) + zero(num3)
+        ChainRulesCore.@ignore_derivatives @assert σ > 0 "volatility must be positive"
+        ChainRulesCore.@ignore_derivatives @assert λ > 0 "jump intensity must be positive"
+        ChainRulesCore.@ignore_derivatives @assert σ_jump > 0 "positive λ must be positive"
+        zero_typed = ChainRulesCore.@ignore_derivatives zero(num) + zero(num1) + zero(num2) + zero(num3)
         return new{num, num1, num2, num3, abstrUnderlying, typeof(zero_typed)}(σ, λ, μ_jump, σ_jump, underlying)
     end
 end

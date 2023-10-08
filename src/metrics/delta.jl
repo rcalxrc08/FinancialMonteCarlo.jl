@@ -43,7 +43,7 @@ function delta(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig:
 end
 
 function delta(mcProcess::Dict{String, AbstractMonteCarloProcess}, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration, dict_::Dict{String, Dict{AbstractPayoff, Number}}, underl_::String, dS::Real = 1e-7)
-    @assert isnothing(findfirst("_", underl_)) "deltas are defined on single name"
+    ChainRulesCore.@ignore_derivatives @assert isnothing(findfirst("_", underl_)) "deltas are defined on single name"
     set_seed!(mcConfig)
     price0 = pricer(mcProcess, rfCurve, mcConfig, dict_)
     price2 = 0.0

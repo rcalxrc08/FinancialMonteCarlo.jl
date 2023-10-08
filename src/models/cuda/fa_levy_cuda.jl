@@ -7,7 +7,7 @@ function simulate!(X, mcProcess::finiteActivityProcess, rfCurve::AbstractZeroRat
     σ = mcProcess.σ
     λ = mcProcess.λ
 
-    @assert T > 0.0
+    ChainRulesCore.@ignore_derivatives @assert T > 0.0
     ## Simulate
     # r-d-psi(-i)
     drift_rn = (r - d) - σ^2 / 2 - λ * compute_drift(mcProcess)

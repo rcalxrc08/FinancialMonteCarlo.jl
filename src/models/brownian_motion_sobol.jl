@@ -5,7 +5,7 @@ function simulate!(X, mcProcess::BrownianMotion, mcBaseData::SerialSobolMonteCar
     Nstep = mcBaseData.Nstep
     σ = mcProcess.σ
     μ = mcProcess.μ
-    @assert T > 0
+    ChainRulesCore.@ignore_derivatives @assert T > 0
     dt = T / Nstep
     mean_bm = μ * dt
     stddev_bm = σ * sqrt(dt)
@@ -29,7 +29,7 @@ function simulate!(X, mcProcess::BrownianMotionVec, mcBaseData::SerialSobolMonte
     Nstep = mcBaseData.Nstep
     σ = mcProcess.σ
     μ = mcProcess.μ
-    @assert T > 0
+    ChainRulesCore.@ignore_derivatives @assert T > 0
     dt = T / Nstep
     stddev_bm = σ * sqrt(dt)
     zero_drift = incremental_integral(μ, dt * 0, dt)

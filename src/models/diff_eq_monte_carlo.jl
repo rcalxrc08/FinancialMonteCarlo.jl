@@ -17,7 +17,7 @@ function simulate!(X, mcProcess::MonteCarloDiffEqModel, rfCurve::ZeroRate, mcBas
     Nsim = mcBaseData.Nsim
     Nstep = mcBaseData.Nstep
     Dt = T / Nstep
-    @assert T > 0.0
+    ChainRulesCore.@ignore_derivatives @assert T > 0.0
     diffeqmodel = mcProcess.model
     sol = solve(diffeqmodel, SOSRI(), EnsembleThreads(), trajectories = Nsim, dt = Dt, adaptive = false)
     X .= [path.u[j] for path in sol.u, j = 1:(Nstep+1)]

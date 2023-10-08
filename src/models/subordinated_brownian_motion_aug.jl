@@ -15,8 +15,8 @@ struct SubordinatedBrownianMotionVec{num <: Number, num1 <: Number, num4 <: Numb
     θ::num2
     subordinator_::Distr
     function SubordinatedBrownianMotionVec(sigma::num, drift::CurveType{num1, num4}, θ::num2, dist::Distr) where {num <: Number, num1 <: Number, num2 <: Number, num4 <: Number, Distr <: Distribution{Univariate, Continuous}}
-        @assert sigma > 0 "volatility must be positive"
-        zero_typed = zero(num) + zero(num1) + zero(num4)
+        ChainRulesCore.@ignore_derivatives @assert sigma > 0 "volatility must be positive"
+        zero_typed = ChainRulesCore.@ignore_derivatives zero(num) + zero(num1) + zero(num4)
         return new{num, num1, num4, num2, Distr, typeof(zero_typed)}(sigma, drift, θ, dist)
     end
 end
@@ -31,7 +31,7 @@ function simulate!(X, mcProcess::SubordinatedBrownianMotionVec, mcBaseData::Seri
 
     drift = mcProcess.drift
     sigma = mcProcess.sigma
-    @assert T > 0
+    ChainRulesCore.@ignore_derivatives @assert T > 0
     type_sub = typeof(quantile(mcProcess.subordinator_, 0.5))
     dt_s = Array{type_sub}(undef, Nsim)
     dt = T / Nstep
@@ -57,7 +57,7 @@ function simulate!(X, mcProcess::SubordinatedBrownianMotionVec, mcBaseData::Seri
     type_sub = typeof(quantile(mcProcess.subordinator_, 0.5))
     drift = mcProcess.drift
     sigma = mcProcess.sigma
-    @assert T > 0
+    ChainRulesCore.@ignore_derivatives @assert T > 0
     dt = T / Nstep
     zero_drift = incremental_integral(drift, zero(type_sub), zero(type_sub) + dt) * 0
     isDualZero = sigma * zero(type_sub) * zero_drift

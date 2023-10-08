@@ -6,7 +6,7 @@ struct MultiProcess{abstractMode <: BaseMode} <: AbstractMultiProcess
     sub_mod::abstractMode
     seeds::Array{Int64}
     function MultiProcess(sub_mod::abstractMode = SerialMode(), nbatches::Int64 = Int64(nworkers()), seeds::Array{Int64} = collect(1:nbatches)) where {abstractMode <: BaseMode}
-        @assert length(seeds) == nbatches
+        ChainRulesCore.@ignore_derivatives @assert length(seeds) == nbatches
         return new{abstractMode}(nbatches, sub_mod, seeds)
     end
 end

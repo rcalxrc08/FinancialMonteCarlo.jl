@@ -5,7 +5,7 @@ function simulate!(X, mcProcess::SubordinatedBrownianMotion, mcBaseData::SerialS
     Nstep = mcBaseData.Nstep
     drift = mcProcess.drift * T / Nstep
     sigma = mcProcess.sigma
-    @assert T > 0
+    ChainRulesCore.@ignore_derivatives @assert T > 0
     type_sub = typeof(quantile(mcProcess.subordinator_, 0.5))
     isDualZero = drift * zero(type_sub) * 0.0
     @views X[:, 1] .= isDualZero
@@ -29,7 +29,7 @@ function simulate!(X, mcProcess::SubordinatedBrownianMotionVec, mcBaseData::Seri
     drift = mcProcess.drift
     dt = T / Nstep
     sigma = mcProcess.sigma
-    @assert T > 0
+    ChainRulesCore.@ignore_derivatives @assert T > 0
     type_sub = typeof(quantile(mcProcess.subordinator_, 0.5))
     zero_drift = incremental_integral(drift, zero(type_sub), zero(type_sub) + T / Nstep) * 0
     isDualZero = zero_drift * zero(type_sub) * 0

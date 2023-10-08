@@ -14,14 +14,14 @@ end
 #Link an underlying name to a SingleNamePayoff
 function →(x::String, y::SingleNamePayoff)
     sep = findfirst("_", x)
-    @assert isnothing(sep) "NO UNDERSCORE ALLOWED IN SINGLE NAME OPTIONS"
+    ChainRulesCore.@ignore_derivatives @assert isnothing(sep) "NO UNDERSCORE ALLOWED IN SINGLE NAME OPTIONS"
     return x → (1.0 * y)
 end
 
 #Link an underlying name to a BasketPayoff
 function →(x::String, y::BasketPayoff)
     sep = findfirst("_", x)[1]
-    @assert !isnothing(sep) "Bivariate payoff underlying must follow the format: INDEX1_INDEX2"
+    ChainRulesCore.@ignore_derivatives @assert !isnothing(sep) "Bivariate payoff underlying must follow the format: INDEX1_INDEX2"
     return x → (1.0 * y)
 end
 

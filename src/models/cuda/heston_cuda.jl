@@ -11,7 +11,7 @@ function simulate!(X, mcProcess::HestonProcess, spotData::ZeroRate, mcBaseData::
     κ = mcProcess.κ
     ρ = mcProcess.ρ
     θ = mcProcess.θ
-    @assert T > 0
+    ChainRulesCore.@ignore_derivatives @assert T > 0
 
     ####Simulation
     ## Simulate
@@ -56,7 +56,7 @@ function simulate!(X, mcProcess::HestonProcess, spotData::ZeroRate, mcBaseData::
     κ = mcProcess.κ
     ρ = mcProcess.ρ
     θ = mcProcess.θ
-    @assert T > 0
+    ChainRulesCore.@ignore_derivatives @assert T > 0
 
     ####Simulation
     ## Simulate
