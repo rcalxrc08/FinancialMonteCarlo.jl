@@ -25,5 +25,5 @@ export BinaryAmericanOption;
 
 function payout(Sti::numtype_, amPayoff::BinaryAmericanOption) where {numtype_ <: Number}
     iscall = ChainRulesCore.@ignore_derivatives ifelse(amPayoff.isCall, Int8(1), Int8(-1))
-    return ((Sti - amPayoff.K) * iscall > 0.0) ? one(numtype_) : zero(numtype_)
+    return ifelse((Sti - amPayoff.K) * iscall > 0.0, one(numtype_), zero(numtype_))
 end
