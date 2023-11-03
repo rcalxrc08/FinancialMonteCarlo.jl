@@ -36,6 +36,7 @@ Requires = "1"
 ReverseDiff = "1"
 Sobol = "1.0.2"
 SpecialFunctions = "1, 2"
+Statistics = "1"
 StatsFuns = "0.7, 0.8, 0.9, 1"
 julia = "1"
 
