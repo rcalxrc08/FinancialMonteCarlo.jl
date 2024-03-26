@@ -43,6 +43,10 @@ function predict_output_type_zero(x::baseProcess) where {baseProcess <: ScalarMo
     return zero(num) + predict_output_type_zero(x.underlying)
 end
 
+function predict_output_type_zero(::baseProcess) where {baseProcess <: AbstractMonteCarloEngine{num}} where {num <: Number}
+    return zero(num)
+end
+
 function predict_output_type_zero(::baseProcess) where {baseProcess <: VectorialMonteCarloProcess{num}} where {num <: Number}
     return zero(num)
 end
