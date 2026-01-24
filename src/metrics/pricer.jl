@@ -24,6 +24,16 @@ function pricer(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig
     return Price
 end
 
+function pricer(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig::AbstractMonteCarloConfiguration, abstractPayoff::AbstractSmile)
+    set_seed!(mcConfig)
+    T = maturity(abstractPayoff)
+    S = simulate(mcProcess, rfCurve, mcConfig, T)
+    payoffs = smile_to_options(abstractPayoff)
+    zero_typed = predict_output_type_zero(mcProcess, rfCurve, mcConfig, payoffs)
+    Prices::Array{typeof(zero_typed)} = [mean(payoff(S, abstractPayoff, rfCurve, mcConfig, T)) for abstractPayoff in payoffs]
+    return Prices
+end
+
 get_matrix_type(mcConfig::MonteCarloConfiguration{<:Integer, <:Integer, <:AbstractMonteCarloMethod, <:BaseMode}, ::BaseProcess, price) = Matrix{typeof(price)}(undef, mcConfig.Nsim, mcConfig.Nstep + 1);
 get_array_type(mcConfig::MonteCarloConfiguration{<:Integer, <:Integer, <:AbstractMonteCarloMethod, <:BaseMode}, ::BaseProcess, price) = Array{typeof(price)}(undef, mcConfig.Nstep);
 get_matrix_type(::MonteCarloConfiguration{<:Integer, <:Integer, <:AbstractMonteCarloMethod, <:BaseMode}, ::VectorialMonteCarloProcess, price) = Array{Matrix{typeof(price)}};

@@ -117,6 +117,13 @@ doubleBarrierOptionDownOut = DoubleBarrierOption(T, K, K / 10.0, 1.2 * K)
 @show EuBinPrice = pricer(Model, rfCurve, mc, EUDataBin);
 @show doubleBarrier = pricer(Model, rfCurve, mc, doubleBarrierOptionDownOut);
 
+K_vec = [80.0, 90.0, 100.0, 110.0, 120.0]
+isCall_vec = [true, true, true, false, true]
+smile_EU = FinancialMonteCarlo.EuropeanOptionSmile(T, K_vec, isCall_vec)
+smile_Bin = FinancialMonteCarlo.BinaryEuropeanOptionSmile(T, K_vec, isCall_vec)
+@show prices_smile = pricer(Model, rfCurve, mc, smile_EU);
+@show prices_smile_bin = pricer(Model, rfCurve, mc, smile_Bin);
+
 @show "Test Black Scholes Parameters"
 
 @test_throws(AssertionError, BlackScholesProcess(-sigma, Underlying(S0, d)))
