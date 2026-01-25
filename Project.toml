@@ -1,8 +1,8 @@
 name = "FinancialMonteCarlo"
 uuid = "078f23cc-2637-5a1d-aba6-8a9ba9a6ff83"
 license = "MIT"
-author = ["rcalxrc08"]
 version = "0.3.2"
+author = ["rcalxrc08"]
 
 [deps]
 Accessors = "7d9f7c33-5ae7-4f3b-8dc6-eff91059b697"
@@ -30,7 +30,7 @@ Distributions = "0.16, 0.17, 0.18, 0.19.1, 0.20, 0.21, 0.22, 0.23, 0.24, 0.25"
 DistributionsAD = "0.4, 0.5, 0.6"
 DualNumbers = "0.6"
 ForwardDiff = "0.10"
-Interpolations = "0.12, 0.13, 0.14, 0.15"
+Interpolations = "0.12, 0.13, 0.14, 0.15, 0.16"
 IterTools = "1"
 Requires = "1"
 ReverseDiff = "1"
