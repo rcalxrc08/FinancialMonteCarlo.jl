@@ -1,7 +1,7 @@
 name = "FinancialMonteCarlo"
 uuid = "078f23cc-2637-5a1d-aba6-8a9ba9a6ff83"
 license = "MIT"
-version = "0.3.2"
+version = "0.4.0"
 author = ["rcalxrc08"]
 
 [deps]
