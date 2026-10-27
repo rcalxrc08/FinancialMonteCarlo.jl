@@ -12,3 +12,5 @@ Manifest.toml
 .vscode/
 
 .idea/
+
+docs/src/tutorials/
