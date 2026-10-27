@@ -1,12 +1,13 @@
 """
-Struct for Brownian Motion
+    BrownianMotion(σ, μ)
 
-		bmProcess=BrownianMotion(σ::num1,μ::num2) where {num1,num2 <: Number}
-	
-Where:
+Engine simulating the arithmetic Brownian motion ``X_t = μ t + σ W_t``, ``X_0 = 0``.
+If `μ` is a curve (see [`FinancialMonteCarlo.Curve`](@ref)) a [`FinancialMonteCarlo.BrownianMotionVec`](@ref)
+with time dependent drift is returned.
 
-		σ	=	volatility of the process.
-		μ	=	drift of the process.
+# Arguments
+- `σ`: volatility, must be positive.
+- `μ`: drift.
 """
 struct BrownianMotion{num <: Number, num1 <: Number, numtype <: Number} <: AbstractMonteCarloEngine{numtype}
     σ::num

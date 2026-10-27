@@ -1,16 +1,14 @@
 """
-General Interface for Computation of variance interval of price
+    variance(mcProcess, rfCurve, mcConfig, payoff)
 
-		variance_=variance(mcProcess,rfCurve,mcConfig,abstractPayoff)
-	
-Where:\n
-		mcProcess      = Process to be simulated.
-		rfCurve        = Zero Rate Data.
-		mcConfig       = Basic properties of MonteCarlo simulation
-		abstractPayoff = Payoff(s) to be priced
+Sample variance of the discounted payoff over the simulated paths (a vector for a vector of payoffs).
+The variance of the price estimate is this value divided by the number of paths.
 
-		variance_      = variance of the payoff of the derivative
-
+# Arguments
+- `mcProcess`: the model.
+- `rfCurve`: the zero rate curve.
+- `mcConfig`: the [`MonteCarloConfiguration`](@ref).
+- `payoff`: a payoff or a vector of payoffs.
 """
 function variance(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration, abstractPayoff::AbstractPayoff)
     set_seed!(mcConfig)

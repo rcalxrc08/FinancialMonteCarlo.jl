@@ -1,4 +1,12 @@
 abstract type AbstractMultiThreading <: ParallelMode end
+
+"""
+    MultiThreading(sub_mod = SerialMode(), numberOfBatch = Threads.nthreads(), seeds = 1:Threads.nthreads())
+
+Parallel mode splitting the paths into `numberOfBatch` batches priced on different threads, each
+with the parallel mode `sub_mod` and its own seed from `seeds`. The result is the average of the
+batch prices.
+"""
 struct MultiThreading{abstractMode <: BaseMode} <: AbstractMultiThreading
     numberOfBatch::Int64
     sub_mod::abstractMode

@@ -1,16 +1,22 @@
 """
-Struct for Heston Process
+    HestonProcess(σ, σ₀, λ, κ, ρ, θ, underlying)
 
-		hstProcess=HestonProcess(σ::num1,σ₀::num2,λ::num3,κ::num4,ρ::num5,θ::num6) where {num1,num2,num3,num4,num5,num6 <: Number}
-	
-Where:
+Heston stochastic volatility model:
+```math
+dS_t = (r_t - d_t) S_t\\,dt + \\sqrt{v_t} S_t\\,dW_t, \\qquad
+dv_t = κ^*(θ^* - v_t)\\,dt + σ \\sqrt{v_t}\\,dZ_t, \\qquad d\\langle W, Z\\rangle_t = ρ\\,dt,
+```
+with risk neutral parameters ``κ^* = κ + λ`` and ``θ^* = κθ / (κ + λ)``. Both are simulated with an Euler
+scheme on the log price, flooring the variance at a tiny positive value.
 
-		σ	=	volatility of volatility of the process.
-		σ₀	=   initial volatility of the process.
-		λ	=	shift value of the process.
-		κ	=	mean reversion of the process.
-		ρ	=	correlation between brownian motions.
-		θ	=	long value of square of volatility of the process.
+# Arguments
+- `σ`: volatility of the variance, must be positive.
+- `σ₀`: initial volatility, must be positive.
+- `λ`: market price of volatility risk.
+- `κ`: speed of mean reversion (``κ + λ`` must not be zero).
+- `ρ`: correlation between the Brownian motions, in ``[-1, 1]``.
+- `θ`: long term variance.
+- `underlying`: an [`Underlying`](@ref) with spot price and dividends.
 """
 struct HestonProcess{num <: Number, num1 <: Number, num2 <: Number, num3 <: Number, num4 <: Number, num5 <: Number, abstrUnderlying <: AbstractUnderlying, numtype <: Number} <: ItoProcess{numtype}
     σ::num

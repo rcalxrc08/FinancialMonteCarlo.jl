@@ -1,19 +1,26 @@
 include("utils.jl")
 
 """
-Low Level Interface for Pricing
+    pricer(mcProcess, rfCurve, mcConfig, payoff)
 
-		Price=pricer(mcProcess,rfCurve,mcConfig,abstractPayoff)
-	
-Where:
+Monte Carlo estimate of the price of `payoff`: the mean of the discounted payoff over the
+simulated paths. The random number generator is reset to the seed of `mcConfig` first, so the
+result is reproducible. Returns a vector of prices for a vector of payoffs or a smile.
 
-		mcProcess      = Process to be simulated.
-		rfCurve        = Zero Rate Data.
-		mcConfig       = Basic properties of MonteCarlo simulation
-		abstractPayoff = Payoff(s) to be priced
+# Arguments
+- `mcProcess`: the model (a single name or multivariate process, or a [`MarketDataSet`](@ref)).
+- `rfCurve`: the zero rate curve, e.g. [`ZeroRate`](@ref).
+- `mcConfig`: the [`MonteCarloConfiguration`](@ref).
+- `payoff`: a payoff, a vector of payoffs priced on the same paths, a [`FinancialMonteCarlo.Position`](@ref)
+  or, with a [`MarketDataSet`](@ref), a [`FinancialMonteCarlo.Portfolio`](@ref).
 
-		Price          = Price of the derivative
-
+# Examples
+```julia
+model = BlackScholesProcess(0.2, Underlying(100.0, 0.01))
+mcConfig = MonteCarloConfiguration(10_000, 30)
+pricer(model, ZeroRate(0.02), mcConfig, EuropeanOption(1.0, 100.0))
+pricer(model, ZeroRate(0.02), mcConfig, [Forward(1.0), AmericanOption(1.0, 100.0, false)])
+```
 """
 function pricer(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig::AbstractMonteCarloConfiguration, abstractPayoff::AbstractPayoff)
     set_seed!(mcConfig)

@@ -1,6 +1,30 @@
 
 abstract type AbstractMonteCarloConfiguration end
 
+"""
+    MonteCarloConfiguration(Nsim, Nstep, seed::Number)
+    MonteCarloConfiguration(Nsim, Nstep, method = StandardMC(), seed = 0)
+    MonteCarloConfiguration(Nsim, Nstep, parallelMode::BaseMode)
+    MonteCarloConfiguration(Nsim, Nstep, method, parallelMode, init_rng = true)
+
+Settings of a Monte Carlo simulation.
+
+# Arguments
+- `Nsim`: number of simulated paths, must be positive (and even for [`FinancialMonteCarlo.AntitheticMC`](@ref)).
+- `Nstep`: number of time steps of each path, must be positive.
+- `method`: an `AbstractMonteCarloMethod`: [`FinancialMonteCarlo.StandardMC`](@ref), [`FinancialMonteCarlo.AntitheticMC`](@ref),
+  [`FinancialMonteCarlo.SobolMode`](@ref) or [`FinancialMonteCarlo.ControlVariates`](@ref).
+- `parallelMode`: a `BaseMode` owning the random number generator: [`FinancialMonteCarlo.SerialMode`](@ref) (default,
+  with the given `seed`), [`FinancialMonteCarlo.MultiThreading`](@ref), `MultiProcess` (with `Distributed`) or `CudaMode` (with `CUDA`).
+- `init_rng`: when `true`, every metric resets the generator to its seed before simulating.
+
+# Examples
+```julia
+MonteCarloConfiguration(10_000, 30)
+MonteCarloConfiguration(10_000, 30, FinancialMonteCarlo.AntitheticMC())
+MonteCarloConfiguration(10_000, 30, FinancialMonteCarlo.MultiThreading())
+```
+"""
 struct MonteCarloConfiguration{num1 <: Integer, num2 <: Integer, abstractMonteCarloMethod <: AbstractMonteCarloMethod, baseMode <: BaseMode} <: AbstractMonteCarloConfiguration
     Nsim::num1
     Nstep::num2

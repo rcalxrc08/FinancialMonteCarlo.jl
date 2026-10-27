@@ -1,15 +1,15 @@
-# Abstract type for GeometricBrownianMotion, an Ito process is always a Levy
+# Abstract type for the geometric Brownian motion engines (constant and time dependent drift)
 abstract type AbstractGeometricBrownianMotion{T <: Number} <: AbstractMonteCarloEngine{T} end
 """
-Struct for Geometric Brownian Motion
+    GeometricBrownianMotion(σ, μ, x0)
 
-		gbmProcess=GeometricBrownianMotion(σ::num1,μ::num2) where {num1,num2 <: Number}
-	
-Where:
+Engine simulating the geometric Brownian motion ``dX_t = μ X_t\\,dt + σ X_t\\,dW_t``, ``X_0 = x_0``.
+If `μ` is a curve a [`GeometricBrownianMotionVec`](@ref) with time dependent drift is returned.
 
-		σ	=	volatility of the process.
-		μ	=	drift of the process.
-		x0	=	initial value.
+# Arguments
+- `σ`: volatility, must be positive.
+- `μ`: drift.
+- `x0`: initial value.
 """
 struct GeometricBrownianMotion{num <: Number, num1 <: Number, num2 <: Number, numtype <: Number} <: AbstractGeometricBrownianMotion{numtype}
     σ::num

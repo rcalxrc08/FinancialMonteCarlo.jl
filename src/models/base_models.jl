@@ -34,19 +34,16 @@ abstract type InfiniteActivityProcess{T <: Number} <: LevyProcess{T} end
 dividend(x::mc) where {mc <: ScalarMonteCarloProcess} = x.underlying.d;
 
 """
-General Interface for Stochastic Process simulation
+    simulate(mcProcess, zeroCurve, mcConfig, T)
 
-		S=simulate(mcProcess,zeroCurve,mcBaseData,T)
-	
-Where:
+Simulate the paths of the underlying of `mcProcess` from time 0 to `T`, under the risk neutral
+measure given by `zeroCurve`.
 
-		mcProcess   = Process to be simulated.
-		zeroCurve   = Datas of the Zero Rate Curve.
-		mcBaseData  = Basic properties of MonteCarlo simulation
-		T           = Final time of the process
+Returns an `Nsim × (Nstep + 1)` matrix whose `i`-th row is the `i`-th path on the uniform time grid
+`0:T/Nstep:T` (the first column is the spot). For multivariate processes, a vector with one such
+matrix per component. The element type is inferred from the inputs, so it can be a dual number.
 
-		S           = Matrix with path of underlying.
-
+New models implement the in-place `simulate!(S, mcProcess, zeroCurve, mcConfig, T)`.
 """
 function simulate(mcProcess::AbstractMonteCarloProcess, zeroCurve::AbstractZeroRateCurve, mcBaseData::AbstractMonteCarloConfiguration, T::Number)
     price_type = predict_output_type_zero(mcProcess, zeroCurve, mcBaseData, T)
@@ -67,18 +64,10 @@ function simulate(mcProcess::VectorialMonteCarloProcess, zeroCurve::AbstractZero
 end
 
 """
-General Interface for Stochastic Engine simulation
+    simulate(engine, mcConfig, T)
 
-		S=simulate(mcProcess,mcBaseData,T)
-	
-Where:
-
-		mcProcess  = Process to be simulated.
-		mcBaseData = Basic properties of MonteCarlo simulation
-		T          = Final time of the process
-
-		S          = Matrix with path of underlying.
-
+Simulate the paths of an engine (e.g. [`BrownianMotion`](@ref)), which needs no zero rate curve,
+from time 0 to `T`. Returns an `Nsim × (Nstep + 1)` matrix, one path per row.
 """
 function simulate(mcProcess::AbstractMonteCarloEngine, mcBaseData::AbstractMonteCarloConfiguration, T::Number)
     price_type = predict_output_type_zero(mcProcess, mcBaseData, T)

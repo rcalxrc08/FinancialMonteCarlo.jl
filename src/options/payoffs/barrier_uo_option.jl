@@ -1,14 +1,14 @@
 """
-Struct for Barrier Up and Out Option
+    BarrierOptionUpOut(T, K, barrier, isCall = true)
 
-		barOption=BarrierOptionUpOut(T::num1,K::num2,barrier::num3,isCall::Bool=true) where {num1 <: Number,num2 <: Number,num3 <: Number}
-	
-Where:
+Up-and-out barrier option: a European option with strike `K` and maturity `T` that is knocked out
+if the underlying ever goes above `barrier`. The barrier is monitored on the simulation time grid.
 
-		T	    = Time to maturity of the Option.
-		K	    = Strike Price of the Option.
-		barrier	= Up Barrier of the Option.
-		isCall  = true for CALL, false for PUT.
+# Arguments
+- `T`: time to maturity, must be positive.
+- `K`: strike, must be positive.
+- `barrier`: upper barrier, must be positive.
+- `isCall`: `true` (default) for a call, `false` for a put.
 """
 struct BarrierOptionUpOut{num1 <: Number, num2 <: Number, num3 <: Number, numtype <: Number} <: BarrierPayoff{numtype}
     T::num1

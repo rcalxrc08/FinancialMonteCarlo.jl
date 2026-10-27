@@ -1,16 +1,14 @@
 """
-General Interface for distribution
+    distribution(mcProcess, rfCurve, mcConfig, T)
 
-		S=distribution(mcProcess,rfCurve,mcConfig,payoff_)
-	
-Where:\n
-		mcProcess = Process to be simulated.
-		rfCurve   = Zero Rate Data.
-		mcConfig  = Basic properties of MonteCarlo simulation
-		T         = Time of simulation
+Simulated values of the underlying at time `T`, one per path (the last column of the paths
+returned by [`simulate`](@ref)).
 
-		S         = distribution
-
+# Arguments
+- `mcProcess`: the model.
+- `rfCurve`: the zero rate curve.
+- `mcConfig`: the [`MonteCarloConfiguration`](@ref).
+- `T`: time, must be positive.
 """
 function distribution(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration, T::num_) where {num_ <: Number}
     set_seed!(mcConfig)

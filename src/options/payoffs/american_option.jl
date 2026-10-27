@@ -1,13 +1,13 @@
 """
-Struct for Standard American Option
+    AmericanOption(T, K, isCall = true)
 
-		amOption=AmericanOption(T::num1,K::num2,isCall::Bool=true) where {num1 <: Number,num2 <: Number}
-	
-Where:
+American vanilla option, exercisable at any time step up to maturity `T` with exercise value
+``\\max(S_t - K, 0)`` (call) or ``\\max(K - S_t, 0)`` (put). Priced with the Longstaff-Schwartz regression.
 
-		T	    = Time to maturity of the Option.
-		K	    = Strike Price of the Option.
-		isCall  = true for CALL, false for PUT.
+# Arguments
+- `T`: time to maturity, must be positive.
+- `K`: strike, must be positive.
+- `isCall`: `true` (default) for a call, `false` for a put.
 """
 struct AmericanOption{num1 <: Number, num2 <: Number, numtype <: Number} <: AmericanPayoff{numtype}
     T::num1

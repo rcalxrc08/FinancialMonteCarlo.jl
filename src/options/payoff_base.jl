@@ -1,6 +1,14 @@
 ## Payoffs
 abstract type AbstractPayoff{numtype <: Number} end
 
+"""
+    ControlVariates(variate, conf_variate, method = StandardMC())
+
+Control variates method for [`MonteCarloConfiguration`](@ref). A pilot simulation with
+configuration `conf_variate` estimates the optimal coefficient and the price of the control
+`variate` (exact when `variate` is a [`Forward`](@ref)); the main simulation then uses `method`.
+The control must have the same maturity as the priced payoff.
+"""
 struct ControlVariates{abstractPayoff <: AbstractPayoff{<:Number}, abstractMonteCarloConfiguration <: AbstractMonteCarloConfiguration, abstractMonteCarloMethod <: AbstractMonteCarloMethod} <: AbstractMonteCarloMethod
     variate::abstractPayoff
     conf_variate::abstractMonteCarloConfiguration
@@ -30,19 +38,14 @@ function maturity(x::abstractPayoff) where {abstractPayoff <: AbstractPayoff{<:N
 end
 
 """
-General Interface for Payoff computation from MonteCarlo paths
+    payoff(S, payoff, rfCurve, mcConfig, T1 = maturity(payoff))
 
-		Payoff=payoff(S,optionData,rfCurve,T1=optionData.T)
-	
-Where:
+Discounted payout of `payoff` along each simulated path in `S`, i.e. the vector whose mean is the
+price. `S` is the output of [`simulate`](@ref) up to time `T1`, which can be later than the
+maturity of the payoff (as happens when several payoffs are priced on the same paths).
 
-		S           = Paths of the Underlying.
-		optionData  = Datas of the Option.
-		rfCurve     = Datas of the Risk Free Curve.
-		T1          =Final Time of Spot Simulation (default equals Time to Maturity of the option)[Optional, default to optionData.T]
-
-		Payoff      = payoff of the Option.
-
+This is the generic interface: each payoff family has an engine implementing it on top of the
+payoff specific `payout`, see the Extending section of the manual.
 """
 function payoff(::AbstractMatrix, ::AbstractPayoff, ::AbstractZeroRateCurve, ::AbstractMonteCarloConfiguration, T1::Number = 0.0)
     error("Function used just for documentation")

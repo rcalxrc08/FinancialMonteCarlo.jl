@@ -1,13 +1,16 @@
 """
-Struct for SubordinatedBrownianMotion
+    SubordinatedBrownianMotion(σ, drift, θ, subordinator)
 
-		subordinatedBrownianMotion=SubordinatedBrownianMotion(sigma::num,drift::num1,underlying::abstrUnderlying)
-	
-Where:
+Engine simulating a Brownian motion with drift `θ` and volatility `σ` evaluated at a subordinator,
+plus a deterministic `drift`: at every time step
+``X_{t+Δt} = X_t + \\text{drift}\\,Δt + θ\\,Δτ + σ \\sqrt{Δτ}\\,Z``, with ``Δτ`` drawn from `subordinator`.
+If `drift` is a curve a [`FinancialMonteCarlo.SubordinatedBrownianMotionVec`](@ref) is returned.
 
-		sigma       =	Volatility.
-		drift       = 	drift.
-		underlying  = 	underlying.
+# Arguments
+- `σ`: volatility, must be positive.
+- `drift`: deterministic drift in calendar time.
+- `θ`: drift in subordinated time.
+- `subordinator`: univariate continuous `Distribution` of the subordinator increment over one time step.
 """
 struct SubordinatedBrownianMotion{num <: Number, num1 <: Number, num2 <: Number, Distr <: Distribution{Univariate, Continuous}, numtype <: Number} <: AbstractMonteCarloProcess{numtype}
     sigma::num

@@ -1,13 +1,14 @@
 """
-Struct for ShiftedLogNormalMixture
+    ShiftedLogNormalMixture(η, λ, α, underlying)
 
-		lnmModel=ShiftedLogNormalMixture(η::Array{num1},λ::Array{num2},num3) where {num1,num2,num3<: Number}
-	
-Where:
+Shifted LogNormal mixture model: a [`LogNormalMixture`](@ref) on ``(1 - α) S_0`` plus a deterministic
+shift ``α S_0`` growing at the risk neutral rate.
 
-		η  =	Array of volatilities.
-		λ  = 	Array of weights.
-		α  = 	shift.
+# Arguments
+- `η`: vector of volatilities, all positive.
+- `λ`: vector of the first `length(η) - 1` weights, positive and summing to at most 1.
+- `α`: shift, as a fraction of the spot price.
+- `underlying`: an [`Underlying`](@ref) with spot price and dividends.
 """
 struct ShiftedLogNormalMixture{num <: Number, num2 <: Number, num3 <: Number, abstrUnderlying <: AbstractUnderlying, numtype <: Number} <: ItoProcess{numtype}
     η::Array{num, 1}

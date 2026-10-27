@@ -1,15 +1,17 @@
 """
-Struct for Kou Process
+    KouProcess(σ, λ, p, λ₊, λ₋, underlying)
 
-		kouProcess=KouProcess(σ::num1,λ::num2,p::num3,λ₊::num4,λ₋::num5) where {num1,num2,num3,num4,num5 <: Number}
-	
-Where:
+Kou jump diffusion: the log price is a Brownian motion with volatility `σ` plus a compound
+Poisson process with intensity `λ` and double exponential jumps (up with probability `p`, with
+exponential sizes of rate `λ₊` up and `λ₋` down). The drift is chosen to make the discounted price a martingale.
 
-		σ  =	volatility of the process.
-		λ  = 	jumps intensity.
-		p  =	prob. of having positive jump.
-		λ₊ =	positive jump size.
-		λ₋ =	negative jump size.
+# Arguments
+- `σ`: volatility, must be positive.
+- `λ`: jump intensity, must be positive.
+- `p`: probability of an up jump, in ``[0, 1]``.
+- `λ₊`: rate of the exponential up jumps, must be positive (and greater than 1 for a finite forward).
+- `λ₋`: rate of the exponential down jumps, must be positive.
+- `underlying`: an [`Underlying`](@ref) with spot price and dividends.
 """
 struct KouProcess{num <: Number, num1 <: Number, num2 <: Number, num3 <: Number, num4 <: Number, abstrUnderlying <: AbstractUnderlying, numtype <: Number} <: FiniteActivityProcess{numtype}
     σ::num

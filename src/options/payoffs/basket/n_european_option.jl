@@ -1,13 +1,13 @@
 """
-Struct for European Option
+    EuropeanOptionND(T, K, isCall = true)
 
-		euOption=EuropeanOptionND(T::num1,K::num2,isCall::Bool=true) where {num1 <: Number,num2 <: Number}
-	
-Where:
+European option on the sum of the underlyings of a multivariate model, paying
+``\\max(\\sum_i S^i_T - K, 0)`` (call) or ``\\max(K - \\sum_i S^i_T, 0)`` (put) at maturity `T`.
 
-		T	    = Time to maturity of the Option.
-		K	    = Strike Price of the Option.
-		isCall  = true for CALL, false for PUT.
+# Arguments
+- `T`: time to maturity, must be positive.
+- `K`: strike, must be positive.
+- `isCall`: `true` (default) for a call, `false` for a put.
 """
 struct EuropeanOptionND{num1 <: Number, num2 <: Number, numtype <: Number} <: EuropeanBasketPayoff{numtype}
     T::num1

@@ -1,13 +1,12 @@
 """
-Struct for European Option
+    EuropeanOption(T, K, isCall = true)
 
-		euOption=EuropeanOption(T::num1,K::num2,isCall::Bool=true) where {num1 <: Number,num2 <: Number}
-	
-Where:
+European vanilla option paying ``\\max(S_T - K, 0)`` (call) or ``\\max(K - S_T, 0)`` (put) at maturity `T`.
 
-		T	    = Time to maturity of the Option.
-		K	    = Strike Price of the Option.
-		isCall  = true for CALL, false for PUT.
+# Arguments
+- `T`: time to maturity, must be positive.
+- `K`: strike, must be positive.
+- `isCall`: `true` (default) for a call, `false` for a put.
 """
 struct EuropeanOption{num1 <: Number, num2 <: Number, numtype <: Number} <: EuropeanPayoff{numtype}
     T::num1

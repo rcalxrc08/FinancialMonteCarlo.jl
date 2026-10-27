@@ -1,14 +1,16 @@
 """
-Struct for Merton Process
+    MertonProcess(σ, λ, μ_jump, σ_jump, underlying)
 
-		mertonProcess=MertonProcess(σ::num1,λ::num2,μ_jump::num3,σ_jump::num4) where {num1,num2,num3,num4<: Number}
-	
-Where:
+Merton jump diffusion: the log price is a Brownian motion with volatility `σ` plus a compound
+Poisson process with intensity `λ` and normally distributed jumps. The drift is chosen to make the
+discounted price a martingale.
 
-		σ  =	volatility of the process.
-		λ  = 	jumps intensity.
-		μ_jump =	jumps mean.
-		σ_jump =	jumps variance.
+# Arguments
+- `σ`: volatility, must be positive.
+- `λ`: jump intensity, must be positive.
+- `μ_jump`: mean of the jumps of the log price.
+- `σ_jump`: standard deviation of the jumps of the log price, must be positive.
+- `underlying`: an [`Underlying`](@ref) with spot price and dividends.
 """
 struct MertonProcess{num <: Number, num1 <: Number, num2 <: Number, num3 <: Number, abstrUnderlying <: AbstractUnderlying, numtype <: Number} <: FiniteActivityProcess{numtype}
     σ::num

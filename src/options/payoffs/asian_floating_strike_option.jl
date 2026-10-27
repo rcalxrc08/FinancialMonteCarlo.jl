@@ -1,12 +1,12 @@
 """
-Struct for Asian Floating Strike Option
+    AsianFloatingStrikeOption(T, isCall = true)
 
-		asOption=AsianFloatingStrikeOption(T::num1,isCall::Bool=true) where {num1 <: Number}
-	
-Where:
+Arithmetic Asian option with floating strike, paying ``\\max(S_T - A_T, 0)`` (call) or ``\\max(A_T - S_T, 0)``
+(put) at maturity `T`, where ``A_T`` is the average of the underlying on the simulation time grid.
 
-		T	    = Time to maturity of the Option.
-		isCall  = true for CALL, false for PUT.
+# Arguments
+- `T`: time to maturity, must be positive.
+- `isCall`: `true` (default) for a call, `false` for a put.
 """
 struct AsianFloatingStrikeOption{num <: Number} <: AsianPayoff{num}
     T::num

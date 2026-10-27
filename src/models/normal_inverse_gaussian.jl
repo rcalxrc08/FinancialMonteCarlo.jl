@@ -1,13 +1,17 @@
 """
-Struct for NIG Process
+    NormalInverseGaussianProcess(σ, θ, κ, underlying)
 
-		nigProcess=NormalInverseGaussianProcess(σ::num1,θ::num2,κ::num3) where {num1,num2,num3<: Number}
-	
-Where:
+Normal Inverse Gaussian model: the log price is a Brownian motion with drift `θ` and volatility `σ`,
+evaluated at an inverse gaussian subordinator with unit mean rate and variance rate `κ`. The drift is
+chosen to make the discounted price a martingale.
 
-		σ =	volatility of the process.
-		θ = variance of volatility.
-		κ =	skewness of volatility.
+# Arguments
+- `σ`: volatility of the subordinated Brownian motion, must be positive.
+- `θ`: drift of the subordinated Brownian motion.
+- `κ`: variance rate of the subordinator, must be positive.
+- `underlying`: an [`Underlying`](@ref) with spot price and dividends.
+
+The parameters must satisfy ``1 - σ^2 κ - 2 θ κ > 0`` for the forward to be finite.
 """
 struct NormalInverseGaussianProcess{num <: Number, num1 <: Number, num2 <: Number, abstrUnderlying <: AbstractUnderlying, numtype <: Number} <: InfiniteActivityProcess{numtype}
     σ::num

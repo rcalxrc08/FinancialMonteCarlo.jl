@@ -1,12 +1,15 @@
 """
-Struct for MultiVariate Copula Process
+    GaussianCopulaNVariateProcess(ρ, models...)
+    GaussianCopulaNVariateProcess(models...)
+    GaussianCopulaNVariateProcess(model_1, model_2, ρ₁₂)
 
-		gaussianCopulaNVariateProcess=GaussianCopulaNVariateProcess(models::num1,λ::num2,p::num3,λ₊::num4,λ₋::num5) where {num1,num2,num3,num4,num5 <: Number}
-	
-Where:
+Multivariate model joining single name `models` through a Gaussian copula with correlation matrix `ρ`
+(the identity when omitted; for two models the scalar correlation `ρ₁₂` can be passed instead).
+Each component keeps its own marginal distribution.
 
-		models  = the processes.
-		rho     = correlation matrix.
+# Arguments
+- `ρ`: symmetric positive definite correlation matrix, one row per model.
+- `models`: the single name models of the components.
 """
 struct GaussianCopulaNVariateProcess{num3 <: Number, numtype <: Number} <: NDimensionalMonteCarloProcess{numtype}
     rho::Matrix{num3}

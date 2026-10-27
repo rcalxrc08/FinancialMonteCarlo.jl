@@ -1,18 +1,15 @@
 """
-General Interface for Rho computation
+    rho(mcProcess, rfCurve, mcConfig, payoff, dr = 1e-7)
 
-		Rho=rho(mcProcess,rfCurve,mcConfig,abstractPayoff,dr)
-	
-Where:
+Rho of `payoff` by forward finite difference: the zero rate is bumped by `dr` and the payoff
+repriced with the same seed. Returns a vector for a vector of payoffs.
 
-		mcProcess      = Process to be simulated.
-		rfCurve        = Zero Rate Data.
-		mcConfig       = Basic properties of MonteCarlo simulation
-		abstractPayoff = Payoff(s) to be priced
-		dr             = increment [optional, default to 1e-7]
-
-		Rho            = Rho of the derivative
-
+# Arguments
+- `mcProcess`: the model.
+- `rfCurve`: the zero rate curve.
+- `mcConfig`: the [`MonteCarloConfiguration`](@ref).
+- `payoff`: a payoff or a vector of payoffs.
+- `dr`: rate bump.
 """
 function rho(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration, abstractPayoff::AbstractPayoff, dr::Real = 1e-7)
     Price = pricer(mcProcess, rfCurve, mcConfig, abstractPayoff)

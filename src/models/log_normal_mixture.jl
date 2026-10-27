@@ -1,12 +1,14 @@
 """
-Struct for LogNormalMixture
+    LogNormalMixture(η, λ, underlying)
 
-		lnmModel=LogNormalMixture(η::Array{num1},λ::Array{num2}) where {num1,num2<: Number}
-	
-Where:
+LogNormal mixture model: the underlying is the weighted sum ``S_t = \\sum_i λ_i S^i_t`` of geometric
+Brownian motions with the risk neutral drift and volatilities `η`, all starting from the spot.
 
-		η  = Array of volatilities.
-		λ  = Array of weights.
+# Arguments
+- `η`: vector of volatilities, all positive.
+- `λ`: vector of the first `length(η) - 1` weights, positive and summing to at most 1 (the last
+  weight is `1 - sum(λ)`).
+- `underlying`: an [`Underlying`](@ref) with spot price and dividends.
 """
 struct LogNormalMixture{num <: Number, num2 <: Number, abstrUnderlying <: AbstractUnderlying, numtype <: Number} <: ItoProcess{numtype}
     η::Array{num, 1}

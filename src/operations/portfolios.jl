@@ -2,6 +2,12 @@ import Base.+;
 
 #Strategies Implementation
 
+"""
+    Portfolio
+
+Dictionary from underlying names to [`FinancialMonteCarlo.Position`](@ref)s, built with
+`name → payoff` (see [`→`](@ref)) and joined with `+`. Priced against a [`MarketDataSet`](@ref).
+"""
 const Portfolio = Dict{String, Position};
 
 #Link an underlying name to a Position

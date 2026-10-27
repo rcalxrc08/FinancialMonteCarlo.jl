@@ -1,7 +1,8 @@
 """
-Class for Dispatching Spot Payoff
+    Spot()
 
-		spot=Spot()
+The spot price of the underlying today: its price is `S0`, whatever the model.
+Mostly useful inside positions and portfolios.
 """
 struct Spot <: EuropeanPayoff{Float16}
     function Spot()

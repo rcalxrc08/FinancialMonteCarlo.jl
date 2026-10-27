@@ -15,6 +15,14 @@ function extract_values(x::CurveType{num1, num2}) where {num1 <: Number, num2 <:
     return collect(values(x))[idx_]
 end
 
+"""
+    Curve(r::Vector, T::Vector)
+    Curve(r::Vector, T)
+
+Curve of instantaneous rates with values `r` at the sorted times `T` (or on a uniform grid from 0
+to `T`), linearly interpolated in between. Models only use its integrals over time intervals, both
+for the drift and for discounting.
+"""
 function Curve(r_::Array{num1}, T::num2) where {num1 <: Number, num2 <: Number}
     r = DictTypeInternal{num2, num1}()
     Nstep = length(r_) - 1
@@ -33,6 +41,14 @@ function Curve(r_::Array{num1}, T::Array{num2}) where {num1 <: Number, num2 <: N
     end
     return r
 end
+"""
+    ImpliedCurve(r::Vector, T::Vector)
+    ImpliedCurve(r::Vector, T)
+
+Piecewise linear curve of instantaneous rates, starting from zero at time zero, whose integral up to
+each `T[i]` equals `r[i] * T[i]`: use it to turn zero rates (or dividend yields) quoted at maturities
+`T` into a [`FinancialMonteCarlo.Curve`](@ref). With a scalar `T` the maturities are `T/N, 2T/N, ..., T`.
+"""
 function ImpliedCurve(r_::Array{num1}, T::Array{num2}) where {num1 <: Number, num2 <: Number}
     ChainRulesCore.@ignore_derivatives @assert length(r_) == length(T)
     ChainRulesCore.@ignore_derivatives @assert length(r_) >= 1

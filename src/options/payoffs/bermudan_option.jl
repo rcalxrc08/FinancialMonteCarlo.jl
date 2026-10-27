@@ -1,13 +1,14 @@
 """
-Struct for Standard Bermudan Option
+    BermudanOption(T, K, isCall = true)
 
-		bmOption=BermudanOption(T::AbstractArray{num1},K::num2,isCall::Bool=true) where {num1 <: Number,num2 <: Number}
-	
-Where:
+Bermudan vanilla option, exercisable at the dates in `T` (the last one being the maturity), with
+exercise value ``\\max(S_t - K, 0)`` (call) or ``\\max(K - S_t, 0)`` (put). Priced with the
+Longstaff-Schwartz regression. Exercise dates should lie on the simulation time grid.
 
-		T	    = Time to maturity of the Option.
-		K	    = Strike Price of the Option.
-		isCall  = true for CALL, false for PUT.
+# Arguments
+- `T`: sorted vector of positive exercise dates.
+- `K`: strike, must be positive.
+- `isCall`: `true` (default) for a call, `false` for a put.
 """
 struct BermudanOption{num1 <: Number, num2 <: Number, numtype <: Number} <: BermudanPayoff{numtype}
     T::num1

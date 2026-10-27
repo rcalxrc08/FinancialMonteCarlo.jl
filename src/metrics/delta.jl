@@ -1,17 +1,21 @@
 """
-General Interface for Delta
+    delta(mcProcess, rfCurve, mcConfig, payoff, dS0 = 1e-7)
+    delta(market, rfCurve, mcConfig, portfolio, underlying_name, dS0 = 1e-7)
 
-		Delta=delta(mcProcess,rfCurve,mcConfig,abstractPayoff,dS0)
-	
-Where:\n
-		mcProcess      = Process to be simulated.
-		rfCurve        = Zero Rate Data.
-		mcConfig       = Basic properties of MonteCarlo simulation
-		abstractPayoff = Payoff(s) to be priced
-		dS0            = increment [optional, default to 1e-7]
-		
-		Delta          = Delta of the derivative
+Delta of `payoff` by forward finite difference: the spot of the underlying is bumped by `dS0` and
+the payoff repriced with the same seed. For a [`MarketDataSet`](@ref) and a
+[`FinancialMonteCarlo.Portfolio`](@ref), only the underlying called `underlying_name` is bumped
+(also inside multivariate models); the delta is zero if it is not in the market data set.
 
+# Arguments
+- `mcProcess`: the model (a single name or multivariate process, or a [`MarketDataSet`](@ref)).
+- `rfCurve`: the zero rate curve, e.g. [`ZeroRate`](@ref).
+- `mcConfig`: the [`MonteCarloConfiguration`](@ref).
+- `payoff`: a payoff, a vector of payoffs priced on the same paths, a [`FinancialMonteCarlo.Position`](@ref)
+  or, with a [`MarketDataSet`](@ref), a [`FinancialMonteCarlo.Portfolio`](@ref).
+- `dS0`: spot bump.
+
+For exact pathwise deltas use a dual number as spot, see the Automatic differentiation section of the manual.
 """
 function delta(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration, abstractPayoff::AbstractPayoff, dS0::Real = 1e-7)
     Price = pricer(mcProcess, rfCurve, mcConfig, abstractPayoff)

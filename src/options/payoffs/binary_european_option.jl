@@ -1,13 +1,12 @@
 """
-Struct for Binary European Option
+    BinaryEuropeanOption(T, K, isCall = true)
 
-		binOption=BinaryEuropeanOption(T::num1,K::num2,isCall::Bool=true) where {num1 <: Number,num2 <: Number}
-	
-Where:
+European cash-or-nothing digital option paying 1 at maturity `T` if ``S_T > K`` (call) or ``S_T < K`` (put).
 
-		T	    = Time to maturity of the Option.
-		K	    = Strike Price of the Option.
-		isCall  = true for CALL, false for PUT.
+# Arguments
+- `T`: time to maturity, must be positive.
+- `K`: strike, must be positive.
+- `isCall`: `true` (default) for a call, `false` for a put.
 """
 struct BinaryEuropeanOption{num1 <: Number, num2 <: Number, numtype <: Number} <: EuropeanPayoff{numtype}
     T::num1

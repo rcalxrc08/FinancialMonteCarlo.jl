@@ -1,9 +1,23 @@
 import Base.+;
 
+"""
+    MarketDataSet
+
+Dictionary from underlying names to models, built with `name → model` and joined with `+`.
+The name of a multivariate model joins the names of its components with `_`, e.g. `"ENI_AAPL"`.
+"""
 const MarketDataSet = Dict{String, AbstractMonteCarloProcess};
 export MarketDataSet;
 
-#Link an underlying to a single name model
+"""
+    name → model
+    name → payoff
+
+Link the underlying `name` to a model, giving a [`MarketDataSet`](@ref), or to a payoff or
+[`FinancialMonteCarlo.Position`](@ref), giving a [`FinancialMonteCarlo.Portfolio`](@ref).
+Single name keys cannot contain `_`; multivariate models and basket payoffs need one name per
+component, joined by `_`. Type `→` as `\\to<TAB>`.
+"""
 function →(x::String, y::AbstractMonteCarloProcess)
     out = MarketDataSet(x => y)
     return out

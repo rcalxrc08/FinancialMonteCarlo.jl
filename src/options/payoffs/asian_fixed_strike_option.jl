@@ -1,13 +1,13 @@
 """
-Struct for Asian Fixed Strike Option
+    AsianFixedStrikeOption(T, K, isCall = true)
 
-		asOption=AsianFixedStrikeOption(T::num1,K::num2,isCall::Bool=true) where {num1 <: Number,num2 <: Number}
-	
-Where:
+Arithmetic Asian option with fixed strike, paying ``\\max(A_T - K, 0)`` (call) or ``\\max(K - A_T, 0)``
+(put) at maturity `T`, where ``A_T`` is the average of the underlying on the simulation time grid.
 
-		T	    = Time to maturity of the Option.
-		K	    = Strike Price of the Option.
-		isCall  = true for CALL, false for PUT.
+# Arguments
+- `T`: time to maturity, must be positive.
+- `K`: strike, must be positive.
+- `isCall`: `true` (default) for a call, `false` for a put.
 """
 struct AsianFixedStrikeOption{num1 <: Number, num2 <: Number, numtype <: Number} <: AsianPayoff{numtype}
     T::num1

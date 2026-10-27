@@ -1,15 +1,15 @@
 """
-Struct for Double Barrier Option
+    DoubleBarrierOption(T, K, D, U, isCall = true)
 
-		dbOption=DoubleBarrierOption(T::num1,K::num2,D::num3,U::num4,isCall::Bool=true) where {num1 <: Number,num2 <: Number,num3 <: Number,num4 <: Number}
-	
-Where:
+Double knock-out barrier option: a European option with strike `K` and maturity `T` that is knocked
+out if the underlying ever goes below `D` or above `U`. The barrier is monitored on the simulation time grid.
 
-		T	    = Time to maturity of the Option.
-		K	    = Strike Price of the Option.
-		D	    = Low Barrier of the Option.
-		U	    = Up Barrier of the Option.
-		isCall  = true for CALL, false for PUT.
+# Arguments
+- `T`: time to maturity, must be positive.
+- `K`: strike, must be positive.
+- `D`: lower barrier, must be positive.
+- `U`: upper barrier, must be positive.
+- `isCall`: `true` (default) for a call, `false` for a put.
 """
 struct DoubleBarrierOption{num1 <: Number, num2 <: Number, num3 <: Number, num4 <: Number, numtype <: Number} <: BarrierPayoff{numtype}
     T::num1

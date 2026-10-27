@@ -22,6 +22,20 @@ struct UnderlyingVec{num <: Number, num2 <: Number, num3 <: Number} <: AbstractU
 end
 
 #Common Constructors
+"""
+    Underlying(S0, d = 0.0)
+
+Spot price `S0` and continuous dividend yield `d` of an asset, held by every single name model.
+`d` is either a number or a time dependent curve (see [`FinancialMonteCarlo.Curve`](@ref) and
+[`FinancialMonteCarlo.ImpliedCurve`](@ref)). `S0` must be non negative.
+
+# Examples
+```julia
+Underlying(100.0)
+Underlying(100.0, 0.01)
+Underlying(100.0, FinancialMonteCarlo.Curve([0.01, 0.02], 1.0))
+```
+"""
 function Underlying(S0::num_, d::CurveType{num2, num3}) where {num_ <: Number, num2 <: Number, num3 <: Number}
     return UnderlyingVec(S0, d)
 end

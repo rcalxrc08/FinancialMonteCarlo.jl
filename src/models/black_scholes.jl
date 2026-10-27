@@ -1,11 +1,18 @@
 """
-Struct for Black Scholes Process
+    BlackScholesProcess(σ, underlying)
 
-		bsProcess=BlackScholesProcess(σ::num1) where {num1 <: Number}
-	
-Where:
+Black-Scholes model: under the risk neutral measure the underlying follows a geometric Brownian
+motion ``dS_t = (r_t - d_t) S_t\\,dt + σ S_t\\,dW_t``.
 
-		σ	=	volatility of the process.
+# Arguments
+- `σ`: volatility, must be positive.
+- `underlying`: an [`Underlying`](@ref) with spot price and dividends.
+
+# Examples
+```julia
+model = BlackScholesProcess(0.2, Underlying(100.0, 0.01))
+pricer(model, ZeroRate(0.02), MonteCarloConfiguration(10_000, 30), EuropeanOption(1.0, 100.0))
+```
 """
 struct BlackScholesProcess{num <: Number, abstrUnderlying <: AbstractUnderlying} <: ItoProcess{num}
     σ::num

@@ -1,11 +1,10 @@
 """
-Class for Dispatching Forward Payoff
+    Forward(T)
 
-		forward=Forward(T::num) where {num <: Number}
-	
-Where:
+Forward contract paying ``S_T`` at maturity `T` (no strike).
 
-		T	=	Time to maturity of the Forward.
+# Arguments
+- `T`: time to maturity, must be positive.
 """
 struct Forward{num <: Number} <: EuropeanPayoff{num}
     T::num

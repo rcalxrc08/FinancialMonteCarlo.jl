@@ -3,6 +3,13 @@ import Base.*;
 import Base.-;
 import Base./;
 
+"""
+    Position
+
+Linear combination of payoffs on the same underlying, stored as a dictionary from payoff to weight.
+Positions are built with `+`, `-`, `*` and `/` on payoffs and numbers, e.g.
+`2.0 * EuropeanOption(T, K) - Forward(T)`, and are priced on a single simulation.
+"""
 const Position = Dict{AbstractPayoff, Number};
 
 # "sum" AbstractPayoff s

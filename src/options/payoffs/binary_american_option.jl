@@ -1,13 +1,13 @@
 """
-Struct for Binary American Option
+    BinaryAmericanOption(T, K, isCall = true)
 
-		binAmOption=BinaryAmericanOption(T::num1,K::num2,isCall::Bool=true) where {num1 <: Number,num2 <: Number}
-	
-Where:
+American digital option, exercisable at any time step up to maturity `T`, paying 1 when exercised
+in the money (``S_t > K`` for a call, ``S_t < K`` for a put). Priced with the Longstaff-Schwartz regression.
 
-		T	    = Time to maturity of the Option.
-		K	    = Strike Price of the Option.
-		isCall  = true for CALL, false for PUT.
+# Arguments
+- `T`: time to maturity, must be positive.
+- `K`: strike, must be positive.
+- `isCall`: `true` (default) for a call, `false` for a put.
 """
 struct BinaryAmericanOption{num1 <: Number, num2 <: Number, numtype <: Number} <: AmericanPayoff{numtype}
     T::num1

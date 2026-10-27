@@ -1,12 +1,13 @@
 """
-Struct for Geometric Brownian Motion
+    GeometricBrownianMotionVec(σ, μ, x0)
 
-		gbmProcess=GeometricBrownianMotionVec(σ::num1,μ::num2) where {num1,num2 <: Number}
-	
-Where:
+Engine simulating a geometric Brownian motion with time dependent drift. Built by
+[`GeometricBrownianMotion`](@ref) when the drift is a curve.
 
-		σ	=	volatility of the process.
-		μ	=	drift of the process.
+# Arguments
+- `σ`: volatility, must be positive.
+- `μ`: drift curve.
+- `x0`: initial value.
 """
 struct GeometricBrownianMotionVec{num <: Number, num1 <: Number, num4 <: Number, num2 <: Number, numtype <: Number} <: AbstractGeometricBrownianMotion{numtype}
     σ::num

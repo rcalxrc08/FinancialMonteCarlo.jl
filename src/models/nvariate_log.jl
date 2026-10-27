@@ -1,12 +1,14 @@
 """
-Struct for MultiVariate (log moneyness x-> S0*exp(x) ) Copula Process
+    GaussianCopulaNVariateLogProcess(ρ, models...)
+    GaussianCopulaNVariateLogProcess(models...)
+    GaussianCopulaNVariateLogProcess(model_1, model_2, ρ₁₂)
 
-		gaussianCopulaNVariateLogProcess=GaussianCopulaNVariateLogProcess(models::num1,λ::num2,p::num3,λ₊::num4,λ₋::num5) where {num1,num2,num3,num4,num5 <: Number}
-	
-Where:
+Like [`GaussianCopulaNVariateProcess`](@ref), but the copula is applied to the log returns
+``x ↦ S_0 e^x`` of the components.
 
-		models  = the processes.
-		rho     = correlation matrix.
+# Arguments
+- `ρ`: symmetric positive definite correlation matrix, one row per model.
+- `models`: the single name models of the components.
 """
 struct GaussianCopulaNVariateLogProcess{num3 <: Number, numtype <: Number} <: NDimensionalMonteCarloProcess{numtype}
     models::Tuple{Vararg{BaseProcess}}

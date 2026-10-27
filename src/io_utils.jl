@@ -31,6 +31,12 @@ end
 
 # Agnostic getters and setters, useful for testing and calibration
 
+"""
+    get_parameters(x)
+
+Numeric parameters of a model or of a payoff, flattened into a vector in field order (the
+underlying of a model is excluded). The inverse of [`FinancialMonteCarlo.set_parameters!`](@ref).
+"""
 function get_parameters(model::XProcess) where {XProcess <: AbstractPayoff}
     fields_ = fieldnames(XProcess)
     N1 = length(fields_)
@@ -77,6 +83,13 @@ function get_parameters(model::XProcess) where {XProcess <: VectorialMonteCarloP
     return param_
 end
 
+"""
+    set_parameters!(model, params)
+
+Return a copy of `model` whose parameters are replaced by the vector `params`, in the order of
+[`FinancialMonteCarlo.get_parameters`](@ref). Despite the `!`, `model` is not modified: use the
+returned value. Useful to write calibration loops that do not depend on the model.
+"""
 function set_parameters!(model::XProcess, param::Array{num}) where {XProcess <: BaseProcess, num <: Number}
     fields_ = fieldnames(XProcess)
     N1 = length(fields_) - 1

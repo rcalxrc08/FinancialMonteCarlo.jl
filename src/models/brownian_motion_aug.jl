@@ -1,12 +1,12 @@
 """
-Struct for Brownian Motion
+    BrownianMotionVec(σ, μ)
 
-		bmProcess=BrownianMotionVec(σ::num1,μ::num2) where {num1,num2 <: Number}
-	
-Where:
+Engine simulating a Brownian motion with time dependent drift, ``X_t = \\int_0^t μ(s)\\,ds + σ W_t``.
+Built by [`BrownianMotion`](@ref) when the drift is a curve.
 
-		σ	=	volatility of the process.
-		μ	=	drift of the process.
+# Arguments
+- `σ`: volatility, must be positive.
+- `μ`: drift curve.
 """
 struct BrownianMotionVec{num <: Number, num1 <: Number, num4 <: Number, numtype <: Number} <: AbstractMonteCarloEngine{numtype}
     σ::num

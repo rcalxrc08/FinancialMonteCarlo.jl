@@ -1,14 +1,14 @@
 """
-Struct for Barrier Down and In Option
+    BarrierOptionDownIn(T, K, barrier, isCall = true)
 
-		barOption=BarrierOptionDownIn(T::num1,K::num2,barrier::num3,isCall::Bool=true) where {num1 <: Number,num2 <: Number,num3 <: Number}
-	
-Where:
+Down-and-in barrier option: a European option with strike `K` and maturity `T` that pays only
+if the underlying goes below `barrier` at least once. The barrier is monitored on the simulation time grid.
 
-		T	    = Time to maturity of the Option.
-		K	    = Strike Price of the Option.
-		barrier	= Down Barrier of the Option.
-		isCall  = true for CALL, false for PUT.
+# Arguments
+- `T`: time to maturity, must be positive.
+- `K`: strike, must be positive.
+- `barrier`: lower barrier, must be positive.
+- `isCall`: `true` (default) for a call, `false` for a put.
 """
 struct BarrierOptionDownIn{num1 <: Number, num2 <: Number, num3 <: Number, numtype <: Number} <: BarrierPayoff{numtype}
     T::num1

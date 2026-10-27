@@ -1,13 +1,13 @@
 """
-Struct for SubordinatedBrownianMotion
+    SubordinatedBrownianMotionVec(σ, drift, θ, subordinator)
 
-		subordinatedBrownianMotion=SubordinatedBrownianMotion(sigma::num,drift::num1)
-	
-Where:
+[`SubordinatedBrownianMotion`](@ref) with a time dependent deterministic drift.
 
-		sigma       =	Volatility.
-		drift       = 	drift.
-		underlying  = 	underlying.
+# Arguments
+- `σ`: volatility, must be positive.
+- `drift`: drift curve in calendar time.
+- `θ`: drift in subordinated time.
+- `subordinator`: univariate continuous `Distribution` of the subordinator increment over one time step.
 """
 struct SubordinatedBrownianMotionVec{num <: Number, num1 <: Number, num4 <: Number, num2 <: Number, Distr <: Distribution{Univariate, Continuous}, numtype <: Number} <: AbstractMonteCarloProcess{numtype}
     sigma::num
