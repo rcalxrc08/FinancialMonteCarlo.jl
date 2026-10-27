@@ -11,7 +11,7 @@ struct MonteCarloDiffEqModel{absdiffeqmodel <: DiffEqBase.AbstractEnsembleProble
     end
 end
 
-export MonteCarloDiffeEqModel;
+export MonteCarloDiffEqModel;
 
 function simulate!(X, mcProcess::MonteCarloDiffEqModel, rfCurve::ZeroRate, mcBaseData::MonteCarloConfiguration{type1, type2, type3, type4}, T::numb) where {numb <: Number, type1 <: Number, type2 <: Number, type3 <: AbstractMonteCarloMethod, type4 <: BaseMode}
     Nsim = mcBaseData.Nsim

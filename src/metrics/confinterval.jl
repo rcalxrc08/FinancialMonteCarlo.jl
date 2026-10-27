@@ -1,19 +1,17 @@
 using Distributions
 
 """
-General Interface for Computation of confidence interval of price
+    confinter(mcProcess, rfCurve, mcConfig, payoff, alpha = 0.99)
 
-		IC=confinter(mcProcess,rfCurve,mcConfig,abstractPayoff,alpha)
-	
-Where:\n
-		mcProcess      = Process to be simulated.
-		rfCurve        = Zero Rate Data.
-		mcConfig       = Basic properties of MonteCarlo simulation
-		abstractPayoff = Payoff(s) to be priced
-		alpha          = confidence level [Optional, default to 99%]
+Confidence interval at level `alpha` for the price of `payoff`, based on the Student t approximation
+of the Monte Carlo estimator. Returns a tuple `(lower, upper)`, or a vector of them for a vector of payoffs.
 
-		Price          = Price of the derivative
-
+# Arguments
+- `mcProcess`: the model.
+- `rfCurve`: the zero rate curve.
+- `mcConfig`: the [`MonteCarloConfiguration`](@ref).
+- `payoff`: a payoff or a vector of payoffs.
+- `alpha`: confidence level.
 """
 function confinter(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration, abstractPayoff::AbstractPayoff, alpha::Real = 0.99)
     set_seed!(mcConfig)
@@ -26,7 +24,7 @@ function confinter(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcCon
     alpha_ = 1 - alpha
     dist1 = Distributions.TDist(Nsim)
     tstar = quantile(dist1, 1 - alpha_ / 2.0)
-    IC = (mean1 - tstar * sqrt(var1) / Nsim, mean1 + tstar * sqrt(var1) / Nsim)
+    IC = (mean1 - tstar * sqrt(var1 / Nsim), mean1 + tstar * sqrt(var1 / Nsim))
     return IC
 end
 
@@ -40,6 +38,6 @@ function confinter(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcCon
     alpha_ = 1 - alpha
     dist1 = Distributions.TDist(Nsim)
     tstar = quantile(dist1, 1 - alpha_ / 2.0)
-    IC = [(mean1 - tstar * sqrt(var1) / Nsim, mean1 + tstar * sqrt(var1) / Nsim) for (mean1, var1) in zip(Means, Vars)]
+    IC = [(mean1 - tstar * sqrt(var1 / Nsim), mean1 + tstar * sqrt(var1 / Nsim)) for (mean1, var1) in zip(Means, Vars)]
     return IC
 end
