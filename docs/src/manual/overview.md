@@ -43,7 +43,7 @@ and accounts for time dependent rates when `rfCurve` is a curve instead of a sca
 All structs are parametric in the type of each of their numeric fields, and the numeric type of
 the output is inferred from all the inputs. A dual number anywhere (volatility, spot, rate,
 maturity, strike, ...) therefore propagates through the whole computation, see
-[Automatic differentiation](@ref).
+[Automatic differentiation](@ref autodiff).
 
 ## Optional integrations
 

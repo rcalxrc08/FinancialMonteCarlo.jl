@@ -49,4 +49,4 @@ model_dual_vol = BlackScholesProcess(dual(0.2, 1.0), Underlying(S0, d))
 pricer(model_dual_vol, rfCurve, mcConfig, euOption).epsilon
 
 # ForwardDiff.jl and ReverseDiff.jl gradients work the same way, see
-# [Automatic differentiation](@ref).
+# [Automatic differentiation](@ref autodiff).

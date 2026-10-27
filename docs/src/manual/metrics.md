@@ -25,7 +25,7 @@ rho(model, rfCurve, mcConfig, payoff, 1e-4)                 # rate bump
 
 The bump and reprice greeks use the same seed for the base and the bumped prices, so the Monte
 Carlo noise largely cancels. For exact pathwise derivatives, use dual numbers instead, see
-[Automatic differentiation](@ref).
+[Automatic differentiation](@ref autodiff).
 
 For a market data set and a portfolio, [`delta`](@ref) takes the name of the underlying to bump:
 

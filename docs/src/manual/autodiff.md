@@ -1,4 +1,4 @@
-# Automatic differentiation
+# [Automatic differentiation](@id autodiff)
 
 All structs of the package are parametric in the type of their numeric fields, and the numeric
 type of the simulated paths is inferred from all the inputs. Any number type implementing the
