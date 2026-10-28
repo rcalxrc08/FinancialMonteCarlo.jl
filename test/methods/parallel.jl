@@ -16,3 +16,10 @@ using Distributed, VectorizedRNG
         @test prices[1] ≈ prices[2]
     end
 end
+
+# CudaMode exists without CUDA, so that the package extensions of other packages can dispatch on it.
+@testset "CudaMode without CUDA" begin
+    mode = FinancialMonteCarlo.CudaMode(1, 2)
+    @test mode isa FinancialMonteCarlo.AbstractCudaMode
+    @test (mode.seed_cpu, mode.seed_gpu) == (1, 2)
+end

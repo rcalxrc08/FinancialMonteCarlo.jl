@@ -52,7 +52,7 @@ Some features are loaded only when the corresponding package is loaded in the sa
 
 | Package | Enables |
 |:--|:--|
-| `CUDA` | `CudaMode` and GPU simulation of several models |
+| `CUDA` | GPU simulation of several models with `CudaMode` |
 | `Distributed` | `MultiProcess` parallel mode |
 | `DifferentialEquations` | `MonteCarloDiffEqModel`, see [DifferentialEquations.jl](@ref) |
 | `DualNumbers`, `TaylorSeries` | compatibility methods for these number types |

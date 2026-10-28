@@ -38,6 +38,7 @@ FinancialMonteCarlo.PrescribedMC
 FinancialMonteCarlo.ControlVariates
 FinancialMonteCarlo.SerialMode
 FinancialMonteCarlo.MultiThreading
+FinancialMonteCarlo.CudaMode
 ```
 
 ## [Models](@id api-models)
