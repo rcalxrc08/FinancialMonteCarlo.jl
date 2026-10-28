@@ -28,8 +28,8 @@ function simulate!(X, mcProcess::HestonProcess, rfCurve::ZeroRateCurve, mcBaseDa
     e2_rho = CuArray{typeof(get_rng_type(isDualZero))}(undef, Nsim)
     e2 = CuArray{typeof(get_rng_type(isDualZero))}(undef, Nsim)
     @inbounds for j = 1:Nstep
-        randn!(CUDA.CURAND.default_rng(), e1)
-        randn!(CUDA.CURAND.default_rng(), e2_rho)
+        randn!(e1)
+        randn!(e2_rho)
         @. e2 = e1 * ρ + e2_rho * sqrt(1 - ρ * ρ)
         tmp_ = incremental_integral(r_d, (j - 1) * dt, dt)
         @. @views X[:, j+1] = X[:, j] + (tmp_ - 0.5 * v_m * dt) + sqrt(v_m) * sqrt(dt) * e1
@@ -76,8 +76,8 @@ function simulate!(X, mcProcess::HestonProcess, rfCurve::ZeroRateCurve, mcBaseDa
     e2 = CuArray{typeof(get_rng_type(isDualZero))}(undef, Nsim_2)
     isDualZeroVol_eps = isDualZeroVol + eps(isDualZeroVol)
     for j = 1:Nstep
-        randn!(CUDA.CURAND.default_rng(), e1)
-        randn!(CUDA.CURAND.default_rng(), e2_rho)
+        randn!(e1)
+        randn!(e2_rho)
         @. e2 = e1 * ρ + e2_rho * sqrt(1 - ρ * ρ)
         tmp_ = incremental_integral(r_d, (j - 1) * dt, dt)
         @. @views Xp[:, j+1] = Xp[:, j] + (tmp_ - 0.5 * v_mp .* dt) + sqrt(max.(v_mp, 0)) * sqrt(dt) * e1

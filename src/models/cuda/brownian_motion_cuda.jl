@@ -12,7 +12,7 @@ function simulate!(X_cu, mcProcess::BrownianMotion, mcBaseData::CudaMonteCarloCo
     @views fill!(X_cu[:, 1], isDualZero) #more efficient than @views X_cu[:, 1] .= isDualZero
     Z = CuArray{typeof(get_rng_type(isDualZero))}(undef, Nsim)
     @inbounds for i = 1:Nstep
-        randn!(CUDA.CURAND.default_rng(), Z)
+        randn!(Z)
         @views @. X_cu[:, i+1] = X_cu[:, i] + mean_bm + stddev_bm * Z
     end
     return
@@ -35,7 +35,7 @@ function simulate!(X_cu, mcProcess::BrownianMotion, mcBaseData::CudaAntitheticMo
     X_cu_m = view(X_cu, (Nsim_2+1):Nsim, :)
     Z = CuArray{typeof(get_rng_type(isDualZero))}(undef, Nsim_2)
     for i = 1:Nstep
-        randn!(CUDA.CURAND.default_rng(), Z)
+        randn!(Z)
         @views @inbounds @. X_cu_p[:, i+1] = X_cu_p[:, i] + mean_bm + stddev_bm * Z
         @views @inbounds @. X_cu_m[:, i+1] = X_cu_m[:, i] + mean_bm - stddev_bm * Z
     end

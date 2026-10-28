@@ -19,7 +19,7 @@ function simulate!(X, mcProcess::SubordinatedBrownianMotionVec, mcBaseData::Cuda
     # tmp_drift_gpu = CuArray{typeof(zero_drift)}(undef, Nsim)
     θ = mcProcess.θ
     @inbounds for i = 1:Nstep
-        randn!(CUDA.CURAND.default_rng(), Z)
+        randn!(Z)
         rand!(mcBaseData.parallelMode.rng, mcProcess.subordinator_, dt_s_cpu)
         # tmp_drift .= [incremental_integral(drift, t_, dt_) for (t_, dt_) in zip(t_s, dt_s_cpu)]
         tmp_drift = incremental_integral(drift, (i - 1) * dt, dt)
@@ -55,7 +55,7 @@ function simulate!(X, mcProcess::SubordinatedBrownianMotionVec, mcBaseData::Cuda
     Z = CuArray{typeof(get_rng_type(isDualZero))}(undef, Nsim_2)
     θ = mcProcess.θ
     @inbounds for i = 1:Nstep
-        randn!(CUDA.CURAND.default_rng(), Z)
+        randn!(Z)
         rand!(mcBaseData.parallelMode.rng, mcProcess.subordinator_, dt_s_cpu)
         # tmp_drift .= [incremental_integral(drift, t_, dt_) for (t_, dt_) in zip(t_s, dt_s_cpu)]
         tmp_drift = incremental_integral(drift, (i - 1) * dt, dt)

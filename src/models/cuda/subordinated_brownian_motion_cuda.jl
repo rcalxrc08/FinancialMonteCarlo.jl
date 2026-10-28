@@ -16,7 +16,7 @@ function simulate!(X_cu, mcProcess::SubordinatedBrownianMotion, mcBaseData::Cuda
         # SUBORDINATED BROWNIAN MOTION (dt_s=time change)
         rand!(mcBaseData.parallelMode.rng, mcProcess.subordinator_, dt_s_cpu)
         dt_s .= cu(dt_s_cpu)
-        randn!(CUDA.CURAND.default_rng(), Z)
+        randn!(Z)
         @views @. X_cu[:, i+1] = X_cu[:, i] + drift + θ * dt_s + sigma * sqrt(dt_s) * Z
     end
     return
@@ -25,7 +25,7 @@ end
 function simulate!(X_cu, mcProcess::SubordinatedBrownianMotion, mcBaseData::CudaAntitheticMonteCarloConfig, T::numb) where {numb <: Number}
     Nsim = mcBaseData.Nsim
     Nstep = mcBaseData.Nstep
-    drift = mcProcess.drift
+    drift = mcProcess.drift * T / Nstep
     sigma = mcProcess.sigma
     ChainRulesCore.@ignore_derivatives @assert T > 0
     type_sub = typeof(Float32(quantile(mcProcess.subordinator_, 0.5)))
@@ -39,7 +39,7 @@ function simulate!(X_cu, mcProcess::SubordinatedBrownianMotion, mcBaseData::Cuda
     Z = CuArray{typeof(get_rng_type(isDualZero))}(undef, Nsim_2)
     θ = mcProcess.θ
     @inbounds for i = 1:Nstep
-        randn!(CUDA.CURAND.default_rng(), Z)
+        randn!(Z)
         # SUBORDINATED BROWNIAN MOTION (dt_s=time change)
         rand!(mcBaseData.parallelMode.rng, mcProcess.subordinator_, dt_s_cpu)
         dt_s .= cu(dt_s_cpu)

@@ -11,6 +11,7 @@ Nsim=10000;
 Nstep=30;
 sigma=0.2;
 mc=MonteCarloConfiguration(Nsim,Nstep,FinancialMonteCarlo.CudaMode());
+mc1=MonteCarloConfiguration(Nsim,Nstep,FinancialMonteCarlo.AntitheticMC(),FinancialMonteCarlo.CudaMode());
 toll=0.8
 
 rfCurve=ZeroRate(r);
