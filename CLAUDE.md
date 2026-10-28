@@ -79,10 +79,11 @@ Hierarchy in [payoff_base.jl](src/options/payoff_base.jl): `SingleNamePayoff` �
 
 ### Automatic differentiation conventions
 
-AD (ForwardDiff, ReverseDiff, DualNumbers, TaylorSeries, HyperDualNumbers) is a first-class concern, which drives several pervasive patterns — follow them in new code:
+AD (ForwardDiff, ReverseDiff, Mooncake, DualNumbers, TaylorSeries, HyperDualNumbers) is a first-class concern, which drives several pervasive patterns — follow them in new code:
 - Structs are fully parametric on each numeric field and carry a promoted `numtype` parameter (e.g. `KouProcess{num, num1, …, numtype}`), computed in the inner constructor via `promote_type` or `zero(num1) + zero(num2)`.
 - Output element types are inferred with `predict_output_type_zero(...)` ([src/output_type.jl](src/output_type.jl)) to allocate path/price arrays of the right (possibly Dual) type — never hardcode `Float64` buffers.
 - Assertions/validation and non-differentiable bookkeeping are wrapped in `ChainRulesCore.@ignore_derivatives` (needed for Zygote/ReverseDiff compatibility).
+- Mooncake needs a pure-Julia RNG (`SerialMode(seed, Xoshiro())`): the default `MersenneTwister` calls into libdSFMT, which Mooncake cannot differentiate. Mooncake's first rule build is slow (~2 min in `test/ad/mooncake.jl`).
 
 ### Optional dependencies
 

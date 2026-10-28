@@ -11,7 +11,7 @@ const TEST_GROUPS = [
     "Models" => ["models/black_scholes.jl", "models/heston.jl", "models/kou.jl", "models/merton.jl", "models/variance_gamma.jl", "models/normal_inverse_gaussian.jl", "models/lognormal_mixture.jl", "models/diffeq.jl"],
     "Methods" => ["methods/sobol.jl", "methods/control_variates.jl", "methods/parallel.jl"],
     "Metrics" => ["metrics/statistics.jl", "metrics/greeks.jl"],
-    "AD" => ["ad/dual_numbers.jl", "ad/forward_diff.jl", "ad/reverse_diff.jl", "ad/taylor_series.jl"],
+    "AD" => ["ad/dual_numbers.jl", "ad/forward_diff.jl", "ad/reverse_diff.jl", "ad/mooncake.jl", "ad/taylor_series.jl"],
     "Portfolio" => ["portfolio/algebra.jl", "portfolio/multivariate.jl"],
 ]
 
