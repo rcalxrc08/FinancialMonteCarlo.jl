@@ -16,6 +16,8 @@ include("../testutils.jl")
         heston_ref = (fwd = 98.8790717426047, eu = 7.9813557592924, barrier = 7.006564636309922, asian_float = 4.242256952013707)
         check_prices(model, rfCurve, mc_sobol, standard_payoffs(), heston_ref; toll = 0.8)
         @test isfinite(pricer(model, FinancialMonteCarlo.ImpliedZeroRate([0.01], [0.5]), mc_sobol, Forward(T)))
+        # a flat rate curve gives the same forward as the scalar rate
+        @test abs(pricer(model, ZeroRate([r, r, r], T), mc_sobol, Forward(T)) - S0 * exp(-d * T)) < 0.2
     end
 
     @testset "Variance Gamma" begin

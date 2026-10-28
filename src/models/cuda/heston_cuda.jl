@@ -84,7 +84,7 @@ function simulate!(X, mcProcess::HestonProcess, spotData::ZeroRate, mcBaseData::
     @inbounds for j = 1:Nstep
         randn!(CUDA.CURAND.default_rng(), e1)
         randn!(CUDA.CURAND.default_rng(), e2_rho)
-        @. e2 = -(e1 * ρ + e2_rho * sqrt(1 - ρ * ρ))
+        @. e2 = e1 * ρ + e2_rho * sqrt(1 - ρ * ρ)
         @views @. Xp[:, j+1] = Xp[:, j] + (r_d - 0.5 * v_m_1) * dt + sqrt(v_m_1) * sqrt(dt) * e1
         @views @. Xm[:, j+1] = Xm[:, j] + (r_d - 0.5 * v_m_2) * dt - sqrt(v_m_2) * sqrt(dt) * e1
         @. v_m_1 += κ_s * (θ_s - v_m_1) * dt + σ * sqrt(v_m_1) * sqrt(dt) * e2
