@@ -15,6 +15,16 @@ const HESTON_REF = (fwd = 98.8790717426047, eu = 7.9813557592924, barrier = 7.00
         check_prices(model, rfCurve, mc_anti, standard_payoffs(), HESTON_REF; toll = 0.8)
     end
 
+    @testset "antithetic agrees with standard for strong correlation" begin
+        model_corr = HestonProcess(0.3, 0.2, 0.0, 2.0, -0.7, 0.04, Underlying(S0, d))
+        mc_big = MonteCarloConfiguration(100_000, Nstep)
+        mc_big_anti = MonteCarloConfiguration(100_000, Nstep, FinancialMonteCarlo.AntitheticMC())
+        for payoff_ in (EuropeanOption(T, 80.0, false), EuropeanOption(T, 120.0))
+            # about 7 standard errors of the standard estimator
+            @test pricer(model_corr, rfCurve, mc_big_anti, payoff_) ≈ pricer(model_corr, rfCurve, mc_big, payoff_) atol = 0.1
+        end
+    end
+
     @testset "zero rate curve" begin
         rf_curve = ZeroRate([0.02; 0.02], T)
         @test abs(pricer(model, rf_curve, mc, Forward(T)) - 98.72567723404445) < 0.8

@@ -22,6 +22,15 @@ end
         @test FinancialMonteCarlo.Curve([0.0, 0.1], [0.0, 0.1]) isa FinancialMonteCarlo.CurveType
         @test_throws AssertionError Underlying(-S0)
         @test_throws AssertionError Underlying(-S0, rf_curve.r)
+
+        # trapezoidal inside the nodes, flat outside them
+        c = ZeroRate([0.01, 0.02, 0.05], 1.0).r # nodes at 0, 0.5, 1
+        @test FinancialMonteCarlo.integral(c, 1.0) ≈ 0.025
+        @test FinancialMonteCarlo.integral(c, 2.0) ≈ 0.025 + 0.05
+        c_late = FinancialMonteCarlo.Curve([0.03, 0.05], [0.5, 1.0])
+        @test FinancialMonteCarlo.integral(c_late, 0.25) ≈ 0.03 * 0.25
+        @test FinancialMonteCarlo.integral(c_late, 1.0) ≈ 0.03 * 0.5 + 0.04 * 0.5
+        @test FinancialMonteCarlo.integral(FinancialMonteCarlo.Curve([0.03], [1.0]), 2.0) ≈ 0.06
     end
 
     @testset "market data and portfolios" begin

@@ -45,5 +45,10 @@ using DualNumbers
             @test abs(price.epsilon - rho(model, rfCurve, cfg, payoff_, dr)) < der_toll
             @test abs(price.epsilon - rho(model, rfCurve, cfg, [payoff_], dr)[1]) < der_toll
         end
+
+        @testset "parallel shift of a curve" begin
+            flat_curve = ZeroRate([r, r, r], T)
+            @test rho(model, flat_curve, mc, EuropeanOption(T, K), 1e-5) ≈ rho(model, rfCurve, mc, EuropeanOption(T, K), 1e-5) rtol = 1e-3
+        end
     end
 end

@@ -12,9 +12,10 @@ function payoff(S1::AbstractMatrix{num}, bmPayoff::BermudanPayoff, rfCurve::abst
     # initialize 
     exerciseTimes = Nstep .* ones(Nsim)
     phi(Sti::numtype_) where {numtype_ <: Number} = payout(Sti, bmPayoff)
-    idx_opt = round.(Int, T_opt ./ dt)
+    # column of each exercise date (column 1 is t = 0); exercise at maturity is already in V
+    idx_opt = filter(j -> j <= Nstep, round.(Int, T_opt ./ dt) .+ 1)
     @views V = phi.(S[:, end]) #payoff
-    # Backward Procedure 
+    # Backward Procedure
     for j in reverse(idx_opt)
         @views Tmp = phi.(S[:, j])
         inMoneyIndexes = findall(Tmp .> 0.0)

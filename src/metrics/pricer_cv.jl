@@ -34,6 +34,6 @@ function pricer(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig
     mcConfig_mod = MonteCarloConfiguration(mcConfig.Nsim, mcConfig.Nstep, variate_handl.curr_method, mcConfig.parallelMode)
     #END OF VARIATE SECTION
     Prices = pricer(mcProcess, rfCurve, mcConfig_mod, [abstractPayoff, variate_payoff])
-    Price = Prices[1] - c * (Prices[2] - price_var)
+    Price = Prices[1] + c * (Prices[2] - price_var)
     return Price
 end

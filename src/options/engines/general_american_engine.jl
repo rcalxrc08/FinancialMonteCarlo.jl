@@ -31,7 +31,8 @@ function payoff(S1::AbstractMatrix{num}, amPayoff::AmericanPayoff, rfCurve::abst
             @views @. A[:, 1] = 1
             @views @. A[:, 2] = S_I
             @views @. A[:, 3] = S_I^2
-            b = [V[j_] * df_exerciseTimes[exerciseTimes[j_]-j+1] for j_ in inMoneyIndexes]
+            # discount from the time of column j, (j - 1) * dt, to the exercise time
+            b = [V[j_] * df_exerciseTimes[exerciseTimes[j_]-j+2] for j_ in inMoneyIndexes]
             A_2 .= A' * A
             LuMat = lu!(A_2)
             Btilde .= A' * b

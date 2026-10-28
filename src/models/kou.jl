@@ -9,7 +9,7 @@ exponential sizes of rate `λ₊` up and `λ₋` down). The drift is chosen to m
 - `σ`: volatility, must be positive.
 - `λ`: jump intensity, must be positive.
 - `p`: probability of an up jump, in ``[0, 1]``.
-- `λ₊`: rate of the exponential up jumps, must be positive (and greater than 1 for a finite forward).
+- `λ₊`: rate of the exponential up jumps, must be greater than 1 (for a finite forward).
 - `λ₋`: rate of the exponential down jumps, must be positive.
 - `underlying`: an [`Underlying`](@ref) with spot price and dividends.
 """
@@ -24,7 +24,7 @@ struct KouProcess{num <: Number, num1 <: Number, num2 <: Number, num3 <: Number,
         ChainRulesCore.@ignore_derivatives @assert σ > 0 "volatility must be positive"
         ChainRulesCore.@ignore_derivatives @assert λ > 0 "λ, i.e. jump intensity, must be positive"
         ChainRulesCore.@ignore_derivatives @assert 0 <= p <= 1 "p must be a probability"
-        ChainRulesCore.@ignore_derivatives @assert λ₊ > 0 "λ₊ must be positive"
+        ChainRulesCore.@ignore_derivatives @assert λ₊ > 1 "λ₊ must be greater than 1 (finite expected jump)"
         ChainRulesCore.@ignore_derivatives @assert λ₋ > 0 "λ₋ must be positive"
         zero_typed = promote_type(num, num1, num2, num3, num4)
         return new{num, num1, num2, num3, num4, abstrUnderlying, zero_typed}(σ, λ, p, λ₊, λ₋, underlying)

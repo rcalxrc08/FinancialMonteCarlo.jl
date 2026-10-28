@@ -39,6 +39,15 @@ include("../testutils.jl")
         check_prices(model, rfCurve, mc, payoffs)
     end
 
+    @testset "Bermudan and American engines" begin
+        put_eu, put_am = EuropeanOption(T, K, false), AmericanOption(T, K, false)
+        @test pricer(model, rfCurve, mc, BermudanOption([T], K, false)) ≈ pricer(model, rfCurve, mc, put_eu)
+        # exercisable at every step of the grid, a Bermudan is the American on the same paths
+        every_step = collect(T / Nstep:T / Nstep:T)
+        @test pricer(model, rfCurve, mc, BermudanOption(every_step, K, false)) ≈ pricer(model, rfCurve, mc, put_am)
+        @test abs(pricer(model, rfCurve, mc, put_am) - BS_PUT_REF.am) < 0.3
+    end
+
     @testset "smiles" begin
         K_vec = [80.0, 90.0, 100.0, 110.0, 120.0]
         isCall_vec = [true, true, true, false, true]

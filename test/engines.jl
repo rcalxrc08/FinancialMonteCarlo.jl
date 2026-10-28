@@ -22,5 +22,8 @@ using Distributions
     @testset "SubordinatedBrownianMotion" begin
         @test_throws AssertionError SubordinatedBrownianMotion(-sigma, drift, 0.01, InverseGaussian(1.0, 1.0))
         @test_throws AssertionError SubordinatedBrownianMotion(-sigma, mu_curve, 0.01, InverseGaussian(1.0, 1.0))
+        S = simulate(SubordinatedBrownianMotion(sigma, 0.01, 0.1, Gamma(T / Nstep, 1.0)), mc, T)
+        @test size(S) == (Nsim, Nstep + 1)
+        @test all(iszero, S[:, 1])
     end
 end

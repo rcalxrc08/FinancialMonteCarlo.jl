@@ -85,14 +85,17 @@ function internal_definite_integral(x::num, T::Array{num1}, r::Array{num2}) wher
         return 0.0
     end
     ChainRulesCore.@ignore_derivatives @assert x >= 0.0
+    # the rate is extrapolated flat before the first node and after the last one
+    if x <= T[1]
+        return r[1] * x
+    end
     idx_ = findlast(y -> y < x, T)
-    out = sum([(r[i] + r[i+1]) * 0.5 * (T[i+1] - T[i]) for i = 1:(idx_-1)])
-    if x <= T[end]
+    out = r[1] * T[1] + sum([(r[i] + r[i+1]) * 0.5 * (T[i+1] - T[i]) for i = 1:(idx_-1)])
+    if idx_ < length(T)
         itp = linear_interpolation([T[idx_], T[idx_+1]], [r[idx_], r[idx_+1]], extrapolation_bc = Flat())
         out = out + (r[idx_] + itp(x)) * 0.5 * (x - T[idx_])
     else
-        #continuation
-        out = out + (r[idx_] + r[idx_-1]) * 0.5 * (x - T[idx_])
+        out = out + r[end] * (x - T[end])
     end
     return out
 end
