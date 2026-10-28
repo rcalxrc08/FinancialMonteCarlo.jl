@@ -25,6 +25,12 @@ const HESTON_REF = (fwd = 98.8790717426047, eu = 7.9813557592924, barrier = 7.00
         end
     end
 
+    @testset "American with almost no path in the money at early dates" begin
+        # fewer than 3 paths in the money make the regression singular: no early exercise there
+        model_corr = HestonProcess(0.3, 0.2, 0.0, 2.0, -0.7, 0.04, Underlying(S0, d))
+        @test isfinite(pricer(model_corr, rfCurve, MonteCarloConfiguration(5_000, 50), AmericanOption(T, 90.0, false)))
+    end
+
     @testset "zero rate curve" begin
         rf_curve = ZeroRate([0.02; 0.02], T)
         @test abs(pricer(model, rf_curve, mc, Forward(T)) - 98.72567723404445) < 0.8

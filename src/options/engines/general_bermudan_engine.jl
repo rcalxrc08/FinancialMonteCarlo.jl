@@ -5,48 +5,23 @@ function payoff(S1::AbstractMatrix{num}, bmPayoff::BermudanPayoff, rfCurve::abst
     NStep = mcBaseData.Nstep
     Nsim = mcBaseData.Nsim
     index1 = round(Int, T / T1 * NStep) + 1
-    S = collect(S1[:, 1:index1])
+    S = view(S1, :, 1:index1)
     Nstep = index1 - 1
     r = rfCurve.r
     dt = T / Nstep
-    # initialize 
-    exerciseTimes = Nstep .* ones(Nsim)
+    # initialize
+    exerciseTimes = Nstep .* ones(Int64, Nsim)
+    df_exerciseTimes = [exp(-integral(r, dt * j_)) for j_ = 0:Nstep]
     phi(Sti::numtype_) where {numtype_ <: Number} = payout(Sti, bmPayoff)
     # column of each exercise date (column 1 is t = 0); exercise at maturity is already in V
     idx_opt = filter(j -> j <= Nstep, round.(Int, T_opt ./ dt) .+ 1)
     @views V = phi.(S[:, end]) #payoff
-    # Backward Procedure
+    # Backward Procedure (the regression is shared with the American engine)
     for j in reverse(idx_opt)
-        @views Tmp = phi.(S[:, j])
-        inMoneyIndexes = findall(Tmp .> 0.0)
-        if !isempty(inMoneyIndexes)
-            #S_I=S[inMoneyIndexes,j];
-            S_I = view(S, inMoneyIndexes, j)
-            #-- Intrinsic Value
-            @views IV = Tmp[inMoneyIndexes]
-            #-- Continuation Value 
-            #- Linear Regression on Quadratic Form
-            A = [ones(length(S_I)) S_I S_I .^ 2]
-            #@views b=V[inMoneyIndexes].*exp.(-r*dt*(exerciseTimes[inMoneyIndexes].-j));
-            @views b = V[inMoneyIndexes] .* exp.(-[integral(r, dt * (exerciseTime - j + 1)) for exerciseTime in exerciseTimes[inMoneyIndexes]])
-            #@views b = V[inMoneyIndexes] .* exp.(-1.0*integral.(r, dt .* (exerciseTimes[inMoneyIndexes]. - j + 1)))
-            #MAT=A'*A;			
-            LuMat = lu(A' * A)
-            Btilde = A' * b
-            alpha = LuMat \ Btilde
-            #alpha=A\b;
-            #Continuation Value
-            CV = A * alpha
-            #----------
-            # Find premature exercise times
-            Index = findall(IV .> CV)
-            @views exercisePositions = inMoneyIndexes[Index]
-            # Update the outputs
-            @views V[exercisePositions] = IV[Index]
-            @views exerciseTimes[exercisePositions] .= j - 1
-        end
+        alpha = lsm_coefficients(S, V, phi, i -> df_exerciseTimes[exerciseTimes[i]-j+2], j)
+        isnothing(alpha) || lsm_exercise!(V, exerciseTimes, S, phi, alpha, j)
     end
-    Out = V .* exp.(-[integral(r, dt * exerciseTime) for exerciseTime in exerciseTimes])
+    Out = @. V * df_exerciseTimes[exerciseTimes+1]
 
     return Out
 end
