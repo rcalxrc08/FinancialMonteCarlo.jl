@@ -1,5 +1,5 @@
 include("../testutils.jl")
-using RandomNumbers
+using RandomNumbers, ForwardDiff
 
 const VG_REF = (fwd = 99.09861035102614, eu = 8.368903690692187, barrier = 7.469024475794258, asian_float = 4.779663836736272)
 
@@ -28,6 +28,17 @@ const VG_REF = (fwd = 99.09861035102614, eu = 8.368903690692187, barrier = 7.469
         end
         payoffs = merge(standard_payoffs(), (binary_eu = BinaryEuropeanOption(T, K),))
         check_prices(model_curve, implied_curve, mc, payoffs)
+    end
+
+    @testset "drift and subordinator law with explicit parameters" begin
+        dt = T / Nstep
+        @test FinancialMonteCarlo.compute_drift(model) == FinancialMonteCarlo.compute_drift(model, sigma, theta1, k1)
+        @test FinancialMonteCarlo.compute_subordinator_law(model, dt) == FinancialMonteCarlo.compute_subordinator_law(model, k1, dt)
+        @test FinancialMonteCarlo.compute_drift(model, Float32(sigma), Float32(theta1), Float32(k1)) isa Float32
+        @test FinancialMonteCarlo.compute_subordinator_law(model, Float32(k1), Float32(dt)) isa FinancialMonteCarlo.Gamma{Float32}
+        model_dual = VarianceGammaProcess(sigma, theta1, ForwardDiff.Dual(k1, 1.0), Underlying(S0, d))
+        @test FinancialMonteCarlo.compute_subordinator_law(model_dual, dt) isa FinancialMonteCarlo.Gamma{<:ForwardDiff.Dual}
+        @test FinancialMonteCarlo.compute_subordinator_law(model_dual, ForwardDiff.value(model_dual.κ), dt) isa FinancialMonteCarlo.Gamma{Float64}
     end
 
     @testset "parameter validation" begin

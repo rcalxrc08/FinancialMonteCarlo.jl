@@ -29,24 +29,7 @@ end
 
 export VarianceGammaProcess;
 
-function simulate!(X, mcProcess::VarianceGammaProcess, rfCurve::AbstractZeroRateCurve, mcBaseData::AbstractMonteCarloConfiguration, T::Number)
-    r = rfCurve.r
-    S0 = mcProcess.underlying.S0
-    d = dividend(mcProcess)
-    Nstep = mcBaseData.Nstep
-    σ = mcProcess.σ
-    θ = mcProcess.θ
-    κ = mcProcess.κ
-    ChainRulesCore.@ignore_derivatives @assert T > 0
-    dt = T / Nstep
-    ψ = -1 / κ * log(1 - σ^2 * κ / 2 - θ * κ)
-    drift = r - d - ψ
-
-    gammaRandomVariable = Gamma(dt / κ, κ)
-
-    simulate!(X, SubordinatedBrownianMotion(σ, drift, θ, gammaRandomVariable), mcBaseData, T)
-
-    @. X = S0 * exp(X)
-
-    nothing
-end
+compute_drift(::VarianceGammaProcess, σ::Number, θ::Number, κ::Number) = -1 / κ * log(1 - σ^2 * κ / 2 - θ * κ)
+compute_drift(mcProcess::VarianceGammaProcess) = compute_drift(mcProcess, mcProcess.σ, mcProcess.θ, mcProcess.κ)
+compute_subordinator_law(::VarianceGammaProcess, κ::Number, dt::Number) = Gamma(dt / κ, κ)
+compute_subordinator_law(mcProcess::VarianceGammaProcess, dt::Number) = compute_subordinator_law(mcProcess, mcProcess.κ, dt)

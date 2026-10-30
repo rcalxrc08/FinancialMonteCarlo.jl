@@ -29,28 +29,7 @@ end
 
 export NormalInverseGaussianProcess;
 
-function simulate!(X, mcProcess::NormalInverseGaussianProcess, rfCurve::AbstractZeroRateCurve, mcBaseData::AbstractMonteCarloConfiguration, T::Number)
-    r = rfCurve.r
-    S0 = mcProcess.underlying.S0
-    d = dividend(mcProcess)
-    Nstep = mcBaseData.Nstep
-
-    σ = mcProcess.σ
-    θ = mcProcess.θ
-    κ = mcProcess.κ
-    ChainRulesCore.@ignore_derivatives @assert T > 0
-
-    dt = T / Nstep
-    ψ = (1 - sqrt(1 - (σ^2 + 2 * θ) * κ)) / κ
-    drift = r - d - ψ
-
-    #Define subordinator
-    IGRandomVariable = InverseGaussian(dt, (dt^2) / κ)
-
-    #Call SubordinatedBrownianMotion
-    simulate!(X, SubordinatedBrownianMotion(σ, drift, θ, IGRandomVariable), mcBaseData, T)
-
-    @. X = S0 * exp(X)
-
-    return nothing
-end
+compute_drift(::NormalInverseGaussianProcess, σ::Number, θ::Number, κ::Number) = (1 - sqrt(1 - (σ^2 + 2 * θ) * κ)) / κ
+compute_drift(mcProcess::NormalInverseGaussianProcess) = compute_drift(mcProcess, mcProcess.σ, mcProcess.θ, mcProcess.κ)
+compute_subordinator_law(::NormalInverseGaussianProcess, κ::Number, dt::Number) = InverseGaussian(dt, (dt^2) / κ)
+compute_subordinator_law(mcProcess::NormalInverseGaussianProcess, dt::Number) = compute_subordinator_law(mcProcess, mcProcess.κ, dt)

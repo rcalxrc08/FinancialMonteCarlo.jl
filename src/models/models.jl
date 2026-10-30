@@ -26,6 +26,7 @@ include("merton.jl")
 include("subordinated_brownian_motion.jl")
 include("subordinated_brownian_motion_aug.jl")
 include("subordinated_brownian_motion_sobol.jl")
+include("ia_levy.jl")
 include("variance_gamma.jl")
 include("normal_inverse_gaussian.jl")
 
