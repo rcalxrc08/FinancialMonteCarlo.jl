@@ -16,8 +16,8 @@ struct SerialMode{rngType <: Random.AbstractRNG} <: BaseMode
 end
 abstract type ParallelMode <: BaseMode end
 
-# Defined here and not with the CUDA code, that Requires loads at run time: package extensions of other packages are
-# precompiled, so they can dispatch on these types only if they exist without CUDA.
+# Defined here and not in the CUDA extension: an extension can only add methods, and the package extensions of other
+# packages can dispatch on these types only if they exist without CUDA.
 abstract type AbstractCudaMode <: ParallelMode end
 
 """
@@ -31,6 +31,28 @@ struct CudaMode{rngType <: Random.AbstractRNG} <: AbstractCudaMode
     rng::rngType
     function CudaMode(seed_cpu::num = 0, seed_gpu::num2 = 0, rng::rngType = MersenneTwister()) where {num <: Integer, num2 <: Integer, rngType <: Random.AbstractRNG}
         return new{rngType}(Int64(seed_cpu), Int64(seed_gpu), rng)
+    end
+end
+
+abstract type AbstractMultiProcess <: ParallelMode end
+
+# Number of batches of MultiProcess by default: the workers, in the Distributed extension.
+function default_nbatches end
+
+"""
+    MultiProcess(sub_mod = SerialMode(), nbatches = nworkers(), seeds = 1:nbatches)
+
+Parallel mode splitting the paths into `nbatches` batches priced on the workers of `Distributed`, which
+needs `using Distributed`, each with the parallel mode `sub_mod` and its own seed from `seeds`. The
+result is the average of the batch prices.
+"""
+struct MultiProcess{abstractMode <: BaseMode} <: AbstractMultiProcess
+    nbatches::Int64
+    sub_mod::abstractMode
+    seeds::Array{Int64}
+    function MultiProcess(sub_mod::abstractMode = SerialMode(), nbatches::Int64 = default_nbatches(), seeds::Array{Int64} = collect(1:nbatches)) where {abstractMode <: BaseMode}
+        ChainRulesCore.@ignore_derivatives @assert length(seeds) == nbatches
+        return new{abstractMode}(nbatches, sub_mod, seeds)
     end
 end
 

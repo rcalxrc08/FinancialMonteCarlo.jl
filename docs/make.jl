@@ -35,6 +35,5 @@ makedocs(
         "Extending the package" => "extending.md",
         "API reference" => "api.md",
     ],
-    # Docstrings of the optional (Requires-based) extensions are not loaded here.
     warnonly = [:missing_docs],
 )

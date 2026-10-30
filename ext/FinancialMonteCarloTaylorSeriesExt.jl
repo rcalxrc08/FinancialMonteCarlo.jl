@@ -1,4 +1,6 @@
-using .TaylorSeries
+module FinancialMonteCarloTaylorSeriesExt
+
+using TaylorSeries: AbstractSeries, Taylor1
 import Base.max,Base.min,Base.isless
 
 value_taylor(x::Taylor1)=@inbounds @views x[0];
@@ -12,3 +14,5 @@ value_taylor(x::AbstractSeries)=@inbounds @views x[0][1];
 !hasmethod(isless,(AbstractSeries,Number)) ? (isless(x::AbstractSeries,t::Number)=isless(value_taylor(x),t)) : nothing
 !hasmethod(isless,(Number,AbstractSeries)) ? (isless(t::Number, x::AbstractSeries)=isless(t,value_taylor(x))) : nothing
 !hasmethod(isless,(AbstractSeries,AbstractSeries)) ? (isless(x::AbstractSeries,t::AbstractSeries)=isless(value_taylor(x),value_taylor(t))) : nothing
+
+end

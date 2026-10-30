@@ -30,6 +30,9 @@ include("ia_levy.jl")
 include("variance_gamma.jl")
 include("normal_inverse_gaussian.jl")
 
+### Stochastic Differential Equations
+include("diff_eq_monte_carlo.jl")
+
 ### MultiDimensional
 include("nvariate.jl")
 include("nvariate_log.jl")

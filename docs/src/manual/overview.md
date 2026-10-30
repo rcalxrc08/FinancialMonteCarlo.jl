@@ -47,8 +47,8 @@ maturity, strike, ...) therefore propagates through the whole computation, see
 
 ## Optional integrations
 
-Some features are loaded only when the corresponding package is loaded in the same session
-(through [Requires.jl](https://github.com/JuliaPackaging/Requires.jl)):
+Some features are package extensions, loaded only when the corresponding package is loaded in the
+same session:
 
 | Package | Enables |
 |:--|:--|

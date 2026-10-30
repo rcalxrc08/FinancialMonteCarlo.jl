@@ -88,7 +88,7 @@ AD (ForwardDiff, ReverseDiff, Mooncake, DualNumbers, TaylorSeries, HyperDualNumb
 
 ### Optional dependencies
 
-[src/deps/](src/deps/) files are loaded lazily through `Requires.@require` in `__init__`: CUDA (`*.cujl` files, GPU models in [src/models/cuda/](src/models/cuda/)), DifferentialEquations (price directly from an SDE via [diff_eq_monte_carlo.jl](src/models/diff_eq_monte_carlo.jl)), DualNumbers, TaylorSeries, VectorizedRNG, Distributed. Code there only exists when the user has loaded the corresponding package.
+[ext/](ext/) holds the package extensions, one per weak dependency: CUDA (GPU models, in [ext/FinancialMonteCarloCUDAExt/](ext/FinancialMonteCarloCUDAExt/)), DifferentialEquations (price directly from an SDE), DualNumbers, TaylorSeries, VectorizedRNG, Distributed. Code there only exists when the user has loaded the corresponding package. An extension can only add methods, so types and functions it needs must be defined in `src/` (`CudaMode`, `MultiProcess`, `MonteCarloDiffEqModel`, `default_nbatches`), and it imports the unexported names of the package explicitly. CUDA is not a test dependency, so nothing runs that extension on CI.
 
 ## Extending (see docs/src/extending.md for runnable examples)
 

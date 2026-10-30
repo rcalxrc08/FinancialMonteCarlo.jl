@@ -1,15 +1,11 @@
-using .Distributed
+module FinancialMonteCarloDistributedExt
 
-abstract type AbstractMultiProcess <: ParallelMode end
-struct MultiProcess{abstractMode <: BaseMode} <: AbstractMultiProcess
-    nbatches::Int64
-    sub_mod::abstractMode
-    seeds::Array{Int64}
-    function MultiProcess(sub_mod::abstractMode = SerialMode(), nbatches::Int64 = Int64(nworkers()), seeds::Array{Int64} = collect(1:nbatches)) where {abstractMode <: BaseMode}
-        ChainRulesCore.@ignore_derivatives @assert length(seeds) == nbatches
-        return new{abstractMode}(nbatches, sub_mod, seeds)
-    end
-end
+using Accessors
+using Distributed
+using FinancialMonteCarlo: AbstractMonteCarloMethod, AbstractMonteCarloProcess, AbstractPayoff, AbstractZeroRateCurve, BaseProcess, MonteCarloConfiguration, MultiProcess, VectorialMonteCarloProcess, predict_output_type_zero
+import FinancialMonteCarlo: default_nbatches, pricer
+
+default_nbatches() = Int64(nworkers())
 
 function pricer_macro_multiprocesses(model_type, payoff_type)
     @eval begin
@@ -46,4 +42,6 @@ function pricer(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig
     end
     Out = price ./ nbatches
     return Out
+end
+
 end

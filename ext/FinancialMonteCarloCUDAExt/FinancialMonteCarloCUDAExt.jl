@@ -1,8 +1,19 @@
-CudaMonteCarloConfig = MonteCarloConfiguration{num1, num2, num3, ser_mode} where {num1 <: Integer, num2 <: Integer, num3 <: FinancialMonteCarlo.StandardMC, ser_mode <: FinancialMonteCarlo.CudaMode{rng_}} where {rng_ <: Random.AbstractRNG}
-CudaAntitheticMonteCarloConfig = MonteCarloConfiguration{num1, num2, num3, ser_mode} where {num1 <: Integer, num2 <: Integer, num3 <: FinancialMonteCarlo.AntitheticMC, ser_mode <: FinancialMonteCarlo.CudaMode{rng_}} where {rng_ <: Random.AbstractRNG}
+module FinancialMonteCarloCUDAExt
 
-using .CUDA
-include("../models/cuda/cuda_models.jl")
+using CUDA
+using ChainRulesCore
+using Random
+using Statistics: quantile
+using FinancialMonteCarlo: AbstractCudaMode, AbstractMonteCarloConfiguration, AbstractMonteCarloMethod, AbstractZeroRateCurve, AmericanPayoff, BaseProcess, BermudanPayoff, BrownianMotion, BrownianMotionVec, CudaAntitheticMonteCarloConfig, CudaMode, CudaMonteCarloConfig, FiniteActivityProcess, HestonProcess, MonteCarloConfiguration, PathDependentPayoff, SubordinatedBrownianMotion, SubordinatedBrownianMotionVec, VectorialMonteCarloProcess, ZeroRate, ZeroRateCurve, add_jump_matrix!, compute_drift, dividend, get_rng_type, incremental_integral, inner_seed!, maturity
+import FinancialMonteCarlo: get_array_type, get_matrix_type, payoff, set_seed!, simulate!
+
+include("brownian_motion_cuda.jl")
+include("brownian_motion_cuda_aug.jl")
+include("heston_cuda.jl")
+include("heston_aug_cuda.jl")
+include("fa_levy_cuda.jl")
+include("subordinated_brownian_motion_cuda.jl")
+include("subordinated_brownian_motion_aug_cuda.jl")
 
 function set_seed!(mcConfig::MonteCarloConfiguration{type1, type2, type3, type4}) where {type1 <: Integer, type2 <: Integer, type3 <: AbstractMonteCarloMethod, type4 <: AbstractCudaMode}
     if mcConfig.init_rng
@@ -24,3 +35,5 @@ end
 # The Longstaff-Schwartz regressions index the paths, so the exercise engines run on the host.
 payoff(S::CuMatrix{num}, payoff_::AmericanPayoff, rfCurve::AbstractZeroRateCurve, mcBaseData::AbstractMonteCarloConfiguration, T1::num2 = maturity(payoff_)) where {num <: Number, num2 <: Number} = payoff(collect(S), payoff_, rfCurve, mcBaseData, T1)
 payoff(S::CuMatrix{num}, payoff_::BermudanPayoff, rfCurve::AbstractZeroRateCurve, mcBaseData::AbstractMonteCarloConfiguration, T1::num2 = maturity(payoff_)) where {num <: Number, num2 <: Number} = payoff(collect(S), payoff_, rfCurve, mcBaseData, T1)
+
+end

@@ -1,27 +1,15 @@
-struct MonteCarloDiffEqModel{absdiffeqmodel <: DiffEqBase.AbstractEnsembleProblem} <: ScalarMonteCarloProcess{Float64}
+# simulate! is in the DifferentialEquations extension.
+struct MonteCarloDiffEqModel{absdiffeqmodel} <: ScalarMonteCarloProcess{Float64}
     model::absdiffeqmodel
     final_trasform::Function
     underlying::AbstractUnderlying
-    function MonteCarloDiffEqModel(model::absdiffeqmodel, final_trasform::Function, underlying::AbstractUnderlying) where {absdiffeqmodel <: DiffEqBase.AbstractEnsembleProblem}
+    function MonteCarloDiffEqModel(model::absdiffeqmodel, final_trasform::Function, underlying::AbstractUnderlying) where {absdiffeqmodel}
         return new{absdiffeqmodel}(model, final_trasform, underlying)
     end
-    function MonteCarloDiffEqModel(model::absdiffeqmodel, underlying::AbstractUnderlying) where {absdiffeqmodel <: DiffEqBase.AbstractEnsembleProblem}
+    function MonteCarloDiffEqModel(model::absdiffeqmodel, underlying::AbstractUnderlying) where {absdiffeqmodel}
         func(x) = identity(x)
         return new{absdiffeqmodel}(model, func, underlying)
     end
 end
 
 export MonteCarloDiffEqModel;
-
-function simulate!(X, mcProcess::MonteCarloDiffEqModel, rfCurve::ZeroRate, mcBaseData::MonteCarloConfiguration{type1, type2, type3, type4}, T::numb) where {numb <: Number, type1 <: Number, type2 <: Number, type3 <: AbstractMonteCarloMethod, type4 <: BaseMode}
-    Nsim = mcBaseData.Nsim
-    Nstep = mcBaseData.Nstep
-    Dt = T / Nstep
-    ChainRulesCore.@ignore_derivatives @assert T > 0.0
-    diffeqmodel = mcProcess.model
-    sol = solve(diffeqmodel, SOSRI(), EnsembleThreads(), trajectories = Nsim, dt = Dt, adaptive = false)
-    X .= [path.u[j] for path in sol.u, j = 1:(Nstep+1)]
-    f(x) = mcProcess.final_trasform(x)
-    @. X = f(X)
-    nothing
-end

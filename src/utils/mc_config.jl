@@ -62,5 +62,7 @@ end
 SerialMonteCarloConfig = MonteCarloConfiguration{num1, num2, num3, ser_mode} where {num1 <: Integer, num2 <: Integer, num3 <: FinancialMonteCarlo.AbstractMonteCarloMethod, ser_mode <: FinancialMonteCarlo.SerialMode{rng_}} where {rng_ <: Random.AbstractRNG}
 SerialAntitheticMonteCarloConfig = MonteCarloConfiguration{num1, num2, num3, ser_mode} where {num1 <: Integer, num2 <: Integer, num3 <: FinancialMonteCarlo.AntitheticMC, ser_mode <: FinancialMonteCarlo.SerialMode{rng_}} where {rng_ <: Random.AbstractRNG}
 SerialSobolMonteCarloConfig = MonteCarloConfiguration{num1, num2, num3, ser_mode} where {num1 <: Integer, num2 <: Integer, num3 <: FinancialMonteCarlo.SobolMode, ser_mode <: FinancialMonteCarlo.SerialMode{rng_}} where {rng_ <: Random.AbstractRNG}
+CudaMonteCarloConfig = MonteCarloConfiguration{num1, num2, num3, ser_mode} where {num1 <: Integer, num2 <: Integer, num3 <: FinancialMonteCarlo.StandardMC, ser_mode <: FinancialMonteCarlo.CudaMode{rng_}} where {rng_ <: Random.AbstractRNG}
+CudaAntitheticMonteCarloConfig = MonteCarloConfiguration{num1, num2, num3, ser_mode} where {num1 <: Integer, num2 <: Integer, num3 <: FinancialMonteCarlo.AntitheticMC, ser_mode <: FinancialMonteCarlo.CudaMode{rng_}} where {rng_ <: Random.AbstractRNG}
 
 export MonteCarloConfiguration;
