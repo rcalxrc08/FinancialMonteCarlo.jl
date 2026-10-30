@@ -36,15 +36,15 @@ include("../testutils.jl")
             binary_eu = BinaryEuropeanOption(T, K),
             double_barrier = DoubleBarrierOption(T, K, K / 10.0, 1.2 * K),
         )
-        check_prices(model, rfCurve, mc, payoffs)
+        check_prices(model, rfCurve, mc_small, payoffs)
     end
 
     @testset "Bermudan and American engines" begin
         put_eu, put_am = EuropeanOption(T, K, false), AmericanOption(T, K, false)
-        @test pricer(model, rfCurve, mc, BermudanOption([T], K, false)) ≈ pricer(model, rfCurve, mc, put_eu)
+        @test pricer(model, rfCurve, mc_small, BermudanOption([T], K, false)) ≈ pricer(model, rfCurve, mc_small, put_eu)
         # exercisable at every step of the grid, a Bermudan is the American on the same paths
-        every_step = collect(T / Nstep:T / Nstep:T)
-        @test pricer(model, rfCurve, mc, BermudanOption(every_step, K, false)) ≈ pricer(model, rfCurve, mc, put_am)
+        every_step = collect(T / Nstep_small:T / Nstep_small:T)
+        @test pricer(model, rfCurve, mc_small, BermudanOption(every_step, K, false)) ≈ pricer(model, rfCurve, mc_small, put_am)
         @test abs(pricer(model, rfCurve, mc, put_am) - BS_PUT_REF.am) < 0.3
     end
 
@@ -52,18 +52,17 @@ include("../testutils.jl")
         K_vec = [80.0, 90.0, 100.0, 110.0, 120.0]
         isCall_vec = [true, true, true, false, true]
         for smile in (FinancialMonteCarlo.EuropeanOptionSmile(T, K_vec, isCall_vec), FinancialMonteCarlo.BinaryEuropeanOptionSmile(T, K_vec, isCall_vec))
-            prices = pricer(model, rfCurve, mc, smile)
+            prices = pricer(model, rfCurve, mc_small, smile)
             @test length(prices) == length(K_vec)
             @test all(isfinite, prices)
         end
     end
 
     @testset "time dependent rates and dividends" begin
-        mc_large = MonteCarloConfiguration(100_000, Nstep)
         model_curve = BlackScholesProcess(sigma, Underlying(S0, FinancialMonteCarlo.Curve([0.019, 0.019, 0.02], T)))
         rf_curve = ZeroRate([0.00, 0.02], T)
-        @test isfinite(pricer(model_curve, rf_curve, MonteCarloConfiguration(100_000, Nstep, FinancialMonteCarlo.AntitheticMC()), Forward(T)))
+        @test isfinite(pricer(model_curve, rf_curve, mc_small_anti, Forward(T)))
         payoffs = merge(standard_payoffs(), (binary_eu = BinaryEuropeanOption(T, K),))
-        check_prices(model_curve, rf_curve, mc_large, payoffs, BS_CALL_REF; toll = 1.8)
+        check_prices(model_curve, rf_curve, mc, payoffs, BS_CALL_REF; toll = 1.8)
     end
 end

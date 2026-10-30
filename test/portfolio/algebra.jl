@@ -37,6 +37,6 @@ using DualNumbers
             portfolio += name → c
         end
         @test occursin(name, capture_stdout(() -> display(portfolio)))
-        @test abs(pricer(name → model, rfCurve, mc, portfolio) - sum(pricer(model, rfCurve, mc, contracts))) < 1e-8
+        @test abs(pricer(name → model, rfCurve, mc_small, portfolio) - sum(pricer(model, rfCurve, mc_small, contracts))) < 1e-8
     end
 end

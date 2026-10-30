@@ -19,6 +19,12 @@ const mc = MonteCarloConfiguration(Nsim, Nstep)
 const mc_anti = MonteCarloConfiguration(Nsim, Nstep, FinancialMonteCarlo.AntitheticMC())
 const rfCurve = ZeroRate(r)
 
+# For the tests not depending on the Monte Carlo error: shapes, finite prices, identities on the same seed
+const Nsim_small = 500
+const Nstep_small = 10
+const mc_small = MonteCarloConfiguration(Nsim_small, Nstep_small)
+const mc_small_anti = MonteCarloConfiguration(Nsim_small, Nstep_small, FinancialMonteCarlo.AntitheticMC())
+
 # Black-Scholes reference prices for the market data above (also the limit of the mixture models)
 const BS_CALL_REF = (fwd = 99.1078451563562, eu = 8.43005524824866, am = 8.450489415187354, barrier = 7.5008664470880735, asian_float = 4.774451704549382)
 const BS_PUT_REF = (eu = 7.342077422567968, am = 7.467065889603365, barrier = 0.29071929104261723, asian_float = 4.230547012372306, asian_fixed = 4.236220218194027)

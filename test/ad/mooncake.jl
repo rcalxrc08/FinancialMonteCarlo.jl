@@ -4,7 +4,7 @@ using Mooncake, ForwardDiff, Random
 @testset "Mooncake" begin
     # MersenneTwister (the default rng) seeds and refills itself through ccalls into libdSFMT,
     # which Mooncake cannot differentiate through; Xoshiro is pure Julia.
-    mc_xo = MonteCarloConfiguration(1_000, Nstep, FinancialMonteCarlo.StandardMC(), FinancialMonteCarlo.SerialMode(0, Xoshiro()))
+    mc_xo = MonteCarloConfiguration(100, Nstep_small, FinancialMonteCarlo.StandardMC(), FinancialMonteCarlo.SerialMode(0, Xoshiro()))
 
     @testset "Kou European call: gradient matches ForwardDiff" begin
         # x = [S0, σ, λ, p, λ₊, λ₋, r, d, T]

@@ -9,8 +9,8 @@ using Distributions
     @testset "BrownianMotion" begin
         @test_throws AssertionError BrownianMotion(-sigma, drift)
         @test_throws AssertionError BrownianMotion(-sigma, mu_curve)
-        S = simulate(BrownianMotion(sigma, 0.01), mc_anti, T)
-        @test size(S) == (Nsim, Nstep + 1)
+        S = simulate(BrownianMotion(sigma, 0.01), mc_small_anti, T)
+        @test size(S) == (Nsim_small, Nstep_small + 1)
         @test all(iszero, S[:, 1])
     end
 
@@ -22,8 +22,8 @@ using Distributions
     @testset "SubordinatedBrownianMotion" begin
         @test_throws AssertionError SubordinatedBrownianMotion(-sigma, drift, 0.01, InverseGaussian(1.0, 1.0))
         @test_throws AssertionError SubordinatedBrownianMotion(-sigma, mu_curve, 0.01, InverseGaussian(1.0, 1.0))
-        S = simulate(SubordinatedBrownianMotion(sigma, 0.01, 0.1, Gamma(T / Nstep, 1.0)), mc, T)
-        @test size(S) == (Nsim, Nstep + 1)
+        S = simulate(SubordinatedBrownianMotion(sigma, 0.01, 0.1, Gamma(T / Nstep_small, 1.0)), mc_small, T)
+        @test size(S) == (Nsim_small, Nstep_small + 1)
         @test all(iszero, S[:, 1])
     end
 end
