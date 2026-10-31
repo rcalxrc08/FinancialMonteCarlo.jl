@@ -1,5 +1,5 @@
 include("testutils.jl")
-using Distributions
+using Distributions, ForwardDiff, Statistics
 
 # Engines are the building blocks of the models: they know nothing about rates or dividends.
 @testset "Engines" begin
@@ -17,6 +17,9 @@ using Distributions
     @testset "GeometricBrownianMotion" begin
         @test_throws AssertionError GeometricBrownianMotion(-sigma, drift, 1.0)
         @test_throws AssertionError GeometricBrownianMotion(-sigma, mu_curve, 1.0)
+        # the paths are proportional to x0
+        terminal(x0) = (FinancialMonteCarlo.set_seed!(mc_small); mean(simulate(GeometricBrownianMotion(sigma, 0.01, x0), mc_small, T)[:, end]))
+        @test ForwardDiff.derivative(terminal, S0) ≈ terminal(S0) / S0
     end
 
     @testset "SubordinatedBrownianMotion" begin

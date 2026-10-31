@@ -26,7 +26,7 @@ function simulate!(X, mcProcess::HestonProcess, rfCurve::ZeroRateCurve, mcBaseDa
     isDualZeroVol_eps = isDualZeroVol + eps(isDualZeroVol)
     e1 = CuArray{typeof(get_rng_type(isDualZero))}(undef, Nsim)
     e2_rho = CuArray{typeof(get_rng_type(isDualZero))}(undef, Nsim)
-    e2 = CuArray{typeof(get_rng_type(isDualZero))}(undef, Nsim)
+    e2 = CuArray{typeof(get_rng_type(isDualZero) + zero(ρ))}(undef, Nsim)
     @inbounds for j = 1:Nstep
         randn!(e1)
         randn!(e2_rho)
@@ -73,7 +73,7 @@ function simulate!(X, mcProcess::HestonProcess, rfCurve::ZeroRateCurve, mcBaseDa
     v_mm = CUDA.zeros(typeof(isDualZero), Nsim_2) .+ σ₀^2
     e1 = CuArray{typeof(get_rng_type(isDualZero))}(undef, Nsim_2)
     e2_rho = CuArray{typeof(get_rng_type(isDualZero))}(undef, Nsim_2)
-    e2 = CuArray{typeof(get_rng_type(isDualZero))}(undef, Nsim_2)
+    e2 = CuArray{typeof(get_rng_type(isDualZero) + zero(ρ))}(undef, Nsim_2)
     isDualZeroVol_eps = isDualZeroVol + eps(isDualZeroVol)
     for j = 1:Nstep
         randn!(e1)

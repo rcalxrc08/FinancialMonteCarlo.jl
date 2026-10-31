@@ -21,8 +21,10 @@ function simulate!(X, mcProcess::HestonProcess, rfCurve::ZeroRate, mcBaseData::S
     seq = SobolSeq(2 * Nstep)
     skip(seq, Nstep * Nsim)
     dt = T / Nstep
-    isDualZero = T * r * σ₀ * θ_s * κ_s * σ * ρ * 0.0 * S0
+    isDualZeroVol = T * r * σ₀ * θ_s * κ_s * σ * ρ * 0.0
+    isDualZero = isDualZeroVol * S0
     view(X, :, 1) .= isDualZero
+    isDualZeroVol_eps = isDualZeroVol + eps(isDualZeroVol)
     vec = Array{typeof(get_rng_type(isDualZero))}(undef, 2 * Nstep)
     for i = 1:Nsim
         v_m = σ₀^2
@@ -34,7 +36,7 @@ function simulate!(X, mcProcess::HestonProcess, rfCurve::ZeroRate, mcBaseData::S
             @views X[i, j+1] = X[i, j] + ((r - d) - 0.5 * v_m) * dt + sqrt(v_m) * sqrt(dt) * e1
             v_m += κ_s * (θ_s - v_m) * dt + σ * sqrt(v_m) * sqrt(dt) * e2
             #when v_m = 0.0, the derivative becomes NaN
-            v_m = max(v_m, isDualZero)
+            v_m = max(v_m, isDualZeroVol_eps)
         end
     end
     ## Conclude

@@ -17,7 +17,7 @@ struct GeometricBrownianMotion{num <: Number, num1 <: Number, num2 <: Number, nu
     x0::num2
     function GeometricBrownianMotion(σ::num, μ::num1, x0::num2) where {num <: Number, num1 <: Number, num2 <: Number}
         ChainRulesCore.@ignore_derivatives @assert σ > 0 "Volatility must be positive"
-        zero_typed = ChainRulesCore.@ignore_derivatives zero(num) + zero(num1)
+        zero_typed = ChainRulesCore.@ignore_derivatives zero(num) + zero(num1) + zero(num2)
         return new{num, num1, num2, typeof(zero_typed)}(σ, μ, x0)
     end
 end

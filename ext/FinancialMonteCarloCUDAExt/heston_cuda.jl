@@ -27,7 +27,7 @@ function simulate!(X, mcProcess::HestonProcess, spotData::ZeroRate, mcBaseData::
 
     e1 = CuArray{typeof(get_rng_type(isDualZero))}(undef, Nsim)
     e2_rho = CuArray{typeof(get_rng_type(isDualZero))}(undef, Nsim)
-    e2 = CuArray{typeof(get_rng_type(isDualZero))}(undef, Nsim)
+    e2 = CuArray{typeof(get_rng_type(isDualZero) + zero(ρ))}(undef, Nsim)
     isDualZero_eps = isDualZeroVol + eps(isDualZeroVol)
 
     for j = 1:Nstep
@@ -73,7 +73,7 @@ function simulate!(X, mcProcess::HestonProcess, spotData::ZeroRate, mcBaseData::
 
     e1 = CuArray{typeof(get_rng_type(isDualZero))}(undef, Nsim_2)
     e2_rho = CuArray{typeof(get_rng_type(isDualZero))}(undef, Nsim_2)
-    e2 = CuArray{typeof(get_rng_type(isDualZero))}(undef, Nsim_2)
+    e2 = CuArray{typeof(get_rng_type(isDualZero) + zero(ρ))}(undef, Nsim_2)
 
     Xp = @views X[1:Nsim_2, :]
     Xm = @views X[(Nsim_2+1):end, :]

@@ -26,7 +26,7 @@ function simulate!(X, mcProcess::HestonProcess, rfCurve::ZeroRateCurve, mcBaseDa
     isDualZeroVol_eps = isDualZeroVol + eps(isDualZeroVol)
     e1 = Array{typeof(get_rng_type(isDualZero))}(undef, Nsim)
     e2_rho = Array{typeof(get_rng_type(isDualZero))}(undef, Nsim)
-    e2 = Array{typeof(get_rng_type(isDualZero))}(undef, Nsim)
+    e2 = Array{typeof(get_rng_type(isDualZero) + zero(ρ))}(undef, Nsim)
     @inbounds for j = 1:Nstep
         randn!(mcBaseData.parallelMode.rng, e1)
         randn!(mcBaseData.parallelMode.rng, e2_rho)
@@ -73,7 +73,7 @@ function simulate!(X, mcProcess::HestonProcess, rfCurve::ZeroRateCurve, mcBaseDa
     v_mm = [σ₀^2 + isDualZero for _ = 1:Nsim_2]
     e1 = Array{typeof(get_rng_type(isDualZero))}(undef, Nsim_2)
     e2_rho = Array{typeof(get_rng_type(isDualZero))}(undef, Nsim_2)
-    e2 = Array{typeof(get_rng_type(isDualZero))}(undef, Nsim_2)
+    e2 = Array{typeof(get_rng_type(isDualZero) + zero(ρ))}(undef, Nsim_2)
     isDualZeroVol_eps = isDualZeroVol + eps(isDualZeroVol)
     for j = 1:Nstep
         randn!(mcBaseData.parallelMode.rng, e1)
