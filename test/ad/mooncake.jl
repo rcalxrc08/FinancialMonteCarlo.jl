@@ -2,8 +2,6 @@ include("../testutils.jl")
 using Mooncake, ForwardDiff, Random
 
 @testset "Mooncake" begin
-    # MersenneTwister (the default rng) seeds and refills itself through ccalls into libdSFMT,
-    # which Mooncake cannot differentiate through; Xoshiro is pure Julia.
     mc_xo = MonteCarloConfiguration(100, Nstep_small, FinancialMonteCarlo.StandardMC(), FinancialMonteCarlo.SerialMode(0, Xoshiro()))
 
     @testset "Kou European call: gradient matches ForwardDiff" begin
@@ -16,5 +14,15 @@ using Mooncake, ForwardDiff, Random
         @test g ≈ ForwardDiff.gradient(f, x0) rtol = 1e-8
         @test 0 < g[1] < 1 # delta
         @test g[2] > 0 # vega
+    end
+
+    @testset "default rng: seeding has a rule, refills go through" begin
+        # 2000 paths draw past the 1002 numbers cached by the MersenneTwister.
+        x0 = [S0, sigma, r, d]
+        mc_default = MonteCarloConfiguration(2000, Nstep_small)
+        f(x) = pricer(BlackScholesProcess(x[2], Underlying(x[1], x[4])), ZeroRate(x[3]), mc_default, EuropeanOption(T, K))
+        cache = Mooncake.prepare_gradient_cache(f, x0)
+        _, (_, g) = Mooncake.value_and_gradient!!(cache, f, x0)
+        @test g ≈ ForwardDiff.gradient(f, x0) rtol = 1e-10
     end
 end

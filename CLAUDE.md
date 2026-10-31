@@ -84,11 +84,11 @@ AD (ForwardDiff, ReverseDiff, Mooncake, DualNumbers, TaylorSeries, HyperDualNumb
 - Structs are fully parametric on each numeric field and carry a promoted `numtype` parameter (e.g. `KouProcess{num, num1, …, numtype}`), computed in the inner constructor via `promote_type` or `zero(num1) + zero(num2)`.
 - Output element types are inferred with `predict_output_type_zero(...)` ([src/output_type.jl](src/output_type.jl)) to allocate path/price arrays of the right (possibly Dual) type — never hardcode `Float64` buffers.
 - Assertions/validation and non-differentiable bookkeeping are wrapped in `ChainRulesCore.@ignore_derivatives` (needed for Zygote/ReverseDiff compatibility).
-- Mooncake needs a pure-Julia RNG (`SerialMode(seed, Xoshiro())`): the default `MersenneTwister` calls into libdSFMT, which Mooncake cannot differentiate. Mooncake's first rule build is slow (~2 min in `test/ad/mooncake.jl`).
+- Mooncake works with any RNG: `FinancialMonteCarloMooncakeExt` makes `set_seed!` a zero-derivative primitive, because seeding the default `MersenneTwister` ends in a foreigncall into libdSFMT. Mooncake's first rule build is slow (~2 min in `test/ad/mooncake.jl`).
 
 ### Optional dependencies
 
-[ext/](ext/) holds the package extensions, one per weak dependency: CUDA (GPU models, in [ext/FinancialMonteCarloCUDAExt/](ext/FinancialMonteCarloCUDAExt/)), DifferentialEquations (price directly from an SDE), DualNumbers, TaylorSeries, VectorizedRNG, Distributed. Code there only exists when the user has loaded the corresponding package. An extension can only add methods, so types and functions it needs must be defined in `src/` (`CudaMode`, `MultiProcess`, `MonteCarloDiffEqModel`, `default_nbatches`), and it imports the unexported names of the package explicitly. CUDA is not a test dependency, so nothing runs that extension on CI.
+[ext/](ext/) holds the package extensions, one per weak dependency: CUDA (GPU models, in [ext/FinancialMonteCarloCUDAExt/](ext/FinancialMonteCarloCUDAExt/)), DifferentialEquations (price directly from an SDE), DualNumbers, Mooncake, TaylorSeries, VectorizedRNG, Distributed. Code there only exists when the user has loaded the corresponding package. An extension can only add methods, so types and functions it needs must be defined in `src/` (`CudaMode`, `MultiProcess`, `MonteCarloDiffEqModel`, `default_nbatches`), and it imports the unexported names of the package explicitly. CUDA is not a test dependency, so nothing runs that extension on CI.
 
 ## Extending (see docs/src/extending.md for runnable examples)
 

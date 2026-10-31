@@ -37,15 +37,14 @@ bookkeeping are wrapped in `ChainRulesCore.@ignore_derivatives`.
 ## Mooncake.jl
 
 [Mooncake.jl](https://github.com/chalk-lab/Mooncake.jl) is a reverse mode AD that supports
-mutation, so it differentiates directly through the in-place `simulate!` of the models. The only
-requirement is a pure Julia random number generator: the default `MersenneTwister` seeds and
-refills itself through `ccall`s into libdSFMT, for which Mooncake has no rule, while `Xoshiro`
-works out of the box.
+mutation, so it differentiates directly through the in-place `simulate!` of the models. Seeding
+the default `MersenneTwister` ends in a `ccall` into libdSFMT, so the package extension marks
+`set_seed!` as having zero derivative; any random number generator works.
 
 ```julia
-using FinancialMonteCarlo, Mooncake, Random
+using FinancialMonteCarlo, Mooncake
 
-mcConfig = MonteCarloConfiguration(10_000, 30, FinancialMonteCarlo.StandardMC(), FinancialMonteCarlo.SerialMode(0, Xoshiro()))
+mcConfig = MonteCarloConfiguration(10_000, 30)
 
 # x = [S0, σ, λ, p, λ₊, λ₋, r, d, T]
 f(x) = pricer(KouProcess(x[2], x[3], x[4], x[5], x[6], Underlying(x[1], x[8])), ZeroRate(x[7]), mcConfig, EuropeanOption(x[9], 100.0))
