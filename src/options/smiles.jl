@@ -1,6 +1,5 @@
-### European Payoffs
-include("smiles/european_option_smile.jl")
-include("smiles/binary_european_option_smile.jl")
+const EuropeanOptionSmile = OptionSmile{EuropeanOption}
+const BinaryEuropeanOptionSmile = OptionSmile{BinaryEuropeanOption}
 
 @doc """
     EuropeanOptionSmile(T, K::Vector, isCall::Vector{Bool})

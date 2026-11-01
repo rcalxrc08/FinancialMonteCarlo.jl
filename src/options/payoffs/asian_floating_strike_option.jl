@@ -19,8 +19,4 @@ end
 
 export AsianFloatingStrikeOption;
 
-function payout(S::abstractArray, opt_::AsianFloatingStrikeOption) where {abstractArray <: AbstractArray{num_}} where {num_ <: Number}
-    iscall = ChainRulesCore.@ignore_derivatives ifelse(opt_.isCall, Int8(1), Int8(-1))
-    zero_typed = ChainRulesCore.@ignore_derivatives zero(eltype(S))
-    return max(iscall * (S[end] - mean(S)), zero_typed)
-end
+payout(S::AbstractArray{<:Number}, opt_::AsianFloatingStrikeOption) = vanilla_payout(S[end], mean(S), opt_)

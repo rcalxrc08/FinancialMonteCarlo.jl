@@ -15,19 +15,9 @@ same seed. Returns a vector for a vector of payoffs or a smile.
 - `payoff`: a payoff, a vector of payoffs or a smile.
 - `dr`: rate bump.
 """
-function rho(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration, abstractPayoff::AbstractPayoff, dr::Real = 1e-7)
-    Price = pricer(mcProcess, rfCurve, mcConfig, abstractPayoff)
-    rfCurve_1 = bump_rate(rfCurve, dr)
-    PriceUp = pricer(mcProcess, rfCurve_1, mcConfig, abstractPayoff)
-    rho = (PriceUp - Price) / dr
-
-    return rho
-end
-
-function rho(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration, abstractPayoffs::Union{Array{<:AbstractPayoff}, AbstractSmile}, dr::Real = 1e-7)
+function rho(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration, abstractPayoffs::Union{AbstractPayoff, Array{<:AbstractPayoff}, AbstractSmile}, dr::Real = 1e-7)
     Prices = pricer(mcProcess, rfCurve, mcConfig, abstractPayoffs)
-    rfCurve_1 = bump_rate(rfCurve, dr)
-    PricesUp = pricer(mcProcess, rfCurve_1, mcConfig, abstractPayoffs)
+    PricesUp = pricer(mcProcess, bump_rate(rfCurve, dr), mcConfig, abstractPayoffs)
     rho = @. (PricesUp - Prices) / dr
 
     return rho

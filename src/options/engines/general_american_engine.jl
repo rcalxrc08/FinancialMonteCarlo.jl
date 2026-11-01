@@ -42,24 +42,26 @@ function lsm_exercise!(V::AbstractVector, exerciseTimes::AbstractVector, S::Abst
     end
 end
 
-function payoff(S1::AbstractMatrix{num}, amPayoff::AmericanPayoff, rfCurve::abstractZeroRateCurve, mcBaseData::AbstractMonteCarloConfiguration, T1::num2 = maturity(amPayoff)) where {abstractZeroRateCurve <: AbstractZeroRateCurve, num <: Number, num2 <: Number}
-    T = amPayoff.T
-    NStep = mcBaseData.Nstep
-    Nsim = mcBaseData.Nsim
-    index1 = round(Int, T / T1 * NStep) + 1
+# The columns of the paths where the option can be exercised before maturity (column 1 is t = 0), latest first
+exercise_columns(::AmericanPayoff, Nstep::Integer, ::Number) = Nstep:-1:2
+exercise_columns(bmPayoff::BermudanPayoff, Nstep::Integer, dt::Number) = reverse(filter(j -> j <= Nstep, round.(Int, bmPayoff.T_ex ./ dt) .+ 1))
+
+function payoff(S1::AbstractMatrix{num}, exPayoff::Union{AmericanPayoff, BermudanPayoff}, rfCurve::abstractZeroRateCurve, mcBaseData::AbstractMonteCarloConfiguration, T1::num2 = maturity(exPayoff)) where {abstractZeroRateCurve <: AbstractZeroRateCurve, num <: Number, num2 <: Number}
+    T = maturity(exPayoff)
+    index1 = maturity_index(T, T1, mcBaseData)
     S = view(S1, :, 1:index1)
     Nstep = index1 - 1
     r = rfCurve.r
     dt = T / Nstep
     # initialize vectors
-    exerciseTimes = Nstep .* ones(Int64, Nsim)
-    df_exerciseTimes = [exp(-integral(r, dt * j_)) for j_ = 0:NStep]
+    exerciseTimes = fill(Nstep, mcBaseData.Nsim)
+    df_exerciseTimes = [exp(-integral(r, dt * j_)) for j_ = 0:Nstep]
     #define payout
-    phi(Sti::numtype_) where {numtype_ <: Number} = payout(Sti, amPayoff)
+    phi(Sti::numtype_) where {numtype_ <: Number} = payout(Sti, exPayoff)
     #compute payout
     @views V = @. phi(S[:, end])
     # Backward Procedure
-    for j = Nstep:-1:2
+    for j in exercise_columns(exPayoff, Nstep, dt)
         # discount from the time of column j, (j - 1) * dt, to the exercise time
         alpha = lsm_coefficients(S, V, phi, i -> df_exerciseTimes[exerciseTimes[i]-j+2], j)
         isnothing(alpha) || lsm_exercise!(V, exerciseTimes, S, phi, alpha, j)

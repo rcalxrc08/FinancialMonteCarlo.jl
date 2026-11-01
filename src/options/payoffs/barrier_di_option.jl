@@ -10,24 +10,6 @@ if the underlying goes below `barrier` at least once. The barrier is monitored o
 - `barrier`: lower barrier, must be positive.
 - `isCall`: `true` (default) for a call, `false` for a put.
 """
-struct BarrierOptionDownIn{num1 <: Number, num2 <: Number, num3 <: Number, numtype <: Number} <: BarrierPayoff{numtype}
-    T::num1
-    K::num2
-    barrier::num3
-    isCall::Bool
-    function BarrierOptionDownIn(T::num1, K::num2, barrier::num3, isCall::Bool = true) where {num1 <: Number, num2 <: Number, num3 <: Number}
-        ChainRulesCore.@ignore_derivatives @assert T > 0 "Time to Maturity must be positive"
-        ChainRulesCore.@ignore_derivatives @assert K > 0 "Strike Price must be positive"
-        ChainRulesCore.@ignore_derivatives @assert barrier > 0 "Barrier must be positive"
-        zero_typed = ChainRulesCore.@ignore_derivatives zero(num1) + zero(num2) + zero(num3)
-        return new{num1, num2, num3, typeof(zero_typed)}(T, K, barrier, isCall)
-    end
-end
+@option_type BarrierOptionDownIn BarrierPayoff T K barrier
 
-export BarrierOptionDownIn;
-
-function payout(S::abstractArray, barrierPayoff::BarrierOptionDownIn) where {abstractArray <: AbstractArray{num_}} where {num_ <: Number}
-    iscall = ChainRulesCore.@ignore_derivatives ifelse(barrierPayoff.isCall, Int8(1), Int8(-1))
-    zero_typed = ChainRulesCore.@ignore_derivatives zero(eltype(S)) * barrierPayoff.K * barrierPayoff.barrier
-    return max(iscall * (S[end] - barrierPayoff.K), zero_typed) * !(findfirst(x -> x < barrierPayoff.barrier, S) === nothing)
-end
+is_alive(S::AbstractArray, payoff_::BarrierOptionDownIn) = crossed_below(S, payoff_.barrier)

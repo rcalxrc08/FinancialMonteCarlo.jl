@@ -4,6 +4,16 @@ function validate_abstract_smile(T::T1, K::T3, isCall::T4) where {T1, T2, T3 <: 
     @assert T > 0 "Maturity must be positive"
 end
 
+struct OptionSmile{Option, T1, T2, T3 <: AbstractArray{T2}, T4 <: AbstractArray{Bool}} <: AbstractSmile{Option}
+    T::T1
+    K::T3
+    isCall::T4
+    function OptionSmile{Option}(T::T1, K::T3, isCall::T4) where {Option, T1, T2, T3 <: AbstractArray{T2}, T4 <: AbstractArray{Bool}}
+        validate_abstract_smile(T, K, isCall)
+        return new{Option, T1, T2, T3, T4}(T, K, isCall)
+    end
+end
+
 maturity(smile::AbstractSmile) = smile.T
 
 function smile_to_options(smile::AbstractSmile{T}) where {T}

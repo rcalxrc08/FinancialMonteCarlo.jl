@@ -38,92 +38,48 @@ end
 
 export HestonProcess;
 
-function simulate!(X, mcProcess::HestonProcess, rfCurve::ZeroRate, mcBaseData::SerialMonteCarloConfig, T::numb) where {numb <: Number}
-    r = rfCurve.r
-    S0 = mcProcess.underlying.S0
-    d = dividend(mcProcess)
-    Nsim = mcBaseData.Nsim
-    Nstep = mcBaseData.Nstep
-    σ = mcProcess.σ
-    σ₀ = mcProcess.σ₀
+# The risk neutral parameters, the time step and the zero of the variance, which carries the derivatives of every input
+function heston_setup(mcProcess::HestonProcess, rfCurve::AbstractZeroRateCurve, mcBaseData::MonteCarloConfiguration, T::Number)
+    ChainRulesCore.@ignore_derivatives @assert T > 0
     λ1 = mcProcess.λ
     κ = mcProcess.κ
-    ρ = mcProcess.ρ
-    θ = mcProcess.θ
-    ChainRulesCore.@ignore_derivatives @assert T > 0.0
-
-    ## Simulate
     κ_s = κ + λ1
-    θ_s = κ * θ / κ_s
-
-    dt = T / Nstep
-    isDualZeroVol = zero(T * r * σ₀ * θ_s * κ_s * σ * ρ)
-    isDualZero = isDualZeroVol * S0
-    view(X, :, 1) .= isDualZero
-    v_m = [σ₀^2 + isDualZero for _ = 1:Nsim]
-    isDualZero_eps = isDualZeroVol + eps(isDualZeroVol)
-    e1 = Array{typeof(get_rng_type(isDualZero))}(undef, Nsim)
-    #Wrong, is dual zero shouldn't have rho
-    e2_rho = Array{typeof(get_rng_type(isDualZero))}(undef, Nsim)
-    e2 = Array{typeof(get_rng_type(isDualZero) + zero(ρ))}(undef, Nsim)
-    tmp_cost = sqrt(1 - ρ * ρ)
-    #TODO: acnaoicna
-    for j = 1:Nstep
-        randn!(mcBaseData.parallelMode.rng, e1)
-        randn!(mcBaseData.parallelMode.rng, e2_rho)
-        @. e2 = e1 * ρ + e2_rho * tmp_cost
-        @views @. X[:, j+1] = X[:, j] + ((r - d) - 0.5 * v_m) * dt + sqrt(v_m) * sqrt(dt) * e1
-        @. v_m += κ_s * (θ_s - v_m) * dt + σ * sqrt(v_m) * sqrt(dt) * e2
-        #when v_m = 0.0, the derivative becomes NaN
-        @. v_m = max(v_m, isDualZero_eps)
-    end
-    ## Conclude
-    @. X = S0 * exp(X)
-    return
+    θ_s = κ * mcProcess.θ / κ_s
+    dt = T / mcBaseData.Nstep
+    drifts = step_drifts(rfCurve.r - dividend(mcProcess), dt, mcBaseData.Nstep)
+    isDualZeroVol = zero(T * mcProcess.σ₀ * κ_s * θ_s * λ1 * mcProcess.σ * mcProcess.ρ * drift_of_step(drifts, 1))
+    return κ_s, θ_s, drifts, dt, isDualZeroVol
 end
 
-function simulate!(X, mcProcess::HestonProcess, rfCurve::ZeroRate, mcBaseData::SerialAntitheticMonteCarloConfig, T::numb) where {numb <: Number}
-    r = rfCurve.r
+function simulate!(X, mcProcess::HestonProcess, rfCurve::AbstractZeroRateCurve, mcBaseData::PseudoRandomConfig, T::Number)
     S0 = mcProcess.underlying.S0
-    d = dividend(mcProcess)
-    Nsim = mcBaseData.Nsim
-    Nstep = mcBaseData.Nstep
     σ = mcProcess.σ
-    σ₀ = mcProcess.σ₀
-    λ1 = mcProcess.λ
-    κ = mcProcess.κ
     ρ = mcProcess.ρ
-    θ = mcProcess.θ
-    ChainRulesCore.@ignore_derivatives @assert T > 0.0
-
-    ####Simulation
-    ## Simulate
-    κ_s = κ + λ1
-    θ_s = κ * θ / κ_s
-
-    dt = T / Nstep
-    isDualZeroVol = zero(T * r * σ₀ * κ * θ * λ1 * σ * ρ)
+    κ_s, θ_s, drifts, dt, isDualZeroVol = heston_setup(mcProcess, rfCurve, mcBaseData, T)
     isDualZero = isDualZeroVol * S0
-    view(X, :, 1) .= isDualZero
-    isDualZero_eps = isDualZeroVol + eps(isDualZeroVol)
-    Nsim_2 = div(Nsim, 2)
-    Xp = @views X[1:Nsim_2, :]
-    Xm = @views X[(Nsim_2+1):end, :]
-    v_m_1 = [σ₀^2 + isDualZero for _ = 1:Nsim_2]
-    v_m_2 = [σ₀^2 + isDualZero for _ = 1:Nsim_2]
-    e1 = Array{typeof(get_rng_type(isDualZero))}(undef, Nsim_2)
-    e2_rho = Array{typeof(get_rng_type(isDualZero))}(undef, Nsim_2)
-    e2 = Array{typeof(get_rng_type(isDualZero) + zero(ρ))}(undef, Nsim_2)
-    for j = 1:Nstep
-        randn!(mcBaseData.parallelMode.rng, e1)
-        randn!(mcBaseData.parallelMode.rng, e2_rho)
-        @. e2 = e1 * ρ + e2_rho * sqrt(1 - ρ * ρ)
-        @views @. Xp[:, j+1] = Xp[:, j] + ((r - d) - 0.5 * v_m_1) * dt + sqrt(v_m_1) * sqrt(dt) * e1
-        @views @. Xm[:, j+1] = Xm[:, j] + ((r - d) - 0.5 * v_m_2) * dt - sqrt(v_m_2) * sqrt(dt) * e1
-        @. v_m_1 += κ_s * (θ_s - v_m_1) * dt + σ * sqrt(v_m_1) * sqrt(dt) * e2
-        @. v_m_2 += κ_s * (θ_s - v_m_2) * dt - σ * sqrt(v_m_2) * sqrt(dt) * e2
-        @. v_m_1 = max(v_m_1, isDualZero_eps)
-        @. v_m_2 = max(v_m_2, isDualZero_eps)
+    fill!(view(X, :, 1), isDualZero)
+    #when v_m = 0.0, the derivative becomes NaN
+    v_floor = isDualZeroVol + eps(isDualZeroVol)
+    v_0 = mcProcess.σ₀^2 + isDualZero
+    sides = path_sides(X, mcBaseData)
+    N = draws_per_side(sides)
+    sides_v = map(side -> (side[1], fill!(draw_buffer(mcBaseData, typeof(v_0), N), v_0), side[2]), sides)
+    e1 = draw_buffer(mcBaseData, typeof(get_rng_type(isDualZero)), N)
+    e2_rho = draw_buffer(mcBaseData, typeof(get_rng_type(isDualZero)), N)
+    e2 = draw_buffer(mcBaseData, typeof(get_rng_type(isDualZero) + zero(ρ)), N)
+    ρ_orthogonal = sqrt(1 - ρ * ρ)
+    sqrt_dt = sqrt(dt)
+    for j = 1:mcBaseData.Nstep
+        draw_normals!(e1, mcBaseData)
+        draw_normals!(e2_rho, mcBaseData)
+        @. e2 = e1 * ρ + e2_rho * ρ_orthogonal
+        drift = drift_of_step(drifts, j)
+        for (X_, v_m, sign_) in sides_v
+            sqrt_dt_step = sign_ * sqrt_dt
+            @views @. X_[:, j+1] = X_[:, j] + (drift - v_m * dt / 2) + sqrt(v_m) * sqrt_dt_step * e1
+            @. v_m += κ_s * (θ_s - v_m) * dt + σ * sqrt(v_m) * sqrt_dt_step * e2
+            @. v_m = max(v_m, v_floor)
+        end
     end
     ## Conclude
     @. X = S0 * exp(X)

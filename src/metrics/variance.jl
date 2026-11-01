@@ -33,7 +33,7 @@ end
 
 function payoff_moments(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration, abstractPayoffs::Array{<:AbstractPayoff})
     set_seed!(mcConfig)
-    maxT = maximum([maturity(abstractPayoff) for abstractPayoff in abstractPayoffs])
+    maxT = maturity(abstractPayoffs)
     S = simulate(mcProcess, rfCurve, mcConfig, maxT)
     moments = [path_moments(payoff(S, abstractPayoff, rfCurve, mcConfig, maxT)) for abstractPayoff in abstractPayoffs]
     return first.(moments), last.(moments)

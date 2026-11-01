@@ -17,16 +17,8 @@ function print(p::Union{AbstractMonteCarloProcess, AbstractPayoff})
 end
 
 function display(p::Union{AbstractMonteCarloProcess, AbstractPayoff})
-    fldnames = collect(fieldnames(typeof(p)))
-    Base.print(typeof(p), "(")
-    if (length(fldnames) > 0)
-        Base.print(fldnames[1], "=", getfield(p, fldnames[1]))
-        popfirst!(fldnames)
-        for name in fldnames
-            Base.print(",", name, "=", getfield(p, name))
-        end
-    end
-    println(")")
+    print(p)
+    println()
 end
 
 # Agnostic getters and setters, useful for testing and calibration

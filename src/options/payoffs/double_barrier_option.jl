@@ -29,8 +29,4 @@ end
 
 export DoubleBarrierOption;
 
-function payout(S::abstractArray, barrierPayoff::DoubleBarrierOption) where {abstractArray <: AbstractArray{num_}} where {num_ <: Number}
-    iscall = ChainRulesCore.@ignore_derivatives ifelse(barrierPayoff.isCall, Int8(1), Int8(-1))
-    zero_typed = ChainRulesCore.@ignore_derivatives zero(eltype(S)) * barrierPayoff.K * barrierPayoff.U * barrierPayoff.D
-    return max(iscall * (S[end] - barrierPayoff.K), zero_typed) * (findfirst(x -> x < barrierPayoff.D, S) === nothing) * (findfirst(x -> x > barrierPayoff.U, S) === nothing)
-end
+is_alive(S::AbstractArray, payoff_::DoubleBarrierOption) = !crossed_below(S, payoff_.D) && !crossed_above(S, payoff_.U)

@@ -12,6 +12,8 @@ Positions are built with `+`, `-`, `*` and `/` on payoffs and numbers, e.g.
 """
 const Position = Dict{AbstractPayoff, Number};
 
+maturity(position::Position) = maximum(maturity, keys(position))
+
 # "sum" AbstractPayoff s
 function +(x::AbstractPayoff, y::AbstractPayoff)
     out = Position(x => 1.0)

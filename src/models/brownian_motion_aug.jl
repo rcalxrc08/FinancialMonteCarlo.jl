@@ -22,48 +22,25 @@ function BrownianMotion(σ::num, μ::CurveType{num1, num4}) where {num <: Number
     return BrownianMotionVec(σ, μ)
 end
 
-function simulate!(X, mcProcess::BrownianMotionVec, mcBaseData::SerialMonteCarloConfig, T::numb) where {numb <: Number}
-    Nsim = mcBaseData.Nsim
-    Nstep = mcBaseData.Nstep
+function simulate!(X, mcProcess::Union{BrownianMotion, BrownianMotionVec}, mcBaseData::PseudoRandomConfig, T::Number)
     σ = mcProcess.σ
     μ = mcProcess.μ
     ChainRulesCore.@ignore_derivatives @assert T > 0
-    dt = T / Nstep
-    stddev_bm = σ * sqrt(dt)
-    zero_drift = incremental_integral(μ, dt * 0, dt)
-    isDualZero = stddev_bm * 0 * zero_drift
-    view(X, :, 1) .= isDualZero
-    Z = Array{typeof(get_rng_type(isDualZero))}(undef, Nsim)
-    @inbounds for j = 1:Nstep
-        tmp_ = incremental_integral(μ, (j - 1) * dt, dt)
-        randn!(mcBaseData.parallelMode.rng, Z)
-        @views @. X[:, j+1] = X[:, j] + tmp_ + stddev_bm * Z
-    end
-
-    nothing
-end
-
-function simulate!(X, mcProcess::BrownianMotionVec, mcBaseData::SerialAntitheticMonteCarloConfig, T::numb) where {numb <: Number}
-    Nsim = mcBaseData.Nsim
     Nstep = mcBaseData.Nstep
-    σ = mcProcess.σ
-    μ = mcProcess.μ
-    ChainRulesCore.@ignore_derivatives @assert T > 0
     dt = T / Nstep
     stddev_bm = σ * sqrt(dt)
-    zero_drift = incremental_integral(μ, dt * 0, dt)
-    isDualZero = stddev_bm * 0 * zero_drift
-    view(X, :, 1) .= isDualZero
-    Nsim_2 = div(Nsim, 2)
-    Z = Array{typeof(get_rng_type(isDualZero))}(undef, Nsim_2)
-    Xp = @views X[1:Nsim_2, :]
-    Xm = @views X[(Nsim_2+1):end, :]
+    drifts = step_drifts(μ, dt, Nstep)
+    isDualZero = stddev_bm * 0 * drift_of_step(drifts, 1)
+    fill!(view(X, :, 1), isDualZero)
+    sides = path_sides(X, mcBaseData)
+    Z = draw_buffer(mcBaseData, typeof(get_rng_type(isDualZero)), draws_per_side(sides))
     @inbounds for j = 1:Nstep
-        tmp_ = incremental_integral(μ, (j - 1) * dt, dt)
-        randn!(mcBaseData.parallelMode.rng, Z)
-        @views @. Xp[:, j+1] = Xp[:, j] + tmp_ + stddev_bm * Z
-        @views @. Xm[:, j+1] = Xm[:, j] + tmp_ - stddev_bm * Z
+        drift = drift_of_step(drifts, j)
+        draw_normals!(Z, mcBaseData)
+        for (X_, sign_) in sides
+            stddev_step = sign_ * stddev_bm
+            @views @. X_[:, j+1] = X_[:, j] + drift + stddev_step * Z
+        end
     end
-
-    nothing
+    return
 end

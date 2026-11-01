@@ -39,6 +39,42 @@ function maturity(x::abstractPayoff) where {abstractPayoff <: AbstractPayoff{<:N
     return x.T
 end
 
+maturity(x::AbstractArray) = maximum(maturity, x)
+
+const POSITIVE_FIELD_MESSAGES = Dict(:T => "Time to Maturity must be positive", :K => "Strike Price must be positive", :barrier => "Barrier must be positive")
+
+# Defines and exports an option with the given numeric fields, all positive, plus isCall. A docstring can precede it.
+macro option_type(name, family, fields...)
+    nums = [Symbol(:num, i) for i in eachindex(fields)]
+    typed_fields = [:($field::$num) for (field, num) in zip(fields, nums)]
+    bounds = [:($num <: Number) for num in nums]
+    checks = [:(ChainRulesCore.@ignore_derivatives @assert $field > 0 $(POSITIVE_FIELD_MESSAGES[field])) for field in fields]
+    zeros_ = [:(zero($num)) for num in nums]
+    return esc(quote
+        Base.@__doc__ struct $name{$(bounds...), numtype <: Number} <: $family{numtype}
+            $(typed_fields...)
+            isCall::Bool
+            function $name($(typed_fields...), isCall::Bool = true) where {$(bounds...)}
+                $(checks...)
+                zero_typed = ChainRulesCore.@ignore_derivatives +($(zeros_...))
+                return new{$(nums...), typeof(zero_typed)}($(fields...), isCall)
+            end
+        end
+        export $name
+    end)
+end
+
+call_put_sign(isCall::Bool) = ChainRulesCore.@ignore_derivatives ifelse(isCall, Int8(1), Int8(-1))
+
+# The value of a vanilla option, of the type of all the inputs of the payoff, whichever enter the formula
+function vanilla_payout(x::Number, K::Number, payoff_::AbstractPayoff{numtype}) where {numtype <: Number}
+    zero_typed = ChainRulesCore.@ignore_derivatives zero(x) * zero(numtype)
+    return max(call_put_sign(payoff_.isCall) * (x - K), zero_typed)
+end
+
+# The column of the paths, simulated up to T1, of the maturity T
+maturity_index(T::Number, T1::Number, mcBaseData::AbstractMonteCarloConfiguration) = round(Int, T / T1 * mcBaseData.Nstep) + 1
+
 """
     payoff(S, payoff, rfCurve, mcConfig, T1 = maturity(payoff))
 

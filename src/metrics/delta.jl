@@ -17,29 +17,9 @@ the payoff repriced with the same seed. For a [`MarketDataSet`](@ref) and a
 
 For exact pathwise deltas use a dual number as spot, see the Automatic differentiation section of the manual.
 """
-function delta(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration, abstractPayoff::AbstractPayoff, dS0::Real = 1e-7)
-    Price = pricer(mcProcess, rfCurve, mcConfig, abstractPayoff)
-    mcProcess_up = @set mcProcess.underlying.S0 += dS0
-    set_seed!(mcConfig)
-    PriceUp = pricer(mcProcess_up, rfCurve, mcConfig, abstractPayoff)
-    Delta = (PriceUp - Price) / dS0
-
-    return Delta
-end
-
-function delta(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration, abstractPayoffs::Union{Array{<:AbstractPayoff}, AbstractSmile}, dS0::Real = 1e-7)
+function delta(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration, abstractPayoffs::Union{AbstractPayoff, Array{<:AbstractPayoff}, AbstractSmile, Position}, dS0::Real = 1e-7)
     Prices = pricer(mcProcess, rfCurve, mcConfig, abstractPayoffs)
     mcProcess_up = @set mcProcess.underlying.S0 += dS0
-    PricesUp = pricer(mcProcess_up, rfCurve, mcConfig, abstractPayoffs)
-    Delta = @. (PricesUp - Prices) / dS0
-
-    return Delta
-end
-
-function delta(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration, abstractPayoffs::Dict{AbstractPayoff, Number}, dS0::Real = 1e-7)
-    Prices = pricer(mcProcess, rfCurve, mcConfig, abstractPayoffs)
-    mcProcess_up = @set mcProcess.underlying.S0 += dS0
-    set_seed!(mcConfig)
     PricesUp = pricer(mcProcess_up, rfCurve, mcConfig, abstractPayoffs)
     Delta = @. (PricesUp - Prices) / dS0
 

@@ -46,7 +46,7 @@ get_matrix_type(::MonteCarloConfiguration{<:Integer, <:Integer, <:AbstractMonteC
 
 function pricer(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration, abstractPayoffs::Array{abstractPayoff_}) where {abstractPayoff_ <: AbstractPayoff}
     set_seed!(mcConfig)
-    maxT = maximum(maturity.(abstractPayoffs))
+    maxT = maturity(abstractPayoffs)
     S = simulate(mcProcess, rfCurve, mcConfig, maxT)
     zero_typed = predict_output_type_zero(mcProcess, rfCurve, mcConfig, abstractPayoffs)
     Prices::Array{typeof(zero_typed)} = [mean(payoff(S, abstractPayoff, rfCurve, mcConfig, maxT)) for abstractPayoff in abstractPayoffs]
@@ -56,8 +56,7 @@ end
 
 function pricer(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration, dict_::Position)
     set_seed!(mcConfig)
-    abstractPayoffs = keys(dict_)
-    maxT = maximum([maturity(abstractPayoff) for abstractPayoff in abstractPayoffs])
+    maxT = maturity(dict_)
     S = simulate(mcProcess, rfCurve, mcConfig, maxT)
     price = sum(weight_ * mean(payoff(S, abstractPayoff, rfCurve, mcConfig, maxT)) for (abstractPayoff, weight_) in dict_)
 
@@ -74,7 +73,7 @@ function pricer(mcProcess::VectorialMonteCarloProcess, rfCurve::AbstractZeroRate
     filter!(i -> isassigned(special_array_payoff, i), IND_)
     dict_cl = special_array_payoff[IND_]
     #Compute Maximum time to maturity, all of the underlyings will be simulated till maxT.
-    maxT = maximum([maximum(maturity.(collect(keys(ar_el)))) for ar_el in dict_cl])
+    maxT = maturity(dict_cl)
     S = simulate(mcProcess, rfCurve, mcConfig, maxT)
     price = sum(sum(weight_ * mean(payoff(S[idx_[i]], abstractPayoff, rfCurve, mcConfig, maxT)) for (abstractPayoff, weight_) in special_array_payoff[i]) for i in IND_)
 

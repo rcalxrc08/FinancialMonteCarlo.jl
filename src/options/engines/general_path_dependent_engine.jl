@@ -3,8 +3,7 @@ function payoff(S::AbstractMatrix{num}, payoff_::PathDependentPayoff, rfCurve::a
     r = rfCurve.r
     T = payoff_.T
     Nsim = mcBaseData.Nsim
-    NStep = mcBaseData.Nstep
-    index1 = round(Int, T / T1 * NStep) + 1
+    index1 = maturity_index(T, T1, mcBaseData)
 
     @inbounds f(S::abstractArray) where {abstractArray <: AbstractArray{num_}} where {num_ <: Number} = payout(S, payoff_)
     @inbounds payoff2 = [f(view(S, i, 1:index1)) for i = 1:Nsim]
