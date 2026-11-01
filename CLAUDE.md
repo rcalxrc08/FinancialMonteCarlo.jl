@@ -42,7 +42,7 @@ julia -e 'using JuliaFormatter; format(".")'
 
 ## Architecture
 
-Entry point: [src/FinancialMonteCarlo.jl](src/FinancialMonteCarlo.jl). Include order matters (`utils` → `models` → `options` → `io_utils` → `operations` → `metrics` → `output_type` → `multi_threading`). Each type file does its own `export`.
+Entry point: [src/FinancialMonteCarlo.jl](src/FinancialMonteCarlo.jl). Include order matters (`utils` → `models` → `options` → `io_utils` → `operations` → `metrics` → `output_type` → `batches` → `multi_threading`). Each type file does its own `export`.
 
 ### Core pipeline
 
@@ -65,7 +65,7 @@ These type aliases are defined in [src/utils/mc_config.jl](src/utils/mc_config.j
 
 `MonteCarloConfiguration(Nsim, Nstep, method, parallelMode)`:
 - `method <: AbstractMonteCarloMethod`: `StandardMC`, `AntitheticMC`, `SobolMode`, `PrescribedMC`, or `ControlVariates` (defined in [payoff_base.jl](src/options/payoff_base.jl), handled in [pricer_cv.jl](src/metrics/pricer_cv.jl)).
-- `parallelMode <: BaseMode`: `SerialMode(seed, rng)` (models draw from `mcConfig.parallelMode.rng`), `MultiThreading` ([src/multi_threading.jl](src/multi_threading.jl) — one `SerialMode` per batch, each with its own copy of the generator, so the results do not depend on the threads; `pricer` averages the batches, the other metrics use the threaded `simulate`), plus optional CUDA/Distributed modes.
+- `parallelMode <: BaseMode`: `SerialMode(seed, rng)` (models draw from `mcConfig.parallelMode.rng`), `MultiThreading` and `MultiProcess` (one `SerialMode` per batch, each with its own copy of the generator, so the results do not depend on threads or workers; [src/batches.jl](src/batches.jl) holds all they share, and a mode only adds a `run_on_batches` method: `pricer` averages the batches, `variance`/`confinter` pool their statistics, `simulate` joins their paths), plus the optional CUDA mode.
 - Rates: `ZeroRate(r)` scalar or `ZeroRateCurve`/`ImpliedZeroRate` built on `CurveType` ([curves.jl](src/utils/curves.jl)); code uses `integral(r, T)` / `incremental_integral` so the same path works for scalar and curve rates.
 
 ### Payoffs ([src/options/](src/options/))
@@ -90,7 +90,7 @@ AD (ForwardDiff, ReverseDiff, Mooncake, DualNumbers, TaylorSeries, HyperDualNumb
 
 ### Optional dependencies
 
-[ext/](ext/) holds the package extensions, one per weak dependency: CUDA (GPU models, in [ext/FinancialMonteCarloCUDAExt/](ext/FinancialMonteCarloCUDAExt/)), DifferentialEquations (price directly from an SDE), DualNumbers, Mooncake, TaylorSeries, VectorizedRNG, Distributed. Code there only exists when the user has loaded the corresponding package. An extension can only add methods, so types and functions it needs must be defined in `src/` (`CudaMode`, `MultiProcess`, `MonteCarloDiffEqModel`, `default_nbatches`), and it imports the unexported names of the package explicitly. CUDA is not a test dependency, so nothing runs that extension on CI.
+[ext/](ext/) holds the package extensions, one per weak dependency: CUDA (GPU models, in [ext/FinancialMonteCarloCUDAExt/](ext/FinancialMonteCarloCUDAExt/)), DifferentialEquations (price directly from an SDE), DualNumbers, Mooncake, TaylorSeries, VectorizedRNG, Distributed. Code there only exists when the user has loaded the corresponding package. An extension can only add methods, so types and functions it needs must be defined in `src/` (`CudaMode`, `MultiProcess`, `MonteCarloDiffEqModel`, `default_nbatches`, `run_on_batches`), and it imports the unexported names of the package explicitly. CUDA is not a test dependency, so nothing runs that extension on CI.
 
 ## Extending (see docs/src/extending.md for runnable examples)
 

@@ -34,25 +34,42 @@ struct CudaMode{rngType <: Random.AbstractRNG} <: AbstractCudaMode
     end
 end
 
-abstract type AbstractMultiProcess <: ParallelMode end
+# The modes splitting the paths into batches, see batches.jl
+abstract type AbstractBatchedMode <: ParallelMode end
+abstract type AbstractMultiThreading <: AbstractBatchedMode end
+abstract type AbstractMultiProcess <: AbstractBatchedMode end
 
 # Number of batches of MultiProcess by default: the workers, in the Distributed extension.
 function default_nbatches end
 
+function check_distributed()
+    ChainRulesCore.@ignore_derivatives isnothing(Base.get_extension(@__MODULE__, :FinancialMonteCarloDistributedExt)) && throw(ArgumentError("MultiProcess needs `using Distributed`"))
+end
+
 """
-    MultiProcess(sub_mod = SerialMode(), nbatches = nworkers(), seeds = 1:nbatches)
+    MultiProcess(sub_mod = SerialMode(), nbatches = nworkers(), seeds = sub_mod.seed .+ (1:nbatches))
 
 Parallel mode splitting the paths into `nbatches` batches priced on the workers of `Distributed`, which
-needs `using Distributed`, each with the parallel mode `sub_mod` and its own seed from `seeds`. The
-result is the average of the batch prices.
+needs `using Distributed`, each with its own seed from `seeds` and its own copy of the generator of
+`sub_mod`, a [`FinancialMonteCarlo.SerialMode`](@ref). The result does not depend on the number of workers, which take the
+next batch when they finish one. Prices are the averages of the batch prices, weighted by their number of paths.
+
+The workers must load the package and everything the priced objects use (`@everywhere using FinancialMonteCarlo`).
+To differentiate through a pricer, the function must exist on the workers too (`@everywhere f(x) = ...`):
+an anonymous function defined only on the main process raises an error.
+`simulate` and `distribution` send all the paths back to the main process, which can take longer
+than simulating them; the other metrics send back only their results.
+
+`init_rng = false`, generators that cannot be copied (VectorizedRNG) and [`FinancialMonteCarlo.SobolMode`](@ref)
+are not supported. Of the automatic differentiation backends, only the forward ones are supported.
 """
-struct MultiProcess{abstractMode <: BaseMode} <: AbstractMultiProcess
-    nbatches::Int64
-    sub_mod::abstractMode
-    seeds::Array{Int64}
-    function MultiProcess(sub_mod::abstractMode = SerialMode(), nbatches::Int64 = default_nbatches(), seeds::Array{Int64} = collect(1:nbatches)) where {abstractMode <: BaseMode}
-        ChainRulesCore.@ignore_derivatives @assert length(seeds) == nbatches
-        return new{abstractMode}(nbatches, sub_mod, seeds)
+struct MultiProcess{modeType <: SerialMode} <: AbstractMultiProcess
+    sub_modes::Vector{modeType}
+    function MultiProcess(sub_mod::SerialMode = SerialMode(), nbatches::Union{Int64, Nothing} = nothing, seeds::Union{Array{Int64}, Nothing} = nothing)
+        check_distributed()
+        nbatches_ = something(nbatches, default_nbatches())
+        sub_modes = batch_modes(sub_mod, nbatches_, something(seeds, sub_mod.seed .+ collect(1:nbatches_)))
+        return new{eltype(sub_modes)}(sub_modes)
     end
 end
 

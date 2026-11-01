@@ -79,8 +79,10 @@ end
         Payoff = payoff(S, eu, rfCurve, mc_mt)
         @test variance(model, rfCurve, mc_mt, eu) ≈ var(Payoff)
         @test variance(model, rfCurve, mc_mt, [eu, fw])[1] ≈ var(Payoff)
-        lower, upper = confinter(model, rfCurve, mc_mt, eu)
-        @test (lower + upper) / 2 ≈ pricer(model, rfCurve, mc_mt, eu)
+        for payoff_ in (eu, AmericanOption(T, K, false))
+            lower, upper = confinter(model, rfCurve, mc_mt, payoff_)
+            @test (lower + upper) / 2 ≈ pricer(model, rfCurve, mc_mt, payoff_)
+        end
         @test length(confinter(model, rfCurve, mc_mt, [eu, fw])) == 2
         @test delta(model, rfCurve, mc_mt, eu, 1e-5) ≈ on_serial(mc -> delta(model, rfCurve, mc, eu, 1e-5))
         @test rho(model, rfCurve, mc_mt, eu, 1e-5) ≈ on_serial(mc -> rho(model, rfCurve, mc, eu, 1e-5))

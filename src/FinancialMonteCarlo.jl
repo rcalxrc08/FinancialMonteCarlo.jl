@@ -13,6 +13,7 @@ include("io_utils.jl")
 include("operations.jl")
 include("metrics.jl")
 include("output_type.jl")
+include("batches.jl")
 include("multi_threading.jl")
 export pricer, variance, confinter, delta, simulate, payoff, →
 
