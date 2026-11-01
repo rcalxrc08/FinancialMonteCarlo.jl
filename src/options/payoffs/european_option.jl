@@ -22,14 +22,17 @@ end
 
 export EuropeanOption;
 
-function payout_untyped(ST::numtype_, euPayoff::EuropeanOption) where {numtype_ <: Number}
-    iscall = ChainRulesCore.@ignore_derivatives ifelse(euPayoff.isCall, Int8(1), Int8(-1))
+function payout_untyped(ST::numtype_, isCall::Bool, ::Type{<:EuropeanOption}) where {numtype_ <: Number}
+    iscall = ChainRulesCore.@ignore_derivatives ifelse(isCall, Int8(1), Int8(-1))
     zero_typed = ChainRulesCore.@ignore_derivatives zero(ST)
     return max(iscall * (ST - 1), zero_typed)
 end
 
-function payout(ST::numtype_, euPayoff::EuropeanOption) where {numtype_ <: Number}
-    K = euPayoff.K
-    result = K * payout_untyped(ST / K, euPayoff)
+payout_untyped(ST::Number, euPayoff::EuropeanOption) = payout_untyped(ST, euPayoff.isCall, EuropeanOption)
+
+function payout_strike(ST::numtype_, K::Number, isCall::Bool, ::Type{<:EuropeanOption}) where {numtype_ <: Number}
+    result = K * payout_untyped(ST / K, isCall, EuropeanOption)
     return result
 end
+
+payout(ST::Number, euPayoff::EuropeanOption) = payout_strike(ST, euPayoff.K, euPayoff.isCall, EuropeanOption)

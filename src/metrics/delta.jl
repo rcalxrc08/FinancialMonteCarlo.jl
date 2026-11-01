@@ -11,7 +11,7 @@ the payoff repriced with the same seed. For a [`MarketDataSet`](@ref) and a
 - `mcProcess`: the model (a single name or multivariate process, or a [`MarketDataSet`](@ref)).
 - `rfCurve`: the zero rate curve, e.g. [`ZeroRate`](@ref).
 - `mcConfig`: the [`MonteCarloConfiguration`](@ref).
-- `payoff`: a payoff, a vector of payoffs priced on the same paths, a [`FinancialMonteCarlo.Position`](@ref)
+- `payoff`: a payoff, a vector of payoffs priced on the same paths, a smile, a [`FinancialMonteCarlo.Position`](@ref)
   or, with a [`MarketDataSet`](@ref), a [`FinancialMonteCarlo.Portfolio`](@ref).
 - `dS0`: spot bump.
 
@@ -27,7 +27,7 @@ function delta(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig:
     return Delta
 end
 
-function delta(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration, abstractPayoffs::Array{abstractPayoff}, dS0::Real = 1e-7) where {abstractPayoff <: AbstractPayoff}
+function delta(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration, abstractPayoffs::Union{Array{<:AbstractPayoff}, AbstractSmile}, dS0::Real = 1e-7)
     Prices = pricer(mcProcess, rfCurve, mcConfig, abstractPayoffs)
     mcProcess_up = @set mcProcess.underlying.S0 += dS0
     PricesUp = pricer(mcProcess_up, rfCurve, mcConfig, abstractPayoffs)

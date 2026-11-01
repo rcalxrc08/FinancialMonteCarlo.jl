@@ -46,7 +46,9 @@ A smile groups European (or binary European) options with the same maturity and 
 FinancialMonteCarlo.EuropeanOptionSmile(1.0, [90.0, 100.0, 110.0], [false, true, true])
 ```
 
-`pricer` returns the vector of prices.
+`pricer`, `variance`, `confinter`, `delta` and `rho` return one value per strike, in the order of
+`K`. `payoff` returns a matrix with one row per path and one column per strike, and
+`FinancialMonteCarlo.payout(ST, smile)` the undiscounted payouts for one value of the underlying.
 
 ## Positions
 

@@ -40,9 +40,17 @@ pricer_macro_multithreading(Dict{String, AbstractMonteCarloProcess}, Dict{String
 pricer_macro_multithreading(VectorialMonteCarloProcess, Array{Dict{AbstractPayoff, Number}})
 
 function pricer(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration{<:Integer, <:Integer, <:AbstractMonteCarloMethod, <:AbstractMultiThreading}, abstractPayoffs::Array{abstractPayoff_}) where {abstractPayoff_ <: AbstractPayoff}
+    return batch_prices(mcProcess, rfCurve, mcConfig, abstractPayoffs, length(abstractPayoffs))
+end
+
+function pricer(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration{<:Integer, <:Integer, <:AbstractMonteCarloMethod, <:AbstractMultiThreading}, smile::AbstractSmile)
+    return vec(batch_prices(mcProcess, rfCurve, mcConfig, smile, length(smile.K)))
+end
+
+function batch_prices(mcProcess, rfCurve, mcConfig, abstractPayoffs, Npayoffs)
     zero_typed = predict_output_type_zero(mcProcess, rfCurve, mcConfig, abstractPayoffs)
     numberOfBatch = mcConfig.parallelMode.numberOfBatch
-    price = zeros(typeof(zero_typed), length(abstractPayoffs), numberOfBatch)
+    price = zeros(typeof(zero_typed), Npayoffs, numberOfBatch)
     mc_configs = [MonteCarloConfiguration(div(mcConfig.Nsim, numberOfBatch), mcConfig.Nstep, mcConfig.monteCarloMethod, mcConfig.parallelMode.sub_mod) for _ = 1:numberOfBatch]
     for i = 1:numberOfBatch
         mc_config_i = mc_configs[i]

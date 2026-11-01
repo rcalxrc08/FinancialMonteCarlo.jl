@@ -39,6 +39,10 @@ function predict_output_type_zero(::basePayoff) where {basePayoff <: AbstractPay
     return zero(num)
 end
 
+function predict_output_type_zero(smile::AbstractSmile)::Number
+    return predict_output_type_zero(smile.T) + predict_output_type_zero(smile.K)
+end
+
 function predict_output_type_zero(x::baseProcess) where {baseProcess <: ScalarMonteCarloProcess{num}} where {num <: Number}
     return zero(num) + predict_output_type_zero(x.underlying)
 end
@@ -52,4 +56,4 @@ function predict_output_type_zero(::baseProcess) where {baseProcess <: Vectorial
 end
 
 ##Vectorization "utils"
-Base.broadcastable(x::Union{BaseProcess, AbstractZeroRateCurve, AbstractPayoff, AbstractMonteCarloConfiguration}) = Ref(x)
+Base.broadcastable(x::Union{BaseProcess, AbstractZeroRateCurve, AbstractPayoff, AbstractSmile, AbstractMonteCarloConfiguration}) = Ref(x)

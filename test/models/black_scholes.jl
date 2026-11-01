@@ -52,10 +52,25 @@ include("../testutils.jl")
         K_vec = [80.0, 90.0, 100.0, 110.0, 120.0]
         isCall_vec = [true, true, true, false, true]
         for smile in (FinancialMonteCarlo.EuropeanOptionSmile(T, K_vec, isCall_vec), FinancialMonteCarlo.BinaryEuropeanOptionSmile(T, K_vec, isCall_vec))
-            prices = pricer(model, rfCurve, mc_small, smile)
-            @test length(prices) == length(K_vec)
-            @test all(isfinite, prices)
+            options = FinancialMonteCarlo.smile_to_options(smile)
+            @test pricer(model, rfCurve, mc_small, smile) ≈ pricer(model, rfCurve, mc_small, options)
+            @test variance(model, rfCurve, mc_small, smile) ≈ variance(model, rfCurve, mc_small, options)
+            @test delta(model, rfCurve, mc_small, smile) ≈ delta(model, rfCurve, mc_small, options)
+            @test rho(model, rfCurve, mc_small, smile) ≈ rho(model, rfCurve, mc_small, options)
+            @test all(collect.(confinter(model, rfCurve, mc_small, smile)) .≈ collect.(confinter(model, rfCurve, mc_small, options)))
+
+            @test FinancialMonteCarlo.payout(95.0, smile) == [FinancialMonteCarlo.payout(95.0, option) for option in options]
+
+            S = simulate(model, rfCurve, mc_small, 2 * T)
+            payoffs = payoff(S, smile, rfCurve, mc_small, 2 * T)
+            @test size(payoffs) == (Nsim_small, length(K_vec))
+            @test all(payoffs[:, i] ≈ payoff(S, options[i], rfCurve, mc_small, 2 * T) for i in eachindex(options))
         end
+
+        batches = MonteCarloConfiguration(Nsim_small, Nstep_small, FinancialMonteCarlo.StandardMC(), FinancialMonteCarlo.MultiThreading(FinancialMonteCarlo.SerialMode(), 1, [1]))
+        prices = pricer(model, rfCurve, batches, FinancialMonteCarlo.EuropeanOptionSmile(T, K_vec, isCall_vec))
+        @test prices isa Vector{Float64}
+        @test length(prices) == length(K_vec)
     end
 
     @testset "time dependent rates and dividends" begin

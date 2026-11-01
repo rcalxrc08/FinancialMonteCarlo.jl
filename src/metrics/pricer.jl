@@ -11,7 +11,7 @@ result is reproducible. Returns a vector of prices for a vector of payoffs or a 
 - `mcProcess`: the model (a single name or multivariate process, or a [`MarketDataSet`](@ref)).
 - `rfCurve`: the zero rate curve, e.g. [`ZeroRate`](@ref).
 - `mcConfig`: the [`MonteCarloConfiguration`](@ref).
-- `payoff`: a payoff, a vector of payoffs priced on the same paths, a [`FinancialMonteCarlo.Position`](@ref)
+- `payoff`: a payoff, a vector of payoffs priced on the same paths, a smile, a [`FinancialMonteCarlo.Position`](@ref)
   or, with a [`MarketDataSet`](@ref), a [`FinancialMonteCarlo.Portfolio`](@ref).
 
 # Examples
@@ -35,9 +35,8 @@ function pricer(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig
     set_seed!(mcConfig)
     T = maturity(abstractPayoff)
     S = simulate(mcProcess, rfCurve, mcConfig, T)
-    payoffs = smile_to_options(abstractPayoff)
-    zero_typed = predict_output_type_zero(mcProcess, rfCurve, mcConfig, payoffs)
-    Prices::Array{typeof(zero_typed)} = [mean(payoff(S, abstractPayoff, rfCurve, mcConfig, T)) for abstractPayoff in payoffs]
+    zero_typed = predict_output_type_zero(mcProcess, rfCurve, mcConfig, abstractPayoff)
+    Prices::Array{typeof(zero_typed)} = vec(mean(payoff(S, abstractPayoff, rfCurve, mcConfig, T), dims = 1))
     return Prices
 end
 

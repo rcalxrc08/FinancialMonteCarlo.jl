@@ -4,13 +4,13 @@ using Distributions
     confinter(mcProcess, rfCurve, mcConfig, payoff, alpha = 0.99)
 
 Confidence interval at level `alpha` for the price of `payoff`, based on the Student t approximation
-of the Monte Carlo estimator. Returns a tuple `(lower, upper)`, or a vector of them for a vector of payoffs.
+of the Monte Carlo estimator. Returns a tuple `(lower, upper)`, or a vector of them for a vector of payoffs or a smile.
 
 # Arguments
 - `mcProcess`: the model.
 - `rfCurve`: the zero rate curve.
 - `mcConfig`: the [`MonteCarloConfiguration`](@ref).
-- `payoff`: a payoff or a vector of payoffs.
+- `payoff`: a payoff, a vector of payoffs or a smile.
 - `alpha`: confidence level.
 """
 function confinter(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration, abstractPayoff::AbstractPayoff, alpha::Real = 0.99)
@@ -35,6 +35,18 @@ function confinter(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcCon
     S = simulate(mcProcess, rfCurve, mcConfig, maxT)
     Means = [mean(payoff(S, abstractPayoff, rfCurve, mcConfig, maxT)) for abstractPayoff in abstractPayoffs]
     Vars = [var(payoff(S, abstractPayoff, rfCurve, mcConfig, maxT)) for abstractPayoff in abstractPayoffs]
+    return student_intervals(Means, Vars, Nsim, alpha)
+end
+
+function confinter(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration, smile::AbstractSmile, alpha::Real = 0.99)
+    set_seed!(mcConfig)
+    T = maturity(smile)
+    S = simulate(mcProcess, rfCurve, mcConfig, T)
+    Payoffs = payoff(S, smile, rfCurve, mcConfig)
+    return student_intervals(vec(mean(Payoffs, dims = 1)), vec(var(Payoffs, dims = 1)), mcConfig.Nsim, alpha)
+end
+
+function student_intervals(Means, Vars, Nsim, alpha)
     alpha_ = 1 - alpha
     dist1 = Distributions.TDist(Nsim)
     tstar = quantile(dist1, 1 - alpha_ / 2.0)

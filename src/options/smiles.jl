@@ -6,12 +6,14 @@ include("smiles/binary_european_option_smile.jl")
     EuropeanOptionSmile(T, K::Vector, isCall::Vector{Bool})
 
 Set of [`EuropeanOption`](@ref)s with the same maturity `T` and strikes `K`, each a call or a put
-according to `isCall`. [`pricer`](@ref) prices them all on the same paths and returns the vector of prices.
+according to `isCall`. They are priced together on the same paths: [`pricer`](@ref), [`variance`](@ref),
+[`confinter`](@ref), [`delta`](@ref) and [`rho`](@ref) return one value per strike.
 """ EuropeanOptionSmile
 
 @doc """
     BinaryEuropeanOptionSmile(T, K::Vector, isCall::Vector{Bool})
 
 Set of [`BinaryEuropeanOption`](@ref)s with the same maturity `T` and strikes `K`, each a call or a
-put according to `isCall`. [`pricer`](@ref) prices them all on the same paths and returns the vector of prices.
+put according to `isCall`. They are priced together on the same paths: [`pricer`](@ref), [`variance`](@ref),
+[`confinter`](@ref), [`delta`](@ref) and [`rho`](@ref) return one value per strike.
 """ BinaryEuropeanOptionSmile

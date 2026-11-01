@@ -1,5 +1,7 @@
 ## Payoffs
 abstract type AbstractPayoff{numtype <: Number} end
+# A set of options of family T with the same maturity: not an AbstractPayoff, it has one value per strike
+abstract type AbstractSmile{T} end
 
 """
     ControlVariates(variate, conf_variate, method = StandardMC())
@@ -51,7 +53,7 @@ function payoff(::AbstractMatrix, ::AbstractPayoff, ::AbstractZeroRateCurve, ::A
     error("Function used just for documentation")
 end
 
-function payoff(S::Array{Array{num, 2}, 1}, optionData::SingleNamePayoff, rfCurve::abstractZeroRateCurve, mcBaseData::AbstractMonteCarloConfiguration, T1::num2 = optionData.T) where {abstractZeroRateCurve <: AbstractZeroRateCurve, num <: Number, num2 <: Number}
+function payoff(S::Array{Array{num, 2}, 1}, optionData::Union{SingleNamePayoff, AbstractSmile}, rfCurve::abstractZeroRateCurve, mcBaseData::AbstractMonteCarloConfiguration, T1::num2 = optionData.T) where {abstractZeroRateCurve <: AbstractZeroRateCurve, num <: Number, num2 <: Number}
     #switch to only in julia 1.4
     ChainRulesCore.@ignore_derivatives @assert length(S) == 1
     return payoff(S[1], optionData, rfCurve, mcBaseData, T1)

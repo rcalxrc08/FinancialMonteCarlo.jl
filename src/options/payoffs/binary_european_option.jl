@@ -22,13 +22,14 @@ end
 
 export BinaryEuropeanOption;
 
-function payout_untyped(ST::numtype_, euPayoff::BinaryEuropeanOption) where {numtype_ <: Number}
-    iscall = ChainRulesCore.@ignore_derivatives ifelse(euPayoff.isCall, Int8(1), Int8(-1))
+function payout_untyped(ST::numtype_, isCall::Bool, ::Type{<:BinaryEuropeanOption}) where {numtype_ <: Number}
+    iscall = ChainRulesCore.@ignore_derivatives ifelse(isCall, Int8(1), Int8(-1))
     res = ifelse((ST - 1) * iscall > 0, one(numtype_), zero(numtype_))
     return res
 end
 
-function payout(ST::numtype_, euPayoff::BinaryEuropeanOption) where {numtype_ <: Number}
-    K = euPayoff.K
-    return payout_untyped(ST / K, euPayoff)
-end
+payout_untyped(ST::Number, euPayoff::BinaryEuropeanOption) = payout_untyped(ST, euPayoff.isCall, BinaryEuropeanOption)
+
+payout_strike(ST::Number, K::Number, isCall::Bool, ::Type{<:BinaryEuropeanOption}) = payout_untyped(ST / K, isCall, BinaryEuropeanOption)
+
+payout(ST::Number, euPayoff::BinaryEuropeanOption) = payout_strike(ST, euPayoff.K, euPayoff.isCall, BinaryEuropeanOption)
