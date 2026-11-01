@@ -21,6 +21,26 @@ include("../testutils.jl")
         @test width(cis_std[2]) > width(cis_anti[2])
     end
 
+    @testset "the metrics stay in the precision of the inputs" begin
+        model_32 = BlackScholesProcess(Float32(sigma), Underlying(Float32(S0), Float32(d)))
+        curve_32 = ZeroRate(Float32(r))
+        eu_32 = EuropeanOption(Float32(T), Float32(K))
+        smile_32 = FinancialMonteCarlo.EuropeanOptionSmile(Float32(T), Float32[K, K + 10], [true, false])
+        threaded = MonteCarloConfiguration(Nsim_small, Nstep_small, FinancialMonteCarlo.MultiThreading(FinancialMonteCarlo.SerialMode(), 2, [1, 2]))
+        for config in (mc_small, threaded)
+            @test pricer(model_32, curve_32, config, eu_32) isa Float32
+            @test variance(model_32, curve_32, config, eu_32) isa Float32
+            @test confinter(model_32, curve_32, config, eu_32) isa Tuple{Float32, Float32}
+            @test confinter(model_32, curve_32, config, [eu_32, eu_32]) isa Vector{Tuple{Float32, Float32}}
+            @test confinter(model_32, curve_32, config, smile_32) isa Vector{Tuple{Float32, Float32}}
+        end
+    end
+
+    @testset "a payoff of a vector is the payoff alone" begin
+        @test variance(model, rfCurve, mc_small, [eu_put, am_put])[1] ≈ variance(model, rfCurve, mc_small, eu_put)
+        @test all(confinter(model, rfCurve, mc_small, [eu_put, am_put])[1] .≈ confinter(model, rfCurve, mc_small, eu_put))
+    end
+
     @testset "terminal distribution" begin
         ST = FinancialMonteCarlo.distribution(model, rfCurve, mc, T)
         @test length(ST) == Nsim

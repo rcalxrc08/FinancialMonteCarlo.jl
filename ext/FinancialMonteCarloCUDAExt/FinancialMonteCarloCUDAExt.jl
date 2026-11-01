@@ -4,7 +4,7 @@ using CUDA
 using ChainRulesCore
 using Random
 using Statistics: quantile
-using FinancialMonteCarlo: AbstractCudaMode, AbstractMonteCarloConfiguration, AbstractMonteCarloMethod, AbstractZeroRateCurve, AmericanPayoff, BaseProcess, BermudanPayoff, BrownianMotion, BrownianMotionVec, CudaAntitheticMonteCarloConfig, CudaMode, CudaMonteCarloConfig, FiniteActivityProcess, HestonProcess, MonteCarloConfiguration, PathDependentPayoff, SubordinatedBrownianMotion, SubordinatedBrownianMotionVec, VectorialMonteCarloProcess, ZeroRate, ZeroRateCurve, add_jump_matrix!, compute_drift, dividend, get_rng_type, incremental_integral, inner_seed!, maturity
+using FinancialMonteCarlo: AbstractCudaMode, AbstractMonteCarloConfiguration, AbstractMonteCarloMethod, AbstractSmile, AbstractZeroRateCurve, AmericanPayoff, BaseProcess, BermudanPayoff, BrownianMotion, BrownianMotionVec, CudaAntitheticMonteCarloConfig, CudaMode, CudaMonteCarloConfig, FiniteActivityProcess, HestonProcess, MonteCarloConfiguration, PathDependentPayoff, SubordinatedBrownianMotion, SubordinatedBrownianMotionVec, VectorialMonteCarloProcess, ZeroRate, ZeroRateCurve, add_jump_matrix!, compute_drift, dividend, get_rng_type, incremental_integral, inner_seed!, integral, maturity, payout_strike, values_at_maturity
 import FinancialMonteCarlo: get_array_type, get_matrix_type, payoff, set_seed!, simulate!
 
 include("brownian_motion_cuda.jl")
@@ -35,5 +35,14 @@ end
 # The Longstaff-Schwartz regressions index the paths, so the exercise engines run on the host.
 payoff(S::CuMatrix{num}, payoff_::AmericanPayoff, rfCurve::AbstractZeroRateCurve, mcBaseData::AbstractMonteCarloConfiguration, T1::num2 = maturity(payoff_)) where {num <: Number, num2 <: Number} = payoff(collect(S), payoff_, rfCurve, mcBaseData, T1)
 payoff(S::CuMatrix{num}, payoff_::BermudanPayoff, rfCurve::AbstractZeroRateCurve, mcBaseData::AbstractMonteCarloConfiguration, T1::num2 = maturity(payoff_)) where {num <: Number, num2 <: Number} = payoff(collect(S), payoff_, rfCurve, mcBaseData, T1)
+
+# One kernel for all the strikes, instead of one per strike. The result stays on the GPU.
+function payoff(S::CuMatrix{num}, smile::AbstractSmile{T_}, rfCurve::AbstractZeroRateCurve, mcBaseData::AbstractMonteCarloConfiguration, T1::num2 = maturity(smile)) where {T_, num <: Number, num2 <: Number}
+    T = smile.T
+    ST = values_at_maturity(S, T, T1, mcBaseData)
+    K = CuArray(reshape(smile.K, 1, :))
+    isCall = CuArray(reshape(smile.isCall, 1, :))
+    return payout_strike.(ST, K, isCall, T_) .* exp(-integral(rfCurve.r, T))
+end
 
 end

@@ -7,7 +7,8 @@ include("smiles/binary_european_option_smile.jl")
 
 Set of [`EuropeanOption`](@ref)s with the same maturity `T` and strikes `K`, each a call or a put
 according to `isCall`. They are priced together on the same paths: [`pricer`](@ref), [`variance`](@ref),
-[`confinter`](@ref), [`delta`](@ref) and [`rho`](@ref) return one value per strike.
+[`confinter`](@ref), [`delta`](@ref) and [`rho`](@ref) return one value per strike. In `CudaMode` the
+strikes are computed in one kernel and the results are a `CuArray`, except for the tuples of [`confinter`](@ref).
 """ EuropeanOptionSmile
 
 @doc """
@@ -15,5 +16,6 @@ according to `isCall`. They are priced together on the same paths: [`pricer`](@r
 
 Set of [`BinaryEuropeanOption`](@ref)s with the same maturity `T` and strikes `K`, each a call or a
 put according to `isCall`. They are priced together on the same paths: [`pricer`](@ref), [`variance`](@ref),
-[`confinter`](@ref), [`delta`](@ref) and [`rho`](@ref) return one value per strike.
+[`confinter`](@ref), [`delta`](@ref) and [`rho`](@ref) return one value per strike. In `CudaMode` the
+strikes are computed in one kernel and the results are a `CuArray`, except for the tuples of [`confinter`](@ref).
 """ BinaryEuropeanOptionSmile

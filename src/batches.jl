@@ -43,10 +43,11 @@ end
 # The points of a Sobol sequence depend only on Nsim: the batches would all be the same
 batch_configs(::MonteCarloConfiguration{<:Integer, <:Integer, <:SobolMode, <:AbstractBatchedMode}) = throw(ArgumentError("SobolMode does not support batches: every batch would simulate the same paths"))
 
+weighted_average(configs, results, mcConfig::BatchedConfig) = sum(config.Nsim .* result for (config, result) in zip(configs, results)) ./ mcConfig.Nsim
+
 function average_on_batches(f, mcConfig::BatchedConfig)
     configs = batch_configs(mcConfig)
-    results = run_on_batches(f, configs, mcConfig.parallelMode)
-    return sum(config.Nsim .* result for (config, result) in zip(configs, results)) ./ mcConfig.Nsim
+    return weighted_average(configs, run_on_batches(f, configs, mcConfig.parallelMode), mcConfig)
 end
 
 set_seed!(mcConfig::BatchedConfig) = foreach(set_seed!, batch_configs(mcConfig))
@@ -72,47 +73,11 @@ function pricer(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig
     return pricer_control_variates(mcProcess, rfCurve, mcConfig, abstractPayoff)
 end
 
-# Mean and sum of the squared deviations of the discounted payoffs, one per payoff: what pools exactly over the batches
-function path_moments(Payoff::AbstractVector)
-    mean_ = mean(Payoff)
-    return mean_, sum(abs2, Payoff .- mean_)
-end
-
-function path_moments(Payoffs::AbstractMatrix)
-    means = mean(Payoffs, dims = 1)
-    return vec(means), vec(sum(abs2, Payoffs .- means, dims = 1))
-end
-
-function batch_moments(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration, abstractPayoff::Union{AbstractPayoff, AbstractSmile})
-    set_seed!(mcConfig)
-    S = simulate(mcProcess, rfCurve, mcConfig, maturity(abstractPayoff))
-    return path_moments(payoff(S, abstractPayoff, rfCurve, mcConfig))
-end
-
-function batch_moments(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration, abstractPayoffs::Array{<:AbstractPayoff})
-    set_seed!(mcConfig)
-    maxT = maximum([maturity(abstractPayoff) for abstractPayoff in abstractPayoffs])
-    S = simulate(mcProcess, rfCurve, mcConfig, maxT)
-    moments = [path_moments(payoff(S, abstractPayoff, rfCurve, mcConfig, maxT)) for abstractPayoff in abstractPayoffs]
-    return first.(moments), last.(moments)
-end
-
 # The means and the variances of the paths of all the batches, without bringing the paths together
-function pooled_moments(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig::BatchedConfig, abstractPayoffs)
+function mean_and_variance(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig::BatchedConfig, abstractPayoffs)
     configs = batch_configs(mcConfig)
-    moments = run_on_batches(config -> batch_moments(mcProcess, rfCurve, config, abstractPayoffs), configs, mcConfig.parallelMode)
-    Means = sum(config.Nsim .* moment[1] for (config, moment) in zip(configs, moments)) ./ mcConfig.Nsim
-    squares = sum(moment[2] .+ config.Nsim .* abs2.(moment[1] .- Means) for (config, moment) in zip(configs, moments))
+    moments = run_on_batches(config -> payoff_moments(mcProcess, rfCurve, config, abstractPayoffs), configs, mcConfig.parallelMode)
+    Means = weighted_average(configs, first.(moments), mcConfig)
+    squares = sum(muladd.(config.Nsim, abs2.(moment[1] .- Means), moment[2]) for (config, moment) in zip(configs, moments))
     return Means, squares ./ (mcConfig.Nsim - 1)
-end
-
-for payoff_type in (AbstractPayoff, Array{<:AbstractPayoff}, AbstractSmile)
-    @eval function variance(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig::BatchedConfig, abstractPayoffs::$payoff_type)
-        return pooled_moments(mcProcess, rfCurve, mcConfig, abstractPayoffs)[2]
-    end
-    @eval function confinter(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig::BatchedConfig, abstractPayoffs::$payoff_type, alpha::Real = 0.99)
-        Means, Vars = pooled_moments(mcProcess, rfCurve, mcConfig, abstractPayoffs)
-        IC = student_intervals(Means, Vars, mcConfig.Nsim, alpha)
-        return Means isa Number ? only(IC) : IC
-    end
 end

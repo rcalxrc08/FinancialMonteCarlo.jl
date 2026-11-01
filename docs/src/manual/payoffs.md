@@ -50,6 +50,16 @@ FinancialMonteCarlo.EuropeanOptionSmile(1.0, [90.0, 100.0, 110.0], [false, true,
 `K`. `payoff` returns a matrix with one row per path and one column per strike, and
 `FinancialMonteCarlo.payout(ST, smile)` the undiscounted payouts for one value of the underlying.
 
+In `CudaMode`, `pricer`, `variance`, `delta`, `rho` and `payoff` return a `CuArray`, so what follows
+can run on the GPU too; use `Array(prices)` to read them on the CPU. `confinter` returns a `Vector`
+of tuples. With the strikes on the GPU too, implied volatilities need no transfer:
+
+```julia
+smile = FinancialMonteCarlo.EuropeanOptionSmile(T, CuArray(K), CuArray(isCall))
+prices = pricer(model, rfCurve, MonteCarloConfiguration(Nsim, Nstep, FinancialMonteCarlo.CudaMode()), smile)
+volatilities = blsimpv.(S0, smile.K, r, T, prices, d, smile.isCall) # FinancialToolbox
+```
+
 ## Positions
 
 Payoffs can be added, subtracted and multiplied by numbers, see

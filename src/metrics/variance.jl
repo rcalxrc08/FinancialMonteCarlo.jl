@@ -10,29 +10,36 @@ The variance of the price estimate is this value divided by the number of paths.
 - `mcConfig`: the [`MonteCarloConfiguration`](@ref).
 - `payoff`: a payoff, a vector of payoffs or a smile.
 """
-function variance(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration, abstractPayoff::AbstractPayoff)
-    set_seed!(mcConfig)
-    T = maturity(abstractPayoff)
-    S = simulate(mcProcess, rfCurve, mcConfig, T)
-    Payoff = payoff(S, abstractPayoff, rfCurve, mcConfig)
-    variance_ = var(Payoff)
-    return variance_
+function variance(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration, abstractPayoffs::Union{AbstractPayoff, Array{<:AbstractPayoff}, AbstractSmile})
+    return mean_and_variance(mcProcess, rfCurve, mcConfig, abstractPayoffs)[2]
 end
 
-function variance(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration, abstractPayoffs::Array{abstractPayoff_}) where {abstractPayoff_ <: AbstractPayoff}
+# Mean and sum of the squared deviations of the discounted payoffs, one per payoff: what pools exactly over the batches of a parallel mode
+function path_moments(Payoff::AbstractVector)
+    mean_ = mean(Payoff)
+    return mean_, sum(abs2, Payoff .- mean_)
+end
+
+function path_moments(Payoffs::AbstractMatrix)
+    means = mean(Payoffs, dims = 1)
+    return vec(means), vec(sum(abs2, Payoffs .- means, dims = 1))
+end
+
+function payoff_moments(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration, abstractPayoff::Union{AbstractPayoff, AbstractSmile})
+    set_seed!(mcConfig)
+    S = simulate(mcProcess, rfCurve, mcConfig, maturity(abstractPayoff))
+    return path_moments(payoff(S, abstractPayoff, rfCurve, mcConfig))
+end
+
+function payoff_moments(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration, abstractPayoffs::Array{<:AbstractPayoff})
     set_seed!(mcConfig)
     maxT = maximum([maturity(abstractPayoff) for abstractPayoff in abstractPayoffs])
     S = simulate(mcProcess, rfCurve, mcConfig, maxT)
-    variance_ = [var(payoff(S, abstractPayoff, rfCurve, mcConfig, maxT)) for abstractPayoff in abstractPayoffs]
-
-    return variance_
+    moments = [path_moments(payoff(S, abstractPayoff, rfCurve, mcConfig, maxT)) for abstractPayoff in abstractPayoffs]
+    return first.(moments), last.(moments)
 end
 
-function variance(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration, smile::AbstractSmile)
-    set_seed!(mcConfig)
-    T = maturity(smile)
-    S = simulate(mcProcess, rfCurve, mcConfig, T)
-    variance_ = vec(var(payoff(S, smile, rfCurve, mcConfig), dims = 1))
-
-    return variance_
+function mean_and_variance(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration, abstractPayoffs)
+    Means, squares = payoff_moments(mcProcess, rfCurve, mcConfig, abstractPayoffs)
+    return Means, squares ./ (mcConfig.Nsim - 1)
 end

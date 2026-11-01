@@ -5,7 +5,8 @@ include("utils.jl")
 
 Monte Carlo estimate of the price of `payoff`: the mean of the discounted payoff over the
 simulated paths. The random number generator is reset to the seed of `mcConfig` first, so the
-result is reproducible. Returns a vector of prices for a vector of payoffs or a smile.
+result is reproducible. Returns a vector of prices for a vector of payoffs or a smile; for a smile
+in `CudaMode` it is a `CuArray`, so the computations on the prices can stay on the GPU.
 
 # Arguments
 - `mcProcess`: the model (a single name or multivariate process, or a [`MarketDataSet`](@ref)).
@@ -36,8 +37,7 @@ function pricer(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig
     T = maturity(abstractPayoff)
     S = simulate(mcProcess, rfCurve, mcConfig, T)
     zero_typed = predict_output_type_zero(mcProcess, rfCurve, mcConfig, abstractPayoff)
-    Prices::Array{typeof(zero_typed)} = vec(mean(payoff(S, abstractPayoff, rfCurve, mcConfig, T), dims = 1))
-    return Prices
+    return convert(AbstractArray{typeof(zero_typed)}, vec(mean(payoff(S, abstractPayoff, rfCurve, mcConfig, T), dims = 1)))
 end
 
 get_matrix_type(mcConfig::MonteCarloConfiguration{<:Integer, <:Integer, <:AbstractMonteCarloMethod, <:BaseMode}, ::BaseProcess, price) = Matrix{typeof(price)}(undef, mcConfig.Nsim, mcConfig.Nstep + 1);

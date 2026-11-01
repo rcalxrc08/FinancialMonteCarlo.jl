@@ -21,7 +21,7 @@ function simulate!(X, mcProcess::HestonProcess, rfCurve::ZeroRate, mcBaseData::S
     seq = SobolSeq(2 * Nstep)
     skip(seq, Nstep * Nsim)
     dt = T / Nstep
-    isDualZeroVol = T * r * σ₀ * θ_s * κ_s * σ * ρ * 0.0
+    isDualZeroVol = T * r * σ₀ * θ_s * κ_s * σ * ρ * 0
     isDualZero = isDualZeroVol * S0
     view(X, :, 1) .= isDualZero
     isDualZeroVol_eps = isDualZeroVol + eps(isDualZeroVol)
@@ -66,8 +66,8 @@ function simulate!(X, mcProcess::HestonProcess, rfCurve::ZeroRateCurve, mcBaseDa
     dt = T / Nstep
     seq = SobolSeq(2 * Nstep)
     skip(seq, Nstep * Nsim)
-    zero_drift = incremental_integral(r_d, dt * 0.0, dt)
-    isDualZeroVol = T * σ₀ * κ * θ * λ1 * σ * ρ * 0.0 * zero_drift
+    zero_drift = incremental_integral(r_d, dt * 0, dt)
+    isDualZeroVol = T * σ₀ * κ * θ * λ1 * σ * ρ * 0 * zero_drift
     isDualZero = S0 * isDualZeroVol
     view(X, :, 1) .= isDualZero
     vec = Array{typeof(get_rng_type(isDualZero))}(undef, 2 * Nstep)
