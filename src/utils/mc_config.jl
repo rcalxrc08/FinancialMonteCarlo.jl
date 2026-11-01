@@ -58,6 +58,10 @@ struct MonteCarloConfiguration{num1 <: Integer, num2 <: Integer, abstractMonteCa
         ChainRulesCore.@ignore_derivatives @assert iseven(Nsim) "Antithetic support only even number of simulations"
         return GeneralMonteCarloConfiguration(Nsim, Nstep, monteCarloMethod, parallelMethod)
     end
+    function MonteCarloConfiguration(Nsim::num1, Nstep::num2, monteCarloMethod::AntitheticMC, parallelMethod::baseMode, init_rng::Bool) where {num1 <: Integer, num2 <: Integer, baseMode <: BaseMode}
+        ChainRulesCore.@ignore_derivatives @assert iseven(Nsim) "Antithetic support only even number of simulations"
+        return GeneralMonteCarloConfiguration(Nsim, Nstep, monteCarloMethod, parallelMethod, init_rng)
+    end
 end
 SerialMonteCarloConfig = MonteCarloConfiguration{num1, num2, num3, ser_mode} where {num1 <: Integer, num2 <: Integer, num3 <: FinancialMonteCarlo.AbstractMonteCarloMethod, ser_mode <: FinancialMonteCarlo.SerialMode{rng_}} where {rng_ <: Random.AbstractRNG}
 SerialAntitheticMonteCarloConfig = MonteCarloConfiguration{num1, num2, num3, ser_mode} where {num1 <: Integer, num2 <: Integer, num3 <: FinancialMonteCarlo.AntitheticMC, ser_mode <: FinancialMonteCarlo.SerialMode{rng_}} where {rng_ <: Random.AbstractRNG}

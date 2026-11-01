@@ -1,5 +1,5 @@
 include("../testutils.jl")
-using Statistics
+using Random, Statistics
 
 @testset "Control variates" begin
     model = BlackScholesProcess(sigma, Underlying(S0, d))
@@ -11,6 +11,23 @@ using Statistics
         for payoff_ in (AsianFloatingStrikeOption(T), AsianFixedStrikeOption(T, K))
             @test isfinite(pricer(model, rfCurve, mc_cv, payoff_))
         end
+    end
+
+    @testset "init_rng" begin
+        eu = EuropeanOption(T, K)
+        cv_method = FinancialMonteCarlo.ControlVariates(Forward(T), variate_conf)
+        mc_reset = MonteCarloConfiguration(Nsim_small, Nstep_small, cv_method, FinancialMonteCarlo.SerialMode(1))
+        price = pricer(model, rfCurve, mc_reset, eu)
+        @test price == pricer(model, rfCurve, mc_reset, eu)
+        mc_stream = MonteCarloConfiguration(Nsim_small, Nstep_small, cv_method, FinancialMonteCarlo.SerialMode(1, MersenneTwister(1)), false)
+        @test pricer(model, rfCurve, mc_stream, eu) ≈ price
+        @test pricer(model, rfCurve, mc_stream, eu) != price
+    end
+
+    @testset "the method of the main run keeps its checks" begin
+        antithetic = FinancialMonteCarlo.ControlVariates(Forward(T), variate_conf, FinancialMonteCarlo.AntitheticMC())
+        @test_throws AssertionError pricer(model, rfCurve, MonteCarloConfiguration(1001, Nstep_small, antithetic), EuropeanOption(T, K))
+        @test_throws AssertionError MonteCarloConfiguration(1001, Nstep_small, FinancialMonteCarlo.AntitheticMC(), FinancialMonteCarlo.SerialMode(), false)
     end
 
     @testset "a Forward control variate reduces the variance" begin

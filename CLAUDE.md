@@ -65,7 +65,7 @@ These type aliases are defined in [src/utils/mc_config.jl](src/utils/mc_config.j
 
 `MonteCarloConfiguration(Nsim, Nstep, method, parallelMode)`:
 - `method <: AbstractMonteCarloMethod`: `StandardMC`, `AntitheticMC`, `SobolMode`, `PrescribedMC`, or `ControlVariates` (defined in [payoff_base.jl](src/options/payoff_base.jl), handled in [pricer_cv.jl](src/metrics/pricer_cv.jl)).
-- `parallelMode <: BaseMode`: `SerialMode(seed, rng)` (models draw from `mcConfig.parallelMode.rng`), `MultiThreading` ([src/multi_threading.jl](src/multi_threading.jl) — splits Nsim into seeded batches and averages; pricer methods generated via `@eval`), plus optional CUDA/Distributed modes.
+- `parallelMode <: BaseMode`: `SerialMode(seed, rng)` (models draw from `mcConfig.parallelMode.rng`), `MultiThreading` ([src/multi_threading.jl](src/multi_threading.jl) — one `SerialMode` per batch, each with its own copy of the generator, so the results do not depend on the threads; `pricer` averages the batches, the other metrics use the threaded `simulate`), plus optional CUDA/Distributed modes.
 - Rates: `ZeroRate(r)` scalar or `ZeroRateCurve`/`ImpliedZeroRate` built on `CurveType` ([curves.jl](src/utils/curves.jl)); code uses `integral(r, T)` / `incremental_integral` so the same path works for scalar and curve rates.
 
 ### Payoffs ([src/options/](src/options/))

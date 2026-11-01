@@ -27,12 +27,19 @@ MonteCarloConfiguration(Nsim, Nstep, method, parallelMode)                # both
 | Mode | Description |
 |:--|:--|
 | `SerialMode(seed = 0, rng = MersenneTwister())` | single thread; any `Random.AbstractRNG` can be used |
-| `MultiThreading(sub_mode = SerialMode(), nbatches = Threads.nthreads(), seeds = 1:nbatches)` | the paths are split into `nbatches` batches priced on different threads, each with its own seed |
-| `MultiProcess(sub_mode = SerialMode(), nbatches = nworkers(), seeds = 1:nbatches)` | as above, on the workers of `Distributed` (needs `using Distributed`) |
+| `MultiThreading(sub_mode = SerialMode(), nbatches = Threads.nthreads(), seeds = sub_mode.seed .+ (1:nbatches))` | the paths are split into `nbatches` batches priced on different threads, each with its own seed and its own copy of the generator |
+| `MultiProcess(sub_mode = SerialMode(), nbatches = nworkers(), seeds = 1:nbatches)` | the paths are split into `nbatches` batches priced on the workers of `Distributed` (needs `using Distributed`), each with its own seed |
 | `CudaMode(seed_cpu = 0, seed_gpu = 0)` | simulation on the GPU (needs `using CUDA`) |
 
-The parallel modes average the prices of the batches, so with `nbatches` batches each batch uses
-`Nsim ÷ nbatches` paths.
+`MultiProcess` averages the prices of the batches, each with `Nsim ÷ nbatches` paths.
+
+`MultiThreading` uses exactly `Nsim` paths, and its results depend on the seeds and the number of
+batches but not on the number of threads. The price is the average of the batch prices weighted by
+their paths; the other metrics, such as `variance` and `simulate`, work on the paths of all the
+batches, so for American and Bermudan payoffs, whose exercise strategy is estimated from the paths,
+`confinter` is not centred exactly on `pricer`. `MultiThreading` needs a generator that can be
+copied, which excludes VectorizedRNG, does not support `SobolMode`, and among the automatic
+differentiation backends supports only the forward ones.
 
 ## Seeds and reproducibility
 
