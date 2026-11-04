@@ -31,14 +31,16 @@ function draw_subordinator!(dt_s, dt_s_host, subordinator_, mcBaseData::MonteCar
     return dt_s
 end
 
-function sobol_sequence(dimension::Integer, mcBaseData::MonteCarloConfiguration)
-    seq = SobolSeq(dimension)
-    skip(seq, mcBaseData.Nstep * mcBaseData.Nsim)
-    return seq
-end
+# The type of a Sobol sequence holds its dimension, known only at run time, so the paths are drawn behind a
+# function barrier: path!(i, normals) fills the path i from the normals of its point of the sequence.
+on_sobol_paths(path!, dimension::Integer, mcBaseData::MonteCarloConfiguration, numtype::Type) = sobol_paths!(path!, SobolSeq(dimension), Vector{numtype}(undef, dimension), mcBaseData)
 
-function sobol_normals!(vec, seq)
-    next!(seq, vec)
-    @. vec = norminvcdf(vec)
-    return vec
+function sobol_paths!(path!, seq, normals, mcBaseData::MonteCarloConfiguration)
+    skip(seq, mcBaseData.Nstep * mcBaseData.Nsim)
+    for i = 1:mcBaseData.Nsim
+        next!(seq, normals)
+        @. normals = norminvcdf(normals)
+        path!(i, normals)
+    end
+    return
 end

@@ -33,8 +33,22 @@ mcConfig = MonteCarloConfiguration(10_000, 30)
 pricer(model, ZeroRate(0.02), mcConfig, EuropeanOption(1.0, 100.0))
 ```
 
-To support antithetic sampling, Sobol sequences or GPUs, dispatch `simulate!` on the corresponding
-configuration aliases (`SerialAntitheticMonteCarloConfig`, ...) as the built-in models do.
+A model built on an engine inherits everything the engine supports: antithetic variates, Sobol
+sequences, time dependent rates (`μ` above is a curve when `rfCurve` is one) and, with CUDA.jl
+loaded, the GPU. Nothing else needs to be written.
+
+A model that needs its own time stepping can still support all of them with a single
+`simulate!` body, built on the hooks the built-in models use (see `src/models/paths.jl`):
+
+- `step_drifts(μ, dt, Nstep)` and `drift_of_step(drifts, j)`: the drift of each step, a single
+  number for a constant rate and a vector only for a curve;
+- `path_sides(X, mcConfig)`: the paths to fill with the sign of their normal draws, all of them,
+  or the two halves with antithetic variates;
+- `draw_buffer(mcConfig, type, N)` and `draw_normals!(Z, mcConfig)`: buffers and normal draws on
+  the device of the configuration (CPU, or GPU with `CudaMode`).
+
+Sobol sequences draw path by path, so they need a separate method dispatching on
+`FinancialMonteCarlo.SerialSobolMonteCarloConfig`.
 
 ## A new payoff
 

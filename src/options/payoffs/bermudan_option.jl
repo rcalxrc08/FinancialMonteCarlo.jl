@@ -12,7 +12,7 @@ Longstaff-Schwartz regression. Exercise dates should lie on the simulation time 
 """
 struct BermudanOption{num1 <: Number, num2 <: Number, numtype <: Number} <: BermudanPayoff{numtype}
     T::num1
-    T_ex::Array{num1}
+    T_ex::Vector{num1}
     K::num2
     isCall::Bool
     function BermudanOption(T::AbstractArray{num1}, K::num2, isCall::Bool = true) where {num1 <: Number, num2 <: Number}
@@ -26,7 +26,4 @@ end
 
 export BermudanOption;
 
-function payout(Sti::numtype_, bmPayoff::BermudanOption) where {numtype_ <: Number}
-    iscall = ChainRulesCore.@ignore_derivatives ifelse(bmPayoff.isCall, Int8(1), Int8(-1))
-    return max((Sti - bmPayoff.K) * iscall, zero(numtype_))
-end
+payout(Sti::Number, bmPayoff::BermudanOption) = vanilla_payout(Sti, bmPayoff.K, bmPayoff)

@@ -1,0 +1,30 @@
+name: Documentation
+on:
+  push:
+    branches:
+      - master
+    tags: '*'
+  pull_request:
+    branches:
+      - master
+permissions:
+  actions: write # julia-actions/cache deletes the caches it replaces
+  contents: write # deploydocs pushes to the gh-pages branch
+  pull-requests: read
+  statuses: write
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: julia-actions/setup-julia@v2
+        with:
+          version: '1' # docs/Project.toml finds the package through [sources], which needs Julia 1.11 or later
+      - uses: julia-actions/cache@v3
+      - name: Install the documentation environment
+        run: julia --project=docs -e 'using Pkg; Pkg.instantiate()'
+      - name: Build and deploy
+        run: julia --project=docs --color=yes docs/make.jl
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}

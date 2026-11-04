@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-FinancialMonteCarlo.jl: a Julia package for Monte Carlo pricing and risk of equity derivatives (single-name and multivariate via Gaussian copula). The canonical remote is GitLab (`gitlab.com/rcalxrc08/FinancialMonteCarlo.jl`, docs deployed via GitLab Pages); GitHub Actions also run CI (Julia 1.10 and latest 1.x), CompatHelper and TagBot.
+FinancialMonteCarlo.jl: a Julia package for Monte Carlo pricing and risk of equity derivatives (single-name and multivariate via Gaussian copula). The canonical remote is GitLab (`gitlab.com/rcalxrc08/FinancialMonteCarlo.jl`); GitHub Actions run CI (Julia 1.10 and latest 1.x), the documentation (built and deployed to GitHub Pages, `gh-pages` branch, by [Documentation.yml](.github/workflows/Documentation.yml)), CompatHelper and TagBot.
 
 ## Commands
 
@@ -60,7 +60,7 @@ A model has **one `simulate!` body** for antithetic variates, constant and curve
 - `path_sides(X, mcConfig)`: all the paths or, with `AntitheticMC`, the two halves with the sign of their normal draws.
 - `draw_buffer`, `draw_normals!`, `subordinator_host`: the only methods a device adds ([ext/FinancialMonteCarloCUDAExt/](ext/FinancialMonteCarloCUDAExt/)).
 
-Sobol is the one separate body (`*_sobol.jl`, dispatching on `SerialSobolMonteCarloConfig`), because it draws path by path. These aliases are defined in [src/utils/mc_config.jl](src/utils/mc_config.jl).
+Sobol is the one separate body (`*_sobol.jl`, dispatching on `SerialSobolMonteCarloConfig`), because it draws path by path; it fills each path inside `on_sobol_paths`, a function barrier, because the type of a `SobolSeq` holds its dimension, known only at run time. These aliases are defined in [src/utils/mc_config.jl](src/utils/mc_config.jl).
 
 ### Configuration ([src/utils/](src/utils/))
 

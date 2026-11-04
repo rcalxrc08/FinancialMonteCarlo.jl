@@ -2,7 +2,8 @@
 #
 # This tutorial goes through the path dependent payoffs and the ways of computing sensitivities.
 
-using FinancialMonteCarlo, DualNumbers
+using FinancialMonteCarlo, DualNumbers, Plots
+default(size = (720, 400), linewidth = 2, framestyle = :axes, grid = :y, gridalpha = 0.25, titlefontsize = 11, guidefontsize = 10, legendfontsize = 9)
 
 S0, K, r, T, d = 100.0, 100.0, 0.02, 1.0, 0.01
 rfCurve = ZeroRate(r)
@@ -29,6 +30,14 @@ pricer(model, rfCurve, mcConfig, exotics)
 # all priced on the same paths.
 smile = FinancialMonteCarlo.EuropeanOptionSmile(T, [80.0, 90.0, 100.0, 110.0, 120.0], [false, false, true, true, true])
 pricer(model, rfCurve, mcConfig, smile)
+
+# A smile prices many strikes on a single simulation, so a whole price curve costs one run:
+strikes = collect(70.0:2.0:130.0)
+calls = pricer(model, rfCurve, mcConfig, FinancialMonteCarlo.EuropeanOptionSmile(T, strikes, fill(true, length(strikes))))
+puts = pricer(model, rfCurve, mcConfig, FinancialMonteCarlo.EuropeanOptionSmile(T, strikes, fill(false, length(strikes))))
+plot(strikes, calls; color = "#2a78d6", label = "calls", legend = :top, xlabel = "strike", ylabel = "price", title = "European options by strike, one simulation per curve")
+plot!(strikes, puts; color = "#eb6834", label = "puts")
+annotate!([(strikes[3], calls[3], text("calls", 9, "#2a78d6", :left, :bottom)), (strikes[end-5], puts[end-5], text("puts", 9, "#eb6834", :right, :bottom))])
 
 # ## Bump and reprice
 # `delta` and `rho` compute finite differences with respect to the spot and the zero rate,
