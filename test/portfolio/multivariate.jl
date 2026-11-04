@@ -1,4 +1,5 @@
 include("../testutils.jl")
+using Statistics: cor
 
 # Pricing through a MarketDataSet/Portfolio must match pricing the model directly on the same seed.
 @testset "Multivariate" begin
@@ -11,6 +12,17 @@ include("../testutils.jl")
         @test !isempty(FinancialMonteCarlo.get_parameters(model))
         @test occursin("GaussianCopulaNVariateProcess", capture_stdout(() -> display(model)))
         @test abs(pricer("ENJ_ABPL" → model, rfCurve, mc_small, "ENJ_ABPL" → eu_nd) - pricer(model, rfCurve, mc_small, eu_nd)) < 1e-8
+    end
+
+    # The log returns at maturity of two Black-Scholes legs are Gaussian, so their correlation is the copula's
+    @testset "$(nameof(Process)) follows the correlation" for Process in (GaussianCopulaNVariateProcess, GaussianCopulaNVariateLogProcess)
+        mc_corr = MonteCarloConfiguration(5_000, 2)
+        @testset "rho = $rho" for rho in (-0.5, 0.0, 0.75)
+            FinancialMonteCarlo.set_seed!(mc_corr)
+            S = simulate(Process(bs(), bs(), rho), rfCurve, mc_corr, T)
+            @test abs(cor(log.(S[1][:, end]), log.(S[2][:, end])) - rho) < 0.05
+            @test !issorted(S[1][:, end])
+        end
     end
 
     @testset "bivariate log copula: single name legs" begin

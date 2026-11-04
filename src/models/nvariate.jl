@@ -64,7 +64,8 @@ function simulate!(S_total, mcProcess::GaussianCopulaNVariateProcess, rfCurve::A
 
         for i = 1:len_
             @views tmp_ = S_total[i][:, j+1]
-            @views Statistics.quantile!(tmp_, U_joint[i, :])
+            # quantile! sorts tmp_ and returns a new vector, so it can be written back into tmp_
+            @views tmp_ .= Statistics.quantile!(tmp_, U_joint[i, :])
         end
     end
 
