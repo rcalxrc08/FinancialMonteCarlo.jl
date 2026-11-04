@@ -7,6 +7,10 @@ on:
   pull_request:
     branches:
       - master
+concurrency:
+  # One build at a time: two deploys pushing to gh-pages together make one of them fail
+  group: docs
+  cancel-in-progress: false
 permissions:
   actions: write # julia-actions/cache deletes the caches it replaces
   contents: write # deploydocs pushes to the gh-pages branch
