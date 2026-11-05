@@ -1,4 +1,7 @@
 name: Documentation
+# deploydocs keeps the versioned site (dev/, stable/, one folder per tag) on the gh-pages branch; GitHub Pages, whose
+# source is "GitHub Actions", then publishes that branch: it is uploaded as the Pages artifact and deployed by
+# actions/deploy-pages, with no separate Pages build. Pull requests only build.
 on:
   push:
     branches:
@@ -16,6 +19,8 @@ permissions:
   contents: write # deploydocs pushes to the gh-pages branch
   pull-requests: read
   statuses: write
+  pages: write    # the Pages deployment
+  id-token: write # the token of the Pages deployment
 jobs:
   docs:
     runs-on: ubuntu-latest
@@ -32,3 +37,27 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}
+      # the versioned site that deploydocs has just pushed
+      - name: Checkout the published site
+        if: github.event_name != 'pull_request'
+        uses: actions/checkout@v6
+        with:
+          ref: gh-pages
+          path: site
+      - if: github.event_name != 'pull_request'
+        uses: actions/configure-pages@v6
+      - if: github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: site
+  pages:
+    needs: docs
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy 🚀
+        id: deployment
+        uses: actions/deploy-pages@v5

@@ -21,7 +21,7 @@ makedocs(
     authors = "rcalxrc08",
     modules = [FinancialMonteCarlo],
     repo = Remotes.GitHub("rcalxrc08", "FinancialMonteCarlo.jl"),
-    format = Documenter.HTML(prettyurls = get(ENV, "CI", nothing) == "true", assets = ["assets/favicon.ico"], canonical = "https://rcalxrc08.github.io/FinancialMonteCarlo.jl/stable/"),
+    format = Documenter.HTML(prettyurls = get(ENV, "CI", nothing) == "true", assets = ["assets/favicon.ico", "assets/style.css"], canonical = "https://rcalxrc08.github.io/FinancialMonteCarlo.jl/stable/"),
     pages = [
         "Home" => "index.md",
         "Tutorials" => ["Getting started" => "tutorials/getting_started.md", "Exotic options and greeks" => "tutorials/exotics_and_greeks.md", "Portfolios and multivariate models" => "tutorials/portfolios.md"],
