@@ -2,6 +2,8 @@ name: Documentation
 # deploydocs keeps the versioned site (dev/, stable/, one folder per tag) on the gh-pages branch; GitHub Pages, whose
 # source is "GitHub Actions", then publishes that branch: it is uploaded as the Pages artifact and deployed by
 # actions/deploy-pages, with no separate Pages build. Pull requests only build.
+# A tag pushed by TagBot (with the deploy key, so that it triggers this workflow) builds the docs of its release. The
+# docs of an older tag are built by hand: Actions > Documentation > Run workflow, with the tag as input.
 on:
   push:
     branches:
@@ -10,6 +12,12 @@ on:
   pull_request:
     branches:
       - master
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag whose documentation to build and publish (e.g. v0.5.2); empty for master'
+        required: false
+        default: ''
 concurrency:
   # One build at a time: two deploys pushing to gh-pages together make one of them fail
   group: docs
@@ -26,6 +34,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.tag || github.ref }}
       - uses: julia-actions/setup-julia@v2
         with:
           version: '1' # docs/Project.toml finds the package through [sources], which needs Julia 1.11 or later
@@ -33,8 +43,25 @@ jobs:
       - name: Install the documentation environment
         run: julia --project=docs -e 'using Pkg; Pkg.instantiate()'
       - name: Build and deploy
+        if: inputs.tag == ''
         run: julia --project=docs --color=yes docs/make.jl
         env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}
+      # The docs of a tag, by hand: deploydocs learns the version from GITHUB_REF, which a run started by hand sets to
+      # the branch, so the tag is set here before make.jl runs; an older make.jl without deploydocs gets one after it.
+      - name: Build and deploy the documentation of a tag
+        if: inputs.tag != ''
+        run: |
+          julia --project=docs --color=yes -e '
+            ENV["GITHUB_EVENT_NAME"] = "push"
+            ENV["GITHUB_REF"] = "refs/tags/" * ENV["DOCS_TAG"]
+            include("docs/make.jl")
+            if !occursin("deploydocs", read("docs/make.jl", String))
+                Documenter.deploydocs(repo = "github.com/rcalxrc08/FinancialMonteCarlo.jl.git", devbranch = "master")
+            end'
+        env:
+          DOCS_TAG: ${{ inputs.tag }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}
       # the versioned site that deploydocs has just pushed
