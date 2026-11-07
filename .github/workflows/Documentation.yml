@@ -2,8 +2,10 @@ name: Documentation
 # deploydocs keeps the versioned site (dev/, stable/, one folder per tag) on the gh-pages branch; GitHub Pages, whose
 # source is "GitHub Actions", then publishes that branch: it is uploaded as the Pages artifact and deployed by
 # actions/deploy-pages, with no separate Pages build. Pull requests only build.
-# A tag pushed by TagBot (with the deploy key, so that it triggers this workflow) builds the docs of its release. The
-# docs of an older tag are built by hand: Actions > Documentation > Run workflow, with the tag as input.
+# A pushed tag builds the docs of its release into gh-pages, but GitHub Pages does not serve a deployment made from a
+# tag (it reports success and keeps the previous site: v0.6.0), so a tag run publishes nothing itself and starts this
+# workflow on master instead, which uploads gh-pages with the new version in it. The docs of an older tag are built by
+# hand: Actions > Documentation > Run workflow on master, with the tag as input.
 on:
   push:
     branches:
@@ -66,20 +68,31 @@ jobs:
           DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}
       # the versioned site that deploydocs has just pushed
       - name: Checkout the published site
-        if: github.event_name != 'pull_request'
+        if: github.event_name != 'pull_request' && github.ref_type != 'tag'
         uses: actions/checkout@v6
         with:
           ref: gh-pages
           path: site
-      - if: github.event_name != 'pull_request'
+      - if: github.event_name != 'pull_request' && github.ref_type != 'tag'
         uses: actions/configure-pages@v6
-      - if: github.event_name != 'pull_request'
+      - if: github.event_name != 'pull_request' && github.ref_type != 'tag'
         uses: actions/upload-pages-artifact@v5
         with:
           path: site
+  # A tag has pushed its docs to gh-pages: publish them from master (a workflow_dispatch started with GITHUB_TOKEN does
+  # start a run, unlike the other events). The run waits for this one, in the same concurrency group.
+  publish-tag:
+    needs: docs
+    if: github.ref_type == 'tag'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Publish from master
+        run: gh workflow run Documentation.yml --repo "$GITHUB_REPOSITORY" --ref master
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   pages:
     needs: docs
-    if: github.event_name != 'pull_request'
+    if: github.event_name != 'pull_request' && github.ref_type != 'tag'
     runs-on: ubuntu-latest
     environment:
       name: github-pages
