@@ -1,10 +1,10 @@
-function simulate!(X, mcProcess::AnySubordinatedBrownianMotion, mcBaseData::SerialSobolMonteCarloConfig, T::Number)
+function simulate!(X, mcProcess::AnySubordinatedBrownianMotion, mcBaseData::SobolConfig, T::Number)
     Nstep = mcBaseData.Nstep
     sigma = mcProcess.sigma
     θ = mcProcess.θ
     drifts, _, isDualZero = subordinated_setup(mcProcess, mcBaseData, T)
     fill!(view(X, :, 1), isDualZero)
-    rng = mcBaseData.parallelMode.rng
+    rng = host_rng(mcBaseData)
     subordinator_ = mcProcess.subordinator_
     on_sobol_paths(Nstep, mcBaseData, typeof(get_rng_type(isDualZero))) do i, normals
         @inbounds for j = 1:Nstep

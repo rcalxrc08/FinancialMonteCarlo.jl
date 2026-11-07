@@ -3,25 +3,19 @@ module FinancialMonteCarloCUDAExt
 using CUDA
 using ChainRulesCore
 using Random
-using FinancialMonteCarlo: AbstractCudaMode, AbstractMonteCarloConfiguration, AbstractMonteCarloMethod, AbstractSmile, AbstractZeroRateCurve, AmericanPayoff, BaseProcess, BermudanPayoff, FiniteActivityProcess, MonteCarloConfiguration, PathDependentPayoff, VectorialMonteCarloProcess, inner_seed!, integral, maturity, payout_strike, values_at_maturity
-import FinancialMonteCarlo: add_jump_matrix!, draw_buffer, draw_normals!, get_array_type, get_matrix_type, payoff, set_seed!, subordinator_host
+using Adapt
+using FinancialMonteCarlo: AbstractCudaMode, AbstractMonteCarloConfiguration, AbstractSmile, AbstractZeroRateCurve, AmericanPayoff, BermudanPayoff, CudaMode, FiniteActivityProcess, HostAdaptor, MonteCarloConfiguration, PathDependentPayoff, integral, maturity, payout_strike, to_mode, values_at_maturity
+import FinancialMonteCarlo: add_jump_matrix!, array_type, draw_normals!, mode_adaptor, payoff, seed_device!, subordinator_host
 
-const CudaConfig = MonteCarloConfiguration{<:Integer, <:Integer, <:AbstractMonteCarloMethod, <:AbstractCudaMode}
+# Everything the GPU changes, by the mode: where the arrays live and the generator to seed.
+array_type(::AbstractCudaMode) = CuArray
+# CuArray and not cu, that would convert to Float32
+mode_adaptor(::AbstractCudaMode) = CuArray
+Adapt.adapt_storage(::HostAdaptor, x::CuArray) = Array(x)
+seed_device!(::AbstractCudaMode, seed::Integer) = CUDA.seed!(seed)
 
-function set_seed!(mcConfig::CudaConfig)
-    if mcConfig.init_rng
-        inner_seed!(mcConfig.parallelMode.rng, mcConfig.parallelMode.seed_cpu)
-        CUDA.seed!(mcConfig.parallelMode.seed_gpu)
-    end
-end
-
-get_matrix_type(mcConfig::CudaConfig, ::BaseProcess, price) = CuMatrix{typeof(price)}(undef, mcConfig.Nsim, mcConfig.Nstep + 1);
-get_array_type(mcConfig::CudaConfig, ::BaseProcess, price) = CuArray{typeof(price)}(undef, mcConfig.Nsim);
-get_matrix_type(::CudaConfig, ::VectorialMonteCarloProcess, price) = Array{CuMatrix{typeof(price)}};
-
-# All the simulate! of the package run here through these methods
-draw_buffer(::CudaConfig, numtype, N::Integer) = CuArray{numtype}(undef, N)
-draw_normals!(Z, ::CudaConfig) = randn!(Z)
+# And by the type of the arrays: the normals of a CuArray come from CURAND, the laws of Distributions sample on the host.
+draw_normals!(Z::CuArray, ::MonteCarloConfiguration) = randn!(Z)
 subordinator_host(dt_s::CuArray) = Array{eltype(dt_s)}(undef, length(dt_s))
 
 # The jump times are drawn on the host, and writing them to X would launch a kernel for each jump.
@@ -37,12 +31,14 @@ for payoff_type in (PathDependentPayoff, Union{AmericanPayoff, BermudanPayoff})
     @eval payoff(S::CuMatrix{num}, payoff_::$payoff_type, rfCurve::AbstractZeroRateCurve, mcBaseData::AbstractMonteCarloConfiguration, T1::num2 = maturity(payoff_)) where {num <: Number, num2 <: Number} = payoff(collect(S), payoff_, rfCurve, mcBaseData, T1)
 end
 
-# One kernel for all the strikes, instead of one per strike. The result stays on the GPU.
-function payoff(S::CuMatrix{num}, smile::AbstractSmile{T_}, rfCurve::AbstractZeroRateCurve, mcBaseData::AbstractMonteCarloConfiguration, T1::num2 = maturity(smile)) where {T_, num <: Number, num2 <: Number}
+# One kernel for all the strikes, instead of one per strike. The result stays on the GPU. The metrics move the smile to
+# the device once (to_mode), so that here it is already there.
+function payoff(S::CuMatrix{num}, smile_::AbstractSmile{T_}, rfCurve::AbstractZeroRateCurve, mcBaseData::AbstractMonteCarloConfiguration, T1::num2 = maturity(smile_)) where {T_, num <: Number, num2 <: Number}
+    smile = to_mode(smile_, CudaMode())
     T = smile.T
     ST = values_at_maturity(S, T, T1, mcBaseData)
-    K = CuArray(reshape(smile.K, 1, :))
-    isCall = CuArray(reshape(smile.isCall, 1, :))
+    K = reshape(smile.K, 1, :)
+    isCall = reshape(smile.isCall, 1, :)
     return payout_strike.(ST, K, isCall, T_) .* exp(-integral(rfCurve.r, T))
 end
 

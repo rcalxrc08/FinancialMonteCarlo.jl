@@ -25,7 +25,8 @@ function path_moments(Payoffs::AbstractMatrix)
     return vec(means), vec(sum(abs2, Payoffs .- means, dims = 1))
 end
 
-function payoff_moments(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration, abstractPayoff::Union{AbstractPayoff, AbstractSmile})
+function payoff_moments(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration, payoff_::Union{AbstractPayoff, AbstractSmile})
+    abstractPayoff = to_mode(payoff_, execution_mode(mcConfig))
     set_seed!(mcConfig)
     S = simulate(mcProcess, rfCurve, mcConfig, maturity(abstractPayoff))
     return path_moments(payoff(S, abstractPayoff, rfCurve, mcConfig))

@@ -1,4 +1,4 @@
-function simulate!(X, mcProcess::Union{BrownianMotion, BrownianMotionVec}, mcBaseData::SerialSobolMonteCarloConfig, T::Number)
+function simulate!(X, mcProcess::Union{BrownianMotion, BrownianMotionVec}, mcBaseData::SobolConfig, T::Number)
     Nstep = mcBaseData.Nstep
     σ = mcProcess.σ
     μ = mcProcess.μ

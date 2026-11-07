@@ -5,12 +5,12 @@ function add_jump_matrix!(X, mcProcess::finiteActivityProcess, mcBaseData::Abstr
     λ = mcProcess.λ
     dt = T / Nstep
     @inbounds for i = 1:Nsim
-        t_i = randexp(mcBaseData.parallelMode.rng) / λ
+        t_i = randexp(host_rng(mcBaseData)) / λ
         while t_i < T
             jump_size = compute_jump_size(mcProcess, mcBaseData)
             jump_idx = ceil(UInt32, t_i / dt) + 1
             @views @. X[i, jump_idx:end] += jump_size #add jump component
-            t_i += randexp(mcBaseData.parallelMode.rng) / λ
+            t_i += randexp(host_rng(mcBaseData)) / λ
         end
     end
 end

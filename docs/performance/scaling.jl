@@ -13,14 +13,14 @@ function price(U, mode)
     curve = ZeroRate(U(2) / 100)
     option = EuropeanOption(one(U), U(100))
     times = map(paths) do Nsim
-        mc = MonteCarloConfiguration(Nsim, Nstep, FMC.StandardMC(), mode)
+        mc = MonteCarloConfiguration(Nsim, Nstep; mode = mode, seed = 1)
         minimum(@benchmark CUDA.@sync(pricer($model, $curve, $mc, $option)) evals = 1).time / 1e6
     end
     GC.gc()
     CUDA.reclaim()
     return times
 end
-series = [("CPU, Float64", "#2a78d6", price(Float64, FMC.SerialMode(1))), ("GPU, Float64", "#eb6834", price(Float64, FMC.CudaMode(1, 2))), ("GPU, Float32", "#1baf7a", price(Float32, FMC.CudaMode(1, 2)))]
+series = [("CPU, Float64", "#2a78d6", price(Float64, FMC.SerialMode())), ("GPU, Float64", "#eb6834", price(Float64, FMC.CudaMode())), ("GPU, Float32", "#1baf7a", price(Float32, FMC.CudaMode()))]
 for (name, _, times) in series
     println(rpad(name, 14), join([@sprintf("%10.2f ms", t) for t in times]))
 end

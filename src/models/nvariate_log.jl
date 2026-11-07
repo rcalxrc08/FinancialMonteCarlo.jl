@@ -18,8 +18,7 @@ struct GaussianCopulaNVariateLogProcess{num3 <: Number, numtype <: Number} <: ND
         ChainRulesCore.@ignore_derivatives @assert sz[1] == sz[2]
         ChainRulesCore.@ignore_derivatives @assert length(models) == sz[1]
         ChainRulesCore.@ignore_derivatives @assert isposdef(rho)
-        zero_typed = predict_output_type_zero(models...) + zero(num3)
-        return new{num3, typeof(zero_typed)}(models, rho)
+        return new{num3, price_type(models..., num3)}(models, rho)
     end
     function GaussianCopulaNVariateLogProcess(models::BaseProcess...)
         len_ = length(models)

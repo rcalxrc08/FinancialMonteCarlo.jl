@@ -21,7 +21,7 @@ end
 
 export BrownianMotion;
 
-# function simulate_path!(X, mcProcess::BrownianMotion, mcBaseData::SerialMonteCarloConfig, T::numb) where {numb <: Number}
+# function simulate_path!(X, mcProcess::BrownianMotion, mcBaseData::MonteCarloConfiguration, T::numb) where {numb <: Number}
 #     Nstep = mcBaseData.Nstep
 #     σ = mcProcess.σ
 #     μ = mcProcess.μ
@@ -32,7 +32,7 @@ export BrownianMotion;
 #     isDualZero = mean_bm * stddev_bm * 0
 #     @views X[1] = isDualZero
 #     @inbounds for j = 1:Nstep
-#         @views X[j+1] = X[j] + mean_bm + stddev_bm * randn(mcBaseData.parallelMode.rng)
+#         @views X[j+1] = X[j] + mean_bm + stddev_bm * randn(host_rng(mcBaseData))
 #     end
 #     return
 # end

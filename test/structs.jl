@@ -10,11 +10,25 @@ end
     Tneg = -T
 
     @testset "MonteCarloConfiguration" begin
-        @test MonteCarloConfiguration(Nsim, Nstep, 1).parallelMode.seed == 1
-        @test MonteCarloConfiguration(Nsim, Nstep, FinancialMonteCarlo.SerialMode(1)).parallelMode.seed == 1
+        FMC = FinancialMonteCarlo
+        @test MonteCarloConfiguration(Nsim, Nstep; seed = 1).rng.seed == 1
+        @test MonteCarloConfiguration(Nsim, Nstep).mode isa FMC.SerialMode
         @test_throws AssertionError MonteCarloConfiguration(-Nsim, Nstep)
         @test_throws AssertionError MonteCarloConfiguration(Nsim, -Nstep)
-        @test_throws AssertionError MonteCarloConfiguration(Nsim + 1, Nstep, FinancialMonteCarlo.AntitheticMC())
+        @test_throws AssertionError MonteCarloConfiguration(Nsim + 1, Nstep; sampling = FMC.AntitheticMC())
+        @test_throws ArgumentError MonteCarloConfiguration(Nsim, Nstep; sampling = FMC.SobolMC(), mode = FMC.CudaMode())
+        # the mode is part of the method
+        mc_mt = MonteCarloConfiguration(Nsim, Nstep; seed = 3, mode = FMC.MultiThreading(2))
+        @test FMC.execution_mode(mc_mt) === FMC.MultiThreading(2)
+        mc_serial = FMC.with_mode(mc_mt, FMC.SerialMode())
+        @test FMC.execution_mode(mc_serial) === FMC.SerialMode()
+        @test (mc_serial.Nsim, mc_serial.Nstep, mc_serial.rng.seed) == (Nsim, Nstep, 3)
+        @test [state.seed for state in FMC.with_mode(mc_serial, FMC.MultiThreading(2)).rng] == [4, 5]
+        # the names of version 0.5
+        @test (@test_deprecated MonteCarloConfiguration(Nsim, Nstep, 1)).rng.seed == 1
+        @test (@test_deprecated MonteCarloConfiguration(Nsim, Nstep, FMC.AntitheticMC())).sampling isa FMC.AntitheticMC
+        @test (@test_deprecated MonteCarloConfiguration(Nsim, Nstep, FMC.MultiThreading(2))).mode isa FMC.MultiThreading
+        @test (@test_deprecated MonteCarloConfiguration(Nsim, Nstep, FMC.AntitheticMC(), FMC.SerialMode())).sampling isa FMC.AntitheticMC
     end
 
     @testset "Underlying and curves" begin

@@ -22,7 +22,7 @@ function BrownianMotion(σ::num, μ::CurveType{num1, num4}) where {num <: Number
     return BrownianMotionVec(σ, μ)
 end
 
-function simulate!(X, mcProcess::Union{BrownianMotion, BrownianMotionVec}, mcBaseData::PseudoRandomConfig, T::Number)
+function simulate!(X, mcProcess::Union{BrownianMotion, BrownianMotionVec}, mcBaseData::MonteCarloConfiguration, T::Number)
     σ = mcProcess.σ
     μ = mcProcess.μ
     ChainRulesCore.@ignore_derivatives @assert T > 0

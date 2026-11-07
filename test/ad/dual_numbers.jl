@@ -31,6 +31,6 @@ using DualNumbers
         vg_ref = (fwd = 99.09861035102614, eu = 8.368903690692187, barrier = 7.469024475794258, asian_float = 4.779663836736272)
         check_prices(model, rfCurve, mc, standard_payoffs(), vg_ref; toll = 0.8)
         check_prices(model, rfCurve, mc_anti, standard_payoffs(), vg_ref; toll = 0.8)
-        @test isfinite(pricer(model, rfCurve, MonteCarloConfiguration(Nsim, Nstep, FinancialMonteCarlo.SobolMode()), Forward(T)))
+        @test isfinite(pricer(model, rfCurve, MonteCarloConfiguration(Nsim, Nstep; sampling = FinancialMonteCarlo.SobolMC()), Forward(T)))
     end
 end

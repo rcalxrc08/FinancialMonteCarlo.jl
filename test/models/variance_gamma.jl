@@ -8,7 +8,7 @@ const VG_REF = (fwd = 99.09861035102614, eu = 8.368903690692187, barrier = 7.469
     model = VarianceGammaProcess(sigma, theta1, k1, Underlying(S0, d))
 
     @testset "standard (Xoroshiro128Plus rng)" begin
-        mc_xoro = MonteCarloConfiguration(Nsim, Nstep, FinancialMonteCarlo.SerialMode(1, RandomNumbers.Xorshifts.Xoroshiro128Plus()))
+        mc_xoro = MonteCarloConfiguration(Nsim, Nstep; seed = 1, rng = RandomNumbers.Xorshifts.Xoroshiro128Plus())
         check_prices(model, rfCurve, mc_xoro, standard_payoffs(), VG_REF; toll = 0.8)
     end
 

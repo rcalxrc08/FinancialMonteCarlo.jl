@@ -31,11 +31,15 @@ FinancialMonteCarlo.ImpliedCurve
 
 ```@docs
 MonteCarloConfiguration
+FinancialMonteCarlo.AbstractMethod
+FinancialMonteCarlo.execution_mode
+FinancialMonteCarlo.with_mode
+FinancialMonteCarlo.AbstractSampling
 FinancialMonteCarlo.StandardMC
 FinancialMonteCarlo.AntitheticMC
-FinancialMonteCarlo.SobolMode
-FinancialMonteCarlo.PrescribedMC
+FinancialMonteCarlo.SobolMC
 FinancialMonteCarlo.ControlVariates
+FinancialMonteCarlo.AbstractMode
 FinancialMonteCarlo.SerialMode
 FinancialMonteCarlo.MultiThreading
 FinancialMonteCarlo.MultiProcess

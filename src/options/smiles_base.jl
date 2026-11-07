@@ -16,6 +16,9 @@ end
 
 maturity(smile::AbstractSmile) = smile.T
 
+# The strikes and the flags move to the device of the mode, see to_mode
+Adapt.adapt_structure(to, smile::OptionSmile{Option}) where {Option} = OptionSmile{Option}(smile.T, Adapt.adapt(to, smile.K), Adapt.adapt(to, smile.isCall))
+
 function smile_to_options(smile::AbstractSmile{T}) where {T}
     return T.(smile.T, smile.K, smile.isCall)
 end

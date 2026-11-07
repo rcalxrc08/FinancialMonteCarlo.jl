@@ -1,4 +1,4 @@
-function simulate!(X, mcProcess::HestonProcess, rfCurve::AbstractZeroRateCurve, mcBaseData::SerialSobolMonteCarloConfig, T::Number)
+function simulate!(X, mcProcess::HestonProcess, rfCurve::AbstractZeroRateCurve, mcBaseData::SobolConfig, T::Number)
     S0 = mcProcess.underlying.S0
     Nstep = mcBaseData.Nstep
     σ = mcProcess.σ

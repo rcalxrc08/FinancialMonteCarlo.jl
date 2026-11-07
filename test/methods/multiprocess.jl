@@ -7,7 +7,7 @@ worker_ids = addprocs(2; exeflags = "--project=$(Base.active_project())")
 @everywhere using FinancialMonteCarlo, ForwardDiff
 # Differentiated functions must exist on the workers. @everywhere defines them in Main.
 @everywhere begin
-    mp_config() = MonteCarloConfiguration(4000, 5, FinancialMonteCarlo.MultiProcess(FinancialMonteCarlo.SerialMode(), 4, [11, 12, 13, 14]))
+    mp_config() = MonteCarloConfiguration(4000, 5; mode = FinancialMonteCarlo.MultiProcess(4), seed = [11, 12, 13, 14])
     mp_model(s) = BlackScholesProcess(0.2, Underlying(s, 0.01))
     mp_eu(k) = EuropeanOption(1.0, k)
     mp_by_vol(s) = pricer(BlackScholesProcess(s, Underlying(100.0, 0.01)), ZeroRate(0.02), mp_config(), mp_eu(100.0))
@@ -23,10 +23,9 @@ end
     eu, fw = EuropeanOption(T, K), Forward(T)
     Nstep_ = 5
     seeds = [11, 12, 13, 14]
-    mode(rng = MersenneTwister()) = FMC.MultiProcess(FMC.SerialMode(0, rng), 4, seeds)
-    process(Nsim_, method = FMC.StandardMC(), args...) = MonteCarloConfiguration(Nsim_, Nstep_, method, mode(), args...)
+    process(Nsim_, sampling = FMC.StandardMC(); kwargs...) = MonteCarloConfiguration(Nsim_, Nstep_; sampling = sampling, mode = FMC.MultiProcess(4), seed = seeds, kwargs...)
     mc_mp = process(4000)
-    batches = [MonteCarloConfiguration(1000, Nstep_, FMC.StandardMC(), FMC.SerialMode(seed)) for seed in seeds]
+    batches = [MonteCarloConfiguration(1000, Nstep_; seed = seed) for seed in seeds]
     on_serial(f) = mean(f(batch) for batch in batches)
 
     @testset "prices are the average of the serial batches" begin
@@ -43,7 +42,7 @@ end
     end
 
     @testset "reproducible with $name" for (name, rng) in (("MersenneTwister", MersenneTwister()), ("Xoshiro", Xoshiro()), ("default_rng", Random.default_rng()))
-        mc_rng = MonteCarloConfiguration(1000, Nstep_, mode(rng))
+        mc_rng = process(1000; rng = rng)
         prices = [pricer(model, rfCurve, mc_rng, eu) for _ = 1:5]
         @test allequal(prices)
     end
@@ -74,14 +73,14 @@ end
         @test FMC.batch_sizes(process(10, FMC.AntitheticMC())) == [4, 2, 2, 2]
         @test size(simulate(model, rfCurve, process(10, FMC.AntitheticMC()), T), 1) == 10
         @test_throws ArgumentError pricer(model, rfCurve, process(3), eu)
-        @test [mode_.seed for mode_ in FMC.MultiProcess(FMC.SerialMode(5), 2).sub_modes] == [6, 7]
-        @test length(FMC.MultiProcess().sub_modes) == nworkers()
-        @test_throws AssertionError FMC.MultiProcess(FMC.SerialMode(), 2, [1])
-        @test_throws AssertionError FMC.MultiProcess(FMC.SerialMode(), 0)
+        @test [state.seed for state in MonteCarloConfiguration(10, 1; mode = FMC.MultiProcess(2), seed = 5).rng] == [6, 7]
+        @test FMC.MultiProcess().nbatches == nworkers()
+        @test_throws AssertionError MonteCarloConfiguration(10, 1; mode = FMC.MultiProcess(2), seed = [1])
+        @test_throws AssertionError FMC.MultiProcess(0)
     end
 
     @testset "control variates" begin
-        pilot = MonteCarloConfiguration(1000, Nstep_, FMC.StandardMC(), FMC.SerialMode(1))
+        pilot = MonteCarloConfiguration(1000, Nstep_; seed = 1)
         for (variate, payoff_) in ((fw, eu), (eu, fw))
             mc_cv = process(40_000, FMC.ControlVariates(variate, pilot))
             price = pricer(model, rfCurve, mc_cv, payoff_)
@@ -91,11 +90,10 @@ end
     end
 
     @testset "not supported" begin
-        @test_throws ArgumentError pricer(model, rfCurve, process(1024, FMC.SobolMode()), eu)
-        @test_throws ArgumentError pricer(model, rfCurve, process(4000, FMC.StandardMC(), false), eu)
-        @test_throws ArgumentError FMC.MultiProcess(FMC.SerialMode(0, local_rng()), 2)
+        @test_throws ArgumentError process(1024, FMC.SobolMC())
+        @test_throws ArgumentError process(4000; reseed = false)
+        @test_throws ArgumentError MonteCarloConfiguration(10, 1; mode = FMC.MultiProcess(2), rng = local_rng())
         @test_throws MethodError FMC.MultiProcess(FMC.CudaMode())
-        @test_throws MethodError FMC.MultiProcess(FMC.MultiThreading())
     end
 
     @testset "forward automatic differentiation" begin

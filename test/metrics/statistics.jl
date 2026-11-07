@@ -26,7 +26,7 @@ include("../testutils.jl")
         curve_32 = ZeroRate(Float32(r))
         eu_32 = EuropeanOption(Float32(T), Float32(K))
         smile_32 = FinancialMonteCarlo.EuropeanOptionSmile(Float32(T), Float32[K, K + 10], [true, false])
-        threaded = MonteCarloConfiguration(Nsim_small, Nstep_small, FinancialMonteCarlo.MultiThreading(FinancialMonteCarlo.SerialMode(), 2, [1, 2]))
+        threaded = MonteCarloConfiguration(Nsim_small, Nstep_small; mode = FinancialMonteCarlo.MultiThreading(2), seed = [1, 2])
         for config in (mc_small, threaded)
             @test pricer(model_32, curve_32, config, eu_32) isa Float32
             @test variance(model_32, curve_32, config, eu_32) isa Float32

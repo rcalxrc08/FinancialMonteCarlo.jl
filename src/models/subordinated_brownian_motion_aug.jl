@@ -35,7 +35,7 @@ function subordinated_setup(mcProcess::AnySubordinatedBrownianMotion, mcBaseData
     return drifts, type_sub, mcProcess.sigma * zero(type_sub) * 0 * drift_of_step(drifts, 1)
 end
 
-function simulate!(X, mcProcess::AnySubordinatedBrownianMotion, mcBaseData::PseudoRandomConfig, T::Number)
+function simulate!(X, mcProcess::AnySubordinatedBrownianMotion, mcBaseData::MonteCarloConfiguration, T::Number)
     sigma = mcProcess.sigma
     θ = mcProcess.θ
     drifts, type_sub, isDualZero = subordinated_setup(mcProcess, mcBaseData, T)

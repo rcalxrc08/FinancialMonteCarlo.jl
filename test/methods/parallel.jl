@@ -5,12 +5,11 @@ using Distributed, ForwardDiff, Random, Statistics, VectorizedRNG
     model = BlackScholesProcess(sigma, Underlying(S0, d))
     eu = EuropeanOption(T, K)
 
-    @testset "$name" for (name, mode) in [
-        ("MultiThreading", FinancialMonteCarlo.MultiThreading()),
-        ("MultiProcess", FinancialMonteCarlo.MultiProcess()),
-        ("VectorizedRNG", FinancialMonteCarlo.SerialMode(10, local_rng())),
+    @testset "$name" for (name, mc_par) in [
+        ("MultiThreading", MonteCarloConfiguration(Nsim, Nstep; mode = FinancialMonteCarlo.MultiThreading())),
+        ("MultiProcess", MonteCarloConfiguration(Nsim, Nstep; mode = FinancialMonteCarlo.MultiProcess())),
+        ("VectorizedRNG", MonteCarloConfiguration(Nsim, Nstep; seed = 10, rng = local_rng())),
     ]
-        mc_par = MonteCarloConfiguration(Nsim, Nstep, mode)
         @test abs(pricer(model, rfCurve, mc_par, eu) - BS_CALL_REF.eu) < 1.0
         prices = pricer(model, rfCurve, mc_par, [eu, eu])
         @test prices[1] ≈ prices[2]
@@ -24,9 +23,9 @@ end
     eu, fw = EuropeanOption(T, K), Forward(T)
     Nstep_ = 5
     seeds = [11, 12, 13, 14]
-    threaded(Nsim_, method = FMC.StandardMC(), args...) = MonteCarloConfiguration(Nsim_, Nstep_, method, FMC.MultiThreading(FMC.SerialMode(), 4, seeds), args...)
+    threaded(Nsim_, sampling = FMC.StandardMC(); kwargs...) = MonteCarloConfiguration(Nsim_, Nstep_; sampling = sampling, mode = FMC.MultiThreading(4), seed = seeds, kwargs...)
     mc_mt = threaded(4000)
-    batches = [MonteCarloConfiguration(1000, Nstep_, FMC.StandardMC(), FMC.SerialMode(seed)) for seed in seeds]
+    batches = [MonteCarloConfiguration(1000, Nstep_; seed = seed) for seed in seeds]
     on_serial(f) = mean(f(batch) for batch in batches)
     function serial_paths()
         foreach(FMC.set_seed!, batches)
@@ -61,13 +60,13 @@ end
     end
 
     @testset "the generators are not shared" begin
-        rngs = [mode.rng for mode in mc_mt.parallelMode.sub_modes]
+        rngs = [state.rng for state in mc_mt.rng]
         @test allunique(objectid.(rngs))
-        @test allunique(pricer(model, rfCurve, MonteCarloConfiguration(1000, Nstep_, FMC.StandardMC(), FMC.SerialMode(seed)), eu) for seed in seeds)
+        @test allunique(pricer(model, rfCurve, MonteCarloConfiguration(1000, Nstep_; seed = seed), eu) for seed in seeds)
     end
 
     @testset "reproducible with $name" for (name, rng) in (("MersenneTwister", MersenneTwister()), ("Xoshiro", Xoshiro()), ("default_rng", Random.default_rng()))
-        mc_rng = MonteCarloConfiguration(1000, Nstep_, FMC.MultiThreading(FMC.SerialMode(0, rng), 4, seeds))
+        mc_rng = MonteCarloConfiguration(1000, Nstep_; mode = FMC.MultiThreading(4), seed = seeds, rng = rng)
         prices = [pricer(model, rfCurve, mc_rng, eu) for _ = 1:50]
         @test allequal(prices)
     end
@@ -101,39 +100,40 @@ end
     end
 
     @testset "seeds" begin
-        @test [mode.seed for mode in FMC.MultiThreading(FMC.SerialMode(5), 2).sub_modes] == [6, 7]
-        @test length(FMC.MultiThreading(FMC.SerialMode(), Threads.nthreads() + 1).sub_modes) == Threads.nthreads() + 1
-        @test_throws AssertionError FMC.MultiThreading(FMC.SerialMode(), 2, [1])
-        @test_throws AssertionError FMC.MultiThreading(FMC.SerialMode(), 0)
+        @test [state.seed for state in MonteCarloConfiguration(10, 1; mode = FMC.MultiThreading(2), seed = 5).rng] == [6, 7]
+        @test length(MonteCarloConfiguration(10, 1; mode = FMC.MultiThreading()).rng) == Threads.nthreads()
+        @test_throws AssertionError MonteCarloConfiguration(10, 1; mode = FMC.MultiThreading(2), seed = [1])
+        @test_throws ArgumentError MonteCarloConfiguration(10, 1; seed = [1, 2])
+        @test_throws AssertionError FMC.MultiThreading(0)
     end
 
-    @testset "init_rng = false continues the streams of the batches" begin
-        mc_stream = threaded(4000, FMC.StandardMC(), false)
+    @testset "reseed = false continues the streams of the batches" begin
+        mc_stream = threaded(4000; reseed = false)
         first_price = pricer(model, rfCurve, mc_stream, eu)
         @test first_price ≈ pricer(model, rfCurve, mc_mt, eu)
         @test pricer(model, rfCurve, mc_stream, eu) != first_price
     end
 
     @testset "control variates" begin
-        pilot = MonteCarloConfiguration(1000, Nstep_, FMC.StandardMC(), FMC.SerialMode(1))
+        pilot = MonteCarloConfiguration(1000, Nstep_; seed = 1)
         for (variate, payoff_) in ((fw, eu), (eu, fw))
-            mc_cv = MonteCarloConfiguration(40_000, Nstep_, FMC.ControlVariates(variate, pilot), FMC.MultiThreading(FMC.SerialMode(), 4, seeds))
+            mc_cv = threaded(40_000, FMC.ControlVariates(variate, pilot))
             price = pricer(model, rfCurve, mc_cv, payoff_)
             @test price == pricer(model, rfCurve, mc_cv, payoff_)
             @test abs(price - pricer(model, rfCurve, threaded(40_000), payoff_)) < 1.0
         end
         cv_method = FMC.ControlVariates(fw, pilot)
         price = pricer(model, rfCurve, threaded(4000, cv_method), eu)
-        mc_stream = threaded(4000, cv_method, false)
+        mc_stream = threaded(4000, cv_method; reseed = false)
         @test pricer(model, rfCurve, mc_stream, eu) ≈ price
         @test pricer(model, rfCurve, mc_stream, eu) != price
     end
 
     @testset "not supported" begin
-        @test_throws ArgumentError pricer(model, rfCurve, threaded(1024, FMC.SobolMode()), eu)
+        @test_throws ArgumentError threaded(1024, FMC.SobolMC())
+        @test_throws ArgumentError threaded(1024, FMC.ControlVariates(fw, MonteCarloConfiguration(100, 1), FMC.SobolMC()))
         @test_throws MethodError FMC.MultiThreading(FMC.CudaMode())
-        @test_throws MethodError FMC.MultiThreading(FMC.MultiThreading())
-        @test_throws ArgumentError FMC.MultiThreading(FMC.SerialMode(0, local_rng()), 2)
+        @test_throws ArgumentError MonteCarloConfiguration(10, 1; mode = FMC.MultiThreading(2), rng = local_rng())
     end
 
     @testset "forward automatic differentiation" begin
@@ -150,7 +150,7 @@ end
 
 # CudaMode exists without CUDA, so that the package extensions of other packages can dispatch on it.
 @testset "CudaMode without CUDA" begin
-    mode = FinancialMonteCarlo.CudaMode(1, 2)
+    mode = FinancialMonteCarlo.CudaMode()
     @test mode isa FinancialMonteCarlo.AbstractCudaMode
-    @test (mode.seed_cpu, mode.seed_gpu) == (1, 2)
+    @test_throws ArgumentError MonteCarloConfiguration(10, 1; mode = mode)
 end

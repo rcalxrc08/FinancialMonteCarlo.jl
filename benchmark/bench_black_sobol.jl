@@ -11,7 +11,7 @@ D = 90.0;
 Nsim = 10000;
 Nstep = 30;
 sigma = 0.2;
-mc = MonteCarloConfiguration(Nsim, Nstep, FinancialMonteCarlo.SobolMode());
+mc = MonteCarloConfiguration(Nsim, Nstep; sampling = FinancialMonteCarlo.SobolMC());
 toll = 1e-3;
 
 rfCurve = ZeroRate(r);

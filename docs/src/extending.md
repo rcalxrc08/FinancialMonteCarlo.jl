@@ -45,10 +45,10 @@ A model that needs its own time stepping can still support all of them with a si
 - `path_sides(X, mcConfig)`: the paths to fill with the sign of their normal draws, all of them,
   or the two halves with antithetic variates;
 - `draw_buffer(mcConfig, type, N)` and `draw_normals!(Z, mcConfig)`: buffers and normal draws on
-  the device of the configuration (CPU, or GPU with `CudaMode`).
+  the device of the mode of the configuration (CPU, or GPU with `CudaMode`).
 
 Sobol sequences draw path by path, so they need a separate method dispatching on
-`FinancialMonteCarlo.SerialSobolMonteCarloConfig`.
+`FinancialMonteCarlo.SobolConfig`, a `MonteCarloConfiguration` with `SobolMC` sampling.
 
 ## A new payoff
 
@@ -85,5 +85,5 @@ To keep dual numbers working:
 
 - keep numeric fields parametric (`CappedCall` uses one shared parameter, the built-in structs one
   per field) so that they can hold dual numbers;
-- allocate with the type returned by `FinancialMonteCarlo.predict_output_type_zero`, never `Float64`;
+- allocate with the number type returned by `FinancialMonteCarlo.price_type(inputs...)`, never `Float64`;
 - wrap assertions and other non differentiable code in `ChainRulesCore.@ignore_derivatives`.

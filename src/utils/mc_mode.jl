@@ -1,57 +1,82 @@
-#Parallel Modes
-abstract type BaseMode end
+# Pricing methods, execution modes and sampling schemes.
+#
+# - A method (AbstractMethod) is what pricer dispatches on: a MonteCarloConfiguration here, a Fourier method in
+#   FinancialFFT, a Vibrato method in VibratoMonteCarlo. Every method carries its execution mode.
+# - A mode (AbstractMode) says where and how a method runs: serial, on threads or workers, on the GPU. It holds no
+#   seed and no generator, so the methods without randomness can use it too.
+# - A sampling scheme (AbstractSampling) says how a Monte Carlo method draws its paths.
+
+"Abstract type of the pricing methods: every package implementing `pricer(model, zero_rate, method, payoff)` subtypes it."
+abstract type AbstractMethod end
 
 """
-    SerialMode(seed = 0, rng = MersenneTwister())
+    execution_mode(method)
 
-Single threaded simulation drawing from `rng`, which is reset to `seed` by every metric.
-Any `Random.AbstractRNG` can be used.
+The [`FinancialMonteCarlo.AbstractMode`](@ref) the pricing `method` runs in.
 """
-struct SerialMode{rngType <: Random.AbstractRNG} <: BaseMode
-    seed::Int64
-    rng::rngType
-    function SerialMode(seed::num = 0, rng::rngType = MersenneTwister()) where {num <: Integer, rngType <: Random.AbstractRNG}
-        return new{rngType}(Int64(seed), rng)
-    end
-end
-abstract type ParallelMode <: BaseMode end
+execution_mode(method::AbstractMethod) = method.mode
+
+"""
+    with_mode(method, mode)
+
+A copy of the pricing `method` that runs in `mode`.
+"""
+with_mode(method::AbstractMethod, mode) = @set method.mode = mode
+
+## Execution modes
+"Abstract type of the execution modes: where and how a pricing method runs."
+abstract type AbstractMode end
+
+"""
+    SerialMode()
+
+Execution on one thread of the CPU (the default mode of every method).
+"""
+struct SerialMode <: AbstractMode end
+
+abstract type ParallelMode <: AbstractMode end
 
 # Defined here and not in the CUDA extension: an extension can only add methods, and the package extensions of other
 # packages can dispatch on these types only if they exist without CUDA.
 abstract type AbstractCudaMode <: ParallelMode end
 
 """
-    CudaMode(seed_cpu = 0, seed_gpu = 0, rng = MersenneTwister())
+    CudaMode()
 
-Simulation on the GPU, which needs `using CUDA`. Every metric resets `rng` to `seed_cpu` and the CURAND generator to `seed_gpu`.
+Execution on the GPU, which needs `using CUDA`. The paths, and the results of a smile, stay on the device.
 """
-struct CudaMode{rngType <: Random.AbstractRNG} <: AbstractCudaMode
-    seed_cpu::Int64
-    seed_gpu::Int64
-    rng::rngType
-    function CudaMode(seed_cpu::num = 0, seed_gpu::num2 = 0, rng::rngType = MersenneTwister()) where {num <: Integer, num2 <: Integer, rngType <: Random.AbstractRNG}
-        return new{rngType}(Int64(seed_cpu), Int64(seed_gpu), rng)
-    end
-end
+struct CudaMode <: AbstractCudaMode end
+
+# Where the arrays of a mode live. An input is moved there when a metric starts, once (to_mode): a smile with its strikes
+# on the host is priced in CudaMode, and one with its strikes on the GPU in the other modes. The results stay where the
+# mode computes them. Adapt.adapt rebuilds the structs whose arrays move; the CUDA extension adds the adaptors.
+struct HostAdaptor end
+mode_adaptor(::AbstractMode) = HostAdaptor()
+to_mode(x, mode::AbstractMode) = Adapt.adapt(mode_adaptor(mode), x)
 
 # The modes splitting the paths into batches, see batches.jl
 abstract type AbstractBatchedMode <: ParallelMode end
 abstract type AbstractMultiThreading <: AbstractBatchedMode end
 abstract type AbstractMultiProcess <: AbstractBatchedMode end
 
+nbatches(mode::AbstractBatchedMode) = mode.nbatches
+
+function check_nbatches(nbatches::Integer)
+    ChainRulesCore.@ignore_derivatives @assert nbatches > 0 "Number of batches must be positive"
+end
+
 # Number of batches of MultiProcess by default: the workers, in the Distributed extension.
 function default_nbatches end
 
-function check_distributed()
-    ChainRulesCore.@ignore_derivatives isnothing(Base.get_extension(@__MODULE__, :FinancialMonteCarloDistributedExt)) && throw(ArgumentError("MultiProcess needs `using Distributed`"))
-end
+check_extension(name::Symbol, message) = ChainRulesCore.@ignore_derivatives isnothing(Base.get_extension(@__MODULE__, name)) && throw(ArgumentError(message))
+check_distributed() = check_extension(:FinancialMonteCarloDistributedExt, "MultiProcess needs `using Distributed`")
 
 """
-    MultiProcess(sub_mod = SerialMode(), nbatches = nworkers(), seeds = sub_mod.seed .+ (1:nbatches))
+    MultiProcess(nbatches = nworkers())
 
 Parallel mode splitting the paths into `nbatches` batches priced on the workers of `Distributed`, which
-needs `using Distributed`, each with its own seed from `seeds` and its own copy of the generator of
-`sub_mod`, a [`FinancialMonteCarlo.SerialMode`](@ref). The result does not depend on the number of workers, which take the
+needs `using Distributed`. Each batch has its own seed and its own copy of the generator of the
+[`MonteCarloConfiguration`](@ref), so the result does not depend on the number of workers, which take the
 next batch when they finish one. Prices are the averages of the batch prices, weighted by their number of paths.
 
 The workers must load the package and everything the priced objects use (`@everywhere using FinancialMonteCarlo`).
@@ -60,31 +85,28 @@ an anonymous function defined only on the main process raises an error.
 `simulate` and `distribution` send all the paths back to the main process, which can take longer
 than simulating them; the other metrics send back only their results.
 
-`init_rng = false`, generators that cannot be copied (VectorizedRNG) and [`FinancialMonteCarlo.SobolMode`](@ref)
+`reseed = false`, generators that cannot be copied (VectorizedRNG) and [`FinancialMonteCarlo.SobolMC`](@ref)
 are not supported. Of the automatic differentiation backends, only the forward ones are supported.
 """
-struct MultiProcess{modeType <: SerialMode} <: AbstractMultiProcess
-    sub_modes::Vector{modeType}
-    function MultiProcess(sub_mod::SerialMode = SerialMode(), nbatches::Union{Int64, Nothing} = nothing, seeds::Union{Array{Int64}, Nothing} = nothing)
+struct MultiProcess <: AbstractMultiProcess
+    nbatches::Int64
+    function MultiProcess(nbatches::Union{Integer, Nothing} = nothing)
         check_distributed()
-        nbatches_ = something(nbatches, default_nbatches())
-        sub_modes = batch_modes(sub_mod, nbatches_, something(seeds, sub_mod.seed .+ collect(1:nbatches_)))
-        return new{eltype(sub_modes)}(sub_modes)
+        nbatches_ = Int64(something(nbatches, default_nbatches()))
+        check_nbatches(nbatches_)
+        return new(nbatches_)
     end
 end
 
-#Numerical Modes, keyholes for modes different than Monte Carlo
-abstract type AbstractMethod end
-abstract type AbstractMonteCarloMethod <: AbstractMethod end
+## Sampling schemes of the Monte Carlo methods
+"Abstract type of the sampling schemes of a [`MonteCarloConfiguration`](@ref)."
+abstract type AbstractSampling end
 
-"Plain Monte Carlo sampling (the default method of [`MonteCarloConfiguration`](@ref))."
-struct StandardMC <: AbstractMonteCarloMethod end
+"Plain Monte Carlo sampling (the default sampling of [`MonteCarloConfiguration`](@ref))."
+struct StandardMC <: AbstractSampling end
 
 "Antithetic variates: the second half of the paths uses the negated normals of the first half. Requires an even number of paths."
-struct AntitheticMC <: AbstractMonteCarloMethod end
+struct AntitheticMC <: AbstractSampling end
 
-"Quasi Monte Carlo sampling with Sobol low discrepancy sequences."
-struct SobolMode <: AbstractMonteCarloMethod end
-
-"Reserved for simulations from prescribed random numbers; not implemented by the built-in models."
-struct PrescribedMC <: AbstractMonteCarloMethod end
+"Quasi Monte Carlo sampling with Sobol low discrepancy sequences. Only in [`FinancialMonteCarlo.SerialMode`](@ref)."
+struct SobolMC <: AbstractSampling end

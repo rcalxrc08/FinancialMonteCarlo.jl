@@ -9,7 +9,7 @@ D = 90.0;
 Nsim = 10000;
 Nstep = 30;
 sigma = 0.2;
-mc = MonteCarloConfiguration(Nsim, Nstep, FinancialMonteCarlo.MultiProcess(FinancialMonteCarlo.SerialMode(), 12));
+mc = MonteCarloConfiguration(Nsim, Nstep; mode = FinancialMonteCarlo.MultiProcess(12));
 toll = 1e-3;
 rfCurve = ZeroRate(r);
 FwdData = Forward(T)

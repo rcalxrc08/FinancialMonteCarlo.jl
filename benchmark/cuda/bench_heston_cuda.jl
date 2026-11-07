@@ -17,7 +17,7 @@ lambda = 0.01;
 rho = 0.0;
 mc = MonteCarloConfiguration(Nsim, Nstep);
 
-mc_2 = MonteCarloConfiguration(Nsim, Nstep, FinancialMonteCarlo.CudaMode());
+mc_2 = MonteCarloConfiguration(Nsim, Nstep; mode = FinancialMonteCarlo.CudaMode());
 toll = 0.8;
 
 rfCurve = ZeroRate(r);

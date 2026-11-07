@@ -15,7 +15,7 @@ Nsim = 10000;
 Nstep = 30;
 sigma = 0.2;
 mc = MonteCarloConfiguration(Nsim, Nstep);
-mc1 = MonteCarloConfiguration(Nsim, Nstep, FinancialMonteCarlo.AntitheticMC());
+mc1 = MonteCarloConfiguration(Nsim, Nstep; sampling = FinancialMonteCarlo.AntitheticMC());
 toll = 0.8
 
 rfCurve = ZeroRate(r);

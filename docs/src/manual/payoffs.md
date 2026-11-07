@@ -52,11 +52,13 @@ FinancialMonteCarlo.EuropeanOptionSmile(1.0, [90.0, 100.0, 110.0], [false, true,
 
 In `CudaMode`, `pricer`, `variance`, `delta`, `rho` and `payoff` return a `CuArray`, so what follows
 can run on the GPU too; use `Array(prices)` to read them on the CPU. `confinter` returns a `Vector`
-of tuples. With the strikes on the GPU too, implied volatilities need no transfer:
+of tuples. The mode decides where a smile is priced: its strikes are moved to the device of the
+mode once per metric, whichever device they are on. With the strikes on the GPU already, implied
+volatilities need no transfer:
 
 ```julia
 smile = FinancialMonteCarlo.EuropeanOptionSmile(T, CuArray(K), CuArray(isCall))
-prices = pricer(model, rfCurve, MonteCarloConfiguration(Nsim, Nstep, FinancialMonteCarlo.CudaMode()), smile)
+prices = pricer(model, rfCurve, MonteCarloConfiguration(Nsim, Nstep; mode = FinancialMonteCarlo.CudaMode()), smile)
 volatilities = blsimpv.(S0, smile.K, r, T, prices, d, smile.isCall) # FinancialToolbox
 ```
 

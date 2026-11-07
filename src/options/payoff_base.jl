@@ -4,21 +4,24 @@ abstract type AbstractPayoff{numtype <: Number} end
 abstract type AbstractSmile{T} end
 
 """
-    ControlVariates(variate, conf_variate, method = StandardMC())
+    ControlVariates(variate, conf_variate, sampling = StandardMC())
 
-Control variates method for [`MonteCarloConfiguration`](@ref). A pilot simulation with
+Control variates sampling for [`MonteCarloConfiguration`](@ref). A pilot simulation with
 configuration `conf_variate` estimates the optimal coefficient and the price of the control
-`variate` (exact when `variate` is a [`Forward`](@ref)); the main simulation then uses `method`.
+`variate` (exact when `variate` is a [`Forward`](@ref)); the main simulation then uses `sampling`.
 The control must have the same maturity as the priced payoff.
 """
-struct ControlVariates{abstractPayoff <: AbstractPayoff{<:Number}, abstractMonteCarloConfiguration <: AbstractMonteCarloConfiguration, abstractMonteCarloMethod <: AbstractMonteCarloMethod} <: AbstractMonteCarloMethod
+struct ControlVariates{abstractPayoff <: AbstractPayoff{<:Number}, abstractMonteCarloConfiguration <: AbstractMonteCarloConfiguration, abstractSampling <: AbstractSampling} <: AbstractSampling
     variate::abstractPayoff
     conf_variate::abstractMonteCarloConfiguration
-    curr_method::abstractMonteCarloMethod
-    function ControlVariates(variate::T1, conf_variate::abstractMonteCarloConfiguration, curr_method::abstractMonteCarloMethod = StandardMC()) where {T1 <: AbstractPayoff{<:Number}, abstractMonteCarloConfiguration <: AbstractMonteCarloConfiguration, abstractMonteCarloMethod <: AbstractMonteCarloMethod}
-        return new{T1, abstractMonteCarloConfiguration, abstractMonteCarloMethod}(variate, conf_variate, curr_method)
+    sampling::abstractSampling
+    function ControlVariates(variate::T1, conf_variate::abstractMonteCarloConfiguration, sampling::abstractSampling = StandardMC()) where {T1 <: AbstractPayoff{<:Number}, abstractMonteCarloConfiguration <: AbstractMonteCarloConfiguration, abstractSampling <: AbstractSampling}
+        return new{T1, abstractMonteCarloConfiguration, abstractSampling}(variate, conf_variate, sampling)
     end
 end
+# The main simulation uses the sampling of the control variates
+check_sampling(cv::ControlVariates, Nsim::Integer) = check_sampling(cv.sampling, Nsim)
+check_sampling_mode(cv::ControlVariates, mode::AbstractMode) = check_sampling_mode(cv.sampling, mode)
 
 abstract type SingleNamePayoff{numtype <: Number} <: AbstractPayoff{numtype} end
 abstract type EuropeanPayoff{numtype <: Number} <: SingleNamePayoff{numtype} end

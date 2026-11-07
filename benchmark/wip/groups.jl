@@ -32,10 +32,10 @@ K = 100.0;
 const Nsim = 10000;
 const Nstep = 30;
 const std_mc = MonteCarloConfiguration(Nsim, Nstep);
-const anti_mc = MonteCarloConfiguration(Nsim, Nstep, FinancialMonteCarlo.AntitheticMC());
-const sobol_mc = MonteCarloConfiguration(Nsim, Nstep, FinancialMonteCarlo.SobolMode());
-const cv_mc = MonteCarloConfiguration(Nsim, Nstep, FinancialMonteCarlo.ControlVariates(Forward(T), MonteCarloConfiguration(100, 3)));
-const vect_mc = MonteCarloConfiguration(Nsim, Nstep, FinancialMonteCarlo.SerialMode(), 10, local_rng());
+const anti_mc = MonteCarloConfiguration(Nsim, Nstep; sampling = FinancialMonteCarlo.AntitheticMC());
+const sobol_mc = MonteCarloConfiguration(Nsim, Nstep; sampling = FinancialMonteCarlo.SobolMC());
+const cv_mc = MonteCarloConfiguration(Nsim, Nstep; sampling = FinancialMonteCarlo.ControlVariates(Forward(T), MonteCarloConfiguration(100, 3)));
+const vect_mc = MonteCarloConfiguration(Nsim, Nstep; seed = 10, rng = local_rng());
 
 const r = 0.02;
 const r_prev = 0.019999;

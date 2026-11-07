@@ -51,7 +51,7 @@ function heston_setup(mcProcess::HestonProcess, rfCurve::AbstractZeroRateCurve, 
     return κ_s, θ_s, drifts, dt, isDualZeroVol
 end
 
-function simulate!(X, mcProcess::HestonProcess, rfCurve::AbstractZeroRateCurve, mcBaseData::PseudoRandomConfig, T::Number)
+function simulate!(X, mcProcess::HestonProcess, rfCurve::AbstractZeroRateCurve, mcBaseData::MonteCarloConfiguration, T::Number)
     S0 = mcProcess.underlying.S0
     σ = mcProcess.σ
     ρ = mcProcess.ρ

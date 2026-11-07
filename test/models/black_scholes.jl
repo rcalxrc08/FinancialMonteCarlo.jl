@@ -67,7 +67,7 @@ include("../testutils.jl")
             @test all(payoffs[:, i] ≈ payoff(S, options[i], rfCurve, mc_small, 2 * T) for i in eachindex(options))
         end
 
-        batches = MonteCarloConfiguration(Nsim_small, Nstep_small, FinancialMonteCarlo.StandardMC(), FinancialMonteCarlo.MultiThreading(FinancialMonteCarlo.SerialMode(), 1, [1]))
+        batches = MonteCarloConfiguration(Nsim_small, Nstep_small; mode = FinancialMonteCarlo.MultiThreading(1), seed = [1])
         prices = pricer(model, rfCurve, batches, FinancialMonteCarlo.EuropeanOptionSmile(T, K_vec, isCall_vec))
         @test prices isa Vector{Float64}
         @test length(prices) == length(K_vec)

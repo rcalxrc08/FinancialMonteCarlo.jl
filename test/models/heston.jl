@@ -19,7 +19,7 @@ const HESTON_REF = (fwd = 98.8790717426047, eu = 7.9813557592924, barrier = 7.00
     @testset "antithetic agrees with standard for strong correlation" begin
         model_corr = HestonProcess(0.3, 0.2, 0.0, 2.0, -0.7, 0.04, Underlying(S0, d))
         mc_big = MonteCarloConfiguration(100_000, Nstep_small)
-        mc_big_anti = MonteCarloConfiguration(100_000, Nstep_small, FinancialMonteCarlo.AntitheticMC())
+        mc_big_anti = MonteCarloConfiguration(100_000, Nstep_small; sampling = FinancialMonteCarlo.AntitheticMC())
         for payoff_ in (EuropeanOption(T, 80.0, false), EuropeanOption(T, 120.0))
             # about 7 standard errors of the standard estimator
             @test pricer(model_corr, rfCurve, mc_big_anti, payoff_) ≈ pricer(model_corr, rfCurve, mc_big, payoff_) atol = 0.1
@@ -42,9 +42,9 @@ const HESTON_REF = (fwd = 98.8790717426047, eu = 7.9813557592924, barrier = 7.00
         model_rho(ρ, σ = 0.3) = HestonProcess(σ, 0.2, 0.0, 2.0, ρ, 0.04, Underlying(S0, d))
         eu = EuropeanOption(T, K)
         curves = (rfCurve, ZeroRate([r, r], T))
-        methods_ = (FinancialMonteCarlo.StandardMC(), FinancialMonteCarlo.AntitheticMC(), FinancialMonteCarlo.SobolMode())
+        methods_ = (FinancialMonteCarlo.StandardMC(), FinancialMonteCarlo.AntitheticMC(), FinancialMonteCarlo.SobolMC())
         @testset "$(nameof(typeof(curve))), $(nameof(typeof(method)))" for curve in curves, method in methods_
-            mc_ = MonteCarloConfiguration(Nsim_small, Nstep_small, method)
+            mc_ = MonteCarloConfiguration(Nsim_small, Nstep_small; sampling = method)
             f(ρ) = pricer(model_rho(ρ), curve, mc_, eu)
             h = 1e-5
             @test ForwardDiff.derivative(f, -0.5) ≈ (f(-0.5 + h) - f(-0.5 - h)) / (2h) atol = 1e-3

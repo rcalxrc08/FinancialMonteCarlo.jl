@@ -36,7 +36,7 @@ The Kou model, written as an SDE for the log price with a `ConstantRateJump`:
 ```julia
 using Random
 mcConfig = MonteCarloConfiguration(10_000, 30)
-rng = mcConfig.parallelMode.rng
+rng = FinancialMonteCarlo.host_rng(mcConfig)
 p, λ, λ₊, λ₋ = 0.3, 5.0, 30.0, 20.0
 
 drift(u, p_, t) = r - d - σ^2 / 2 - λ * (p / (λ₊ - 1) - (1 - p) / (λ₋ + 1))

@@ -31,10 +31,10 @@ reuse the same steps.
 There is no switch statement anywhere: the right simulation is selected by multiple dispatch on
 the types of the arguments. For example, the same `simulate` call on a [`BlackScholesProcess`](@ref) runs
 
-- standard Monte Carlo when `mcConfig` uses `StandardMC()`,
+- standard Monte Carlo when `mcConfig` uses `StandardMC()` sampling,
 - antithetic sampling when it uses `AntitheticMC()`,
-- Sobol low discrepancy sequences when it uses `SobolMode()`,
-- a GPU kernel when its parallel mode is a `CudaMode` (with CUDA.jl loaded),
+- Sobol low discrepancy sequences when it uses `SobolMC()`,
+- a GPU kernel when its mode is a `CudaMode` (with CUDA.jl loaded),
 
 and accounts for time dependent rates when `rfCurve` is a curve instead of a scalar.
 

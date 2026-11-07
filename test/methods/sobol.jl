@@ -1,7 +1,7 @@
 include("../testutils.jl")
 
 @testset "Sobol quasi Monte Carlo" begin
-    mc_sobol = MonteCarloConfiguration(Nsim, Nstep, FinancialMonteCarlo.SobolMode())
+    mc_sobol = MonteCarloConfiguration(Nsim, Nstep; sampling = FinancialMonteCarlo.SobolMC())
 
     @testset "Black-Scholes" begin
         model = BlackScholesProcess(sigma, Underlying(S0, d))

@@ -46,15 +46,13 @@ matrix per component. The element type is inferred from the inputs, so it can be
 New models implement the in-place `simulate!(S, mcProcess, zeroCurve, mcConfig, T)`.
 """
 function simulate(mcProcess::AbstractMonteCarloProcess, zeroCurve::AbstractZeroRateCurve, mcBaseData::AbstractMonteCarloConfiguration, T::Number)
-    price_type = predict_output_type_zero(mcProcess, zeroCurve, mcBaseData, T)
-    S = get_matrix_type(mcBaseData, mcProcess, price_type)
+    S = get_matrix_type(mcBaseData, mcProcess, price_type(mcProcess, zeroCurve, T))
     simulate!(S, mcProcess, zeroCurve, mcBaseData, T)
     return S
 end
 
 function simulate(mcProcess::VectorialMonteCarloProcess, zeroCurve::AbstractZeroRateCurve, mcBaseData::AbstractMonteCarloConfiguration, T::Number)
-    price_type = predict_output_type_zero(mcProcess, zeroCurve, mcBaseData, T)
-    matrix_type = get_matrix_type(mcBaseData, mcProcess, price_type)
+    matrix_type = get_matrix_type(mcBaseData, mcProcess, price_type(mcProcess, zeroCurve, T))
     S = matrix_type(undef, length(mcProcess.models))
     for i = 1:length(mcProcess.models)
         S[i] = eltype(S)(undef, mcBaseData.Nsim, mcBaseData.Nstep + 1)
@@ -70,8 +68,7 @@ Simulate the paths of an engine (e.g. [`BrownianMotion`](@ref)), which needs no 
 from time 0 to `T`. Returns an `Nsim × (Nstep + 1)` matrix, one path per row.
 """
 function simulate(mcProcess::AbstractMonteCarloEngine, mcBaseData::AbstractMonteCarloConfiguration, T::Number)
-    price_type = predict_output_type_zero(mcProcess, mcBaseData, T)
-    S = get_matrix_type(mcBaseData, mcProcess, price_type)
+    S = get_matrix_type(mcBaseData, mcProcess, price_type(mcProcess, T))
     simulate!(S, mcProcess, mcBaseData, T)
     return S
 end
@@ -87,8 +84,7 @@ end
 # end
 
 # function simulate_per_path(mcProcess::AbstractMonteCarloProcess, zeroCurve::AbstractZeroRateCurve, mcBaseData::AbstractMonteCarloConfiguration, T::Number)
-#     price_type = predict_output_type_zero(mcProcess, zeroCurve, mcBaseData, T)
-#     S = get_matrix_type(mcBaseData, mcProcess, price_type)
+#     S = get_matrix_type(mcBaseData, mcProcess, price_type(mcProcess, zeroCurve, T))
 #     #simulate!(S, mcProcess, zeroCurve, mcBaseData, T)
 # 	for i=1:mcBaseData.Nsim
 # 		# @views simulate_path!(X[i,:],rn)

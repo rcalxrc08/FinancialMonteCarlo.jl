@@ -2,7 +2,7 @@ include("../testutils.jl")
 using Mooncake, ForwardDiff, Random
 
 @testset "Mooncake" begin
-    mc_xo = MonteCarloConfiguration(100, Nstep_small, FinancialMonteCarlo.StandardMC(), FinancialMonteCarlo.SerialMode(0, Xoshiro()))
+    mc_xo = MonteCarloConfiguration(100, Nstep_small; rng = Xoshiro())
 
     @testset "Kou European call: gradient matches ForwardDiff" begin
         # x = [S0, σ, λ, p, λ₊, λ₋, r, d, T]

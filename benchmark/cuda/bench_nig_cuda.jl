@@ -18,7 +18,7 @@ mc = MonteCarloConfiguration(Nsim, Nstep);
 toll = 0.8;
 mc = MonteCarloConfiguration(Nsim, Nstep);
 
-mc_2 = MonteCarloConfiguration(Nsim, Nstep, FinancialMonteCarlo.CudaMode());
+mc_2 = MonteCarloConfiguration(Nsim, Nstep; mode = FinancialMonteCarlo.CudaMode());
 rfCurve = ZeroRate(r);
 
 FwdData = Forward(T)

@@ -19,16 +19,14 @@ struct GaussianCopulaNVariateProcess{num3 <: Number, numtype <: Number} <: NDime
         ChainRulesCore.@ignore_derivatives @assert sz[1] == sz[2]
         ChainRulesCore.@ignore_derivatives @assert length(models) == sz[1]
         ChainRulesCore.@ignore_derivatives @assert isposdef(rho)
-        zero_typed = predict_output_type_zero(models...) + zero(num3)
-        return new{num3, typeof(zero_typed)}(rho, models)
+        return new{num3, price_type(models..., num3)}(rho, models)
     end
     function GaussianCopulaNVariateProcess(rho::Matrix{num3}, models::BaseProcess...) where {num3 <: Number}
         sz = size(rho)
         ChainRulesCore.@ignore_derivatives @assert sz[1] == sz[2]
         ChainRulesCore.@ignore_derivatives @assert length(models) == sz[1]
         ChainRulesCore.@ignore_derivatives @assert isposdef(rho)
-        zero_typed = predict_output_type_zero(models...) + zero(num3)
-        return new{num3, typeof(zero_typed)}(rho, models)
+        return new{num3, price_type(models..., num3)}(rho, models)
     end
     function GaussianCopulaNVariateProcess(models::BaseProcess...)
         len_ = length(models)

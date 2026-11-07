@@ -13,7 +13,7 @@ using DifferentialEquations, Random
 
     @testset "Kou jump diffusion (log price)" begin
         p1, lam, lamp, lamm = 0.3, 5.0, 30.0, 20.0
-        rng = mc.parallelMode.rng
+        rng = FinancialMonteCarlo.host_rng(mc)
         drift(u, p, t) = r - d - sigma^2 / 2.0 - lam * (p1 / (lamp - 1) - (1 - p1) / (lamm + 1))
         diffusion(u, p, t) = sigma
         rate(u, p, t) = lam * T
@@ -23,7 +23,7 @@ using DifferentialEquations, Random
         payoffs = standard_payoffs()
         check_prices(model, rfCurve, mc, (fwd = payoffs.fwd,), (fwd = 98.8436678850961,); toll = 0.8)
         # the jumps draw from rng, which set_seed! must reset here too
-        mc_small_jumps = MonteCarloConfiguration(Nsim_small, Nstep_small, FinancialMonteCarlo.StandardMC(), FinancialMonteCarlo.SerialMode(0, rng))
+        mc_small_jumps = MonteCarloConfiguration(Nsim_small, Nstep_small; rng = rng)
         check_prices(model, rfCurve, mc_small_jumps, Base.structdiff(payoffs, NamedTuple{(:fwd,)}))
     end
 end

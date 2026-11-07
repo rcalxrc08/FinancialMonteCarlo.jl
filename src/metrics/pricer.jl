@@ -32,24 +32,25 @@ function pricer(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig
     return Price
 end
 
-function pricer(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig::AbstractMonteCarloConfiguration, abstractPayoff::AbstractSmile)
+function pricer(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig::AbstractMonteCarloConfiguration, smile::AbstractSmile)
+    abstractPayoff = to_mode(smile, execution_mode(mcConfig))
     set_seed!(mcConfig)
     T = maturity(abstractPayoff)
     S = simulate(mcProcess, rfCurve, mcConfig, T)
-    zero_typed = predict_output_type_zero(mcProcess, rfCurve, mcConfig, abstractPayoff)
-    return convert(AbstractArray{typeof(zero_typed)}, vec(mean(payoff(S, abstractPayoff, rfCurve, mcConfig, T), dims = 1)))
+    return convert(AbstractArray{price_type(mcProcess, rfCurve, abstractPayoff)}, vec(mean(payoff(S, abstractPayoff, rfCurve, mcConfig, T), dims = 1)))
 end
 
-get_matrix_type(mcConfig::MonteCarloConfiguration{<:Integer, <:Integer, <:AbstractMonteCarloMethod, <:BaseMode}, ::BaseProcess, price) = Matrix{typeof(price)}(undef, mcConfig.Nsim, mcConfig.Nstep + 1);
-get_array_type(mcConfig::MonteCarloConfiguration{<:Integer, <:Integer, <:AbstractMonteCarloMethod, <:BaseMode}, ::BaseProcess, price) = Array{typeof(price)}(undef, mcConfig.Nstep);
-get_matrix_type(::MonteCarloConfiguration{<:Integer, <:Integer, <:AbstractMonteCarloMethod, <:BaseMode}, ::VectorialMonteCarloProcess, price) = Array{Matrix{typeof(price)}};
+# The arrays of the paths with numbers of type T (see price_type), on the device of the mode
+get_matrix_type(mcConfig::MonteCarloConfiguration, ::BaseProcess, ::Type{T}) where {T <: Number} = array_type(mcConfig.mode){T}(undef, mcConfig.Nsim, mcConfig.Nstep + 1);
+get_array_type(mcConfig::MonteCarloConfiguration, ::BaseProcess, ::Type{T}) where {T <: Number} = array_type(mcConfig.mode){T}(undef, mcConfig.Nsim);
+get_matrix_type(mcConfig::MonteCarloConfiguration, ::VectorialMonteCarloProcess, ::Type{T}) where {T <: Number} = Array{array_type(mcConfig.mode){T, 2}};
 
-function pricer(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration, abstractPayoffs::Array{abstractPayoff_}) where {abstractPayoff_ <: AbstractPayoff}
+function pricer(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration, abstractPayoffs::Array{abstractPayoff_, N}) where {abstractPayoff_ <: AbstractPayoff, N}
     set_seed!(mcConfig)
     maxT = maturity(abstractPayoffs)
     S = simulate(mcProcess, rfCurve, mcConfig, maxT)
-    zero_typed = predict_output_type_zero(mcProcess, rfCurve, mcConfig, abstractPayoffs)
-    Prices::Array{typeof(zero_typed)} = [mean(payoff(S, abstractPayoff, rfCurve, mcConfig, maxT)) for abstractPayoff in abstractPayoffs]
+    T_price = price_type(mcProcess, rfCurve, abstractPayoffs)
+    Prices::Array{T_price, N} = [mean(payoff(S, abstractPayoff, rfCurve, mcConfig, maxT)) for abstractPayoff in abstractPayoffs]
 
     return Prices
 end
@@ -84,8 +85,8 @@ function pricer(mcProcess::MarketDataSet, rfCurve::AbstractZeroRateCurve, mcConf
     set_seed!(mcConfig)
     underlyings_payoff = keys(dict_)
     underlyings_payoff_cpl = get_underlyings_identifier(underlyings_payoff, keys(mcProcess))
-    zero_typed = predict_output_type_zero(rfCurve, mcConfig, collect(keys(collect(values(dict_)))), collect(values(mcProcess)))
-    price::typeof(zero_typed) = sum(pricer(mcProcess[under_cpl], rfCurve, mcConfig, extract_option_from_portfolio(under_cpl, dict_)) for under_cpl in unique(underlyings_payoff_cpl))
+    T_price = price_type(rfCurve, collect(values(dict_)), collect(values(mcProcess)))
+    price::T_price = sum(pricer(mcProcess[under_cpl], rfCurve, mcConfig, extract_option_from_portfolio(under_cpl, dict_)) for under_cpl in unique(underlyings_payoff_cpl))
 
     return price
 end

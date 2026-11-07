@@ -12,7 +12,7 @@ Nstep = 30;
 sigma = 0.2
 mc = MonteCarloConfiguration(Nsim, Nstep);
 
-mc_2 = MonteCarloConfiguration(Nsim, Nstep, FinancialMonteCarlo.CudaMode());
+mc_2 = MonteCarloConfiguration(Nsim, Nstep; mode = FinancialMonteCarlo.CudaMode());
 toll = 1e-3;
 
 rfCurve = ZeroRate(r);

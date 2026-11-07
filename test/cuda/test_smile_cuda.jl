@@ -13,7 +13,8 @@ rfCurve = ZeroRate(r);
 model = BlackScholesProcess(sigma, Underlying(S0, d));
 K = [80.0, 90.0, 100.0, 110.0, 120.0];
 isCall = [true, false, true, false, true];
-mc = MonteCarloConfiguration(Nsim, Nstep, FMC.StandardMC(), FMC.CudaMode(1, 2));
+mc = MonteCarloConfiguration(Nsim, Nstep; mode = FMC.CudaMode(), seed = 1);
+mc_cpu = FMC.with_mode(mc, FMC.SerialMode());
 
 @testset "$(nameof(Smile))" for Smile in (FMC.EuropeanOptionSmile, FMC.BinaryEuropeanOptionSmile)
     smile = Smile(T, K, isCall)
@@ -41,6 +42,16 @@ mc = MonteCarloConfiguration(Nsim, Nstep, FMC.StandardMC(), FMC.CudaMode(1, 2));
     @testset "strikes and flags of other array types" begin
         @test pricer(model, rfCurve, mc, Smile(T, K, BitVector(isCall))) ≈ pricer(model, rfCurve, mc, smile)
         @test pricer(model, rfCurve, mc, Smile(T, CuArray(K), CuArray(isCall))) ≈ pricer(model, rfCurve, mc, smile)
+    end
+
+    # The mode decides where the smile is priced: its strikes move there, once per metric.
+    @testset "strikes on the other device" begin
+        smile_gpu = Smile(T, CuArray(K), CuArray(isCall))
+        @test FMC.to_mode(smile, FMC.CudaMode()).K isa CuVector{Float64}
+        @test FMC.to_mode(smile_gpu, FMC.SerialMode()).K isa Vector{Float64}
+        @test pricer(model, rfCurve, mc_cpu, smile_gpu) isa Vector{Float64}
+        @test pricer(model, rfCurve, mc_cpu, smile_gpu) ≈ pricer(model, rfCurve, mc_cpu, smile)
+        @test variance(model, rfCurve, mc_cpu, smile_gpu) ≈ variance(model, rfCurve, mc_cpu, smile)
     end
 
     @testset "Float32 stays Float32" begin

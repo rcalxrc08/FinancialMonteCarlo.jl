@@ -17,8 +17,8 @@ models = [KouProcess(0.2, 3.0, 0.5, 25.0, 30.0, und), MertonProcess(0.2, 3.0, 0.
 
 @testset "$(nameof(typeof(model)))" for model in models
     @testset "$(nameof(typeof(method)))" for method in (FMC.StandardMC(), FMC.AntitheticMC())
-        mc = MonteCarloConfiguration(Nsim, Nstep, method, FMC.CudaMode(1, 2))
-        mc_cpu = MonteCarloConfiguration(Nsim, Nstep, method, FMC.SerialMode(3))
+        mc = MonteCarloConfiguration(Nsim, Nstep; sampling = method, mode = FMC.CudaMode(), seed = 1)
+        mc_cpu = MonteCarloConfiguration(Nsim, Nstep; sampling = method, seed = 3)
         # The generic method also works on a CuMatrix, launching a kernel for each jump.
         jump_method = which(FMC.add_jump_matrix!, Tuple{CuMatrix{Float64}, typeof(model), typeof(mc), Float64})
         @test jump_method.module === Base.get_extension(FMC, :FinancialMonteCarloCUDAExt)

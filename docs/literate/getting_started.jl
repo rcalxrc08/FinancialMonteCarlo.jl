@@ -52,7 +52,7 @@ variance(model, rfCurve, mcConfig, euOption)
 confinter(model, rfCurve, mcConfig, euOption, 0.99)
 
 # Antithetic variates reduce the variance at no extra cost (the number of paths must be even):
-mcAntithetic = MonteCarloConfiguration(10_000, 30, FinancialMonteCarlo.AntitheticMC())
+mcAntithetic = MonteCarloConfiguration(10_000, 30; sampling = FinancialMonteCarlo.AntitheticMC())
 variance(model, rfCurve, mcAntithetic, euOption)
 
 # The interval shrinks like one over the square root of the number of paths. Under Black-Scholes the
