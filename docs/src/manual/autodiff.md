@@ -31,8 +31,8 @@ f(x) = pricer(BlackScholesProcess(x[1], Underlying(x[2], 0.01)), ZeroRate(x[3]),
 ForwardDiff.gradient(f, [0.2, 100.0, 0.02])   # vega, delta, rho
 ```
 
-`ReverseDiff.gradient` works the same way. Internally, assertions and other non differentiable
-bookkeeping are wrapped in `ChainRulesCore.@ignore_derivatives`.
+`ReverseDiff.gradient` works the same way, but much more slowly (see below). Internally,
+assertions and other non differentiable bookkeeping are wrapped in `ChainRulesCore.@ignore_derivatives`.
 
 ## Mooncake.jl
 
@@ -57,6 +57,24 @@ price, (_, grad) = Mooncake.value_and_gradient!!(cache, f, x0)
 The gradient agrees with `ForwardDiff.gradient(f, x0)` to machine precision. Building the rule
 takes a while (about a minute and a half for the call above), after which each gradient costs a
 few times a plain pricing; reverse mode pays off when there are many parameters.
+
+## Choosing a backend
+
+Gradient of a European call with respect to `[S0, σ, r, d]`, 2 000 paths × 10 steps, minimum time:
+
+| Backend | Black-Scholes | Kou | allocations (Black-Scholes) |
+|:--|--:|--:|--:|
+| ForwardDiff, `gradient` | 0.53 ms | 0.97 ms | 29 |
+| Mooncake, `value_and_gradient!!` (rule prepared) | 2.5 ms | 3.9 ms | 96 |
+| ReverseDiff, `gradient` | 68 ms | 81 ms | 576 220 |
+| TaylorSeries, vega of order 2 | 4.0 ms | | 120 047 |
+
+Measured on an Intel Core i7-8550U with Julia 1.13. ForwardDiff carries all the partials through one
+simulation, so it is the fastest up to a few dozen parameters; Mooncake pays a fixed cost per
+gradient and is the choice for many parameters, such as the calibration of a large model.
+ReverseDiff records one tape entry per number of every path, which makes it two orders of
+magnitude slower than ForwardDiff here; prefer Mooncake for reverse mode. With `MultiThreading`
+and `MultiProcess` only the forward backends are supported.
 
 !!! warning
     The derivative of the Monte Carlo estimator is the estimator of the derivative only for

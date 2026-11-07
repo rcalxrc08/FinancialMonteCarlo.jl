@@ -46,6 +46,11 @@ Constructors check the parameters (positive volatilities and intensities, valid 
 and correlations, existence of the risk neutral drift, ...) and throw an `AssertionError` when they
 are not admissible.
 
+The Heston variance follows an Euler scheme floored at a tiny positive value (`sqrt(floatmin)` of
+its number type, about `1e-154` in `Float64` and `1e-19` in `Float32`) instead of zero, where the
+derivative of its square root is infinite. When the Feller condition `2κθ ≥ σ²` does not hold the
+floor is reached often; it is far enough from the subnormal numbers that this costs nothing.
+
 ## Engines
 
 | Engine | Constructor |

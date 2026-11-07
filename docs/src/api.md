@@ -32,6 +32,7 @@ FinancialMonteCarlo.ImpliedCurve
 ```@docs
 MonteCarloConfiguration
 FinancialMonteCarlo.AbstractMethod
+FinancialMonteCarlo.AbstractMonteCarloConfiguration
 FinancialMonteCarlo.execution_mode
 FinancialMonteCarlo.with_mode
 FinancialMonteCarlo.AbstractSampling
@@ -78,6 +79,7 @@ FinancialMonteCarlo.SubordinatedBrownianMotionVec
 ```@docs
 FinancialMonteCarlo.get_parameters
 FinancialMonteCarlo.set_parameters!
+FinancialMonteCarlo.price_type
 ```
 
 ## [Payoffs](@id api-payoffs)

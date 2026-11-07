@@ -23,7 +23,7 @@ variates with an odd `Nsim`, Sobol sequences in batches or on the GPU, `MultiPro
 |:--|:--|
 | `StandardMC()` | plain Monte Carlo (default) |
 | `AntitheticMC()` | antithetic variates: half of the paths use the negated normals of the other half. `Nsim` must be even |
-| `SobolMC()` | quasi Monte Carlo with Sobol sequences, only in `SerialMode` |
+| `SobolMC()` | quasi Monte Carlo with Sobol sequences, only in `SerialMode`: each path is one point of dimension `Nstep` (`2 Nstep` for Heston), after skipping the first `2^m - 1` points, `2^m ≤ Nstep · Nsim + 1 < 2^(m+1)` |
 | `ControlVariates(variate, conf, sampling = StandardMC())` | control variates: a pilot run with configuration `conf` estimates the optimal coefficient and the price of `variate` (exact for a [`Forward`](@ref)), then the main run uses `sampling`. `variate` must have the same maturity as the priced payoff |
 
 ## Execution modes

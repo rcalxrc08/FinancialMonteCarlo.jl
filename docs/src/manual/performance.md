@@ -34,6 +34,10 @@ figure is not regenerated when the documentation is built.
 - Antithetic variates halve the normal draws and usually the variance too, at no extra cost.
 - Constant rates are cheaper than curves, whose drift is integrated at every step.
 - On the CPU, `MultiThreading` splits the paths into batches priced on different threads; the
-  results do not depend on the number of threads.
+  results do not depend on the number of threads. The paths of all the steps are stored, so the
+  simulation is bound by memory traffic: 4 threads price 40 000 paths × 50 steps 2.8 times faster
+  than one.
+- For gradients, ForwardDiff is the fastest backend up to a few dozen parameters and Mooncake above;
+  ReverseDiff is about a hundred times slower, see [Automatic differentiation](@ref autodiff).
 - Keep the numeric type uniform: `Float32` inputs give `Float32` paths and prices, and a single
   `Float64` input promotes the whole computation.

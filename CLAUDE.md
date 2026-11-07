@@ -60,7 +60,7 @@ A model has **one `simulate!` body** for antithetic variates, constant and curve
 - `path_sides(X, mcConfig)`: all the paths or, with `AntitheticMC`, the two halves with the sign of their normal draws.
 - `draw_buffer`, `draw_normals!`, `subordinator_host`, `get_matrix_type`: buffers and draws on the device of the mode. The arrays come from `array_type(mode)`; a device adds its method of `array_type` and, for the arrays of its own type (`Z::CuArray`), of `draw_normals!` and `subordinator_host` ([ext/FinancialMonteCarloCUDAExt/](ext/FinancialMonteCarloCUDAExt/)). Models draw on the host from `host_rng(mcConfig)`.
 
-Sobol is the one separate body (`*_sobol.jl`, dispatching on `SobolConfig = MonteCarloConfiguration{<:SobolMC}`), because it draws path by path; it fills each path inside `on_sobol_paths`, a function barrier, because the type of a `SobolSeq` holds its dimension, known only at run time. The aliases `SobolConfig` and `BatchedConfig` are defined in [src/utils/mc_config.jl](src/utils/mc_config.jl).
+Sobol is the one separate body (`*_sobol.jl`, dispatching on `SobolConfig = MonteCarloConfiguration{<:SobolMC}`), because it draws path by path (the first `2^m - 1` points are skipped by `sobol_skip!`, which sets the state of the sequence in closed form: never call `Sobol.skip`, which draws every skipped point); it fills each path inside `on_sobol_paths`, a function barrier, because the type of a `SobolSeq` holds its dimension, known only at run time. The aliases `SobolConfig` and `BatchedConfig` are defined in [src/utils/mc_config.jl](src/utils/mc_config.jl).
 
 ### Configuration ([src/utils/](src/utils/))
 
@@ -92,6 +92,8 @@ AD (ForwardDiff, ReverseDiff, Mooncake, DualNumbers, TaylorSeries, HyperDualNumb
 - Structs are fully parametric on each numeric field and carry a promoted `numtype` parameter (e.g. `KouProcess{num, num1, …, numtype}`), computed in the inner constructor via `promote_type` or `zero(num1) + zero(num2)`.
 - Output element types come from `price_type(inputs...)` ([src/output_type.jl](src/output_type.jl)), a number type (`typeof(zero(T1) + zero(T2) + …)` over the inputs' `number_type`s), used to allocate path/price arrays of the right (possibly Dual) type — never hardcode `Float64` buffers. It works on types only (no array traversal, so GPU arrays and ReverseDiff tapes are untouched); `BaseProcess{T}` and `AbstractPayoff{T}` carry their type, anything else needs a `number_type` method (there is no catch-all, so a missing one is a `MethodError`, not a silently ignored input). `get_matrix_type`/`get_array_type(mcConfig, process, T)` take that type.
 - Assertions/validation and non-differentiable bookkeeping are wrapped in `ChainRulesCore.@ignore_derivatives` (needed for Zygote/ReverseDiff compatibility).
+- No Float64 literals or types in package code (`0.5 * x`, `max.(x, 0.0)`, `d = 0.0` promote Float32 inputs to Float64): use integers, `zero(x)`, `one(x)`, `x / 2`. `test/metrics/statistics.jl` checks that Float32 inputs give Float32 prices.
+- Floors must stay away from the subnormal numbers (`eps(0.0)` is one, and arithmetic on subnormals is ~100× slower): Heston floors its variance at `variance_floor(zero) = zero + sqrt(floatmin(eps(zero)))`.
 - Mooncake works with any RNG: `FinancialMonteCarloMooncakeExt` makes `set_seed!` a zero-derivative primitive, because seeding the default `MersenneTwister` ends in a foreigncall into libdSFMT. Mooncake's first rule build is slow (~2 min in `test/ad/mooncake.jl`).
 
 ### Optional dependencies
@@ -107,6 +109,10 @@ FinancialFFT, VibratoMonteCarlo and FinancialCalibrator (in `~/.julia/dev`) exte
 - New model: struct subtyping the appropriate abstract type (engine vs. process matters), holding its parameters (+ `underlying` for processes), and a `simulate!` method; copy the signature from an existing model.
 - New payoff: struct subtyping the right payoff family with its parameters (`T`, `K`, barriers…) and a `payoff`/`payout` method; all metrics then work automatically.
 - `get_parameters` / `set_parameters!` exist on models and payoffs and are tested — keep them consistent when adding fields.
+
+## Documentation
+
+Keep the docs in step with the code in the same commit: the manual pages in `docs/src/manual/` (configuration, models, payoffs, autodiff, performance), `docs/src/api.md` (every exported or documented name), `docs/src/extending.md`, the Literate tutorials in `docs/literate/`, the docstrings and this file. Measured numbers in the docs (performance and autodiff tables) say on which machine they were taken; refresh them when a change moves them.
 
 ## Caveats (from README)
 
