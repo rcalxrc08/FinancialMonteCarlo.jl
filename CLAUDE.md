@@ -114,6 +114,23 @@ FinancialFFT, VibratoMonteCarlo and FinancialCalibrator (in `~/.julia/dev`) exte
 
 Keep the docs in step with the code in the same commit: the manual pages in `docs/src/manual/` (configuration, models, payoffs, autodiff, performance), `docs/src/api.md` (every exported or documented name), `docs/src/extending.md`, the Literate tutorials in `docs/literate/`, the docstrings and this file. Measured numbers in the docs (performance and autodiff tables) say on which machine they were taken; refresh them when a change moves them.
 
+## Releasing
+
+1. Bump `version` in `Project.toml` on master (breaking changes: minor bump while 0.x), wait for CI to be green on Julia 1.10 and 1.x.
+2. Register by commenting on the release commit on GitHub, with release notes (sections: Breaking changes, New features, Performance, Bug fixes):
+   `gh api repos/rcalxrc08/FinancialMonteCarlo.jl/commits/<sha>/comments -F body=@notes.md`, where `notes.md` starts with `@JuliaRegistrator register` then `Release notes:`. JuliaRegistrator answers on the commit with the General PR; AutoMerge merges it in ~20 minutes.
+3. **Tag by hand**, TagBot usually does not: `git tag -a vX.Y.Z -m "FinancialMonteCarlo vX.Y.Z" <sha>`, `git push GitHub vX.Y.Z`, then `gh release create vX.Y.Z -R rcalxrc08/FinancialMonteCarlo.jl --title vX.Y.Z --notes-file <notes without the registrator lines> --verify-tag`.
+4. Check that `https://rcalxrc08.github.io/FinancialMonteCarlo.jl/stable/` serves the new version (see below).
+
+Push to the `GitHub` remote; `origin` (GitLab) has not been pushed since 0.5.2 and is many commits behind.
+
+### Docs deployment: open problem (2026-11-07)
+
+- For v0.6.0 the docs run of the tag pushed `v0.6.0/` and `stable/` to `gh-pages` and its Pages deployment was reported successful, but the site kept the previous deployment; a manual run on master (Actions > Documentation > Run workflow, or `gh workflow run Documentation.yml --ref master`) published it. 0.6.0 docs are live since then.
+- Commit 4383fdb changed `Documentation.yml` so that a tag run only pushes to `gh-pages` and then dispatches the workflow on master (`publish-tag` job). The hypothesis behind it (Pages does not serve deployments made from a tag) is **unverified**: no release has exercised it yet.
+- Since 4383fdb every Pages deployment (`actions/deploy-pages`) has hung in `syncing_files` / empty status and timed out after 10 minutes (three runs: push, re-run, fresh dispatch), while the docs job passes; githubstatus.com reported Pages operational. Deployments of 99df528 before it worked.
+- Next steps: re-run the Documentation workflow later; if Pages still hangs, `git revert 4383fdb` (restores the workflow that deployed at 20:48) and, after each release tag, dispatch the workflow on master by hand.
+
 ## Caveats (from README)
 
 - First- and second-order AD "works" for every payoff, including ones where it is meaningless (binary, barrier); second-order results are mostly useless.
