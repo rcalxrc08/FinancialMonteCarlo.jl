@@ -6,8 +6,7 @@ function simulate!(X, mcProcess::HestonProcess, rfCurve::AbstractZeroRateCurve, 
     κ_s, θ_s, drifts, dt, isDualZeroVol = heston_setup(mcProcess, rfCurve, mcBaseData, T)
     isDualZero = isDualZeroVol * S0
     fill!(view(X, :, 1), isDualZero)
-    #when v_m = 0.0, the derivative becomes NaN
-    v_floor = isDualZeroVol + eps(isDualZeroVol)
+    v_floor = variance_floor(isDualZeroVol)
     ρ_orthogonal = sqrt(1 - ρ * ρ)
     sqrt_dt = sqrt(dt)
     v_0 = mcProcess.σ₀^2

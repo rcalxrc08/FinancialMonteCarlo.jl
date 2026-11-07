@@ -3,6 +3,18 @@ include("../testutils.jl")
 @testset "Sobol quasi Monte Carlo" begin
     mc_sobol = MonteCarloConfiguration(Nsim, Nstep; sampling = FinancialMonteCarlo.SobolMC())
 
+    # sobol_skip! sets the state in closed form: the same state, and points, as Sobol.skip drawing every skipped point
+    @testset "skip in closed form, dimension $dim" for dim in (1, 2, 7, 100)
+        Sobol = FinancialMonteCarlo.Sobol
+        for n in (0, 1, 2, 3, 8, 1023, 1024, 409_600)
+            reference, fast = Sobol.SobolSeq(dim), Sobol.SobolSeq(dim)
+            skip(reference, n)
+            FinancialMonteCarlo.sobol_skip!(fast, n)
+            @test (fast.x, fast.b, fast.n) == (reference.x, reference.b, reference.n)
+            @test all(Sobol.next!(fast) == Sobol.next!(reference) for _ = 1:50)
+        end
+    end
+
     @testset "Black-Scholes" begin
         model = BlackScholesProcess(sigma, Underlying(S0, d))
         payoffs = merge(standard_payoffs(), (binary_eu = BinaryEuropeanOption(T, K),))

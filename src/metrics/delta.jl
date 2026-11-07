@@ -30,7 +30,7 @@ function delta(mcProcess::Dict{String, AbstractMonteCarloProcess}, rfCurve::Abst
     ChainRulesCore.@ignore_derivatives @assert isnothing(findfirst("_", underl_)) "deltas are defined on single name"
     set_seed!(mcConfig)
     price0 = pricer(mcProcess, rfCurve, mcConfig, dict_)
-    price2 = 0.0
+    price2 = zero(price0)
     set_seed!(mcConfig)
     mcProcess_up = deepcopy(mcProcess)
     keys_mkt = collect(keys(mcProcess_up))
@@ -39,7 +39,7 @@ function delta(mcProcess::Dict{String, AbstractMonteCarloProcess}, rfCurve::Abst
     if (isnothing(idx_1))
         idx_1 = findfirst(out_el -> any(out_el_sub -> out_el_sub == underl_, split(out_el, "_")), keys_mkt)
         if (isnothing(idx_1))
-            return 0.0
+            return zero(price0)
         end
         multi_name = keys_mkt[idx_1]
         idx_supp = findfirst(x_ -> x_ == underl_, split(multi_name, "_"))

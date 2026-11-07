@@ -38,6 +38,12 @@ end
 
 export HestonProcess;
 
+# The floor of the variance. Positive, since the derivative of sqrt is infinite at 0, and far from the subnormal numbers:
+# eps(0.0) is one, and every operation on a subnormal is about a hundred times slower, which made the paths whose variance
+# hits the floor (Feller condition violated) the slowest part of the simulation. sqrt(floatmin) keeps v * dt and sqrt(v)
+# normal too, in Float32 and in Float64.
+variance_floor(zero_vol) = zero_vol + sqrt(floatmin(eps(zero_vol)))
+
 # The risk neutral parameters, the time step and the zero of the variance, which carries the derivatives of every input
 function heston_setup(mcProcess::HestonProcess, rfCurve::AbstractZeroRateCurve, mcBaseData::MonteCarloConfiguration, T::Number)
     ChainRulesCore.@ignore_derivatives @assert T > 0
@@ -58,8 +64,7 @@ function simulate!(X, mcProcess::HestonProcess, rfCurve::AbstractZeroRateCurve, 
     κ_s, θ_s, drifts, dt, isDualZeroVol = heston_setup(mcProcess, rfCurve, mcBaseData, T)
     isDualZero = isDualZeroVol * S0
     fill!(view(X, :, 1), isDualZero)
-    #when v_m = 0.0, the derivative becomes NaN
-    v_floor = isDualZeroVol + eps(isDualZeroVol)
+    v_floor = variance_floor(isDualZeroVol)
     v_0 = mcProcess.σ₀^2 + isDualZero
     sides = path_sides(X, mcBaseData)
     N = draws_per_side(sides)

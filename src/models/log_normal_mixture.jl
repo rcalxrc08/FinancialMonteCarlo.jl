@@ -33,7 +33,7 @@ function simulate!(S, mcProcess::LogNormalMixture, rfCurve::AbstractZeroRateCurv
     d = dividend(mcProcess)
     η_gbm = mcProcess.η
     λ_gmb = copy(mcProcess.λ)
-    push!(λ_gmb, 1.0 - sum(mcProcess.λ))
+    push!(λ_gmb, 1 - sum(mcProcess.λ))
     mu_gbm = r - d
     S .= 0
     tmp_s = similar(S)

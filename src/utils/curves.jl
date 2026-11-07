@@ -56,8 +56,8 @@ function ImpliedCurve(r_::Array{num1}, T::Array{num2}) where {num1 <: Number, nu
 
     r = DictTypeInternal{num2, num1}()
     insert!(r, 0.0, 0.0)
-    insert!(r, T[1], r_[1] * 2.0)
-    prec_r = r_[1] * 2.0
+    insert!(r, T[1], r_[1] * 2)
+    prec_r = r_[1] * 2
     for i = 2:length(r_)
         tmp_r = (r_[i] * T[i] - r_[i-1] * T[i-1]) * 2 / (T[i] - T[i-1]) - prec_r
         insert!(r, T[i], tmp_r)
@@ -81,8 +81,8 @@ end
 using Interpolations
 function internal_definite_integral(x::num, T::Array{num1}, r::Array{num2}) where {num <: Number, num1 <: Number, num2 <: Number}
     ChainRulesCore.@ignore_derivatives @assert length(T) == length(r)
-    if x == 0.0
-        return 0.0
+    if iszero(x)
+        return zero(r[1] * x)
     end
     ChainRulesCore.@ignore_derivatives @assert x >= 0.0
     # the rate is extrapolated flat before the first node and after the last one
@@ -90,10 +90,10 @@ function internal_definite_integral(x::num, T::Array{num1}, r::Array{num2}) wher
         return r[1] * x
     end
     idx_ = findlast(y -> y < x, T)
-    out = r[1] * T[1] + sum([(r[i] + r[i+1]) * 0.5 * (T[i+1] - T[i]) for i = 1:(idx_-1)])
+    out = r[1] * T[1] + sum([(r[i] + r[i+1]) / 2 * (T[i+1] - T[i]) for i = 1:(idx_-1)])
     if idx_ < length(T)
         itp = linear_interpolation([T[idx_], T[idx_+1]], [r[idx_], r[idx_+1]], extrapolation_bc = Flat())
-        out = out + (r[idx_] + itp(x)) * 0.5 * (x - T[idx_])
+        out = out + (r[idx_] + itp(x)) / 2 * (x - T[idx_])
     else
         out = out + r[end] * (x - T[end])
     end

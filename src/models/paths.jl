@@ -38,8 +38,32 @@ end
 # function barrier: path!(i, normals) fills the path i from the normals of its point of the sequence.
 on_sobol_paths(path!, dimension::Integer, mcBaseData::MonteCarloConfiguration, numtype::Type) = sobol_paths!(path!, SobolSeq(dimension), Vector{numtype}(undef, dimension), mcBaseData)
 
+# Sobol.skip(seq, n) skips 2^m - 1 points, 2^m <= n + 1 < 2^(m + 1), by drawing every one of them: with n = Nstep * Nsim
+# that was 32 times the points of the simulation, most of its time. After k points the state of the sequence has a closed
+# form (the Gray code of k selects the direction numbers, every coordinate has its fixed point after bit floor(log2(k))),
+# so the same state is set here in O(dimension * log2(k)), with the same points afterwards.
+function sobol_skip!(seq::SobolSeq, n::Integer)
+    n <= 0 && return seq
+    k = (one(UInt64) << floor(Int, log2(n + 1))) - one(UInt64)
+    k == 0 && return seq
+    B = 63 - leading_zeros(k)
+    gray = k ⊻ (k >> 1)
+    for i in eachindex(seq.x)
+        x = zero(UInt32)
+        for c = 0:B
+            if isodd(gray >> c)
+                x ⊻= seq.m[i, c+1] << (B - c)
+            end
+        end
+        seq.x[i] = x
+        seq.b[i] = B
+    end
+    seq.n = k
+    return seq
+end
+
 function sobol_paths!(path!, seq, normals, mcBaseData::MonteCarloConfiguration)
-    skip(seq, mcBaseData.Nstep * mcBaseData.Nsim)
+    sobol_skip!(seq, mcBaseData.Nstep * mcBaseData.Nsim)
     for i = 1:mcBaseData.Nsim
         next!(seq, normals)
         @. normals = norminvcdf(normals)

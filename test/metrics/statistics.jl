@@ -34,6 +34,14 @@ include("../testutils.jl")
             @test confinter(model_32, curve_32, config, [eu_32, eu_32]) isa Vector{Tuple{Float32, Float32}}
             @test confinter(model_32, curve_32, config, smile_32) isa Vector{Tuple{Float32, Float32}}
         end
+        # no Float64 constant of the package promotes them: default dividend, jump drift, basket payoff, position weights
+        und_32 = Underlying(Float32(S0), Float32(d))
+        @test pricer(BlackScholesProcess(Float32(sigma), Underlying(Float32(S0))), curve_32, mc_small, eu_32) isa Float32
+        @test pricer(MertonProcess(Float32(sigma), 3.0f0, 0.03f0, 0.02f0, und_32), curve_32, mc_small, eu_32) isa Float32
+        @test pricer(GaussianCopulaNVariateProcess(model_32, model_32, 0.4f0), curve_32, mc_small, EuropeanOptionND(Float32(T), Float32(K))) isa Float32
+        @test pricer(model_32, curve_32, mc_small, eu_32 + Forward(Float32(T))) isa Float32
+        @test pricer("A" → model_32, curve_32, mc_small, "A" → eu_32) isa Float32
+        @test FinancialMonteCarlo.integral(ZeroRate(Float32[r, 2r], Float32(T)).r, 0.0f0) isa Float32
     end
 
     @testset "a payoff of a vector is the payoff alone" begin

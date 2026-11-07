@@ -16,11 +16,11 @@ maturity(position::Position) = maximum(maturity, keys(position))
 
 # "sum" AbstractPayoff s
 function +(x::AbstractPayoff, y::AbstractPayoff)
-    out = Position(x => 1.0)
+    out = Position(x => 1)
     if haskey(out, y)
-        out[x] = 2.0
+        out[x] = 2
     else
-        out[y] = 1.0
+        out[y] = 1
     end
     return out
 end
@@ -29,9 +29,9 @@ end
 function +(x::Position, y::AbstractPayoff)
     out = copy(x)
     if haskey(out, y)
-        out[y] += 1.0
+        out[y] += 1
     else
-        out[y] = 1.0
+        out[y] = 1
     end
     return out
 end
@@ -65,8 +65,8 @@ function *(x::AbstractPayoff, y::Number)
 end
 *(y::Number, out::AbstractPayoff) = out * y;
 *(y::Number, out::Position) = out * y;
-/(out::AbstractPayoff, y::Number) = out * (1.0 / y);
-/(out::Position, y::Number) = out * (1.0 / y);
+/(out::AbstractPayoff, y::Number) = out * inv(y);
+/(out::Position, y::Number) = out * inv(y);
 +(y::AbstractPayoff, out::Position) = out + y;
 -(x::AbstractPayoff) = return -1 * x;
 -(x::Position) = return -1 * x;

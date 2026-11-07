@@ -25,7 +25,7 @@ struct GaussianCopulaNVariateLogProcess{num3 <: Number, numtype <: Number} <: ND
         return GaussianCopulaNVariateLogProcess(Matrix{Float64}(I, len_, len_), models...)
     end
     function GaussianCopulaNVariateLogProcess(model1::BaseProcess, model2::BaseProcess, rho::num3) where {num3 <: Number}
-        corr_matrix_ = [1.0 rho; rho 1.0]
+        corr_matrix_ = [one(rho) rho; rho one(rho)]
         ChainRulesCore.@ignore_derivatives @assert isposdef(corr_matrix_)
         return GaussianCopulaNVariateLogProcess(corr_matrix_, model1, model2)
     end
