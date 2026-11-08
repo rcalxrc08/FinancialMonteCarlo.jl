@@ -69,11 +69,39 @@ centres = [(lower + upper) / 2 for (lower, upper) in intervals]
 plot(paths, centres; ribbon = (centres .- first.(intervals), last.(intervals) .- centres), fillalpha = 0.2, color = "#2a78d6", marker = :circle, markersize = 4, markerstrokewidth = 0, label = "Monte Carlo, 99% interval", xscale = :log10, xticks = ([1_000, 10_000, 100_000], ["1k", "10k", "100k"]), xlabel = "number of paths", ylabel = "price", title = "European call: Monte Carlo estimate against the exact price")
 hline!([exact]; color = "#eb6834", linestyle = :dash, label = "exact Black-Scholes price")
 
+# ## Variance reduction
+# For the same number of paths, antithetic variates and Sobol sequences give a smaller error. The plot shows the
+# root mean square error against the exact price over 20 seeds (a Sobol sequence has no seed, so its error is the
+# one of a single run), on logarithmic axes, where the ``1/\sqrt{N}`` rate of plain Monte Carlo is a line of slope -1/2:
+rmse(sampling, n) = sqrt(mean((pricer(model, rfCurve, MonteCarloConfiguration(n, 1; sampling = sampling, seed = seed), euOption) - exact)^2 for seed = 1:20))
+errors_standard = [rmse(FinancialMonteCarlo.StandardMC(), n) for n in paths]
+errors_antithetic = [rmse(FinancialMonteCarlo.AntitheticMC(), n) for n in paths]
+errors_sobol = [abs(pricer(model, rfCurve, MonteCarloConfiguration(n, 1; sampling = FinancialMonteCarlo.SobolMC()), euOption) - exact) for n in paths]
+plot(paths, errors_standard; color = "#2a78d6", marker = :circle, markersize = 4, markerstrokewidth = 0, label = "standard", xscale = :log10, yscale = :log10, xticks = ([1_000, 10_000, 100_000], ["1k", "10k", "100k"]), legend = :bottomleft, xlabel = "number of paths", ylabel = "error (log scale)", title = "European call: error of the estimate by sampling method")
+plot!(paths, errors_antithetic; color = "#eb6834", marker = :circle, markersize = 4, markerstrokewidth = 0, label = "antithetic")
+plot!(paths, errors_sobol; color = "#1baf7a", marker = :circle, markersize = 4, markerstrokewidth = 0, label = "Sobol")
+plot!(paths, errors_standard[1] .* sqrt.(paths[1] ./ paths); color = :gray50, linestyle = :dash, linewidth = 1, label = "1/√N")
+
 # ## Changing the model
 # Models are interchangeable: the same payoffs can be priced under, e.g., Heston or Kou.
 heston = HestonProcess(0.2, 0.2, 0.01, 0.01, 0.0, 0.03, underlying)
 kou = KouProcess(0.2, 5.0, 0.3, 30.0, 20.0, underlying)
 [pricer(m, rfCurve, mcConfig, euOption) for m in (model, heston, kou)]
+
+# The models differ in the distribution of the underlying at maturity. With a negative correlation between spot
+# and variance, Heston has a fat left tail and a thin right one. Kou adds jumps to a Black-Scholes diffusion with
+# the same volatility, so its distribution is wider, with fatter tails; Variance Gamma has a sharper peak and a
+# fatter left tail than the normal log return of Black-Scholes:
+heston_skew = HestonProcess(0.5, 0.2, 0.0, 2.0, -0.7, 0.04, underlying)
+vg = VarianceGammaProcess(0.2, -0.1, 0.2, underlying)
+mcDensity = MonteCarloConfiguration(50_000, 50)
+log_returns(m) = log.(simulate(m, rfCurve, mcDensity, T)[:, end] ./ S0)
+bins = range(-0.9, 0.7; length = 81)
+plot(; legend = :topleft, xlabel = "log return at maturity", ylabel = "density", title = "Distribution of the one year log return by model")
+for (m, name, colour) in ((model, "Black-Scholes", "#2a78d6"), (heston_skew, "Heston, ρ = -0.7", "#eb6834"), (kou, "Kou", "#1baf7a"), (vg, "Variance Gamma", "#eda100"))
+    stephist!(log_returns(m); bins = bins, normalize = :pdf, color = colour, label = name)
+end
+plot!()
 
 # ## Looking at the paths
 # `simulate` returns the simulated paths as an `Nsim × (Nstep + 1)` matrix, the first column being the spot.
