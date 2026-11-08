@@ -32,11 +32,14 @@ function payoff_moments(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, 
     return path_moments(payoff(S, abstractPayoff, rfCurve, mcConfig))
 end
 
-function payoff_moments(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration, abstractPayoffs::Array{<:AbstractPayoff})
+function payoff_moments(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration, abstractPayoffs::Array{<:AbstractPayoff, N}) where {N}
     set_seed!(mcConfig)
     maxT = maturity(abstractPayoffs)
     S = simulate(mcProcess, rfCurve, mcConfig, maxT)
-    moments = [path_moments(payoff(S, abstractPayoff, rfCurve, mcConfig, maxT)) for abstractPayoff in abstractPayoffs]
+    # An array of payoffs of different types has an abstract element type: the type of the moments comes from
+    # price_type, as in pricer, so that the result is inferred
+    T_price = price_type(mcProcess, rfCurve, abstractPayoffs)
+    moments::Array{Tuple{T_price, T_price}, N} = [path_moments(payoff(S, abstractPayoff, rfCurve, mcConfig, maxT)) for abstractPayoff in abstractPayoffs]
     return first.(moments), last.(moments)
 end
 

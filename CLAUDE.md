@@ -108,7 +108,8 @@ FinancialFFT, VibratoMonteCarlo and FinancialCalibrator (in `~/.julia/dev`) exte
 
 - New model: struct subtyping the appropriate abstract type (engine vs. process matters), holding its parameters (+ `underlying` for processes), and a `simulate!` method; copy the signature from an existing model.
 - New payoff: struct subtyping the right payoff family with its parameters (`T`, `K`, barriers…) and a `payoff`/`payout` method; all metrics then work automatically.
-- `get_parameters` / `set_parameters!` exist on models and payoffs and are tested — keep them consistent when adding fields.
+- `get_parameters` / `set_parameters!` exist on models and payoffs and are tested, inferred included ([test/models/parameters.jl](test/models/parameters.jl)) — keep them consistent when adding fields. They read and rebuild the fields through `parameter_names`/`parameter_values` ([src/io_utils.jl](src/io_utils.jl)), generated so the names are constants: never loop over `fieldnames` with `PropertyLens{symb}` or `getproperty(x, symb)`, a runtime Symbol makes the result `Any`. A model whose parameters are not one field each (LogNormalMixture) needs its own `set_parameters!`.
+- Results must be inferred also for an array of payoffs of different types (abstract element type): take the element type from `price_type` and annotate the comprehension (`pricer`, `payoff_moments`). A `Position`, a `Portfolio` or a `Vector{AbstractPayoff}` holds abstract types, so their prices are not inferred.
 
 ## Documentation
 

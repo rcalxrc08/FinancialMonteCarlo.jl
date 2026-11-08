@@ -89,6 +89,9 @@ The log variant applies the copula to the log returns of the components. See
 
 [`FinancialMonteCarlo.get_parameters`](@ref) returns the parameters of a model (or of a payoff) as
 a vector, and [`FinancialMonteCarlo.set_parameters!`](@ref) builds a new model with the given
-parameters. Together they make calibration loops independent of the model.
+parameters. Together they make calibration loops independent of the model. Both are type stable:
+their result is inferred from the type of the model, also when the parameters are dual numbers, so
+the code that follows them in a loss function is inferred too. The parameters are the fields of the
+model in their order, without the underlying (and without the models of a copula).
 
 See [Models](@ref api-models) in the API reference.

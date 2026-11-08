@@ -21,6 +21,16 @@ include("../testutils.jl")
         @test width(cis_std[2]) > width(cis_anti[2])
     end
 
+    # A vector of payoffs of different types has an abstract element type: the result must still be inferred
+    @testset "inferred for a vector of payoffs" begin
+        payoffs = [eu_put, am_put]
+        @inferred pricer(model, rfCurve, mc_small, payoffs)
+        @inferred variance(model, rfCurve, mc_small, payoffs)
+        @inferred confinter(model, rfCurve, mc_small, payoffs)
+        @inferred delta(model, rfCurve, mc_small, payoffs)
+        @inferred rho(model, rfCurve, mc_small, payoffs)
+    end
+
     @testset "the metrics stay in the precision of the inputs" begin
         model_32 = BlackScholesProcess(Float32(sigma), Underlying(Float32(S0), Float32(d)))
         curve_32 = ZeroRate(Float32(r))

@@ -8,7 +8,7 @@ using Test
 
 const TEST_GROUPS = [
     "Structs" => ["structs.jl", "engines.jl"],
-    "Models" => ["models/black_scholes.jl", "models/heston.jl", "models/kou.jl", "models/merton.jl", "models/variance_gamma.jl", "models/normal_inverse_gaussian.jl", "models/lognormal_mixture.jl", "models/diffeq.jl"],
+    "Models" => ["models/black_scholes.jl", "models/heston.jl", "models/kou.jl", "models/merton.jl", "models/variance_gamma.jl", "models/normal_inverse_gaussian.jl", "models/lognormal_mixture.jl", "models/parameters.jl", "models/diffeq.jl"],
     "Methods" => ["methods/sobol.jl", "methods/control_variates.jl", "methods/parallel.jl", "methods/multiprocess.jl"],
     "Metrics" => ["metrics/statistics.jl", "metrics/greeks.jl"],
     "AD" => ["ad/dual_numbers.jl", "ad/forward_diff.jl", "ad/reverse_diff.jl", "ad/mooncake.jl", "ad/taylor_series.jl"],
