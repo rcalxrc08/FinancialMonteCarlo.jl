@@ -33,7 +33,7 @@ end
 
 # The Longstaff-Schwartz regression solves its 3x3 normal equations on scalars, with the pivoting of the LAPACK LU.
 @testset "Longstaff-Schwartz 3x3 solve" begin
-    using LinearAlgebra, Random
+    using Random
     solve(A, b) = FinancialMonteCarlo.solve_3x3(Tuple([A[1, :]; b[1]]), Tuple([A[2, :]; b[2]]), Tuple([A[3, :]; b[3]]))
     rng = MersenneTwister(1)
     for A in (rand(rng, 3, 3), [0.0 1 2; 1 0 3; 4 5 0], [1e-3 2 3; 4 5 6; 7 8 10], [1.0 2 3; 2 1 3; 3 3 1])
