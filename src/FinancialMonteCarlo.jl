@@ -3,7 +3,7 @@ __precompile__()
 module FinancialMonteCarlo
 
 using Random # for randn! and related
-using LinearAlgebra # for Longstaff Schwartz
+using LinearAlgebra # isposdef and I for the correlation of the copulas
 using Accessors # setting fields
 import Adapt # moving the arrays of the inputs to the device of the mode
 using ChainRulesCore

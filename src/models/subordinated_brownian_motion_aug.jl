@@ -49,7 +49,7 @@ function simulate!(X, mcProcess::AnySubordinatedBrownianMotion, mcBaseData::Mont
         draw_subordinator!(dt_s, dt_s_host, mcProcess.subordinator_, mcBaseData)
         draw_normals!(Z, mcBaseData)
         drift = drift_of_step(drifts, j)
-        for (X_, sign_) in sides
+        foreach(sides) do (X_, sign_)
             sigma_step = sign_ * sigma
             # SUBORDINATED BROWNIAN MOTION (dt_s=time change)
             @views @. X_[:, j+1] = X_[:, j] + drift + θ * dt_s + sigma_step * sqrt(dt_s) * Z

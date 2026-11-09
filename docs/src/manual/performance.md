@@ -37,7 +37,8 @@ figure is not regenerated when the documentation is built.
   results do not depend on the number of threads. The paths of all the steps are stored, so the
   simulation is bound by memory traffic: 4 threads price 40 000 paths × 50 steps 2.8 times faster
   than one.
-- For gradients, ForwardDiff is the fastest backend up to a few dozen parameters and Mooncake above;
-  ReverseDiff is about a hundred times slower, see [Automatic differentiation](@ref autodiff).
+- For gradients, ForwardDiff is the fastest backend up to a few dozen parameters, Enzyme in
+  reverse mode (or Mooncake) above; ReverseDiff is about a hundred times slower, see
+  [Automatic differentiation](@ref autodiff).
 - Keep the numeric type uniform: `Float32` inputs give `Float32` paths and prices, and a single
   `Float64` input promotes the whole computation.

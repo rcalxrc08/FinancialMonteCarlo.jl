@@ -5,7 +5,9 @@ using Sobol, StatsFuns
 # (array_type): a device adds its method of array_type and, for the arrays of its own type, of draw_normals! and
 # subordinator_host.
 
-# The paths of X with the sign of their normal draws: all of them or, with antithetic variates, the two halves
+# The paths of X with the sign of their normal draws: all of them or, with antithetic variates, the two halves. The
+# simulate! methods go through the sides with foreach, which unrolls the tuple: a for loop over it iterates with a
+# Union{Nothing, Tuple} state, whose type Enzyme cannot prove.
 path_sides(X, ::MonteCarloConfiguration) = ((X, Int8(1)),)
 
 function path_sides(X, mcBaseData::MonteCarloConfiguration{<:AntitheticMC})
@@ -25,6 +27,11 @@ array_type(::AbstractMode) = Array
 draw_buffer(mcBaseData::MonteCarloConfiguration, numtype, N::Integer) = array_type(mcBaseData.mode){numtype}(undef, N)
 # The CUDA extension draws the normals of a CuArray from CURAND
 draw_normals!(Z, mcBaseData::MonteCarloConfiguration) = randn!(host_rng(mcBaseData), Z)
+# Scalar draws on the host (jump times and sizes). A draw carries no derivative, the parameters it is scaled by do: the
+# Enzyme extension marks these functions inactive, since Enzyme cannot analyse the scalar draws of the MersenneTwister.
+draw_uniform(mcBaseData::AbstractMonteCarloConfiguration) = rand(host_rng(mcBaseData))
+draw_exponential(mcBaseData::AbstractMonteCarloConfiguration) = randexp(host_rng(mcBaseData))
+draw_normal(mcBaseData::AbstractMonteCarloConfiguration) = randn(host_rng(mcBaseData))
 # The laws of Distributions sample on the host: the array to fill there, which on the CPU is dt_s itself
 subordinator_host(dt_s) = dt_s
 

@@ -79,7 +79,7 @@ function simulate!(X, mcProcess::HestonProcess, rfCurve::AbstractZeroRateCurve, 
         draw_normals!(e2_rho, mcBaseData)
         @. e2 = e1 * ρ + e2_rho * ρ_orthogonal
         drift = drift_of_step(drifts, j)
-        for (X_, v_m, sign_) in sides_v
+        foreach(sides_v) do (X_, v_m, sign_)
             sqrt_dt_step = sign_ * sqrt_dt
             @views @. X_[:, j+1] = X_[:, j] + (drift - v_m * dt / 2) + sqrt(v_m) * sqrt_dt_step * e1
             @. v_m += κ_s * (θ_s - v_m) * dt + σ * sqrt(v_m) * sqrt_dt_step * e2

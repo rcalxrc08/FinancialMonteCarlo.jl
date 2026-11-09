@@ -24,10 +24,33 @@ function lsm_coefficients(S::AbstractMatrix, V::AbstractVector, phi::Function, d
         y2 += y * s_2
     end
     n < 3 && return nothing
-    A_2 = [n s1 s2; s1 s2 s3; s2 s3 s4]
-    LuMat = lu!(A_2, check = false)
-    issuccess(LuMat) || return nothing
-    return LuMat \ [y0, y1, y2]
+    return solve_3x3((n * one(s_0), s1, s2, y0), (s1, s2, s3, y1), (s2, s3, s4, y2))
+end
+
+# The rows with the pivot first: the row with the largest entry in column k in absolute value (the first one on a tie,
+# as LAPACK) swapped with the first row
+pivot_rows(k, r1, r2) = abs(r2[k]) > abs(r1[k]) ? (r2, r1) : (r1, r2)
+function pivot_rows(k, r1, r2, r3)
+    p1, p2 = pivot_rows(k, r1, r2)
+    return abs(r3[k]) > abs(p1[k]) ? (r3, r2, r1) : (p1, p2, r3)
+end
+# Row r minus the multiple of the pivot row p that zeroes its column k (the columns up to k are not read afterwards)
+eliminate(r, p, k) = (l = r[k] / p[k]; map((r_c, p_c) -> r_c - l * p_c, r, p))
+
+# The solution of the 3x3 system whose rows, augmented with the right hand side, are r1, r2, r3: Gaussian elimination
+# with partial pivoting, as the LAPACK LU, on scalars, so it allocates nothing and every AD backend goes through it
+# (Enzyme has no rule for the LAPACK LU). Returns nothing when the matrix is singular.
+function solve_3x3(r1::Tuple{Number, Number, Number, Number}, r2::Tuple{Number, Number, Number, Number}, r3::Tuple{Number, Number, Number, Number})
+    r1, r2, r3 = pivot_rows(1, r1, r2, r3)
+    iszero(r1[1]) && return nothing
+    r2, r3 = pivot_rows(2, eliminate(r2, r1, 1), eliminate(r3, r1, 1))
+    iszero(r2[2]) && return nothing
+    r3 = eliminate(r3, r2, 2)
+    iszero(r3[3]) && return nothing
+    x3 = r3[4] / r3[3]
+    x2 = (r2[4] - r2[3] * x3) / r2[2]
+    x1 = (r1[4] - r1[2] * x2 - r1[3] * x3) / r1[1]
+    return (x1, x2, x3)
 end
 
 # Exercise at column j the paths whose intrinsic value is positive and above the continuation value.

@@ -1,16 +1,17 @@
-
 function add_jump_matrix!(X, mcProcess::finiteActivityProcess, mcBaseData::AbstractMonteCarloConfiguration, T::numb) where {finiteActivityProcess <: FiniteActivityProcess, numb <: Number}
     Nsim = mcBaseData.Nsim
     Nstep = mcBaseData.Nstep
     λ = mcProcess.λ
     dt = T / Nstep
     @inbounds for i = 1:Nsim
-        t_i = randexp(host_rng(mcBaseData)) / λ
+        t_i = draw_exponential(mcBaseData) / λ
         while t_i < T
             jump_size = compute_jump_size(mcProcess, mcBaseData)
             jump_idx = ceil(UInt32, t_i / dt) + 1
-            @views @. X[i, jump_idx:end] += jump_size #add jump component
-            t_i += randexp(host_rng(mcBaseData)) / λ
+            for j = jump_idx:(Nstep+1) #add jump component
+                X[i, j] += jump_size
+            end
+            t_i += draw_exponential(mcBaseData) / λ
         end
     end
 end

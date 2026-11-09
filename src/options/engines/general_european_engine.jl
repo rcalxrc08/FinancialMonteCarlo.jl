@@ -6,7 +6,7 @@ function payoff(S::AbstractMatrix{num}, euPayoff::EuropeanPayoff, rfCurve::abstr
     T = euPayoff.T
     ST = values_at_maturity(S, T, T1, mcBaseData)
     phi(Sti::numtype_) where {numtype_ <: Number} = payout(Sti, euPayoff)
-    payoff2 = @. phi(ST)
-
-    return payoff2 * exp(-integral(r, T))
+    discount = exp(-integral(r, T))
+    # one fused broadcast: the discounted payoffs are the only array allocated
+    return @. phi(ST) * discount
 end

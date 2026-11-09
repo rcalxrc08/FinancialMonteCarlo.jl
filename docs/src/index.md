@@ -49,8 +49,10 @@ pricer(model, rfCurve, mcConfig, EuropeanOption(1.0, 100.0))
 - **Automatic differentiation** with [DualNumbers.jl](https://github.com/JuliaDiff/DualNumbers.jl),
   [HyperDualNumbers.jl](https://github.com/JuliaDiff/HyperDualNumbers.jl),
   [TaylorSeries.jl](https://github.com/JuliaDiff/TaylorSeries.jl),
-  [ForwardDiff.jl](https://github.com/JuliaDiff/ForwardDiff.jl) and
-  [ReverseDiff.jl](https://github.com/JuliaDiff/ReverseDiff.jl).
+  [ForwardDiff.jl](https://github.com/JuliaDiff/ForwardDiff.jl),
+  [ReverseDiff.jl](https://github.com/JuliaDiff/ReverseDiff.jl),
+  [Mooncake.jl](https://github.com/chalk-lab/Mooncake.jl) and
+  [Enzyme.jl](https://github.com/EnzymeAD/Enzyme.jl).
 - **Custom SDEs** defined with [DifferentialEquations.jl](https://github.com/SciML/DifferentialEquations.jl).
 
 ## Installation

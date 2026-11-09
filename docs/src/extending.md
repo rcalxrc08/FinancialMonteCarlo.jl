@@ -87,3 +87,13 @@ To keep dual numbers working:
   per field) so that they can hold dual numbers;
 - allocate with the number type returned by `FinancialMonteCarlo.price_type(inputs...)`, never `Float64`;
 - wrap assertions and other non differentiable code in `ChainRulesCore.@ignore_derivatives`.
+
+For [Enzyme](@ref enzyme) as well:
+
+- draw scalar random numbers with `FinancialMonteCarlo.draw_uniform`, `draw_exponential` and
+  `draw_normal`, which the extension marks inactive, rather than `rand(rng)`: Enzyme cannot analyse
+  the scalar draws of the `MersenneTwister`;
+- go through the paths of `FinancialMonteCarlo.path_sides` with `foreach`, not with a `for` loop
+  over the tuple, whose iteration state Enzyme cannot type;
+- avoid LAPACK factorizations (`lu`, `qr`) inside the simulation or the payoff, Enzyme has no rule
+  for them.
