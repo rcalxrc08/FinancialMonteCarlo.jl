@@ -32,7 +32,9 @@ payoff only needs to describe its payout:
 - **European** payoffs look at the column of the paths at maturity and call `payout(S_T, payoff)`;
 - **path dependent** payoffs (barriers, Asians) receive the whole path of each simulation;
 - **American** and **Bermudan** payoffs are priced with the Longstaff-Schwartz regression, using
-  the exercise value `payout(S_t, payoff)` at every step (or exercise date).
+  the exercise value `payout(S_t, payoff)` at every step (or exercise date). The continuation value
+  is regressed on 1, x, x² over the paths in the money, with x = (S_t - S_0) / S_0 the return from
+  the spot, which keeps the normal equations well conditioned.
 
 Because the paths are shared, several payoffs with different maturities can be priced on the same
 simulation: the paths go up to the largest maturity and each payoff picks the time steps it needs.

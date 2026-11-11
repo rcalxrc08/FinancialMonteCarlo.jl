@@ -20,7 +20,10 @@ using Enzyme, ForwardDiff, Random
         mc_xo = MonteCarloConfiguration(200, Nstep_small; rng = Xoshiro())
         f(x) = pricer(BlackScholesProcess(x[2], Underlying(x[1], d)), ZeroRate(r), mc_xo, 2 * EuropeanOption(T, x[3]) - EuropeanOption(T, x[3], false))
         x0 = [S0, sigma, K]
-        @test Enzyme.gradient(Enzyme.Reverse, Enzyme.Const(f), x0)[1] ≈ ForwardDiff.gradient(f, x0) rtol = 1e-10
+        # on Julia 1.10 Enzyme cannot prove statically that the integer weights stored next to the active payoffs are
+        # inactive, and asks for runtime activity
+        mode = VERSION < v"1.11" ? Enzyme.set_runtime_activity(Enzyme.Reverse) : Enzyme.Reverse
+        @test Enzyme.gradient(mode, Enzyme.Const(f), x0)[1] ≈ ForwardDiff.gradient(f, x0) rtol = 1e-10
     end
 
     @testset "Black-Scholes, Xoshiro" begin

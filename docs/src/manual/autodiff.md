@@ -77,7 +77,8 @@ ForwardDiff to machine precision for the Black-Scholes, Heston, log-normal mixtu
 and normal inverse Gaussian models, with European, Asian, barrier, American and Bermudan payoffs,
 with and without antithetic variates. The variance gamma model does not work: the gamma sampler of
 Distributions.jl draws scalar exponentials, which Enzyme cannot analyse either. Positions work too,
-also when they are built inside the differentiated function (their legs are two plain vectors).
+also when they are built inside the differentiated function (their legs are two plain vectors);
+on Julia 1.10 that case needs runtime activity, `Enzyme.set_runtime_activity(Enzyme.Reverse)`.
 The first call compiles the derivative, which takes about a minute.
 
 ## Choosing a backend

@@ -57,6 +57,29 @@ end
     @test 0 < dK < 1
 end
 
+# The regression on the returns from the spot fits the continuation values to the accuracy of a BigFloat least squares
+# fit (#35: on the prices themselves the error was up to 3e-11, on the returns it is below 2e-13)
+@testset "Longstaff-Schwartz regression accuracy" begin
+    using Random
+    rng = MersenneTwister(0)
+    for _ = 1:20
+        n = 10_000
+        s = S0 .* exp.(sigma .* randn(rng, n))
+        S = hcat(fill(S0, n), s)
+        V = max.(K .- s, 0) .+ randn(rng, n) ./ 10
+        phi = x -> max(K - x, zero(x))
+        scale = FinancialMonteCarlo.lsm_scale(S)
+        alpha = FinancialMonteCarlo.lsm_coefficients(S, V, phi, i -> 1, 2, scale)
+        itm = s[phi.(s) .> 0]
+        A = hcat(ones(BigFloat, length(itm)), big.(itm), big.(itm) .^ 2)
+        exact = A * ((A' * A) \ (A' * big.(V[phi.(s) .> 0])))
+        fitted = FinancialMonteCarlo.lsm_continuation.(Ref(alpha), itm, scale)
+        @test maximum(abs.(fitted .- exact)) <= 1e-12 * maximum(abs.(exact))
+    end
+    # an engine starting at the origin regresses on the prices
+    @test FinancialMonteCarlo.lsm_scale(zeros(3, 2)) == 1
+end
+
 @testset "Row reductions and jump lists" begin
     # What the CUDA extension uses, on the CPU: the same prices and paths without indexing the paths one by one
     @testset "path dependent payoffs by row reductions" begin

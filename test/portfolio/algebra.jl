@@ -39,8 +39,10 @@ using DualNumbers, ForwardDiff, Statistics
 
     # Regression tests of #36
     @testset "payoffs as keys: hash and equality" begin
-        hash(eu)
-        @test (@allocated hash(eu)) == 0
+        # measured inside a function: at the top level Julia 1.10 counts the boxing of the result
+        hash_allocations(x) = @allocated hash(x)
+        hash_allocations(eu)
+        @test hash_allocations(eu) == 0
         # the two-argument hash, used by containers, agrees with isequal, also with an array field
         b1, b2 = BermudanOption([0.5, 1.0], K), BermudanOption([0.5, 1.0], K)
         @test isequal(b1, b2) && b1 == b2
