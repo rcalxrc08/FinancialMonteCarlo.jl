@@ -29,4 +29,4 @@ end
 
 export DoubleBarrierOption;
 
-is_alive(S::AbstractArray, payoff_::DoubleBarrierOption) = !crossed_below(S, payoff_.D) && !crossed_above(S, payoff_.U)
+is_alive(S, payoff_::DoubleBarrierOption) = !crossed_below(S, payoff_.D) && !crossed_above(S, payoff_.U)

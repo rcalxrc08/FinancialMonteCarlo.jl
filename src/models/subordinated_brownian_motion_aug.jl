@@ -43,10 +43,9 @@ function simulate!(X, mcProcess::AnySubordinatedBrownianMotion, mcBaseData::Mont
     sides = path_sides(X, mcBaseData)
     N = draws_per_side(sides)
     dt_s = draw_buffer(mcBaseData, type_sub, N)
-    dt_s_host = subordinator_host(dt_s)
     Z = draw_buffer(mcBaseData, typeof(get_rng_type(isDualZero)), N)
     @inbounds for j = 1:mcBaseData.Nstep
-        draw_subordinator!(dt_s, dt_s_host, mcProcess.subordinator_, mcBaseData)
+        draw_subordinator!(dt_s, mcProcess.subordinator_, mcBaseData)
         draw_normals!(Z, mcBaseData)
         drift = drift_of_step(drifts, j)
         foreach(sides) do (X_, sign_)

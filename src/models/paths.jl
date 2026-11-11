@@ -3,7 +3,7 @@ using Sobol, StatsFuns
 # What the simulate! methods share, so that one body covers antithetic variates, constant and curve rates, and the
 # devices: step_drifts handles the rates, path_sides the antithetic variates, and the arrays come from the mode
 # (array_type): a device adds its method of array_type and, for the arrays of its own type, of draw_normals! and
-# subordinator_host.
+# draw_subordinator!.
 
 # The paths of X with the sign of their normal draws: all of them or, with antithetic variates, the two halves. The
 # simulate! methods go through the sides with foreach, which unrolls the tuple: a for loop over it iterates with a
@@ -32,14 +32,9 @@ draw_normals!(Z, mcBaseData::MonteCarloConfiguration) = randn!(host_rng(mcBaseDa
 draw_uniform(mcBaseData::AbstractMonteCarloConfiguration) = rand(host_rng(mcBaseData))
 draw_exponential(mcBaseData::AbstractMonteCarloConfiguration) = randexp(host_rng(mcBaseData))
 draw_normal(mcBaseData::AbstractMonteCarloConfiguration) = randn(host_rng(mcBaseData))
-# The laws of Distributions sample on the host: the array to fill there, which on the CPU is dt_s itself
-subordinator_host(dt_s) = dt_s
-
-function draw_subordinator!(dt_s, dt_s_host, subordinator_, mcBaseData::MonteCarloConfiguration)
-    rand!(host_rng(mcBaseData), subordinator_, dt_s_host)
-    dt_s === dt_s_host || copyto!(dt_s, dt_s_host)
-    return dt_s
-end
+# The subordinator increments of one step, from the laws of Distributions on the host. The CUDA extension draws the
+# gamma and inverse Gaussian laws on the device, and any other law on the host and copies it.
+draw_subordinator!(dt_s, subordinator_, mcBaseData::MonteCarloConfiguration) = rand!(host_rng(mcBaseData), subordinator_, dt_s)
 
 # The type of a Sobol sequence holds its dimension, known only at run time, so the paths are drawn behind a
 # function barrier: path!(i, normals) fills the path i from the normals of its point of the sequence. Only the first

@@ -1,17 +1,58 @@
 # The jumps of a finite activity Lévy process, added to the log paths in X. The CUDA extension adds a method for a
-# CuMatrix, which adds them on the host: the methods for the samplings are those of add_jumps!, so they do not clash.
+# CuMatrix, which collects the jumps on the host in a JumpList and adds them with one kernel: the methods for the
+# samplings are those of add_jumps!, so they do not clash.
 add_jump_matrix!(X, mcProcess::FiniteActivityProcess, mcBaseData::AbstractMonteCarloConfiguration, T::Number) = add_jumps!(X, mcProcess, mcBaseData, T)
 
-# The jump in log price of size jump_size at the time t of [0, 1] (as a fraction of the maturity), on the path row: a
-# jump in step k moves the grid points from k + 1 on.
-function add_jump!(row, t, jump_size)
-    Nstep = length(row) - 1
-    jump_idx = max(ceil(Int, t * Nstep), 1) + 1
-    @inbounds for j = jump_idx:(Nstep+1)
-        row[j] += jump_size
+# The jumps go to a sink through add_jump!(sink, i, jump_idx, jump_size): the jump of the path i in the step jump_idx - 1,
+# which moves the grid points from jump_idx on. The sink is the matrix of the log paths, or a JumpList.
+function add_jump!(X::AbstractMatrix, i::Integer, jump_idx::Integer, jump_size)
+    @inbounds for j = jump_idx:size(X, 2)
+        X[i, j] += jump_size
     end
     return
 end
+
+# The jumps of all the paths as a list (path, first grid point, size), to add them where the paths are, e.g. on a GPU
+# without a dense matrix of jumps: jumps_by_path sorts them by path, add_jumps!(X, jumps) adds them.
+struct JumpList{T}
+    path::Vector{Int32}
+    step::Vector{Int32}
+    size::Vector{T}
+end
+# n: the expected number of jumps, to allocate the list once
+JumpList{T}(n::Integer = 0) where {T} = JumpList{T}(sizehint!(Int32[], n), sizehint!(Int32[], n), sizehint!(T[], n))
+function add_jump!(J::JumpList, i::Integer, jump_idx::Integer, jump_size)
+    push!(J.path, i)
+    push!(J.step, jump_idx)
+    push!(J.size, jump_size)
+    return
+end
+# The jumps sorted by path (stably, by counting): those of the path i are offsets[i]:(offsets[i + 1] - 1).
+function jumps_by_path(J::JumpList, Nsim::Integer)
+    offsets = zeros(Int32, Nsim + 1)
+    offsets[1] = 1
+    for i in J.path
+        offsets[i+1] += 1
+    end
+    cumsum!(offsets, offsets)
+    next = offsets[1:Nsim]
+    order = similar(J.path)
+    for (k, i) in enumerate(J.path)
+        order[next[i]] = k
+        next[i] += 1
+    end
+    return offsets, J.step[order], J.size[order]
+end
+function add_jumps!(X::AbstractMatrix, J::JumpList)
+    for k in eachindex(J.path)
+        add_jump!(X, J.path[k], J.step[k], J.size[k])
+    end
+    return X
+end
+
+# The grid point from which a jump at the time t of [0, 1] (as a fraction of the maturity) moves the path: a jump in step
+# k moves the grid points from k + 1 on.
+jump_index(t, Nstep::Integer) = max(ceil(Int, t * Nstep), 1) + 1
 
 # Plain Monte Carlo: the jump times as sums of exponential spacings, the sizes from compute_jump_size, both from the rng.
 function add_jumps!(X, mcProcess::FiniteActivityProcess, mcBaseData::AbstractMonteCarloConfiguration, T::Number)
@@ -22,14 +63,11 @@ function add_jumps!(X, mcProcess::FiniteActivityProcess, mcBaseData::AbstractMon
     @inbounds for i = 1:Nsim
         t_i = draw_exponential(mcBaseData) / λ
         while t_i < T
-            jump_size = compute_jump_size(mcProcess, mcBaseData)
-            jump_idx = ceil(UInt32, t_i / dt) + 1
-            for j = jump_idx:(Nstep+1) #add jump component
-                X[i, j] += jump_size
-            end
+            add_jump!(X, i, ceil(Int, t_i / dt) + 1, compute_jump_size(mcProcess, mcBaseData))
             t_i += draw_exponential(mcBaseData) / λ
         end
     end
+    return
 end
 
 # AntitheticMC and SobolMC draw the jumps of a path from uniforms by inversion: the count N_T is the quantile of its
@@ -111,20 +149,17 @@ open_unit(u) = clamp(u, eps(typeof(u)), 1 - eps(typeof(u)))
 
 # The jumps of one path of a Sobol point, from its uniforms u: the count at u[1], then a time and a size for each jump,
 # u[2k] and u[2k + 1]. Above M jumps, the times and sizes come from the rng.
-function add_jumps_from_uniforms!(row, u, J::JumpUniforms, mcProcess::FiniteActivityProcess, mcBaseData::AbstractMonteCarloConfiguration)
+function add_jumps_from_uniforms!(X, i::Integer, u, J::JumpUniforms, mcProcess::FiniteActivityProcess, mcBaseData::AbstractMonteCarloConfiguration)
+    Nstep = mcBaseData.Nstep
     N = jump_count(J, open_unit(u[1]))
     if N > J.M
-        add_jumps_from_rng!(row, N, mcProcess, mcBaseData)
+        for _ = 1:N
+            add_jump!(X, i, jump_index(draw_uniform(mcBaseData), Nstep), compute_jump_size(mcProcess, mcBaseData))
+        end
         return
     end
     @inbounds for k = 1:N
-        add_jump!(row, u[2k], jump_quantile(mcProcess, open_unit(u[2k+1])))
-    end
-    return
-end
-function add_jumps_from_rng!(row, N::Integer, mcProcess::FiniteActivityProcess, mcBaseData::AbstractMonteCarloConfiguration)
-    for _ = 1:N
-        add_jump!(row, draw_uniform(mcBaseData), compute_jump_size(mcProcess, mcBaseData))
+        add_jump!(X, i, jump_index(u[2k], Nstep), jump_quantile(mcProcess, open_unit(u[2k+1])))
     end
     return
 end
@@ -135,17 +170,16 @@ end
 function add_jumps!(X, mcProcess::FiniteActivityProcess, mcBaseData::MonteCarloConfiguration{<:AntitheticMC}, T::Number)
     J = JumpUniforms(mcProcess.λ * T, typeof(draw_uniform(mcBaseData)))
     half = div(mcBaseData.Nsim, 2)
+    Nstep = mcBaseData.Nstep
     for i = 1:half
-        row = view(X, i, :)
-        row_anti = view(X, i + half, :)
         u = open_unit(draw_uniform(mcBaseData))
         N = jump_count(J, u)
         N_anti = jump_count(J, 1 - u)
         for k = 1:max(N, N_anti)
             t = draw_uniform(mcBaseData)
             v = open_unit(draw_uniform(mcBaseData))
-            k <= N && add_jump!(row, t, jump_quantile(mcProcess, v))
-            k <= N_anti && add_jump!(row_anti, 1 - t, jump_quantile(mcProcess, 1 - v))
+            k <= N && add_jump!(X, i, jump_index(t, Nstep), jump_quantile(mcProcess, v))
+            k <= N_anti && add_jump!(X, i + half, jump_index(1 - t, Nstep), jump_quantile(mcProcess, 1 - v))
         end
     end
     return
@@ -180,7 +214,7 @@ function simulate!(X, mcProcess::FiniteActivityProcess, rfCurve::AbstractZeroRat
         @inbounds for j = 1:Nstep
             X[i, j+1] = X[i, j] + drift_of_step(drifts, j) + stddev_bm * point[j]
         end
-        add_jumps_from_uniforms!(view(X, i, :), view(point, (Nstep+1):dimension), J, mcProcess, mcBaseData)
+        add_jumps_from_uniforms!(X, i, view(point, (Nstep+1):dimension), J, mcProcess, mcBaseData)
     end
     S0 = mcProcess.underlying.S0
     @. X = S0 * exp(X)

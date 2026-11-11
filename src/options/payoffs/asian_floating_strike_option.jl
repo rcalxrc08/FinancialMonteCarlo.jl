@@ -20,3 +20,5 @@ end
 export AsianFloatingStrikeOption;
 
 payout(S::AbstractArray{<:Number}, opt_::AsianFloatingStrikeOption) = vanilla_payout(S[end], mean(S), opt_)
+# The payout from the final value and the mean of the path (payoff_by_rows)
+asian_payout(ST::Number, A::Number, opt_::AsianFloatingStrikeOption) = vanilla_payout(ST, A, opt_)

@@ -12,4 +12,4 @@ if the underlying ever goes above `barrier`. The barrier is monitored on the sim
 """
 @option_type BarrierOptionUpOut BarrierPayoff T K barrier
 
-is_alive(S::AbstractArray, payoff_::BarrierOptionUpOut) = !crossed_above(S, payoff_.barrier)
+is_alive(S, payoff_::BarrierOptionUpOut) = !crossed_above(S, payoff_.barrier)

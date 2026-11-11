@@ -12,3 +12,5 @@ Arithmetic Asian option with fixed strike, paying ``\\max(A_T - K, 0)`` (call) o
 @option_type AsianFixedStrikeOption AsianPayoff T K
 
 payout(S::AbstractArray{<:Number}, opt_::AsianFixedStrikeOption) = vanilla_payout(mean(S), opt_.K, opt_)
+# The payout from the final value and the mean of the path (payoff_by_rows)
+asian_payout(ST::Number, A::Number, opt_::AsianFixedStrikeOption) = vanilla_payout(A, opt_.K, opt_)

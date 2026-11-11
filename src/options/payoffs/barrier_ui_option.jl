@@ -12,4 +12,4 @@ if the underlying goes above `barrier` at least once. The barrier is monitored o
 """
 @option_type BarrierOptionUpIn BarrierPayoff T K barrier
 
-is_alive(S::AbstractArray, payoff_::BarrierOptionUpIn) = crossed_above(S, payoff_.barrier)
+is_alive(S, payoff_::BarrierOptionUpIn) = crossed_above(S, payoff_.barrier)

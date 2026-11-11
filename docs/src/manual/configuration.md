@@ -59,7 +59,10 @@ generators. Functions to differentiate must exist on the workers (`@everywhere f
 than simulating them; the other metrics send back only their results.
 
 In `CudaMode` the paths are simulated on the GPU, from the CURAND generator seeded with `seed`
-(the jump times and the subordinators are drawn on the host from `rng`). The mode decides where the
+(the jump times and sizes of Kou and Merton are drawn on the host from `rng` and added on the GPU
+by one kernel; the gamma and inverse Gaussian subordinators of variance gamma and normal inverse
+Gaussian are drawn on the GPU, by kernels seeded from `rng`). Barrier and Asian payoffs are
+computed on the GPU, American and Bermudan ones on the host. The mode decides where the
 computation runs: a smile with its strikes on the host is moved to the GPU once per metric, and one
 with its strikes on the GPU is moved to the host in the other modes. The results stay on the device
 that computed them.

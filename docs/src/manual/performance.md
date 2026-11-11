@@ -24,6 +24,32 @@ BenchmarkTools, synchronizing the GPU with `CUDA.@sync` (kernels are asynchronou
 the time stops at the launch). The script is `docs/performance/scaling.jl`; it needs a GPU, so the
 figure is not regenerated when the documentation is built.
 
+Beyond the diffusion, three steps of some models and payoffs could go through the host. In
+`CudaMode` they stay on the GPU or move only what they need:
+
+- the gamma and inverse Gaussian subordinators of variance gamma and normal inverse Gaussian are
+  drawn on the GPU (other laws of a `SubordinatedBrownianMotion` are drawn on the host and copied);
+- the jumps of Kou and Merton are drawn on the host as a list of times and sizes, and one kernel
+  adds them to the paths;
+- barrier and Asian payoffs are reductions of the paths (minimum, maximum, mean) on the GPU;
+  American and Bermudan payoffs, whose Longstaff-Schwartz regressions run on the host, still copy
+  the paths there.
+
+100 000 paths × 50 steps, median time and host memory, before (0.6.0) and after these changes:
+
+| Case | 0.6.0 | now | host memory, 0.6.0 → now |
+|:--|--:|--:|--:|
+| Black-Scholes, European | 27.9 ms | 24.8 ms | 59 KiB → 59 KiB |
+| Kou, European | 75.3 ms | 39.4 ms | 39 MiB → 10 MiB |
+| Merton, European | 74.4 ms | 36.3 ms | 39 MiB → 10 MiB |
+| Variance gamma, European | 236 ms | 131 ms | 851 KiB → 86 KiB |
+| Normal inverse Gaussian, European | 194 ms | 64 ms | 851 KiB → 86 KiB |
+| Black-Scholes, barrier (down and out) | 73.8 ms | 26.3 ms | 79 MiB → 64 KiB |
+| Black-Scholes, Asian (fixed strike) | 74.1 ms | 27.3 ms | 79 MiB → 65 KiB |
+
+Measured on the same NVIDIA GeForce MX150 with BenchmarkTools and `CUDA.@sync`; the Black-Scholes
+European case, whose code did not change, shows the noise between runs (about 10%).
+
 ## Getting the most out of a run
 
 - Price several payoffs on the same paths: a vector of payoffs, a [`FinancialMonteCarlo.Position`](@ref)
