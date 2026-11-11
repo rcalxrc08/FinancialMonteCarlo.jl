@@ -8,7 +8,7 @@ include(joinpath(@__DIR__, "benchmarks.jl"))
 function run_suite(suite::BenchmarkGroup, groups::AbstractVector{<:AbstractString}; seconds::Real = 2)
     unknown = setdiff(groups, keys(suite))
     isempty(unknown) || error("unknown benchmark groups: $(join(unknown, ", ")); available: $(join(keys(suite), ", "))")
-    selected = isempty(groups) ? suite : BenchmarkGroup(Dict(group => suite[group] for group in groups))
+    selected = isempty(groups) ? suite : BenchmarkGroup([group => suite[group] for group in groups]...)
     for (_, benchmark) in BenchmarkTools.leaves(selected)
         benchmark.params.seconds = seconds
     end
