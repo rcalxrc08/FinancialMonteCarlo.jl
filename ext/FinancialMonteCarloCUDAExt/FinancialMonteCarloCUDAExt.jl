@@ -5,7 +5,7 @@ using ChainRulesCore
 using Random
 using Adapt
 using Distributions: Gamma, InverseGaussian
-using FinancialMonteCarlo: AbstractCudaMode, AbstractMonteCarloConfiguration, AbstractSmile, AbstractZeroRateCurve, AmericanPayoff, AsianFixedStrikeOption, AsianFloatingStrikeOption, BarrierPayoff, BermudanPayoff, CudaMode, FiniteActivityProcess, HostAdaptor, JumpList, MonteCarloConfiguration, PathDependentPayoff, add_jumps!, get_rng_type, host_rng, integral, jumps_by_path, maturity, payoff_by_rows, payout_strike, to_mode, values_at_maturity
+using FinancialMonteCarlo: AbstractCudaMode, AbstractMonteCarloConfiguration, AbstractSmile, AbstractZeroRateCurve, AmericanPayoff, AsianFixedStrikeOption, AsianFloatingStrikeOption, BarrierPayoff, BermudanPayoff, CudaMode, FiniteActivityProcess, HostAdaptor, JumpList, MonteCarloConfiguration, PathDependentPayoff, add_jumps!, get_rng_type, host_rng, jumps_by_path, maturity, payoff_by_rows, smile_payoffs, to_mode
 import FinancialMonteCarlo: add_jump_matrix!, array_type, draw_normals!, draw_subordinator!, mode_adaptor, payoff, seed_device!
 
 # Everything the GPU changes, by the mode: where the arrays live and the generator to seed.
@@ -122,15 +122,8 @@ for payoff_type in (PathDependentPayoff, Union{AmericanPayoff, BermudanPayoff})
 end
 payoff(S::CuMatrix{num}, payoff_::Union{BarrierPayoff, AsianFixedStrikeOption, AsianFloatingStrikeOption}, rfCurve::AbstractZeroRateCurve, mcBaseData::AbstractMonteCarloConfiguration, T1::num2 = maturity(payoff_)) where {num <: Number, num2 <: Number} = payoff_by_rows(S, payoff_, rfCurve, mcBaseData, T1)
 
-# One kernel for all the strikes, instead of one per strike. The result stays on the GPU. The metrics move the smile to
-# the device once (to_mode), so that here it is already there.
-function payoff(S::CuMatrix{num}, smile_::AbstractSmile{T_}, rfCurve::AbstractZeroRateCurve, mcBaseData::AbstractMonteCarloConfiguration, T1::num2 = maturity(smile_)) where {T_, num <: Number, num2 <: Number}
-    smile = to_mode(smile_, CudaMode())
-    T = smile.T
-    ST = values_at_maturity(S, T, T1, mcBaseData)
-    K = reshape(smile.K, 1, :)
-    isCall = reshape(smile.isCall, 1, :)
-    return payout_strike.(ST, K, isCall, T_) .* exp(-integral(rfCurve.r, T))
-end
+# The smile moves to the device first (to_mode), so that a smile with its strikes on the host is priced on the GPU. The
+# result stays on the GPU.
+payoff(S::CuMatrix, smile::AbstractSmile, rfCurve::AbstractZeroRateCurve, mcBaseData::AbstractMonteCarloConfiguration, T1::Number = maturity(smile)) = smile_payoffs(S, to_mode(smile, CudaMode()), rfCurve, mcBaseData, T1)
 
 end

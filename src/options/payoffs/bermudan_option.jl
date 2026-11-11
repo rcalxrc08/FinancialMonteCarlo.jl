@@ -15,7 +15,7 @@ struct BermudanOption{num1 <: Number, num2 <: Number, numtype <: Number} <: Berm
     T_ex::Vector{num1}
     K::num2
     isCall::Bool
-    function BermudanOption(T::AbstractArray{num1}, K::num2, isCall::Bool = true) where {num1 <: Number, num2 <: Number}
+    function BermudanOption(T::AbstractVector{num1}, K::num2, isCall::Bool = true) where {num1 <: Number, num2 <: Number}
         ChainRulesCore.@ignore_derivatives @assert minimum(T) > 0 "Times to Maturity must be positive"
         ChainRulesCore.@ignore_derivatives @assert K > 0 "Strike Price must be positive"
         ChainRulesCore.@ignore_derivatives @assert issorted(T) "Times to Maturity must be sorted"

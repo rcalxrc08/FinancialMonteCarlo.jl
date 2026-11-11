@@ -53,7 +53,7 @@ Return a copy of `model` whose parameters are replaced by the vector `params`, i
 [`FinancialMonteCarlo.get_parameters`](@ref). Despite the `!`, `model` is not modified: use the
 returned value. Useful to write calibration loops that do not depend on the model.
 """
-function set_parameters!(model::XProcess, param::Array{num}) where {XProcess <: BaseProcess, num <: Number}
+function set_parameters!(model::XProcess, param::AbstractVector{num}) where {XProcess <: BaseProcess, num <: Number}
     names = parameter_names(XProcess)
     N1 = length(names)
     ChainRulesCore.@ignore_derivatives @assert N1 == length(param) "Check number of parameters of the model"
@@ -62,7 +62,7 @@ function set_parameters!(model::XProcess, param::Array{num}) where {XProcess <: 
     return Accessors.setproperties(model, NamedTuple{names}(values_))
 end
 
-function set_parameters!(model::LogNormalMixture, param::Array{num}) where {num <: Number}
+function set_parameters!(model::LogNormalMixture, param::AbstractVector{num}) where {num <: Number}
     N1 = div(length(param) + 1, 2)
     ChainRulesCore.@ignore_derivatives @assert !(N1 * 2 != length(param) + 1 || N1 < 2) "Check number of parameters of the model"
     eta = param[1:N1]
@@ -70,7 +70,7 @@ function set_parameters!(model::LogNormalMixture, param::Array{num}) where {num 
     return Accessors.setproperties(model, (η = eta, λ = lam))
 end
 
-function set_parameters!(model::ShiftedLogNormalMixture, param::Array{num}) where {num <: Number}
+function set_parameters!(model::ShiftedLogNormalMixture, param::AbstractVector{num}) where {num <: Number}
     N1 = div(length(param), 2)
     ChainRulesCore.@ignore_derivatives @assert !(N1 * 2 != length(param) || N1 < 2) "Check number of parameters of the model"
     eta = param[1:N1]

@@ -23,7 +23,7 @@ Curve of instantaneous rates with values `r` at the sorted times `T` (or on a un
 to `T`), linearly interpolated in between. Models only use its integrals over time intervals, both
 for the drift and for discounting.
 """
-function Curve(r_::Array{num1}, T::num2) where {num1 <: Number, num2 <: Number}
+function Curve(r_::AbstractVector{num1}, T::num2) where {num1 <: Number, num2 <: Number}
     r = DictTypeInternal{num2, num1}()
     Nstep = length(r_) - 1
     dt = T / Nstep
@@ -32,7 +32,7 @@ function Curve(r_::Array{num1}, T::num2) where {num1 <: Number, num2 <: Number}
     end
     return r
 end
-function Curve(r_::Array{num1}, T::Array{num2}) where {num1 <: Number, num2 <: Number}
+function Curve(r_::AbstractVector{num1}, T::AbstractVector{num2}) where {num1 <: Number, num2 <: Number}
     ChainRulesCore.@ignore_derivatives @assert length(r_) == length(T)
     ChainRulesCore.@ignore_derivatives @assert T == sort(T)
     r = DictTypeInternal{num2, num1}()
@@ -49,7 +49,7 @@ Piecewise linear curve of instantaneous rates, starting from zero at time zero, 
 each `T[i]` equals `r[i] * T[i]`: use it to turn zero rates (or dividend yields) quoted at maturities
 `T` into a [`FinancialMonteCarlo.Curve`](@ref). With a scalar `T` the maturities are `T/N, 2T/N, ..., T`.
 """
-function ImpliedCurve(r_::Array{num1}, T::Array{num2}) where {num1 <: Number, num2 <: Number}
+function ImpliedCurve(r_::AbstractVector{num1}, T::AbstractVector{num2}) where {num1 <: Number, num2 <: Number}
     ChainRulesCore.@ignore_derivatives @assert length(r_) == length(T)
     ChainRulesCore.@ignore_derivatives @assert length(r_) >= 1
     ChainRulesCore.@ignore_derivatives @assert T == sort(T)
@@ -65,7 +65,7 @@ function ImpliedCurve(r_::Array{num1}, T::Array{num2}) where {num1 <: Number, nu
     end
     return r
 end
-function ImpliedCurve(r_::Array{num1}, T::num2) where {num1 <: Number, num2 <: Number}
+function ImpliedCurve(r_::AbstractVector{num1}, T::num2) where {num1 <: Number, num2 <: Number}
     N = length(r_)
     dt_ = T / N
     t_ = collect(dt_:dt_:T)
@@ -79,7 +79,7 @@ function incremental_integral(x::CurveType{num1, num2}, t::Number, dt::Number) w
 end
 
 using Interpolations
-function internal_definite_integral(x::num, T::Array{num1}, r::Array{num2}) where {num <: Number, num1 <: Number, num2 <: Number}
+function internal_definite_integral(x::num, T::AbstractVector{num1}, r::AbstractVector{num2}) where {num <: Number, num1 <: Number, num2 <: Number}
     ChainRulesCore.@ignore_derivatives @assert length(T) == length(r)
     if iszero(x)
         return zero(r[1] * x)

@@ -1,14 +1,14 @@
-function validate_abstract_smile(T::T1, K::T3, isCall::T4) where {T1, T2, T3 <: (AbstractArray{T2}), T4 <: (AbstractArray{Bool})}
+function validate_abstract_smile(T::T1, K::T3, isCall::T4) where {T1, T2, T3 <: (AbstractVector{T2}), T4 <: (AbstractVector{Bool})}
     @assert length(K) == length(isCall) "K and isCall must have the same length"
     @assert minimum(K) > 0 "Strikes must be positive"
     @assert T > 0 "Maturity must be positive"
 end
 
-struct OptionSmile{Option, T1, T2, T3 <: AbstractArray{T2}, T4 <: AbstractArray{Bool}} <: AbstractSmile{Option}
+struct OptionSmile{Option, T1, T2, T3 <: AbstractVector{T2}, T4 <: AbstractVector{Bool}} <: AbstractSmile{Option}
     T::T1
     K::T3
     isCall::T4
-    function OptionSmile{Option}(T::T1, K::T3, isCall::T4) where {Option, T1, T2, T3 <: AbstractArray{T2}, T4 <: AbstractArray{Bool}}
+    function OptionSmile{Option}(T::T1, K::T3, isCall::T4) where {Option, T1, T2, T3 <: AbstractVector{T2}, T4 <: AbstractVector{Bool}}
         validate_abstract_smile(T, K, isCall)
         return new{Option, T1, T2, T3, T4}(T, K, isCall)
     end
@@ -26,13 +26,11 @@ end
 # Undiscounted payouts of the smile for one value of the underlying: one value per strike
 payout(ST::Number, smile::AbstractSmile{T}) where {T} = payout_strike.(ST, smile.K, smile.isCall, T)
 
-# Discounted payouts along the paths: one row per path, one column per strike
-function payoff(S::AbstractMatrix{num}, smile::AbstractSmile{T_}, rfCurve::abstractZeroRateCurve, mcBaseData::AbstractMonteCarloConfiguration, T1::num2 = maturity(smile)) where {T_, abstractZeroRateCurve <: AbstractZeroRateCurve, num <: Number, num2 <: Number}
-    r = rfCurve.r
+# Discounted payouts along the paths: one row per path, one column per strike, as one broadcast of the values at maturity
+# against the strikes as a row (on the GPU too: one kernel for all the strikes)
+payoff(S::AbstractMatrix, smile::AbstractSmile, rfCurve::AbstractZeroRateCurve, mcBaseData::AbstractMonteCarloConfiguration, T1::Number = maturity(smile)) = smile_payoffs(S, smile, rfCurve, mcBaseData, T1)
+function smile_payoffs(S::AbstractMatrix, smile::AbstractSmile{T_}, rfCurve::AbstractZeroRateCurve, mcBaseData::AbstractMonteCarloConfiguration, T1::Number) where {T_}
     T = smile.T
     ST = values_at_maturity(S, T, T1, mcBaseData)
-    payoff_of_strike(K, isCall) = payout_strike.(ST, K, isCall, T_)
-    payoffs = reduce(hcat, map(payoff_of_strike, smile.K, smile.isCall))
-
-    return payoffs * exp(-integral(r, T))
+    return payout_strike.(ST, transpose(smile.K), transpose(smile.isCall), T_) .* exp(-integral(rfCurve.r, T))
 end

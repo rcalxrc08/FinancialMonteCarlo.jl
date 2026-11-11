@@ -106,6 +106,20 @@ end
             @test_throws "K and isCall must have the same length" Smile(T, K_vec_w, isCall_vec)
             @test_throws "Strikes must be positive" Smile(T, K_vec_w2, isCall_vec)
             @test_throws "Maturity must be positive" Smile(-1.0, K_vec, isCall_vec)
+            # strikes and flags are vectors (#37): a range or a view works, a matrix does not
+            smile_range = Smile(T, 90.0:10.0:110.0, view(isCall_vec, :))
+            S = simulate(BlackScholesProcess(sigma, Underlying(S0, d)), rfCurve, mc_small, T)
+            @test payoff(S, smile_range, rfCurve, mc_small) == payoff(S, Smile(T, K_vec, isCall_vec), rfCurve, mc_small)
+            @test_throws MethodError Smile(T, reshape(K_vec, 1, :), reshape(isCall_vec, 1, :))
         end
+    end
+
+    @testset "one-dimensional inputs are vectors (#37)" begin
+        @test BermudanOption(0.5:0.25:1.0, K).T_ex == [0.5, 0.75, 1.0]
+        @test_throws MethodError BermudanOption([0.5 1.0], K)
+        @test FinancialMonteCarlo.integral(ZeroRate(0.01:0.01:0.02, T).r, T) ≈ FinancialMonteCarlo.integral(ZeroRate([0.01, 0.02], T).r, T)
+        @test_throws MethodError ZeroRate([0.01 0.02], T)
+        model = BlackScholesProcess(sigma, Underlying(S0, d))
+        @test FinancialMonteCarlo.set_parameters!(model, view([0.3, 1.0], 1:1)).σ == 0.3
     end
 end

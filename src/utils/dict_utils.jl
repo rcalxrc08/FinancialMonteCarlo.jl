@@ -39,7 +39,7 @@ oper(Symbol(*))
 oper2(Symbol(*))
 oper2(Symbol(+))
 
-function complete_curve(T::Array{num}, d::DictTypeInternal{num1, num2}) where {num <: Number, num1 <: Number, num2 <: Number}
+function complete_curve(T::AbstractVector{num}, d::DictTypeInternal{num1, num2}) where {num <: Number, num1 <: Number, num2 <: Number}
     T_d = extract_keys(d)
     idx_ = sortperm(T_d)
     T_d = T_d[idx_]
