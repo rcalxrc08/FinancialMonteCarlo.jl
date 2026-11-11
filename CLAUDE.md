@@ -134,7 +134,7 @@ Push to the `GitHub` remote; `origin` (GitLab) has not been pushed since 0.5.2 a
 - GitHub Pages is set to **build from GitHub Actions** (`build_type: workflow`, `gh api repos/rcalxrc08/FinancialMonteCarlo.jl/pages`); the `source.branch: gh-pages` in that answer is a leftover and is not served. The `gh-pages` branch is still updated on every run: it is where `deploydocs` stores the versioned site (dev/, stable/, a folder per tag), and the `docs` job uploads that checkout as the Pages artifact, which the `pages` job deploys with `actions/deploy-pages`. So a new commit on `gh-pages` ("build based on <sha>") is expected, and the legacy "pages build and deployment" runs from the branch stopped on 2026-11-04.
 - Verified on 611d415 (2026-11-11): the `github-pages` deployment was created from master by the workflow, and the live `dev/` site served the new content within a minute. The Pages hangs in `syncing_files` after 4383fdb (2026-11-07) did not recur: the deployments of 2026-11-08 and 2026-11-09 succeeded too.
 - The CI and Documentation runs of 54ecd0b (2026-11-11) stayed `queued` for hours with Actions reported operational, and `gh run cancel` answered that they were completed: the next push started fresh runs normally.
-- Still **unverified**: the tag path (`publish-tag` dispatching the workflow on master, because Pages did not serve the v0.6.0 deployment made from the tag). Check it at the next release (step 4 above).
+- Verified at v0.7.0 (2026-11-11): the tag run built the docs and `publish-tag` dispatched the workflow on master, whose `pages` job deployed; `stable/` served the 0.7 manual a minute later. Registration (General#175829) merged 25 minutes after the comment.
 
 ## Caveats (from README)
 
