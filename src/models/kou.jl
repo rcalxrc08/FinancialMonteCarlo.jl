@@ -40,3 +40,10 @@ function compute_jump_size(mcProcess::KouProcess, mcBaseData::MonteCarloConfigur
     return -draw_exponential(mcBaseData) / mcProcess.λ₋
 end
 compute_drift(mcProcess::KouProcess) = mcProcess.p / (mcProcess.λ₊ - 1) - (1 - mcProcess.p) / (mcProcess.λ₋ + 1)
+# The jump size at the uniform u, by inversion (AntitheticMC and SobolMC): downwards for u < 1 - p, upwards above. The
+# quantile is continuous at u = 1 - p and in p, so the pathwise derivatives with respect to p are those of the price.
+function jump_quantile(mcProcess::KouProcess, u)
+    p = mcProcess.p
+    q = 1 - p
+    return u < q ? log(u / q) / mcProcess.λ₋ : -log((1 - u) / p) / mcProcess.λ₊
+end

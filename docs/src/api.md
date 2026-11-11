@@ -74,6 +74,17 @@ SubordinatedBrownianMotion
 FinancialMonteCarlo.SubordinatedBrownianMotionVec
 ```
 
+### Jumps from uniforms
+
+What `AntitheticMC` and `SobolMC` use to draw the jumps of `KouProcess` and `MertonProcess` from a
+fixed number of uniforms per path (also used by VibratoMonteCarlo.jl).
+
+```@docs
+FinancialMonteCarlo.JumpUniforms
+FinancialMonteCarlo.jump_count
+FinancialMonteCarlo.jump_quantile
+```
+
 ### Parameters
 
 ```@docs

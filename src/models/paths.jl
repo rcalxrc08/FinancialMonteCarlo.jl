@@ -42,8 +42,9 @@ function draw_subordinator!(dt_s, dt_s_host, subordinator_, mcBaseData::MonteCar
 end
 
 # The type of a Sobol sequence holds its dimension, known only at run time, so the paths are drawn behind a
-# function barrier: path!(i, normals) fills the path i from the normals of its point of the sequence.
-on_sobol_paths(path!, dimension::Integer, mcBaseData::MonteCarloConfiguration, numtype::Type) = sobol_paths!(path!, SobolSeq(dimension), Vector{numtype}(undef, dimension), mcBaseData)
+# function barrier: path!(i, normals) fills the path i from the normals of its point of the sequence. Only the first
+# `normals` coordinates are turned into normals, the others stay uniform (the jumps of Kou and Merton).
+on_sobol_paths(path!, dimension::Integer, mcBaseData::MonteCarloConfiguration, numtype::Type; normals::Integer = dimension) = sobol_paths!(path!, SobolSeq(dimension), Vector{numtype}(undef, dimension), normals, mcBaseData)
 
 # Sobol.skip(seq, n) skips 2^m - 1 points, 2^m <= n + 1 < 2^(m + 1), by drawing every one of them: with n = Nstep * Nsim
 # that was 32 times the points of the simulation, most of its time. After k points the state of the sequence has a closed
@@ -69,12 +70,13 @@ function sobol_skip!(seq::SobolSeq, n::Integer)
     return seq
 end
 
-function sobol_paths!(path!, seq, normals, mcBaseData::MonteCarloConfiguration)
+function sobol_paths!(path!, seq, point, Nnormals::Integer, mcBaseData::MonteCarloConfiguration)
     sobol_skip!(seq, mcBaseData.Nstep * mcBaseData.Nsim)
+    normals = view(point, 1:Nnormals)
     for i = 1:mcBaseData.Nsim
-        next!(seq, normals)
+        next!(seq, point)
         @. normals = norminvcdf(normals)
-        path!(i, normals)
+        path!(i, point)
     end
     return
 end

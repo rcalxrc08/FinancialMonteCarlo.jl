@@ -48,6 +48,8 @@ include("../testutils.jl")
         und_32 = Underlying(Float32(S0), Float32(d))
         @test pricer(BlackScholesProcess(Float32(sigma), Underlying(Float32(S0))), curve_32, mc_small, eu_32) isa Float32
         @test pricer(MertonProcess(Float32(sigma), 3.0f0, 0.03f0, 0.02f0, und_32), curve_32, mc_small, eu_32) isa Float32
+        @test pricer(MertonProcess(Float32(sigma), 3.0f0, 0.03f0, 0.02f0, und_32), curve_32, mc_small_anti, eu_32) isa Float32
+        @test pricer(KouProcess(Float32(sigma), 3.0f0, 0.3f0, 30.0f0, 20.0f0, und_32), curve_32, MonteCarloConfiguration(Nsim_small, Nstep_small; sampling = FinancialMonteCarlo.SobolMC()), eu_32) isa Float32
         @test pricer(GaussianCopulaNVariateProcess(model_32, model_32, 0.4f0), curve_32, mc_small, EuropeanOptionND(Float32(T), Float32(K))) isa Float32
         @test pricer(model_32, curve_32, mc_small, eu_32 + Forward(Float32(T))) isa Float32
         @test pricer("A" → model_32, curve_32, mc_small, "A" → eu_32) isa Float32

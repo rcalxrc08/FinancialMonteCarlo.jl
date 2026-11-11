@@ -127,4 +127,6 @@ DualNumbers, HyperDualNumbers, TaylorSeries) are supported.
     The same applies to parameters that change the number of jumps in a path. For the jump
     diffusions (Kou, Merton) the jump times are drawn as `randexp() / (λ * T)`, so the derivatives
     with respect to `T` and `λ` miss the contribution of jumps crossing the maturity; the other
-    sensitivities are unaffected.
+    sensitivities are unaffected. With `StandardMC` the direction of a Kou jump is drawn against `p`,
+    so the derivative with respect to `p` misses its effect on the jumps; with `AntitheticMC` and
+    `SobolMC` the sizes are quantiles of uniforms, continuous in `p`, and the derivative is complete.

@@ -30,3 +30,5 @@ end
 export MertonProcess;
 compute_jump_size(mcProcess::MertonProcess, mcBaseData::MonteCarloConfiguration) = mcProcess.μ_jump + mcProcess.σ_jump * draw_normal(mcBaseData);
 compute_drift(mcProcess::MertonProcess) = exp(mcProcess.μ_jump + mcProcess.σ_jump^2 / 2) - 1
+# The jump size at the uniform u, by inversion (AntitheticMC and SobolMC)
+jump_quantile(mcProcess::MertonProcess, u) = mcProcess.μ_jump + mcProcess.σ_jump * norminvcdf(u)

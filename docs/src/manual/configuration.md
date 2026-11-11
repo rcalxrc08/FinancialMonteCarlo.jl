@@ -22,8 +22,13 @@ variates with an odd `Nsim`, Sobol sequences in batches or on the GPU, `MultiPro
 | Sampling | Description |
 |:--|:--|
 | `StandardMC()` | plain Monte Carlo (default) |
-| `AntitheticMC()` | antithetic variates: half of the paths use the negated normals of the other half. `Nsim` must be even |
-| `SobolMC()` | quasi Monte Carlo with Sobol sequences, only in `SerialMode`: each path is one point of dimension `Nstep` (`2 Nstep` for Heston), after skipping the first `2^m - 1` points, `2^m ≤ Nstep · Nsim + 1 < 2^(m+1)` |
+| `AntitheticMC()` | antithetic variates: half of the paths use the negated normals of the other half (and, for Kou and Merton, the uniforms `1 - u` of its jumps). `Nsim` must be even |
+| `SobolMC()` | quasi Monte Carlo with Sobol sequences, only in `SerialMode`: each path is one point of dimension `Nstep` (`2 Nstep` for Heston, `Nstep + 1 + 2M` for Kou and Merton), after skipping the first `2^m - 1` points, `2^m ≤ Nstep · Nsim + 1 < 2^(m+1)` |
+
+With `AntitheticMC` and `SobolMC` the jumps of Kou and Merton are drawn from uniforms by inversion:
+one uniform gives the number of jumps (Poisson), then each jump takes one for its time and one for
+its size. The antithetic path uses `1 - u` for all of them. With `SobolMC` a path has room for `M`
+jumps, the Poisson quantile at `1 - sqrt(eps)`: the rare path with more draws them from `rng`.
 | `ControlVariates(variate, conf, sampling = StandardMC())` | control variates: a pilot run with configuration `conf` estimates the optimal coefficient and the price of `variate` (exact for a [`Forward`](@ref)), then the main run uses `sampling`. `variate` must have the same maturity as the priced payoff |
 
 ## Execution modes
