@@ -126,12 +126,11 @@ Keep the docs in step with the code in the same commit: the manual pages in `doc
 
 Push to the `GitHub` remote; `origin` (GitLab) has not been pushed since 0.5.2 and is many commits behind.
 
-### Docs deployment: open problem (2026-11-07)
+### Docs deployment
 
-- For v0.6.0 the docs run of the tag pushed `v0.6.0/` and `stable/` to `gh-pages` and its Pages deployment was reported successful, but the site kept the previous deployment; a manual run on master (Actions > Documentation > Run workflow, or `gh workflow run Documentation.yml --ref master`) published it. 0.6.0 docs are live since then.
-- Commit 4383fdb changed `Documentation.yml` so that a tag run only pushes to `gh-pages` and then dispatches the workflow on master (`publish-tag` job). The hypothesis behind it (Pages does not serve deployments made from a tag) is **unverified**: no release has exercised it yet.
-- Since 4383fdb every Pages deployment (`actions/deploy-pages`) has hung in `syncing_files` / empty status and timed out after 10 minutes (three runs: push, re-run, fresh dispatch), while the docs job passes; githubstatus.com reported Pages operational. Deployments of 99df528 before it worked.
-- Next steps: re-run the Documentation workflow later; if Pages still hangs, `git revert 4383fdb` (restores the workflow that deployed at 20:48) and, after each release tag, dispatch the workflow on master by hand.
+- GitHub Pages is set to **build from GitHub Actions** (`build_type: workflow`, `gh api repos/rcalxrc08/FinancialMonteCarlo.jl/pages`); the `source.branch: gh-pages` in that answer is a leftover and is not served. The `gh-pages` branch is still updated on every run: it is where `deploydocs` stores the versioned site (dev/, stable/, a folder per tag), and the `docs` job uploads that checkout as the Pages artifact, which the `pages` job deploys with `actions/deploy-pages`. So a new commit on `gh-pages` ("build based on <sha>") is expected, and the legacy "pages build and deployment" runs from the branch stopped on 2026-11-04.
+- Verified on 611d415 (2026-11-11): the `github-pages` deployment was created from master by the workflow, and the live `dev/` site served the new content within a minute. The Pages hangs in `syncing_files` after 4383fdb (2026-11-07) did not recur: the deployments of 2026-11-08 and 2026-11-09 succeeded too.
+- Still **unverified**: the tag path (`publish-tag` dispatching the workflow on master, because Pages did not serve the v0.6.0 deployment made from the tag). Check it at the next release (step 4 above).
 
 ## Caveats (from README)
 

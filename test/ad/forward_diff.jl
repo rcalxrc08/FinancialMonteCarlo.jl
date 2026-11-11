@@ -18,8 +18,10 @@ using ForwardDiff
 
     @testset "jumps by inversion: pathwise derivatives in the jump law" begin
         # With antithetic and Sobol sampling the jump sizes are quantiles of uniforms, so the derivatives with respect
-        # to the parameters of the jump law match finite differences on the same paths (Kou's p included).
-        h = 1e-5
+        # to the parameters of the jump law match finite differences on the same paths (Kou's p included). The step is
+        # small, so that no path crosses the strike between the two bumps (the payoff has a kink there): with h = 1e-5
+        # one path did on Julia 1.10, and dp was 4e-4 off.
+        h = 1e-7
         fd(f, x, i) = (f(x .+ h .* (1:length(x) .== i)) - f(x .- h .* (1:length(x) .== i))) / (2h)
         for sampling in (FinancialMonteCarlo.AntitheticMC(), FinancialMonteCarlo.SobolMC())
             mc_jumps = MonteCarloConfiguration(2000, 5; sampling = sampling)
