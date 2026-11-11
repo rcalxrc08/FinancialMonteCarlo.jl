@@ -11,13 +11,18 @@ mcConfig = MonteCarloConfiguration(10_000, 30)
 
 # ## Positions
 # Payoffs on the same underlying form a vector space: they can be added and scaled.
-# The result is a `Position`, i.e. a dictionary from payoff to weight.
+# The result is a `Position`: the payoffs with their weights, in the order they were added. The same contract
+# appears once, and a leg whose weight is zero is removed.
 straddle = EuropeanOption(T, K) + EuropeanOption(T, K, false)
 #-
 bull_spread = EuropeanOption(T, 95.0) - EuropeanOption(T, 105.0)
 #-
 model = BlackScholesProcess(0.2, Underlying(S0, d))
-pricer(model, rfCurve, mcConfig, 2.0 * straddle - bull_spread)
+position = 2.0 * straddle - bull_spread
+pricer(model, rfCurve, mcConfig, position)
+
+# A position is priced path by path, so it has a Monte Carlo error of its own:
+confinter(model, rfCurve, mcConfig, position)
 
 # A position is priced like a single payoff, so its value can be drawn against the spot, here with its
 # payoff at maturity (the value it converges to as the maturity approaches):
@@ -33,7 +38,8 @@ plot!(spots, clamp.(spots .- 95.0, 0.0, 10.0); color = "#eb6834", linestyle = :d
 
 # ## Market data sets and portfolios
 # A `MarketDataSet` links underlying names to models with the `→` operator (typed `\to<TAB>`),
-# a portfolio links underlying names to positions.
+# a portfolio links underlying names to positions. The models are simulated one after the other from the same
+# stream of random numbers, so the underlyings are independent.
 market = "ENI" → BlackScholesProcess(0.2, Underlying(S0, d))
 market += "AAPL" → KouProcess(0.25, 5.0, 0.3, 30.0, 20.0, Underlying(150.0, 0.0))
 
@@ -47,10 +53,10 @@ delta(market, rfCurve, mcConfig, portfolio, "AAPL")
 
 # ## Multivariate models
 # Correlated underlyings are modelled with a Gaussian copula on top of single name models.
-# The key of a multivariate model joins the names of its components with `_`.
+# A multivariate model is linked to the tuple of the names of its components.
 ρ = [1.0 0.5; 0.5 1.0]
 basket_model = GaussianCopulaNVariateProcess(ρ, BlackScholesProcess(0.2, Underlying(S0, d)), BlackScholesProcess(0.3, Underlying(S0, d)))
-basket_market = "ENI_AAPL" → basket_model
+basket_market = ("ENI", "AAPL") → basket_model
 
 # `simulate` returns one path matrix per component. The log returns at maturity of the two components are
 # correlated as the copula prescribes, while each keeps the distribution of its own model (the second is wider,
@@ -62,6 +68,6 @@ scatter(returns_1[1:2_000], returns_2[1:2_000]; color = "#2a78d6", markersize = 
 
 # Basket payoffs such as `EuropeanOptionND` refer to the whole basket, while single name payoffs
 # can still refer to a single component.
-basket_portfolio = "ENI_AAPL" → EuropeanOptionND(T, K)
+basket_portfolio = ("ENI", "AAPL") → EuropeanOptionND(T, K)
 basket_portfolio += "ENI" → EuropeanOption(T, K)
 pricer(basket_market, rfCurve, mcConfig, basket_portfolio)

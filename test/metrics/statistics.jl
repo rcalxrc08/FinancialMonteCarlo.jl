@@ -53,6 +53,7 @@ include("../testutils.jl")
         @test pricer(GaussianCopulaNVariateProcess(model_32, model_32, 0.4f0), curve_32, mc_small, EuropeanOptionND(Float32(T), Float32(K))) isa Float32
         @test pricer(model_32, curve_32, mc_small, eu_32 + Forward(Float32(T))) isa Float32
         @test pricer("A" → model_32, curve_32, mc_small, "A" → eu_32) isa Float32
+        @test pricer(model_32, curve_32, mc_small, eu_32 + Spot()) isa Float32 # #39
         @test FinancialMonteCarlo.integral(ZeroRate(Float32[r, 2r], Float32(T)).r, 0.0f0) isa Float32
     end
 

@@ -45,14 +45,37 @@ end
         @test FinancialMonteCarlo.integral(c_late, 0.25) ≈ 0.03 * 0.25
         @test FinancialMonteCarlo.integral(c_late, 1.0) ≈ 0.03 * 0.5 + 0.04 * 0.5
         @test FinancialMonteCarlo.integral(FinancialMonteCarlo.Curve([0.03], [1.0]), 2.0) ≈ 0.06
+
+        # arithmetic of curves: on the union of the nodes, each curve flat outside its own (#43, #44)
+        Curve = FinancialMonteCarlo.Curve
+        c1, c2, c3 = Curve([0.01, 0.02], 1.0), Curve([0.03, 0.03, 0.03], 1.0), Curve([0.01, 0.02], [0.5, 1.0])
+        @test (c1 - c2).values ≈ [-0.02, -0.015, -0.01] # not c2 - c1
+        @test (c1 / c2).values ≈ [1, 1.5, 2] ./ 3
+        @test (c3 - c2).times == [0.0, 0.5, 1.0] && (c3 - c2).values ≈ [-0.02, -0.02, -0.01]
+        @test (c1 + 1).values ≈ [1.01, 1.015, 1.02][[1, 3]] && (1 - c1).values ≈ [0.99, 0.98]
+        @test FinancialMonteCarlo.integral(c3 - c2, 1.0) ≈ FinancialMonteCarlo.integral(c3, 1.0) - FinancialMonteCarlo.integral(c2, 1.0)
+        # a drift r - d with a dividend curve finer than the rate curve keeps its sign
+        model = BlackScholesProcess(sigma, Underlying(S0, Curve([0.0, 0.0, 0.0], T)))
+        @test pricer(model, ZeroRate([0.05, 0.05], T), mc_small, Forward(T)) ≈ S0 rtol = 0.02
+        @test_throws ArgumentError Curve([0.01, 0.02], [1.0, 0.5])
+        # a type of the package, not a Dictionary with arithmetic defined on it (#42)
+        @test parentmodule(Curve) === FinancialMonteCarlo
+        @test FinancialMonteCarlo.ImpliedCurve([0.01, 0.02], [1.0, 2.0]) isa Curve{Float64, Float64}
+        @test FinancialMonteCarlo.integral(FinancialMonteCarlo.ImpliedCurve([0.01, 0.02], [1.0, 2.0]), 2.0) ≈ 0.04
     end
 
     @testset "market data and portfolios" begin
         model = GaussianCopulaNVariateProcess(BlackScholesProcess(sigma, Underlying(S0, d)), BlackScholesProcess(sigma, Underlying(S0, d)), 0.0)
-        mkt = "eni_aap" → model
-        @test_throws AssertionError mkt + mkt
-        @test_throws AssertionError "ENJ" → model # multivariate key must be INDEX1_INDEX2
-        @test_throws AssertionError "c_i" → Forward(1.0) # single name key cannot contain '_'
+        mkt = ("eni", "aap") → model
+        @test_throws ArgumentError mkt + mkt
+        @test_throws ArgumentError mkt + ("aap" → BlackScholesProcess(sigma, Underlying(S0, d))) # a name appears once
+        @test_throws ArgumentError "ENJ" → model # a multivariate model needs one name per component
+        @test_throws ArgumentError ("a", "b", "c") → model
+        @test_throws ArgumentError ("a", "b") → Forward(1.0) # a single name payoff needs a single name
+        @test_throws ArgumentError "ENI" → EuropeanOptionND(T, K) # a basket payoff needs a tuple of names (#36)
+        # names joined by `_` are deprecated: they become the tuple of the names
+        @test (@test_deprecated "eni_aap" → model) == mkt
+        @test_throws ArgumentError "c_i" → Forward(1.0) # deprecated, and the tuple of two names is not a single name
     end
 
     @testset "payoffs: negative maturity" begin

@@ -16,6 +16,14 @@ using Mooncake, ForwardDiff, Random
         @test g[2] > 0 # vega
     end
 
+    @testset "two-leg position built inside the function (#36)" begin
+        f(x) = pricer(BlackScholesProcess(x[2], Underlying(x[1], d)), ZeroRate(r), mc_xo, 2 * EuropeanOption(T, x[3]) - EuropeanOption(T, x[3], false))
+        x0 = [S0, sigma, K]
+        cache = Mooncake.prepare_gradient_cache(f, x0)
+        _, (_, g) = Mooncake.value_and_gradient!!(cache, f, x0)
+        @test g ≈ ForwardDiff.gradient(f, x0) rtol = 1e-8
+    end
+
     @testset "default rng: seeding has a rule, refills go through" begin
         # 2000 paths draw past the 1002 numbers cached by the MersenneTwister.
         x0 = [S0, sigma, r, d]

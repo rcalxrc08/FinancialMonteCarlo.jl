@@ -18,10 +18,11 @@ function payoff(S::AbstractMatrix{num}, optionData::Spot, ::ZeroRate, ::Abstract
     return S0_vec
 end
 
-function pricer(mcProcess::BaseProcess, ::AbstractZeroRateCurve, ::MonteCarloConfiguration, ::Spot)
-    return mcProcess.underlying.S0
+# The price of the spot is S0 whatever the configuration: a method for each configuration type with a pricer of its own,
+# so that none is ambiguous (#41)
+for config_type in (MonteCarloConfiguration, BatchedConfig, MonteCarloConfiguration{<:ControlVariates}, MonteCarloConfiguration{<:ControlVariates, <:AbstractBatchedMode})
+    @eval pricer(mcProcess::BaseProcess, ::AbstractZeroRateCurve, ::$config_type, ::Spot) = mcProcess.underlying.S0
 end
 
-function maturity(::Spot)
-    return 0.0
-end
+# No maturity: an Int8 zero, which does not promote the maturities of the other payoffs of a position (#39)
+maturity(::Spot) = Int8(0)

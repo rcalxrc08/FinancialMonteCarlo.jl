@@ -42,7 +42,7 @@ simulate(mcProcess::AbstractMonteCarloProcess, zeroCurve::AbstractZeroRateCurve,
 simulate(mcProcess::VectorialMonteCarloProcess, zeroCurve::AbstractZeroRateCurve, mcConfig::BatchedConfig, T::Number) = joined_on_batches(config -> simulate(mcProcess, zeroCurve, config, T), mcConfig)
 simulate(mcProcess::AbstractMonteCarloEngine, mcConfig::BatchedConfig, T::Number) = joined_on_batches(config -> simulate(mcProcess, config, T), mcConfig)
 
-for (model_type, payoff_type) in ((BaseProcess, AbstractPayoff), (BaseProcess, Position), (BaseProcess, Array{<:AbstractPayoff}), (BaseProcess, AbstractSmile), (VectorialMonteCarloProcess, Array{Position}), (MarketDataSet, Portfolio))
+for (model_type, payoff_type) in ((BaseProcess, AbstractPayoff), (BaseProcess, Position), (BaseProcess, Array{<:AbstractPayoff}), (BaseProcess, AbstractSmile), (VectorialMonteCarloProcess, Array{<:Position}), (MarketDataSet, Portfolio))
     @eval function pricer(mcProcess::$model_type, rfCurve::AbstractZeroRateCurve, mcConfig::BatchedConfig, abstractPayoff::$payoff_type)
         return average_on_batches(config -> pricer(mcProcess, rfCurve, config, abstractPayoff), mcConfig)
     end
@@ -57,7 +57,7 @@ end
 function mean_and_variance(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig::BatchedConfig, abstractPayoffs)
     configs = batch_configs(mcConfig)
     moments = batch_results(config -> payoff_moments(mcProcess, rfCurve, config, abstractPayoffs), configs, mcConfig.mode)
-    Means = weighted_average(configs, first.(moments), mcConfig)
-    squares = sum(muladd.(config.Nsim, abs2.(moment[1] .- Means), moment[2]) for (config, moment) in zip(configs, moments))
-    return Means, squares ./ (mcConfig.Nsim - 1)
+    means = weighted_average(configs, first.(moments), mcConfig)
+    squares = sum(muladd.(config.Nsim, abs2.(moment[1] .- means), moment[2]) for (config, moment) in zip(configs, moments))
+    return means, squares ./ (mcConfig.Nsim - 1)
 end

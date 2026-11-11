@@ -64,7 +64,8 @@ volatilities = blsimpv.(S0, smile.K, r, T, prices, d, smile.isCall) # FinancialT
 
 ## Positions
 
-Payoffs can be added, subtracted and multiplied by numbers, see
-[Portfolios and multivariate](@ref).
+Payoffs can be added, subtracted and multiplied by numbers, giving a
+[`FinancialMonteCarlo.Position`](@ref), which `pricer`, `variance`, `confinter`, `delta` and `rho`
+accept like a payoff; see [Portfolios and multivariate](@ref).
 
 See [Payoffs](@ref api-payoffs) in the API reference.

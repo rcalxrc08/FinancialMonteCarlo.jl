@@ -16,6 +16,13 @@ using Enzyme, ForwardDiff, Random
         @test g[2] > 0 # vega
     end
 
+    @testset "two-leg position built inside the function (#36, #40)" begin
+        mc_xo = MonteCarloConfiguration(200, Nstep_small; rng = Xoshiro())
+        f(x) = pricer(BlackScholesProcess(x[2], Underlying(x[1], d)), ZeroRate(r), mc_xo, 2 * EuropeanOption(T, x[3]) - EuropeanOption(T, x[3], false))
+        x0 = [S0, sigma, K]
+        @test Enzyme.gradient(Enzyme.Reverse, Enzyme.Const(f), x0)[1] ≈ ForwardDiff.gradient(f, x0) rtol = 1e-10
+    end
+
     @testset "Black-Scholes, Xoshiro" begin
         x0 = [S0, sigma, r, d]
         mc_xo = MonteCarloConfiguration(2000, Nstep_small; rng = Xoshiro())

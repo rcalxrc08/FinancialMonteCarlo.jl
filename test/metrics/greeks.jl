@@ -5,7 +5,7 @@ using DualNumbers
 @testset "Greeks" begin
     @testset "delta" begin
         name_1, name_2 = "ENJ", "ABPL"
-        basket_name = name_1 * "_" * name_2 * "_TESL"
+        basket_name = (name_1, name_2, "TESL")
         rho_1 = [1.0 0.0 0.1; 0.0 1.0 0.0; 0.1 0.0 1.0]
         bs(S) = BlackScholesProcess(sigma, Underlying(S, d))
         model_enj, model_abpl, model_tesl = bs(S0), bs(S0), bs(S0)
@@ -29,7 +29,7 @@ using DualNumbers
         @test abs(dual_single - FinancialMonteCarlo.delta(model_enj, rfCurve, mc, am * 1.0, 1e-7)) < 1e-4
         @test abs(dual_single - FinancialMonteCarlo.delta(model_enj, rfCurve, mc, [am], 1e-7)[1]) < 1e-4
 
-        @test_throws AssertionError FinancialMonteCarlo.delta(name_1 → model_enj, rfCurve, mc, portfolio_single, basket_name, 1e-7)
+        @test_throws ArgumentError FinancialMonteCarlo.delta(name_1 → model_enj, rfCurve, mc, portfolio_single, "ENJ_ABPL", 1e-7)
         @test FinancialMonteCarlo.delta(name_1 → model_enj, rfCurve, mc, portfolio_single, "MISSING", 1e-7) == 0.0
     end
 

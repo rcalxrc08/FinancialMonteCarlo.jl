@@ -46,7 +46,7 @@ end
         model_nd = GaussianCopulaNVariateProcess(model, model, 0.4)
         eu_nd = EuropeanOptionND(T, K)
         @test pricer(model_nd, rfCurve, mc_mt, eu_nd) ≈ on_serial(mc -> pricer(model_nd, rfCurve, mc, eu_nd))
-        @test pricer("A_B" → model_nd, rfCurve, mc_mt, "A_B" → eu_nd) ≈ on_serial(mc -> pricer("A_B" → model_nd, rfCurve, mc, "A_B" → eu_nd))
+        @test pricer(("A", "B") → model_nd, rfCurve, mc_mt, ("A", "B") → eu_nd) ≈ on_serial(mc -> pricer(("A", "B") → model_nd, rfCurve, mc, ("A", "B") → eu_nd))
         FMC.set_seed!(mc_mt)
         paths_mt = simulate(model_nd, rfCurve, mc_mt, T)
         foreach(FMC.set_seed!, batches)

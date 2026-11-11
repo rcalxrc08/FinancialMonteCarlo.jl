@@ -18,50 +18,35 @@ the payoff repriced with the same seed. For a [`MarketDataSet`](@ref) and a
 For exact pathwise deltas use a dual number as spot, see the Automatic differentiation section of the manual.
 """
 function delta(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration, abstractPayoffs::Union{AbstractPayoff, Array{<:AbstractPayoff}, AbstractSmile, Position}, dS0::Real = 1e-7)
-    Prices = pricer(mcProcess, rfCurve, mcConfig, abstractPayoffs)
+    prices = pricer(mcProcess, rfCurve, mcConfig, abstractPayoffs)
     mcProcess_up = @set mcProcess.underlying.S0 += dS0
-    PricesUp = pricer(mcProcess_up, rfCurve, mcConfig, abstractPayoffs)
-    Delta = @. (PricesUp - Prices) / dS0
-
-    return Delta
+    prices_up = pricer(mcProcess_up, rfCurve, mcConfig, abstractPayoffs)
+    return @. (prices_up - prices) / dS0
 end
 
-function delta(mcProcess::Dict{String, AbstractMonteCarloProcess}, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration, dict_::Dict{String, Dict{AbstractPayoff, Number}}, underl_::String, dS::Real = 1e-7)
-    ChainRulesCore.@ignore_derivatives @assert isnothing(findfirst("_", underl_)) "deltas are defined on single name"
-    set_seed!(mcConfig)
-    price0 = pricer(mcProcess, rfCurve, mcConfig, dict_)
-    price2 = zero(price0)
-    set_seed!(mcConfig)
-    mcProcess_up = deepcopy(mcProcess)
-    keys_mkt = collect(keys(mcProcess_up))
-    idx_supp = 0
-    idx_1 = findfirst(y -> y == underl_, keys_mkt)
-    if (isnothing(idx_1))
-        idx_1 = findfirst(out_el -> any(out_el_sub -> out_el_sub == underl_, split(out_el, "_")), keys_mkt)
-        if (isnothing(idx_1))
-            return zero(price0)
-        end
-        multi_name = keys_mkt[idx_1]
-        idx_supp = findfirst(x_ -> x_ == underl_, split(multi_name, "_"))
-        model_ = mcProcess_up[multi_name]
-        ok_m = model_.models[idx_supp]
-        ok_m = @set ok_m.underlying.S0 += dS
-        # model_.models[idx_supp].underlying.S0 += dS
-        models_ = model_.models
-        new_models = @set models_[idx_supp] = ok_m
-        new_model = @set model_.models = new_models
-        delete!(mcProcess_up, multi_name)
-        tmp_mkt = multi_name → new_model
-        mcProcess_up = mcProcess_up + tmp_mkt
-        price2 = pricer(mcProcess_up, rfCurve, mcConfig, dict_)
-    else
-        model = mcProcess_up[keys_mkt[idx_1]]
-        model_up = @set model.underlying.S0 += dS
-        delete!(mcProcess_up, keys_mkt[idx_1])
-        tmp_mkt = keys_mkt[idx_1] → model_up
-        mcProcess_up = mcProcess_up + tmp_mkt
-        price2 = pricer(mcProcess_up, rfCurve, mcConfig, dict_)
-    end
+function delta(market::MarketDataSet, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration, portfolio::Portfolio, name::String, dS::Real = 1e-7)
+    occursin('_', name) && throw(ArgumentError("deltas are defined on a single name, not $name"))
+    price0 = pricer(market, rfCurve, mcConfig, portfolio)
+    market_up = bump_spot(market, name, dS)
+    isnothing(market_up) && return zero(price0)
+    return (pricer(market_up, rfCurve, mcConfig, portfolio) - price0) / dS
+end
 
-    return (price2 - price0) / dS
+# The market data set with the spot of name bumped by dS, alone or as a component of a multivariate model; nothing if
+# name is not in it
+function bump_spot(market::MarketDataSet, name::String, dS::Real)
+    for (key, model) in market.models
+        component = findfirst(==(name), underlying_names(key))
+        isnothing(component) && continue
+        models = copy(market.models)
+        models[key] = bump_spot(model, component, dS)
+        return MarketDataSet(models)
+    end
+    return nothing
+end
+bump_spot(model::AbstractMonteCarloProcess, ::Integer, dS::Real) = @set model.underlying.S0 += dS
+function bump_spot(model::NDimensionalMonteCarloProcess, component::Integer, dS::Real)
+    models = model.models
+    bumped = @set models[component].underlying.S0 += dS
+    return @set model.models = bumped
 end

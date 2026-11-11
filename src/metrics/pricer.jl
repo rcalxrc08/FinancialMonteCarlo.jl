@@ -27,9 +27,7 @@ function pricer(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig
     set_seed!(mcConfig)
     T = maturity(abstractPayoff)
     S = simulate(mcProcess, rfCurve, mcConfig, T)
-    Payoff = payoff(S, abstractPayoff, rfCurve, mcConfig)
-    Price = mean(Payoff)
-    return Price
+    return mean(payoff(S, abstractPayoff, rfCurve, mcConfig))
 end
 
 function pricer(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig::AbstractMonteCarloConfiguration, smile::AbstractSmile)
@@ -50,43 +48,56 @@ function pricer(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig
     maxT = maturity(abstractPayoffs)
     S = simulate(mcProcess, rfCurve, mcConfig, maxT)
     T_price = price_type(mcProcess, rfCurve, abstractPayoffs)
-    Prices::Array{T_price, N} = [mean(payoff(S, abstractPayoff, rfCurve, mcConfig, maxT)) for abstractPayoff in abstractPayoffs]
+    prices::Array{T_price, N} = [mean(payoff(S, abstractPayoff, rfCurve, mcConfig, maxT)) for abstractPayoff in abstractPayoffs]
 
-    return Prices
+    return prices
 end
 
-function pricer(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration, dict_::Position)
+# A position is priced path by path: the mean of its discounted payoff, the weighted sum of those of its legs on the same
+# paths (so that its variance and confidence interval are those of the position, see payoff_moments)
+function pricer(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration, position::Position)
+    T_price = price_type(mcProcess, rfCurve, position)
+    isempty(position) && return zero(T_price)
     set_seed!(mcConfig)
-    maxT = maturity(dict_)
+    maxT = maturity(position)
     S = simulate(mcProcess, rfCurve, mcConfig, maxT)
-    price = sum(weight_ * mean(payoff(S, abstractPayoff, rfCurve, mcConfig, maxT)) for (abstractPayoff, weight_) in dict_)
-
+    price::T_price = mean(payoff(S, position, rfCurve, mcConfig, maxT))
     return price
 end
 
 #####Pricer for multivariate
-function pricer(mcProcess::VectorialMonteCarloProcess, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration, special_array_payoff::Array{Position})
+# One position per subset of the components of the model, in the order of compute_indices; undefined or empty where
+# there is none. The paths of a subset are those of its components.
+function pricer(mcProcess::VectorialMonteCarloProcess, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration, positions::Array{<:Position})
+    subsets = compute_indices(length(mcProcess.models))
+    priced = [i for i in eachindex(positions) if isassigned(positions, i) && !isempty(positions[i])]
+    T_price = price_type(mcProcess, rfCurve, positions[priced])
+    isempty(priced) && return zero(T_price)
     set_seed!(mcConfig)
-    N_ = length(mcProcess.models)
-    idx_ = compute_indices(N_)
-    ## Filter special_array_payoff for undef
-    IND_ = collect(1:length(special_array_payoff))
-    filter!(i -> isassigned(special_array_payoff, i), IND_)
-    dict_cl = special_array_payoff[IND_]
-    #Compute Maximum time to maturity, all of the underlyings will be simulated till maxT.
-    maxT = maturity(dict_cl)
+    maxT = maximum(i -> maturity(positions[i]), priced)
     S = simulate(mcProcess, rfCurve, mcConfig, maxT)
-    price = sum(sum(weight_ * mean(payoff(S[idx_[i]], abstractPayoff, rfCurve, mcConfig, maxT)) for (abstractPayoff, weight_) in special_array_payoff[i]) for i in IND_)
-
+    price::T_price = sum(mean(payoff(S[subsets[i]], positions[i], rfCurve, mcConfig, maxT)) for i in priced)
     return price
 end
 
-function pricer(mcProcess::MarketDataSet, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration, dict_::Portfolio)
+# Each model of the market data set prices the positions on its underlyings (for a multivariate model, also those on its
+# components and their subsets). Positions on names missing from the market data set are not priced.
+# The generator is seeded once: the models are simulated one after the other, in the order of the market data set, each
+# continuing the random numbers of the previous one, so that the underlyings are independent (#38). Reseeding for each
+# model would give them all the same numbers, i.e. perfectly correlated paths.
+function pricer(market::MarketDataSet, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration, portfolio::Portfolio)
+    T_price = price_type(rfCurve, portfolio, market)
+    priced = [(model, positions) for (model, positions) in ((model, positions_on(portfolio, key)) for (key, model) in market.models) if !isnothing(positions)]
+    check_independent_streams(mcConfig.sampling, length(priced))
     set_seed!(mcConfig)
-    underlyings_payoff = keys(dict_)
-    underlyings_payoff_cpl = get_underlyings_identifier(underlyings_payoff, keys(mcProcess))
-    T_price = price_type(rfCurve, collect(values(dict_)), collect(values(mcProcess)))
-    price::T_price = sum(pricer(mcProcess[under_cpl], rfCurve, mcConfig, extract_option_from_portfolio(under_cpl, dict_)) for under_cpl in unique(underlyings_payoff_cpl))
-
+    continuing = @set mcConfig.reseed = false
+    price::T_price = zero(T_price)
+    for (model, positions) in priced
+        price += pricer(model, rfCurve, continuing, positions)
+    end
     return price
 end
+
+# A Sobol sequence does not depend on the generator: every model would get the same points
+check_independent_streams(::AbstractSampling, ::Integer) = nothing
+check_independent_streams(::SobolMC, n::Integer) = ChainRulesCore.@ignore_derivatives n <= 1 || throw(ArgumentError("SobolMC gives every model of a market data set the same points: price a portfolio on several models with another sampling"))

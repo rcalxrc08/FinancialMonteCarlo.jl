@@ -1,97 +1,67 @@
-import Base.+;
-
-#Strategies Implementation
-
 """
     Portfolio
 
-Dictionary from underlying names to [`FinancialMonteCarlo.Position`](@ref)s, built with
-`name → payoff` (see [`→`](@ref)) and joined with `+`. Priced against a [`MarketDataSet`](@ref).
+The positions on each underlying, by name: built with `name → payoff` or `name → position` (see [`→`](@ref)) and joined
+with `+`, which adds the positions on the same name. A basket payoff is linked to the tuple of the names of its
+underlyings. Priced against a [`MarketDataSet`](@ref).
 """
-const Portfolio = Dict{String, Position};
+struct Portfolio
+    positions::OrderedDict{UnderlyingKey, Position}
+end
+Portfolio() = Portfolio(OrderedDict{UnderlyingKey, Position}())
 
-#Link an underlying name to a Position
-function →(x::String, y::Position)
-    out = Portfolio(x => y)
-
-    return out
+→(name, position::Position) = Portfolio(OrderedDict{UnderlyingKey, Position}(underlying_key(name) => position))
+function →(name, payoff_::SingleNamePayoff)
+    key = underlying_key(name)
+    key isa String || throw(ArgumentError("a single name payoff needs a single name, not $key"))
+    return key → (1 * payoff_)
+end
+function →(name, payoff_::BasketPayoff)
+    key = underlying_key(name)
+    key isa Tuple || throw(ArgumentError("a basket payoff needs a tuple of names, one per underlying, not $key"))
+    return key → (1 * payoff_)
 end
 
-#Link an underlying name to a SingleNamePayoff
-function →(x::String, y::SingleNamePayoff)
-    sep = findfirst("_", x)
-    ChainRulesCore.@ignore_derivatives @assert isnothing(sep) "NO UNDERSCORE ALLOWED IN SINGLE NAME OPTIONS"
-    return x → (1 * y)
-end
-
-#Link an underlying name to a BasketPayoff
-function →(x::String, y::BasketPayoff)
-    sep = findfirst("_", x)[1]
-    ChainRulesCore.@ignore_derivatives @assert !isnothing(sep) "Bivariate payoff underlying must follow the format: INDEX1_INDEX2"
-    return x → (1 * y)
-end
-
-#Join Portfolio s
 function +(x::Portfolio, y::Portfolio)
-    out = copy(x)
-    y_keys = keys(y)
-    for y_key in y_keys
-        if haskey(out, y_key)
-            out[y_key] = out[y_key] + y[y_key]
-        else
-            out[y_key] = y[y_key]
-        end
+    positions = copy(x.positions)
+    for (key, position) in y.positions
+        positions[key] = haskey(positions, key) ? positions[key] + position : position
     end
-    return out
+    return Portfolio(positions)
 end
 
-#Overload for display
-import Base.Multimedia.display;
-function display(p::Portfolio)
-    keys_ = keys(p)
-    for key_ in keys_
-        print(key_)
-        print(" => ")
-        print(p[key_])
+Base.getindex(portfolio::Portfolio, name) = portfolio.positions[underlying_key(name)]
+Base.haskey(portfolio::Portfolio, name) = haskey(portfolio.positions, underlying_key(name))
+Base.iterate(portfolio::Portfolio, state...) = iterate(portfolio.positions, state...)
+Base.length(portfolio::Portfolio) = length(portfolio.positions)
+Base.keys(portfolio::Portfolio) = keys(portfolio.positions)
+Base.values(portfolio::Portfolio) = values(portfolio.positions)
+Base.pairs(portfolio::Portfolio) = pairs(portfolio.positions)
+Base.:(==)(x::Portfolio, y::Portfolio) = x.positions == y.positions
+
+number_type(portfolio::Portfolio) = number_type(collect(values(portfolio.positions)))
+
+function Base.show(io::IO, ::MIME"text/plain", portfolio::Portfolio)
+    print(io, "Portfolio with ", length(portfolio), " underlying", length(portfolio) == 1 ? "" : "s", isempty(portfolio.positions) ? "" : ":")
+    for (key, position) in portfolio.positions
+        print(io, "\n  ", key, " → ", position)
     end
-    println("")
 end
 
-#Overload for extraction, output needs particular shape.
-function extract_option_from_portfolio(x::String, dict_::Portfolio)
-    keys_ = keys(dict_)
-    out = Position()
-    out_vec = Position[]
-    ap_keys = String[]
-    for key_ in keys_
-        if ((x == key_) || (any(z -> z == key_, split(x, "_"))))
-            out = dict_[key_]
-            push!(out_vec, out)
-            push!(ap_keys, key_)
+# The positions of the portfolio priced on the model of key: the position of a single name, or for a multivariate model
+# one position per subset of its components (in the order of compute_indices; undefined where there is none). Nothing if
+# the portfolio has no position on these underlyings.
+positions_on(portfolio::Portfolio, key::String) = get(portfolio.positions, key, nothing)
+function positions_on(portfolio::Portfolio, key::Tuple)
+    subsets = compute_indices(length(key))
+    out = Vector{Position}(undef, length(subsets))
+    found = false
+    for (i, subset) in enumerate(subsets)
+        name = underlying_key(key[subset])
+        if haskey(portfolio.positions, name)
+            out[i] = portfolio.positions[name]
+            found = true
         end
     end
-
-    if (length(out_vec) == 1) && (x == ap_keys[1])
-        return out
-    else
-        str_v = split(x, "_")
-        X = compute_indices(length(str_v))
-
-        #tmp_map=Dict( str_v .=> collect(1:length(str_v)))
-        tmp_map_rev = Dict(collect(1:length(str_v)) .=> str_v)
-
-        out__ = Array{Position}(undef, length(X))
-
-        for i_ = 1:length(X)
-            idx_ = X[i_]
-            str_underlv = [tmp_map_rev[idx_2] for idx_2 in idx_]
-            str_underl = join(str_underlv, "_")
-
-            if (haskey(dict_, str_underl))
-                out__[i_] = dict_[str_underl]
-            end
-        end
-
-        return out__
-    end
+    return found ? out : nothing
 end
