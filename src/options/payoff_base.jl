@@ -88,7 +88,7 @@ maturity of the payoff (as happens when several payoffs are priced on the same p
 This is the generic interface: each payoff family has an engine implementing it on top of the
 payoff specific `payout`, see the Extending section of the manual.
 """
-function payoff(::AbstractMatrix, ::AbstractPayoff, ::AbstractZeroRateCurve, ::AbstractMonteCarloConfiguration, T1::Number = 0.0)
+function payoff(::AbstractMatrix, ::AbstractPayoff, ::AbstractZeroRateCurve, ::AbstractMonteCarloConfiguration, T1::Number = 0)
     error("Function used just for documentation")
 end
 

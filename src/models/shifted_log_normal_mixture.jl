@@ -18,7 +18,7 @@ struct ShiftedLogNormalMixture{num <: Number, num2 <: Number, num3 <: Number, ab
     function ShiftedLogNormalMixture(η::Array{num, 1}, λ::Array{num2, 1}, α::num3, underlying::abstrUnderlying) where {num <: Number, num2 <: Number, num3 <: Number, abstrUnderlying <: AbstractUnderlying}
         ChainRulesCore.@ignore_derivatives @assert minimum(η) > 0 "Volatilities must be positive"
         ChainRulesCore.@ignore_derivatives @assert minimum(λ) > 0 "weights must be positive"
-        ChainRulesCore.@ignore_derivatives @assert sum(λ) <= 1.0 "λs must be weights"
+        ChainRulesCore.@ignore_derivatives @assert sum(λ) <= 1 "λs must be weights"
         ChainRulesCore.@ignore_derivatives @assert length(λ) == length(η) - 1 "Check vector lengths"
         zero_typed = ChainRulesCore.@ignore_derivatives zero(num) + zero(num2) + zero(num3)
         return new{num, num2, num3, abstrUnderlying, typeof(zero_typed)}(η, λ, α, underlying)

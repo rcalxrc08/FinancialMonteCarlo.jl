@@ -26,7 +26,7 @@ end
 export BlackScholesProcess;
 
 function simulate!(S, mcProcess::BlackScholesProcess, rfCurve::AbstractZeroRateCurve, mcBaseData::AbstractMonteCarloConfiguration, T::Number)
-    ChainRulesCore.@ignore_derivatives @assert T > 0.0
+    ChainRulesCore.@ignore_derivatives @assert T > 0
     r = rfCurve.r
     d = dividend(mcProcess)
     σ = mcProcess.σ
@@ -38,7 +38,7 @@ function simulate!(S, mcProcess::BlackScholesProcess, rfCurve::AbstractZeroRateC
 end
 
 # function simulate_path!(S, mcProcess::BlackScholesProcess, rfCurve::AbstractZeroRateCurve, mcBaseData::AbstractMonteCarloConfiguration, T::Number)
-# ChainRulesCore.@ignore_derivatives @assert T > 0.0
+# ChainRulesCore.@ignore_derivatives @assert T > 0
 #     r = rfCurve.r
 #     d = dividend(mcProcess)
 #     σ = mcProcess.σ

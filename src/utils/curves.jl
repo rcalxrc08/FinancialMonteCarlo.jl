@@ -42,12 +42,12 @@ each `T[i]` equals `r[i] * T[i]`: use it to turn zero rates (or dividend yields)
 function ImpliedCurve(r_::AbstractVector{num1}, T::AbstractVector{num2}) where {num1 <: Number, num2 <: Number}
     ChainRulesCore.@ignore_derivatives @assert length(r_) == length(T)
     ChainRulesCore.@ignore_derivatives @assert length(r_) >= 1
-    # each rate is the one that makes the integral of the piecewise linear curve r_i T_i at T_i
-    rates = [r_[1] * 2]
-    for i = 2:length(r_)
-        push!(rates, (r_[i] * T[i] - r_[i-1] * T[i-1]) * 2 / (T[i] - T[i-1]) - rates[end])
-    end
-    return curve_from_nodes(vcat(zero(num2), T), vcat(zero(eltype(rates)), rates))
+    # the integral of the piecewise linear curve up to T_i is r_i T_i: on each interval the mean of the curve, the mean of
+    # its two end values, is the increment of the integral over the length of the interval
+    times = vcat(zero(num2), T)
+    means = diff(vcat(zero(num1) * zero(num2), r_ .* T)) ./ diff(times)
+    rates = accumulate((previous, mean_) -> 2 * mean_ - previous, means; init = zero(eltype(means)))
+    return curve_from_nodes(times, vcat(zero(eltype(rates)), rates))
 end
 ImpliedCurve(r_::AbstractVector{<:Number}, T::Number) = ImpliedCurve(r_, [i * (T / length(r_)) for i = 1:length(r_)])
 

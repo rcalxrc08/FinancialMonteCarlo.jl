@@ -36,7 +36,7 @@ export GaussianCopulaNVariateLogProcess;
 function simulate!(S_Total, mcProcess::GaussianCopulaNVariateLogProcess, rfCurve::AbstractZeroRateCurve, mcBaseData::AbstractMonteCarloConfiguration, T::Number)
     Nsim = mcBaseData.Nsim
     Nstep = mcBaseData.Nstep
-    ChainRulesCore.@ignore_derivatives @assert T > 0.0
+    ChainRulesCore.@ignore_derivatives @assert T > 0
 
     ####Simulation
     ## Simulate
