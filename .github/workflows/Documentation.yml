@@ -1,11 +1,10 @@
 name: Documentation
-# deploydocs keeps the versioned site (dev/, stable/, one folder per tag) on the gh-pages branch; GitHub Pages, whose
-# source is "GitHub Actions", then publishes that branch: it is uploaded as the Pages artifact and deployed by
-# actions/deploy-pages, with no separate Pages build. Pull requests only build.
-# A pushed tag builds the docs of its release into gh-pages, but GitHub Pages does not serve a deployment made from a
-# tag (it reports success and keeps the previous site: v0.6.0), so a tag run publishes nothing itself and starts this
-# workflow on master instead, which uploads gh-pages with the new version in it. The docs of an older tag are built by
-# hand: Actions > Documentation > Run workflow on master, with the tag as input.
+# Builds the documentation (Documenter) and publishes it with GitHub Pages, whose source is "GitHub Actions": the site is
+# uploaded as the Pages artifact and deployed by actions/deploy-pages, with no gh-pages branch.
+# The site root is the manual of master; stable/ is the manual of the latest release, built from its tag in the same
+# run; docs/redirect/404.html sends the old URLs of the deploydocs site (dev/..., vX.Y.Z/...) to the root and to stable/.
+# Pull requests only build the manual of master. A pushed tag starts this workflow on master (Pages does not deploy
+# from a tag), whose run rebuilds stable/ from the new tag.
 on:
   push:
     branches:
@@ -15,74 +14,57 @@ on:
     branches:
       - master
   workflow_dispatch:
-    inputs:
-      tag:
-        description: 'Tag whose documentation to build and publish (e.g. v0.5.2); empty for master'
-        required: false
-        default: ''
 concurrency:
-  # One build at a time: two deploys pushing to gh-pages together make one of them fail
+  # one deployment at a time; a newer run waits for the one in progress
   group: docs
   cancel-in-progress: false
 permissions:
-  actions: write # julia-actions/cache deletes the caches it replaces
-  contents: write # deploydocs pushes to the gh-pages branch
-  pull-requests: read
-  statuses: write
+  actions: write  # julia-actions/cache deletes the caches it replaces; publish-tag starts a run on master
+  contents: read
   pages: write    # the Pages deployment
   id-token: write # the token of the Pages deployment
 jobs:
   docs:
+    if: github.ref_type != 'tag'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-        with:
-          ref: ${{ inputs.tag || github.ref }}
       - uses: julia-actions/setup-julia@v2
         with:
           version: '1' # docs/Project.toml finds the package through [sources], which needs Julia 1.11 or later
       - uses: julia-actions/cache@v3
-      - name: Install the documentation environment
-        run: julia --project=docs -e 'using Pkg; Pkg.instantiate()'
-      - name: Build and deploy
-        if: inputs.tag == ''
-        run: julia --project=docs --color=yes docs/make.jl
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}
-      # The docs of a tag, by hand: deploydocs learns the version from GITHUB_REF, which a run started by hand sets to
-      # the branch, so the tag is set here before make.jl runs; an older make.jl without deploydocs gets one after it.
-      - name: Build and deploy the documentation of a tag
-        if: inputs.tag != ''
+      - name: Build the manual of master
         run: |
-          julia --project=docs --color=yes -e '
-            ENV["GITHUB_EVENT_NAME"] = "push"
-            ENV["GITHUB_REF"] = "refs/tags/" * ENV["DOCS_TAG"]
-            include("docs/make.jl")
-            if !occursin("deploydocs", read("docs/make.jl", String))
-                Documenter.deploydocs(repo = "github.com/rcalxrc08/FinancialMonteCarlo.jl.git", devbranch = "master")
-            end'
-        env:
-          DOCS_TAG: ${{ inputs.tag }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}
-      # the versioned site that deploydocs has just pushed
-      - name: Checkout the published site
-        if: github.event_name != 'pull_request' && github.ref_type != 'tag'
+          julia --project=docs -e 'using Pkg; Pkg.instantiate()'
+          julia --project=docs --color=yes docs/make.jl
+      - name: Find the latest release
+        id: release
+        if: github.event_name != 'pull_request'
+        run: echo "tag=$(git ls-remote --tags --refs origin 'v*' | sed 's#.*refs/tags/##' | sort -V | tail -n 1)" >> "$GITHUB_OUTPUT"
+      - name: Checkout the latest release
+        if: steps.release.outputs.tag != ''
         uses: actions/checkout@v6
         with:
-          ref: gh-pages
-          path: site
-      - if: github.event_name != 'pull_request' && github.ref_type != 'tag'
+          ref: ${{ steps.release.outputs.tag }}
+          path: release
+      # Without GITHUB_REPOSITORY Documenter detects no deploy system, so the deploydocs of the make.jl of a release
+      # before this workflow does nothing.
+      - name: Build the manual of the latest release into stable/
+        if: steps.release.outputs.tag != ''
+        run: |
+          julia --project=release/docs -e 'using Pkg; Pkg.instantiate()'
+          env -u GITHUB_REPOSITORY julia --project=release/docs --color=yes release/docs/make.jl
+          cp -r release/docs/build docs/build/stable
+      - if: github.event_name != 'pull_request'
+        run: cp docs/redirect/404.html docs/build/404.html
+      - if: github.event_name != 'pull_request'
         uses: actions/configure-pages@v6
-      - if: github.event_name != 'pull_request' && github.ref_type != 'tag'
+      - if: github.event_name != 'pull_request'
         uses: actions/upload-pages-artifact@v5
         with:
-          path: site
-  # A tag has pushed its docs to gh-pages: publish them from master (a workflow_dispatch started with GITHUB_TOKEN does
-  # start a run, unlike the other events). The run waits for this one, in the same concurrency group.
+          path: docs/build
+  # A tag: publish from master (a workflow_dispatch started with GITHUB_TOKEN does start a run, unlike the other events).
   publish-tag:
-    needs: docs
     if: github.ref_type == 'tag'
     runs-on: ubuntu-latest
     steps:
@@ -92,7 +74,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   pages:
     needs: docs
-    if: github.event_name != 'pull_request' && github.ref_type != 'tag'
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     environment:
       name: github-pages

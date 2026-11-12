@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-FinancialMonteCarlo.jl: a Julia package for Monte Carlo pricing and risk of equity derivatives (single-name and multivariate via Gaussian copula). The canonical remote is GitLab (`gitlab.com/rcalxrc08/FinancialMonteCarlo.jl`); GitHub Actions run CI (Julia 1.10 and latest 1.x), the benchmarks, the documentation (built by [Documentation.yml](.github/workflows/Documentation.yml): deploydocs keeps the versioned site on the `gh-pages` branch, which GitHub Pages publishes from Actions; GitHub Pages does not serve a deployment made from a tag, so a tag run starts a run on master to publish its docs), CompatHelper and TagBot.
+FinancialMonteCarlo.jl: a Julia package for Monte Carlo pricing and risk of equity derivatives (single-name and multivariate via Gaussian copula). The canonical remote is GitLab (`gitlab.com/rcalxrc08/FinancialMonteCarlo.jl`); GitHub Actions run CI (Julia 1.10 and latest 1.x), the benchmarks, the documentation (built by [Documentation.yml](.github/workflows/Documentation.yml) and published with GitHub Pages from Actions, with no `gh-pages` branch: master at the site root, the latest release in `stable/`; GitHub Pages does not serve a deployment made from a tag, so a tag run starts a run on master, which rebuilds `stable/` from the new tag), CompatHelper and TagBot.
 
 ## Commands
 
@@ -125,16 +125,16 @@ Keep the docs in step with the code in the same commit: the manual pages in `doc
 2. Register by commenting on the release commit on GitHub, with release notes (sections: Breaking changes, New features, Performance, Bug fixes):
    `gh api repos/rcalxrc08/FinancialMonteCarlo.jl/commits/<sha>/comments -F body=@notes.md`, where `notes.md` starts with `@JuliaRegistrator register` then `Release notes:`. JuliaRegistrator answers on the commit with the General PR; AutoMerge merges it in ~20 minutes.
 3. **Tag by hand**, TagBot usually does not: `git tag -a vX.Y.Z -m "FinancialMonteCarlo vX.Y.Z" <sha>`, `git push GitHub vX.Y.Z`, then `gh release create vX.Y.Z -R rcalxrc08/FinancialMonteCarlo.jl --title vX.Y.Z --notes-file <notes without the registrator lines> --verify-tag`.
-4. Check that `https://rcalxrc08.github.io/FinancialMonteCarlo.jl/stable/` serves the new version (see below).
+4. Check that `https://rcalxrc08.github.io/FinancialMonteCarlo.jl/stable/` serves the new version (the tag run starts a run on master, which builds `stable/` from the highest `v*` tag; see below).
 
 Push to the `GitHub` remote; `origin` (GitLab) has not been pushed since 0.5.2 and is many commits behind.
 
 ### Docs deployment
 
-- GitHub Pages is set to **build from GitHub Actions** (`build_type: workflow`, `gh api repos/rcalxrc08/FinancialMonteCarlo.jl/pages`); the `source.branch: gh-pages` in that answer is a leftover and is not served. The `gh-pages` branch is still updated on every run: it is where `deploydocs` stores the versioned site (dev/, stable/, a folder per tag), and the `docs` job uploads that checkout as the Pages artifact, which the `pages` job deploys with `actions/deploy-pages`. So a new commit on `gh-pages` ("build based on <sha>") is expected, and the legacy "pages build and deployment" runs from the branch stopped on 2026-11-04.
-- Verified on 611d415 (2026-11-11): the `github-pages` deployment was created from master by the workflow, and the live `dev/` site served the new content within a minute. The Pages hangs in `syncing_files` after 4383fdb (2026-11-07) did not recur: the deployments of 2026-11-08 and 2026-11-09 succeeded too.
+- GitHub Pages is set to **build from GitHub Actions** (`build_type: workflow`, `gh api repos/rcalxrc08/FinancialMonteCarlo.jl/pages`); the `source.branch: gh-pages` in that answer is a leftover and is not served. There is no `gh-pages` branch any more (#52): the `docs` job of [Documentation.yml](.github/workflows/Documentation.yml) builds the manual of master into `docs/build` (the site root), checks out the highest `v*` tag (`git ls-remote --tags | sort -V`) into `release/` and builds its manual into `docs/build/stable` (with `GITHUB_REPOSITORY` unset, so the `deploydocs` of the `make.jl` of releases up to 0.7 does nothing), adds `docs/redirect/404.html`, and uploads `docs/build` as the Pages artifact, which the `pages` job deploys with `actions/deploy-pages`. `docs/make.jl` has no `deploydocs`, and its `canonical` is the site root.
+- Old URLs of the versioned deploydocs site: `dev/...` and `vX.Y.Z/...` no longer exist, and `404.html` redirects them with JavaScript to the same page at the root (`dev/`) or in `stable/` (a version folder). `stable/...` keeps working. Docs of releases older than the latest are not published: build them locally from their tag.
+- A tag push runs only the `publish-tag` job, which starts the workflow on master (Pages refuses deployments from a tag; a `workflow_dispatch` started with `GITHUB_TOKEN` does start a run). Pull requests build the manual of master only, without deploying.
 - The CI and Documentation runs of 54ecd0b (2026-11-11) stayed `queued` for hours with Actions reported operational, and `gh run cancel` answered that they were completed: the next push started fresh runs normally.
-- Verified at v0.7.0 (2026-11-11): the tag run built the docs and `publish-tag` dispatched the workflow on master, whose `pages` job deployed; `stable/` served the 0.7 manual a minute later. Registration (General#175829) merged 25 minutes after the comment.
 
 ## Caveats (from README)
 

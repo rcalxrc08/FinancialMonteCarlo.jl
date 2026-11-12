@@ -1,8 +1,8 @@
 # Build the documentation site:
 #     julia --project=docs -e 'using Pkg; Pkg.instantiate()'
 #     julia --project=docs docs/make.jl
-# The HTML ends up in docs/build; on GitHub Actions (.github/workflows/Documentation.yml) deploydocs publishes it
-# to the gh-pages branch, served by GitHub Pages.
+# The HTML ends up in docs/build; on GitHub Actions (.github/workflows/Documentation.yml) it is uploaded as the Pages
+# artifact and deployed with GitHub Pages, at the site root (master) and in stable/ (the latest release).
 using Documenter, Literate, FinancialMonteCarlo
 
 # The tutorials draw plots with GR, which needs no display in this mode (CI runners have none).
@@ -21,7 +21,7 @@ makedocs(
     authors = "rcalxrc08",
     modules = [FinancialMonteCarlo],
     repo = Remotes.GitHub("rcalxrc08", "FinancialMonteCarlo.jl"),
-    format = Documenter.HTML(prettyurls = get(ENV, "CI", nothing) == "true", assets = ["assets/favicon.ico", "assets/style.css"], canonical = "https://rcalxrc08.github.io/FinancialMonteCarlo.jl/stable/"),
+    format = Documenter.HTML(prettyurls = get(ENV, "CI", nothing) == "true", assets = ["assets/favicon.ico", "assets/style.css"], canonical = "https://rcalxrc08.github.io/FinancialMonteCarlo.jl/"),
     pages = [
         "Home" => "index.md",
         "Tutorials" => ["Getting started" => "tutorials/getting_started.md", "Exotic options and greeks" => "tutorials/exotics_and_greeks.md", "Portfolios and multivariate models" => "tutorials/portfolios.md"],
@@ -42,6 +42,3 @@ makedocs(
     ],
     warnonly = [:missing_docs],
 )
-
-# Only acts on GitHub Actions: master goes to dev/, a version tag to stable/ and to its own folder.
-deploydocs(repo = "github.com/rcalxrc08/FinancialMonteCarlo.jl.git", devbranch = "master")
