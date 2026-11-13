@@ -123,7 +123,7 @@ Keep the docs in step with the code in the same commit: the manual pages in `doc
 
 ## Releasing
 
-1. Bump `version` in `Project.toml` on master (breaking changes: minor bump while 0.x), wait for CI to be green on Julia 1.10 and 1.x.
+1. Bump `version` in `Project.toml` on master (breaking changes: minor bump while 0.x), wait for CI to be green on Julia 1.10 and 1.x. Since 2026-11-14 CI pins 1.13.3 instead of 1: Enzyme aborts on Julia 1.13.4 ("unsupported tag julia.gc_alloc_ptr_offsets"); the local Julia is 1.13.4, so the Enzyme tests need `juliaup add 1.13.3` and `julia +1.13.3` until Enzyme supports it, then put '1' back.
 2. Register by commenting on the release commit on GitHub, with release notes (sections: Breaking changes, New features, Performance, Bug fixes):
    `gh api repos/rcalxrc08/FinancialMonteCarlo.jl/commits/<sha>/comments -F body=@notes.md`, where `notes.md` starts with `@JuliaRegistrator register` then `Release notes:`. JuliaRegistrator answers on the commit with the General PR; AutoMerge merges it in ~20 minutes.
 3. **Tag by hand**, TagBot usually does not: `git tag -a vX.Y.Z -m "FinancialMonteCarlo vX.Y.Z" <sha>`, `git push GitHub vX.Y.Z`, then `gh release create vX.Y.Z -R rcalxrc08/FinancialMonteCarlo.jl --title vX.Y.Z --notes-file <notes without the registrator lines> --verify-tag`.
