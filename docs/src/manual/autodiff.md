@@ -1,9 +1,26 @@
+```@raw html
+<div class="fc-page-head">
+<p class="fc-kicker"><span>Manual 08</span> Sensitivities through the simulation</p>
+```
+
 # [Automatic differentiation](@id autodiff)
 
 All structs of the package are parametric in the type of their numeric fields, and the numeric
 type of the simulated paths is inferred from all the inputs. Any number type implementing the
 usual arithmetic can therefore be used for any parameter, and its derivative information
 propagates through the simulation and the payoff.
+
+```@raw html
+<div class="fc-meta"><span>ForwardDiff</span><span>ReverseDiff</span><span>Mooncake</span><span>Enzyme</span></div>
+<nav class="fc-toc">
+<a href="#Dual-numbers"><b>01</b>Dual numbers</a>
+<a href="#ForwardDiff.jl-and-ReverseDiff.jl"><b>02</b>ForwardDiff.jl and ReverseDiff.jl</a>
+<a href="#Mooncake.jl"><b>03</b>Mooncake.jl</a>
+<a href="#enzyme"><b>04</b>Enzyme.jl</a>
+<a href="#Choosing-a-backend"><b>05</b>Choosing a backend</a>
+</nav>
+</div>
+```
 
 ## Dual numbers
 

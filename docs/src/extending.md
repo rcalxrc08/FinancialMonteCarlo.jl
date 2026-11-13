@@ -1,7 +1,21 @@
+```@raw html
+<div class="fc-page-head">
+<p class="fc-kicker"><span>Manual 11</span> Your own models and payoffs</p>
+```
+
 # Extending the package
 
 Models and payoffs are open for extension: implement a struct and one method, and all metrics,
 simulation methods, positions and portfolios work with it.
+
+```@raw html
+<nav class="fc-toc">
+<a href="#A-new-model"><b>01</b>A new model</a>
+<a href="#A-new-payoff"><b>02</b>A new payoff</a>
+<a href="#Automatic-differentiation-friendliness"><b>03</b>Automatic differentiation friendliness</a>
+</nav>
+</div>
+```
 
 ## A new model
 

@@ -1,7 +1,21 @@
+```@raw html
+<div class="fc-page-head">
+<p class="fc-kicker"><span>Manual 09</span> Any SDE as a model</p>
+```
+
 # DifferentialEquations.jl
 
 When `DifferentialEquations` is loaded, any SDE (or jump diffusion) defined with it can be used as
 a model through `FinancialMonteCarlo.MonteCarloDiffEqModel`:
+
+```@raw html
+<div class="fc-meta"><span>DifferentialEquations.jl</span></div>
+<nav class="fc-toc">
+<a href="#Black-Scholes-as-an-SDE"><b>01</b>Black-Scholes as an SDE</a>
+<a href="#A-jump-diffusion-in-log-price"><b>02</b>A jump diffusion in log price</a>
+</nav>
+</div>
+```
 
 ```julia
 FinancialMonteCarlo.MonteCarloDiffEqModel(ensemble_problem, underlying)

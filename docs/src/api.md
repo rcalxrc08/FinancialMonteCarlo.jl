@@ -1,5 +1,23 @@
+```@raw html
+<div class="fc-page-head">
+<p class="fc-kicker"><span>Reference</span> Every documented name</p>
+```
+
 # API reference
 
+
+```@raw html
+<nav class="fc-toc">
+<a href="#api-metrics"><b>01</b>Metrics</a>
+<a href="#api-market-data"><b>02</b>Market data</a>
+<a href="#api-configuration"><b>03</b>Monte Carlo configuration</a>
+<a href="#api-models"><b>04</b>Models</a>
+<a href="#api-payoffs"><b>05</b>Payoffs</a>
+<a href="#api-portfolios"><b>06</b>Portfolios</a>
+<a href="#Index"><b>07</b>Index</a>
+</nav>
+</div>
+```
 ```@contents
 Pages = ["api.md"]
 Depth = 2:2

@@ -1,6 +1,22 @@
+```@raw html
+<div class="fc-page-head">
+<p class="fc-kicker"><span>Manual 01</span> A few composable objects</p>
+```
+
 # Overview
 
 Every computation in FinancialMonteCarlo.jl combines four objects:
+
+```@raw html
+<div class="fc-meta"><span>model</span><span>curve</span><span>configuration</span><span>payoff</span></div>
+<nav class="fc-toc">
+<a href="#What-happens-inside-pricer"><b>01</b>What happens inside pricer</a>
+<a href="#Choosing-the-implementation-by-dispatch"><b>02</b>Choosing the implementation by dispatch</a>
+<a href="#Generic-number-types"><b>03</b>Generic number types</a>
+<a href="#Optional-integrations"><b>04</b>Optional integrations</a>
+</nav>
+</div>
+```
 
 | Object | Role | Examples |
 |:--|:--|:--|

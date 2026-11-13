@@ -1,5 +1,19 @@
+```@raw html
+<div class="fc-page-head">
+<p class="fc-kicker"><span>Manual 10</span> CPU or GPU</p>
+```
+
 # Performance
 
+
+```@raw html
+<div class="fc-meta"><span>CUDA</span><span>Float32</span><span>threads</span></div>
+<nav class="fc-toc">
+<a href="#CPU-or-GPU"><b>01</b>CPU or GPU</a>
+<a href="#Getting-the-most-out-of-a-run"><b>02</b>Getting the most out of a run</a>
+</nav>
+</div>
+```
 ## CPU or GPU
 
 With CUDA.jl loaded, `CudaMode` runs the simulation on the GPU, and the code is the same as on the

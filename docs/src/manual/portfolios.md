@@ -1,5 +1,19 @@
+```@raw html
+<div class="fc-page-head">
+<p class="fc-kicker"><span>Manual 07</span> Positions, market data sets, copulas</p>
+```
+
 # Portfolios and multivariate
 
+
+```@raw html
+<nav class="fc-toc">
+<a href="#Positions:-algebra-of-contracts"><b>01</b>Positions: algebra of contracts</a>
+<a href="#Market-data-sets-and-portfolios"><b>02</b>Market data sets and portfolios</a>
+<a href="#Multivariate-models"><b>03</b>Multivariate models</a>
+</nav>
+</div>
+```
 ## Positions: algebra of contracts
 
 Contracts on the same underlying form a vector space over the real numbers. Adding, subtracting

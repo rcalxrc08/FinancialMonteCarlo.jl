@@ -5,6 +5,8 @@ DualNumbers = "fa6b7ba4-c1ee-5f82-b5fc-ecf0adba8f74"
 FinancialMonteCarlo = "078f23cc-2637-5a1d-aba6-8a9ba9a6ff83"
 Literate = "98b081ad-f1c9-55d3-8b20-4c87d4299306"
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
+Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
+Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
 
 [sources]
 FinancialMonteCarlo = {path = ".."}

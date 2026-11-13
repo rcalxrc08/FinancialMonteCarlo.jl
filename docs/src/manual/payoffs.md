@@ -1,7 +1,22 @@
+```@raw html
+<div class="fc-page-head">
+<p class="fc-kicker"><span>Manual 05</span> From European to American</p>
+```
+
 # Payoffs
 
 A payoff struct holds the terms of a contract: maturity `T` and, depending on the contract,
 strike `K`, barriers and whether it is a call (`isCall = true`, the default) or a put.
+
+```@raw html
+<div class="fc-meta"><span>barrier</span><span>Asian</span><span>Longstaff–Schwartz</span><span>smiles</span></div>
+<nav class="fc-toc">
+<a href="#How-payoffs-are-evaluated"><b>01</b>How payoffs are evaluated</a>
+<a href="#Smiles"><b>02</b>Smiles</a>
+<a href="#Positions"><b>03</b>Positions</a>
+</nav>
+</div>
+```
 
 | Family | Payoffs |
 |:--|:--|

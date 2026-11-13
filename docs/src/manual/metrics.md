@@ -1,8 +1,17 @@
+```@raw html
+<div class="fc-page-head">
+<p class="fc-kicker"><span>Manual 06</span> Price, variance, confidence, Greeks</p>
+```
+
 # Metrics
 
 Metrics are functions of a model, a zero rate curve, a Monte Carlo configuration and a payoff.
 They all accept a single payoff or a vector of payoffs (priced on the same paths), and most of
 them also positions and portfolios.
+
+```@raw html
+</div>
+```
 
 | Metric | Returns |
 |:--|:--|

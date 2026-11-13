@@ -1,9 +1,24 @@
+```@raw html
+<div class="fc-page-head">
+<p class="fc-kicker"><span>Manual 03</span> Sampling, modes and seeds</p>
+```
+
 # Monte Carlo configuration
 
 A [`MonteCarloConfiguration`](@ref) is the Monte Carlo pricing method: the method argument of
 [`pricer`](@ref) and of the other metrics. It holds the number of paths `Nsim`, the number of time
 steps `Nstep`, and, as keywords, the sampling scheme, the execution mode, the seed and the random
 number generator.
+
+```@raw html
+<div class="fc-meta"><span>antithetic</span><span>Sobol</span><span>threads</span><span>CUDA</span></div>
+<nav class="fc-toc">
+<a href="#Sampling"><b>01</b>Sampling</a>
+<a href="#Execution-modes"><b>02</b>Execution modes</a>
+<a href="#Seeds-and-reproducibility"><b>03</b>Seeds and reproducibility</a>
+</nav>
+</div>
+```
 
 ```julia
 MonteCarloConfiguration(Nsim, Nstep)                                                 # standard MC, serial, seed 0
