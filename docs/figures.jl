@@ -84,15 +84,19 @@ save_themes(paths_figure, "paths")
 save_themes(convergence_figure, "convergence")
 save_themes(distributions_figure, "distributions")
 
-# The hero of the home page: the density of the log-return of the Heston model as it spreads in time, from simulated
-# paths (a kernel density per time step), drawn in perspective by surface.jl.
-include(joinpath(@__DIR__, "surface.jl"))
-let model = HestonProcess(0.4, 0.2, 0.0, 1.5, -0.7, 0.04, underlying()), T = 2.0, steps = 200
-    S = simulate(model, zero_rate, MonteCarloConfiguration(20_000, steps; seed = 5), T)
-    grid = collect(range(-0.8, 0.5; length = 46))
-    columns = round.(Int, range(steps ÷ 8, steps; length = 34)) .+ 1
-    times = (columns .- 1) .* (T / steps)
-    density = reduce(vcat, [permutedims(kde(log.(S[:, c] ./ S0), grid)) for c in columns])
-    hi = ceil(maximum(density))
-    write_surface(FIGURES, "hero-surface", grid, times, density; zlims = (0.0, hi), xticks = [x => string(x) for x in (-0.8, -0.4, 0.0, 0.4)], yticks = [0.5 => "6M", 1.0 => "1Y", 1.5 => "18M", 2.0 => "2Y"], zticks = [z => string(round(Int, z)) for z = 1:hi], xlabel = "log-return", ylabel = "time", zlabel = "density", label = "Density of the log-return of a Heston model over time, from simulated paths")
+# The hero of the home page: paths of the Heston model, coloured by where they end.
+function hero_figure(theme)
+    T, steps, n = 1.0, 250, 160
+    model = HestonProcess(0.4, 0.2, 0.0, 1.5, -0.7, 0.04, underlying())
+    S = simulate(model, zero_rate, MonteCarloConfiguration(n, steps; seed = 21), T)
+    t = range(0, T; length = steps + 1)
+    ramp = cgrad(theme.text == "#f5f7fa" ? ["#22346b", "#4f8cff", "#38cfff", "#00d4aa", "#7ee787", "#ffb84d"] : ["#c7d6f5", "#4f8cff", "#1ea6d4", "#00a585", "#4db55c", "#e8962a"])
+    final = S[:, end]
+    lo, hi = quantile(final, 0.02), quantile(final, 0.98)
+    p = base_plot(theme; size = (760, 600), legend = false, xlabel = "time (years)", ylabel = "spot", ylims = (55, 165), framestyle = :axes)
+    for i in sortperm(abs.(final .- median(final)); rev = true)
+        plot!(p, t, S[i, :]; color = get(ramp, clamp((final[i] - lo) / (hi - lo), 0, 1)), linewidth = 1, alpha = 0.7)
+    end
+    return p
 end
+save_themes(hero_figure, "hero-paths")

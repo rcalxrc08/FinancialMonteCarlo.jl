@@ -17,10 +17,10 @@
 <span class="k">price</span> = pricer(model, ZeroRate(0.02), mc, AmericanOption(1.0, 100.0, false))</code></pre>
 </div>
 <figure class="fc-hero-figure">
-<img src="assets/figures/hero-surface-dark.svg" alt="Density of the log-return of a Heston model as it spreads in time, from simulated paths">
-<img src="assets/figures/hero-surface-light.svg" alt="Density of the log-return of a Heston model as it spreads in time, from simulated paths">
-<figcaption><span class="fc-legend"><i class="fc-ramp"></i>density of log(S<sub>t</sub> / S<sub>0</sub>) under Heston, from 20 000 paths</span>
-Simulated with FinancialMonteCarlo.jl when this site was built: a kernel density of the paths at 34 dates, two months to two years.</figcaption>
+<img src="assets/figures/hero-paths-dark.svg" alt="Simulated paths of a Heston model, coloured by their final value">
+<img src="assets/figures/hero-paths-light.svg" alt="Simulated paths of a Heston model, coloured by their final value">
+<figcaption><span class="fc-legend"><i class="fc-ramp"></i>coloured by the spot at one year</span>
+160 paths of a Heston model over one year, simulated with FinancialMonteCarlo.jl when this site was built.</figcaption>
 </figure>
 </div>
 ```
