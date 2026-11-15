@@ -41,23 +41,11 @@ annotate!([(strikes[3], calls[3], text("calls", 9, "#2a78d6", :left, :bottom)), 
 
 # ## Implied volatility
 # Prices of different strikes are easier to compare as Black-Scholes implied volatilities: the volatility that,
-# in the Black-Scholes formula, gives the Monte Carlo price. Black-Scholes itself gives a flat line at its
-# volatility; the other models give a smile or a skew. Each curve is priced with one smile of out of the money
-# options (puts below the spot, calls above), which have the smallest Monte Carlo error.
-using Distributions
-function black_scholes_price(σ, K, isCall)
-    d1 = (log(S0 / K) + (r - d + σ^2 / 2) * T) / (σ * sqrt(T))
-    d2 = d1 - σ * sqrt(T)
-    sign_ = isCall ? 1 : -1
-    return sign_ * (S0 * exp(-d * T) * cdf(Normal(), sign_ * d1) - K * exp(-r * T) * cdf(Normal(), sign_ * d2))
-end
-function implied_volatility(price, K, isCall; low = 1e-4, high = 2.0)
-    for _ = 1:60  # bisection: the price grows with the volatility
-        mid = (low + high) / 2
-        black_scholes_price(mid, K, isCall) < price ? (low = mid) : (high = mid)
-    end
-    return (low + high) / 2
-end
+# in the Black-Scholes formula, gives the Monte Carlo price. `blsimpv` from
+# [FinancialToolbox.jl](https://github.com/rcalxrc08/FinancialToolbox.jl) inverts the formula. Black-Scholes itself
+# gives a flat line at its volatility; the other models give a smile or a skew. Each curve is priced with one smile
+# of out of the money options (puts below the spot, calls above), which have the smallest Monte Carlo error.
+using FinancialToolbox: blsimpv
 
 smile_strikes = collect(70.0:5.0:140.0)
 otm_is_call = smile_strikes .>= S0
@@ -67,7 +55,7 @@ smile_models = (("Black-Scholes", model, "#2a78d6"), ("Heston, ρ = -0.7", Hesto
 plot(; legend = :bottomleft, xlabel = "strike", ylabel = "implied volatility", title = "Implied volatility by strike, one year maturity")
 for (name, m, colour) in smile_models
     prices = pricer(m, rfCurve, mcSmile, otm_smile)
-    plot!(smile_strikes, implied_volatility.(prices, smile_strikes, otm_is_call); color = colour, marker = :circle, markersize = 3, markerstrokewidth = 0, label = name)
+    plot!(smile_strikes, blsimpv.(S0, smile_strikes, r, T, prices, d, otm_is_call); color = colour, marker = :circle, markersize = 3, markerstrokewidth = 0, label = name)
 end
 plot!()
 

@@ -1,7 +1,8 @@
 # Figures of the home page, computed with the package at build time and saved as SVG in src/assets/figures (git-ignored),
 # in a light and a dark variant: assets/figures.css shows the one of the theme of the reader. The palette and the axes
 # are those of the other rcalxrc08 packages.
-using FinancialMonteCarlo, Distributions, Plots, Statistics
+using FinancialMonteCarlo, Plots, Statistics
+using FinancialToolbox: blsprice
 # GR draws without a display on the CI runner
 ENV["GKSwstype"] = get(ENV, "GKSwstype", "100")
 gr()
@@ -48,8 +49,7 @@ function convergence_figure(theme)
     σ, K, T = 0.2, 100.0, 1.0
     model = BlackScholesProcess(σ, underlying())
     option = EuropeanOption(T, K)
-    d1 = (log(S0 / K) + (r - d + σ^2 / 2) * T) / (σ * sqrt(T))
-    exact = S0 * exp(-d * T) * cdf(Normal(), d1) - K * exp(-r * T) * cdf(Normal(), d1 - σ * sqrt(T))
+    exact = blsprice(S0, K, r, T, σ, d)
     paths = round.(Int, 10 .^ range(2, 6; length = 17))
     rows = map(paths) do n
         mc = MonteCarloConfiguration(n, 1; seed = 11)

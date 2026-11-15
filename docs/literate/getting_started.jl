@@ -57,12 +57,12 @@ variance(model, rfCurve, mcAntithetic, euOption)
 
 # The interval shrinks like one over the square root of the number of paths. Under Black-Scholes the
 # exact price is known, so the convergence can be checked (a European payoff needs one time step):
-using Plots, Distributions
+using Plots, Statistics
+using FinancialToolbox: blsprice
 default(size = (720, 400), linewidth = 2, framestyle = :axes, grid = :y, gridalpha = 0.25, titlefontsize = 11, guidefontsize = 10, legendfontsize = 9)
 
 σ = 0.2
-d1 = (log(S0 / K) + (r - d + σ^2 / 2) * T) / (σ * sqrt(T))
-exact = S0 * exp(-d * T) * cdf(Normal(), d1) - K * exp(-r * T) * cdf(Normal(), d1 - σ * sqrt(T))
+exact = blsprice(S0, K, r, T, σ, d)
 paths = [500, 1_000, 2_000, 5_000, 10_000, 20_000, 50_000, 100_000]
 intervals = [confinter(model, rfCurve, MonteCarloConfiguration(n, 1), euOption, 0.99) for n in paths]
 centres = [(lower + upper) / 2 for (lower, upper) in intervals]
