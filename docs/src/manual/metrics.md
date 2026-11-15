@@ -1,6 +1,6 @@
 ```@raw html
 <div class="fc-page-head">
-<p class="fc-kicker"><span>Manual 06</span> Price, variance, confidence, Greeks</p>
+<p class="fc-kicker"><span>Manual 07</span> Price, variance, confidence, Greeks</p>
 ```
 
 # Metrics

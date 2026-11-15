@@ -1,6 +1,6 @@
 ```@raw html
 <div class="fc-page-head">
-<p class="fc-kicker"><span>Manual 10</span> CPU or GPU</p>
+<p class="fc-kicker"><span>Manual 11</span> CPU or GPU</p>
 ```
 
 # Performance

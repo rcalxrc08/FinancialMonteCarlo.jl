@@ -153,6 +153,7 @@ pricer(model, rfCurve, mcConfig, position)
 <div class="fc-next">
 <a href="tutorials/getting_started/"><b>Getting started</b><span>A first tour, with plots.</span></a>
 <a href="manual/overview/"><b>Manual</b><span>Every building block in detail.</span></a>
+<a href="manual/bestiary/"><b>Model bestiary</b><span>Every model, its dynamics and what it supports.</span></a>
 <a href="extending/"><b>Extending the package</b><span>Your own models and payoffs.</span></a>
 <a href="api/"><b>API reference</b><span>Every documented name.</span></a>
 </div>

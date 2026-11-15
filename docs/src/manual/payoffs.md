@@ -1,6 +1,6 @@
 ```@raw html
 <div class="fc-page-head">
-<p class="fc-kicker"><span>Manual 05</span> From European to American</p>
+<p class="fc-kicker"><span>Manual 06</span> From European to American</p>
 ```
 
 # Payoffs

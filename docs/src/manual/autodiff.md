@@ -1,6 +1,6 @@
 ```@raw html
 <div class="fc-page-head">
-<p class="fc-kicker"><span>Manual 08</span> Sensitivities through the simulation</p>
+<p class="fc-kicker"><span>Manual 09</span> Sensitivities through the simulation</p>
 ```
 
 # [Automatic differentiation](@id autodiff)

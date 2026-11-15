@@ -47,7 +47,8 @@ BaseProcess
 
 ## Single name models
 
-All single name processes take their parameters followed by the [`Underlying`](@ref):
+All single name processes take their parameters followed by the [`Underlying`](@ref). The
+[Model bestiary](@ref) has a card for each, with its dynamics and what it supports:
 
 | Model | Constructor | Parameters |
 |:--|:--|:--|
