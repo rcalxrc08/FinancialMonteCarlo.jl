@@ -70,6 +70,7 @@ FinancialMonteCarlo.CudaMode
 ```@docs
 simulate
 BlackScholesProcess
+BachelierProcess
 HestonProcess
 KouProcess
 MertonProcess
@@ -77,6 +78,7 @@ VarianceGammaProcess
 NormalInverseGaussianProcess
 LogNormalMixture
 ShiftedLogNormalMixture
+ShiftedProcess
 GaussianCopulaNVariateProcess
 GaussianCopulaNVariateLogProcess
 ```

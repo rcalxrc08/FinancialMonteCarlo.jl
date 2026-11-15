@@ -1,5 +1,6 @@
 include("../testutils.jl")
 using ForwardDiff
+using FinancialToolbox: blsprice, normcdf, normpdf
 
 @testset "ForwardDiff" begin
     @testset "Dual-valued volatility" begin
@@ -32,6 +33,26 @@ using ForwardDiff
             x_merton = [-0.02, 0.05]
             @test ForwardDiff.gradient(merton, x_merton) ≈ [fd(merton, x_merton, i) for i = 1:2] rtol = 1e-4
         end
+    end
+
+    @testset "Bachelier and shifted Black-Scholes: gradients against the formulas" begin
+        # One step of a long Sobol sequence: the European price is exact up to 1e-5, and so are its derivatives
+        mc_sobol = MonteCarloConfiguration(2^17, 1; sampling = FinancialMonteCarlo.SobolMC())
+        # x = [S0, σ, r, d]: the Bachelier formula with mean the forward and normal volatility σ e^{(r - d) T} (not in
+        # FinancialToolbox yet: rcalxrc08/FinancialToolbox.jl#84)
+        function bachelier_formula(x)
+            carry = exp((x[3] - x[4]) * T)
+            F, v = x[1] * carry, x[2] * sqrt(T) * carry
+            return exp(-x[3] * T) * ((F - K) * normcdf((F - K) / v) + v * normpdf((F - K) / v))
+        end
+        bachelier(x) = pricer(BachelierProcess(x[2], Underlying(x[1], x[4])), ZeroRate(x[3]), mc_sobol, EuropeanOption(T, K))
+        x_bachelier = [S0, 20.0, r, d]
+        @test ForwardDiff.gradient(bachelier, x_bachelier) ≈ ForwardDiff.gradient(bachelier_formula, x_bachelier) rtol = 1e-4
+        # x = [S0, σ, α]: a call on the GBM started from (1 - α) S0, with strike K - α F
+        shifted_formula(x) = blsprice((1 - x[3]) * x[1], K - x[3] * x[1] * exp((r - d) * T), r, T, x[2], d)
+        shifted(x) = pricer(ShiftedProcess(BlackScholesProcess(x[2], Underlying(x[1], d)), x[3]), rfCurve, mc_sobol, EuropeanOption(T, K))
+        x_shifted = [S0, sigma, 0.3]
+        @test ForwardDiff.gradient(shifted, x_shifted) ≈ ForwardDiff.gradient(shifted_formula, x_shifted) rtol = 1e-4
     end
 
     @testset "smiles" begin

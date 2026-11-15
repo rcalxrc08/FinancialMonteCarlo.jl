@@ -8,6 +8,7 @@ It currently contains the following capabilities:
 
 - Support for the following Single Name Models:
     - Black Scholes
+    - Bachelier
     - Kou
     - Merton
     - Normal Inverse Gaussian
@@ -15,6 +16,7 @@ It currently contains the following capabilities:
     - Heston
     - LogNormal Mixture
     - Shifted LogNormal Mixture
+    - Any of the above shifted (`ShiftedProcess`)
 - Support for Multivariate processes through Gaussian Copula
 - Support for non costant zero rates and dividends
 - Support for the following Option families:

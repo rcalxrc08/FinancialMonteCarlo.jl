@@ -26,6 +26,18 @@ using Enzyme, ForwardDiff, Random
         @test Enzyme.gradient(mode, Enzyme.Const(f), x0)[1] ≈ ForwardDiff.gradient(f, x0) rtol = 1e-10
     end
 
+    @testset "Bachelier and ShiftedProcess: gradients match ForwardDiff" begin
+        mc_xo = MonteCarloConfiguration(200, Nstep_small; rng = Xoshiro())
+        x0 = [S0, 20.0, r, d, 0.3]
+        bachelier(x) = pricer(BachelierProcess(x[2], Underlying(x[1], x[4])), ZeroRate(x[3]), mc_xo, EuropeanOption(T, K))
+        shifted(x) = pricer(ShiftedProcess(BlackScholesProcess(x[2] / 100, Underlying(x[1], x[4])), x[5]), ZeroRate(x[3]), mc_xo, AsianFixedStrikeOption(T, K))
+        for f in (bachelier, shifted)
+            g_ref = ForwardDiff.gradient(f, x0)
+            @test Enzyme.gradient(Enzyme.Reverse, Enzyme.Const(f), x0)[1] ≈ g_ref rtol = 1e-10
+            @test collect(Enzyme.gradient(Enzyme.Forward, Enzyme.Const(f), x0)[1]) ≈ g_ref rtol = 1e-10
+        end
+    end
+
     @testset "Black-Scholes, Xoshiro" begin
         x0 = [S0, sigma, r, d]
         mc_xo = MonteCarloConfiguration(2000, Nstep_small; rng = Xoshiro())

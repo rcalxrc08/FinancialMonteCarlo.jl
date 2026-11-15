@@ -22,6 +22,16 @@ drift_of_step(drifts::Number, ::Integer) = drifts
 drift_of_step(drifts::AbstractVector, j::Integer) = drifts[j]
 
 draws_per_side(sides) = size(sides[1][1], 1)
+
+# The carry factors e^{∫₀ᵗ μ} at the Nstep + 1 times of the grid, as a row on the device of the mode: the growth of the
+# forward, used by the models defined around it (Bachelier, the shifted models)
+function carry_factors(μ, mcBaseData::AbstractMonteCarloConfiguration, T::Number)
+    Nstep = mcBaseData.Nstep
+    factors = [exp(integral(μ, j * T / Nstep)) for j = 0:Nstep]
+    return transpose(array_type(execution_mode(mcBaseData)){eltype(factors)}(factors))
+end
+# Add to the paths X the deterministic shift that starts at `shift` and grows like the forward
+add_shift!(X, shift, μ, mcBaseData::AbstractMonteCarloConfiguration, T::Number) = (X .+= shift .* carry_factors(μ, mcBaseData, T); nothing)
 # The array type of a mode: the CUDA extension adds CuArray for its modes
 array_type(::AbstractMode) = Array
 draw_buffer(mcBaseData::MonteCarloConfiguration, numtype, N::Integer) = array_type(mcBaseData.mode){numtype}(undef, N)

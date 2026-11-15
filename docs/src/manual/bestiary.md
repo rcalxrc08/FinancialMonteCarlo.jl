@@ -10,21 +10,23 @@ parameters, how it is simulated and what it supports. [Models](@ref) explains ho
 engines fit together; this page is the catalogue.
 
 ```@raw html
-<div class="fc-meta"><span>diffusions</span><span>stochastic volatility</span><span>jumps</span><span>Lévy</span><span>mixtures</span><span>copulas</span></div>
+<div class="fc-meta"><span>diffusions</span><span>normal</span><span>stochastic volatility</span><span>jumps</span><span>Lévy</span><span>mixtures</span><span>copulas</span></div>
 <nav class="fc-toc">
 <a href="#At-a-glance"><b>01</b>At a glance</a>
 <a href="#Black-Scholes"><b>02</b>Black-Scholes</a>
-<a href="#Heston"><b>03</b>Heston</a>
-<a href="#Merton"><b>04</b>Merton</a>
-<a href="#Kou"><b>05</b>Kou</a>
-<a href="#Variance-Gamma"><b>06</b>Variance Gamma</a>
-<a href="#Normal-Inverse-Gaussian"><b>07</b>Normal Inverse Gaussian</a>
-<a href="#LogNormal-mixture"><b>08</b>LogNormal mixture</a>
-<a href="#Shifted-LogNormal-mixture"><b>09</b>Shifted LogNormal mixture</a>
-<a href="#Gaussian-copulas"><b>10</b>Gaussian copulas</a>
-<a href="#Engines"><b>11</b>Engines</a>
-<a href="#Any-SDE"><b>12</b>Any SDE</a>
-<a href="#Not-yet-here"><b>13</b>Not yet here</a>
+<a href="#Bachelier"><b>03</b>Bachelier</a>
+<a href="#Heston"><b>04</b>Heston</a>
+<a href="#Merton"><b>05</b>Merton</a>
+<a href="#Kou"><b>06</b>Kou</a>
+<a href="#Variance-Gamma"><b>07</b>Variance Gamma</a>
+<a href="#Normal-Inverse-Gaussian"><b>08</b>Normal Inverse Gaussian</a>
+<a href="#LogNormal-mixture"><b>09</b>LogNormal mixture</a>
+<a href="#Shifted-LogNormal-mixture"><b>10</b>Shifted LogNormal mixture</a>
+<a href="#Shifted-models"><b>11</b>Shifted models</a>
+<a href="#Gaussian-copulas"><b>12</b>Gaussian copulas</a>
+<a href="#Engines"><b>13</b>Engines</a>
+<a href="#Any-SDE"><b>14</b>Any SDE</a>
+<a href="#Not-yet-here"><b>15</b>Not yet here</a>
 </nav>
 </div>
 ```
@@ -40,6 +42,7 @@ antithetic, Sobol), with rate and dividend curves and in the batched modes (`Mul
 | Model | Family | Parameters | GPU | Enzyme | Closed form in FinancialFFT |
 |:--|:--|:--|:--:|:--:|:--:|
 | [`BlackScholesProcess`](@ref) | diffusion | 1 | tested | yes | yes |
+| [`BachelierProcess`](@ref) | normal diffusion | 1 | tested | yes | |
 | [`HestonProcess`](@ref) | stochastic volatility | 6 | | yes | yes |
 | [`MertonProcess`](@ref) | jump diffusion | 4 | tested | yes | yes |
 | [`KouProcess`](@ref) | jump diffusion | 5 | tested | yes | yes |
@@ -47,17 +50,19 @@ antithetic, Sobol), with rate and dividend curves and in the batched modes (`Mul
 | [`NormalInverseGaussianProcess`](@ref) | infinite activity Lévy | 3 | tested | yes | yes |
 | [`LogNormalMixture`](@ref) | mixture | ``2n - 1`` | | yes | |
 | [`ShiftedLogNormalMixture`](@ref) | mixture | ``2n`` | | | |
+| [`ShiftedProcess`](@ref) | any of the above, shifted | model + 1 | tested | yes | |
 | [`GaussianCopulaNVariateProcess`](@ref) | multivariate | ``ρ`` + marginals | | | |
 | [`GaussianCopulaNVariateLogProcess`](@ref) | multivariate | ``ρ`` + marginals | | | |
 
-- **GPU**: covered by the suite in `test/cuda/` (run by hand, it needs a GPU); the other models may
-  work in `CudaMode` but are not tested there. See [Performance](@ref).
+- **GPU**: covered by the suite in `test/cuda/` (run by hand, it needs a GPU; `ShiftedProcess` around
+  Black-Scholes, Kou and Variance Gamma); the other models may work in `CudaMode` but are not tested there. See [Performance](@ref).
 - **Enzyme**: forward and reverse mode agree with ForwardDiff (see [Automatic differentiation](@ref autodiff)).
   ForwardDiff, ReverseDiff, Mooncake, DualNumbers and TaylorSeries work with every model.
 - **Closed form**: [FinancialFFT.jl](https://github.com/rcalxrc08/FinancialFFT.jl) prices European
   options from the characteristic function of the model, which gives a reference price for the
   Monte Carlo one (and for Black-Scholes, `blsprice` of
-  [FinancialToolbox.jl](https://github.com/rcalxrc08/FinancialToolbox.jl)).
+  [FinancialToolbox.jl](https://github.com/rcalxrc08/FinancialToolbox.jl); Bachelier and the shifted Black-Scholes
+  have closed forms too, below).
 
 ## Black-Scholes
 
@@ -77,6 +82,31 @@ BlackScholesProcess(0.2, Underlying(100.0, 0.01))
 Simulated exactly (a [`GeometricBrownianMotion`](@ref) with the risk neutral drift), so a European
 payoff needs one time step. The reference for everything else: its European, binary and implied
 volatility formulas are in FinancialToolbox (`blsprice`, `blsbin`, `blsimpv`).
+
+## Bachelier
+
+```math
+S_t = e^{\int_0^t (r_s - d_s)\,ds} \left(S_0 + σ W_tight)
+```
+
+The normal model: the price discounted with the carry, ``S_0 + σ W_t``, is an arithmetic Brownian motion,
+and a martingale.
+
+```julia
+BachelierProcess(σ, underlying)
+BachelierProcess(20.0, Underlying(100.0, 0.01))
+```
+
+| Parameter | Meaning | Constraint |
+|:--|:--|:--|
+| `σ` | normal volatility, in units of the price | ``σ > 0`` |
+
+``S_T`` is normal with mean the forward ``F = S_0 e^{\int_0^T (r - d)}`` and standard deviation
+``v = σ \sqrt{T} e^{\int_0^T (r - d)}``, so the European prices are those of the Bachelier formula,
+``e^{-\int_0^T r} \left[(F - K)\,Φ\!\left(rac{F - K}{v}ight) + v\,φ\!\left(rac{F - K}{v}ight)ight]`` for a call:
+the normal volatility at maturity ``T`` is ``σ e^{\int_0^T (r - d)}``, ``σ`` itself when ``r = d`` (a future).
+Simulated exactly, as a [`BrownianMotion`](@ref) times the carry, so a European payoff needs one time step.
+Prices can be negative.
 
 ## Heston
 
@@ -252,6 +282,36 @@ ShiftedLogNormalMixture([0.2, 0.3], [0.4], 0.1, Underlying(100.0, 0.01))
 The deterministic shift grows at the risk neutral rate, so the forward is the one of the other
 models. It shares the caveat of the LogNormal mixture.
 
+## Shifted models
+
+```math
+S_t = X_t + α S_0\, e^{\int_0^t (r_s - d_s)\,ds}, \qquad X_0 = (1 - α) S_0
+```
+
+with ``X`` following any single name model of this page.
+
+```julia
+ShiftedProcess(model, α)
+ShiftedProcess(BlackScholesProcess(0.2, Underlying(100.0, 0.01)), 0.3)   # displaced diffusion
+ShiftedProcess(HestonProcess(0.5, 0.2, 0.0, 2.0, -0.7, 0.04, Underlying(100.0, 0.01)), 0.2)
+```
+
+| Parameter | Meaning | Constraint |
+|:--|:--|:--|
+| `model` | the model of ``X``: its parameters, then `α`, are those of [`FinancialMonteCarlo.get_parameters`](@ref) | |
+| `α` | shift, as a fraction of the spot | ``α < 1`` |
+
+The forward is the one of `model`. With ``0 ≤ α < 1`` the price stays above ``α`` times the forward and the
+smile flattens (a displaced diffusion has a skew of its own: lower strikes, higher implied volatility); with
+``α < 0`` the price can go below zero. The spot and the dividends are those of the underlying of `model`,
+held by the shifted process, so [`delta`](@ref) bumps the shift too. `model` is simulated by its own code,
+so every sampling, mode and automatic differentiation backend it supports works shifted.
+
+Shifted Black-Scholes has a closed form: ``S_T - α F`` is a geometric Brownian motion started from
+``(1 - α) S_0``, so a call of strike ``K`` is `blsprice((1 - α) * S0, K - α * F, r, T, σ, d)` when
+``K > α F``. A shifted Bachelier is the Bachelier itself, and
+`ShiftedProcess(LogNormalMixture(η, λ, underlying), α)` the [Shifted LogNormal mixture](@ref).
+
 ## Gaussian copulas
 
 ```julia
@@ -297,7 +357,6 @@ cost of the speed, of the GPU and of the samplings of the native models.
 
 ## Not yet here
 
-Bachelier, SABR, CEV, Bates, displaced diffusions and other models that the current building blocks
-make easy to add are collected in
+SABR, CEV, Bates and the other models that the current building blocks make easy to add are collected in
 [#62](https://github.com/rcalxrc08/FinancialMonteCarlo.jl/issues/62). To write one yourself, see
 [Extending the package](@ref).

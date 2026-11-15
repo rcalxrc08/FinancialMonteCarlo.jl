@@ -12,6 +12,7 @@ include("brownian_motion_sobol.jl")
 include("geometric_brownian_motion.jl")
 include("geometric_brownian_motion_aug.jl")
 include("black_scholes.jl")
+include("bachelier.jl")
 include("heston.jl")
 include("heston_sobol.jl")
 include("log_normal_mixture.jl")
@@ -32,6 +33,9 @@ include("normal_inverse_gaussian.jl")
 
 ### Stochastic Differential Equations
 include("diff_eq_monte_carlo.jl")
+
+### Wrappers of single name models
+include("shifted_process.jl")
 
 ### MultiDimensional
 include("nvariate.jl")

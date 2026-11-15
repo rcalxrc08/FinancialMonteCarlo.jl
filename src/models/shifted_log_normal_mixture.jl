@@ -32,15 +32,10 @@ function simulate!(X, mcProcess::ShiftedLogNormalMixture, rfCurve::AbstractZeroR
     r = rfCurve.r
     S0 = mcProcess.underlying.S0
     d = dividend(mcProcess)
-    Nstep = mcBaseData.Nstep
     η_gbm = copy(mcProcess.η)
     λ_gmb = copy(mcProcess.λ)
-    mu_gbm = r - d
-    dt = T / Nstep
     A0 = S0 * (1 - mcProcess.α)
     simulate!(X, LogNormalMixture(η_gbm, λ_gmb, Underlying(A0, d)), rfCurve, mcBaseData, T)
-    drift_type = ChainRulesCore.@ignore_derivatives typeof(integral(mu_gbm, dt) * dt)
-    tmp_::typeof(get_array_type(mcBaseData, mcProcess, drift_type)) = exp.(integral(mu_gbm, t_) for t_ = 0:dt:T)
-    @. X = X + mcProcess.α * S0 * (tmp_')
+    add_shift!(X, mcProcess.α * S0, r - d, mcBaseData, T)
     return nothing
 end

@@ -36,8 +36,9 @@ BaseProcess
 ├── AbstractMonteCarloEngine           BrownianMotion, GeometricBrownianMotion, SubordinatedBrownianMotion
 └── AbstractMonteCarloProcess
     ├── ScalarMonteCarloProcess
+    │   ├── ShiftedProcess
     │   └── LevyProcess
-    │       ├── ItoProcess             BlackScholesProcess, HestonProcess, LogNormalMixture, ShiftedLogNormalMixture
+    │       ├── ItoProcess             BlackScholesProcess, BachelierProcess, HestonProcess, LogNormalMixture, ShiftedLogNormalMixture
     │       ├── FiniteActivityProcess  KouProcess, MertonProcess
     │       └── InfiniteActivityProcess VarianceGammaProcess, NormalInverseGaussianProcess
     └── VectorialMonteCarloProcess
@@ -53,6 +54,7 @@ All single name processes take their parameters followed by the [`Underlying`](@
 | Model | Constructor | Parameters |
 |:--|:--|:--|
 | Black-Scholes | `BlackScholesProcess(σ, underlying)` | volatility |
+| Bachelier | `BachelierProcess(σ, underlying)` | normal volatility |
 | Heston | `HestonProcess(σ, σ₀, λ, κ, ρ, θ, underlying)` | vol of vol, initial vol, market price of vol risk, mean reversion speed, correlation, long term variance |
 | Kou | `KouProcess(σ, λ, p, λ₊, λ₋, underlying)` | volatility, jump intensity, probability of an up jump, rates of the exponential up and down jump sizes |
 | Merton | `MertonProcess(σ, λ, μ_jump, σ_jump, underlying)` | volatility, jump intensity, mean and standard deviation of the normal jump sizes |
@@ -60,6 +62,7 @@ All single name processes take their parameters followed by the [`Underlying`](@
 | Normal Inverse Gaussian | `NormalInverseGaussianProcess(σ, θ, κ, underlying)` | volatility, drift and variance rate of the inverse gaussian subordinator |
 | LogNormal mixture | `LogNormalMixture(η, λ, underlying)` | vector of volatilities, vector of the first `length(η) - 1` weights |
 | Shifted LogNormal mixture | `ShiftedLogNormalMixture(η, λ, α, underlying)` | as above, plus a shift |
+| Shifted (any model) | `ShiftedProcess(model, α)` | the parameters of `model`, plus a shift |
 
 Constructors check the parameters (positive volatilities and intensities, valid probabilities
 and correlations, existence of the risk neutral drift, ...) and throw an `AssertionError` when they

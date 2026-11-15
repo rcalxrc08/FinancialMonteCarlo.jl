@@ -13,7 +13,7 @@ const zero_rate = ZeroRate(r)
 const mc = MonteCarloConfiguration(Nsim, Nstep)
 const european = EuropeanOption(T, K)
 
-const models = (BlackScholes = BlackScholesProcess(σ, underlying), Heston = HestonProcess(σ, 0.2, 1.5, 0.04, -0.7, 0.04, underlying), Kou = KouProcess(σ, 3.0, 0.5, 25.0, 30.0, underlying), Merton = MertonProcess(σ, 3.0, -0.05, 0.1, underlying), VarianceGamma = VarianceGammaProcess(σ, -0.1, 0.2, underlying), NIG = NormalInverseGaussianProcess(σ, -0.1, 0.2, underlying), LogNormalMixture = LogNormalMixture([0.2, 0.3], [0.4], underlying))
+const models = (BlackScholes = BlackScholesProcess(σ, underlying), Heston = HestonProcess(σ, 0.2, 1.5, 0.04, -0.7, 0.04, underlying), Kou = KouProcess(σ, 3.0, 0.5, 25.0, 30.0, underlying), Merton = MertonProcess(σ, 3.0, -0.05, 0.1, underlying), VarianceGamma = VarianceGammaProcess(σ, -0.1, 0.2, underlying), NIG = NormalInverseGaussianProcess(σ, -0.1, 0.2, underlying), LogNormalMixture = LogNormalMixture([0.2, 0.3], [0.4], underlying), Bachelier = BachelierProcess(20.0, underlying), ShiftedBlackScholes = ShiftedProcess(BlackScholesProcess(σ, underlying), 0.3))
 
 # Every model on a European option
 SUITE["models"] = BenchmarkGroup()

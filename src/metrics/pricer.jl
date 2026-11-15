@@ -40,7 +40,6 @@ end
 
 # The arrays of the paths with numbers of type T (see price_type), on the device of the mode
 get_matrix_type(mcConfig::MonteCarloConfiguration, ::BaseProcess, ::Type{T}) where {T <: Number} = array_type(mcConfig.mode){T}(undef, mcConfig.Nsim, mcConfig.Nstep + 1);
-get_array_type(mcConfig::MonteCarloConfiguration, ::BaseProcess, ::Type{T}) where {T <: Number} = array_type(mcConfig.mode){T}(undef, mcConfig.Nsim);
 get_matrix_type(mcConfig::MonteCarloConfiguration, ::VectorialMonteCarloProcess, ::Type{T}) where {T <: Number} = Array{array_type(mcConfig.mode){T, 2}};
 
 function pricer(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration, abstractPayoffs::Array{abstractPayoff_, N}) where {abstractPayoff_ <: AbstractPayoff, N}
