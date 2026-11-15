@@ -43,6 +43,9 @@ struct LogNormalMixture{N, M, num <: Number, num2 <: Number, abstrUnderlying <: 
     end
 end
 
+# Volatilities or weights of different number types (a dual volatility next to a float one) are promoted
+LogNormalMixture(η::Tuple{Number, Vararg{Number}}, λ::Tuple{Number, Vararg{Number}}, underlying::AbstractUnderlying) = LogNormalMixture(promote(η...), promote(λ...), underlying)
+
 export LogNormalMixture;
 
 # All the weights, the last one 1 - sum(λ)
@@ -53,10 +56,14 @@ mixture_weights(model::LogNormalMixture) = (model.λ..., 1 - sum(model.λ))
 # x from the mean of the component, -η_i² t / 2, over twice its variance η_i² t. The exponents are shifted by their
 # maximum (log-sum-exp), so that in the far tails at small t the weights do not all underflow to 0 / 0.
 function lnm_local_variance(x, t, η::NTuple, logw::NTuple)
-    e = map((η_i, logw_i) -> logw_i - (x + η_i^2 * t / 2)^2 / (2 * η_i^2 * t), η, logw)
+    e = map((η_i, logw_i) -> lnm_exponent(x, t, η_i, logw_i), η, logw)
     e_max = maximum(e)
     w = map(e_i -> exp(e_i - e_max), e)
     return sum(map((w_i, η_i) -> w_i * η_i^2, w, η)) / sum(w)
+end
+@inline function lnm_exponent(x, t, η_i, logw_i)
+    @muladd u = x + η_i^2 * (t / 2)
+    return logw_i - u^2 / (2 * η_i^2 * t)
 end
 
 # At t = 0 every path is at the spot, and the weights tend to λ_i / η_i: σ²(0, 0) = Σ λ_i η_i / Σ λ_i / η_i
@@ -74,7 +81,13 @@ end
 # One Euler substep of the log price x from time t, of length h, with the drift of the log price over it and the normal z
 @inline function lnm_euler(x, t, h, drift, z, carry, σ2_0, η, logw)
     σ2 = iszero(t) ? σ2_0 : lnm_local_variance(x - carry, t, η, logw)
-    return x + drift - σ2 * h / 2 + sqrt(σ2 * h) * z
+    @muladd return x + drift - σ2 * (h / 2) + sqrt(σ2 * h) * z
+end
+# One Euler step on all the paths of one side, sign the sign of its normals Z. A function of its own, so that the
+# automatic differentiation extensions can give it a rule.
+function lnm_step!(dest, src, Z, sign, t, h, drift, carry, σ2_0, η::NTuple, logw::NTuple)
+    @. dest = lnm_euler(src, t, h, drift, sign * Z, carry, σ2_0, (η,), (logw,))
+    return nothing
 end
 
 function simulate!(X, mcProcess::LogNormalMixture, rfCurve::AbstractZeroRateCurve, mcBaseData::MonteCarloConfiguration, T::Number)
@@ -90,10 +103,10 @@ function simulate!(X, mcProcess::LogNormalMixture, rfCurve::AbstractZeroRateCurv
         drift = drift_of_step(drifts, j)
         carry = integral(μ, t)
         foreach(sides) do (X_, sign_)
-            @views @. X_[:, j+1] = lnm_euler(X_[:, j], t, dt, drift, sign_ * Z, carry, σ2_0, (η,), (logw,))
+            lnm_step!(view(X_, :, j + 1), view(X_, :, j), Z, sign_, t, dt, drift, carry, σ2_0, η, logw)
         end
     end
-    @. X = S0 * exp(X)
+    exp_paths!(X, S0)
     return nothing
 end
 
@@ -109,6 +122,6 @@ function simulate!(X, mcProcess::LogNormalMixture, rfCurve::AbstractZeroRateCurv
             X[i, j+1] = lnm_euler(X[i, j], (j - 1) * dt, dt, drift_of_step(drifts, j), normals[j], carries[j], σ2_0, η, logw)
         end
     end
-    @. X = S0 * exp(X)
+    exp_paths!(X, S0)
     return nothing
 end

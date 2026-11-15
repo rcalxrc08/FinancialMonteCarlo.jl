@@ -33,12 +33,10 @@ end
 
 export KouProcess;
 
-function compute_jump_size(mcProcess::KouProcess, mcBaseData::MonteCarloConfiguration)
-    if draw_uniform(mcBaseData) < mcProcess.p
-        return draw_exponential(mcBaseData) / mcProcess.λ₊
-    end
-    return -draw_exponential(mcBaseData) / mcProcess.λ₋
-end
+# The random numbers of a jump (its direction, then the exponential of its size) and its size from them
+jump_raw(::KouProcess, mcBaseData::AbstractMonteCarloConfiguration) = (draw_uniform(mcBaseData), draw_exponential(mcBaseData))
+jump_raw_type(::KouProcess) = Tuple{Float64, Float64}
+jump_size(mcProcess::KouProcess, (u, e)) = u < mcProcess.p ? e / mcProcess.λ₊ : -e / mcProcess.λ₋
 compute_drift(mcProcess::KouProcess) = mcProcess.p / (mcProcess.λ₊ - 1) - (1 - mcProcess.p) / (mcProcess.λ₋ + 1)
 # The jump size at the uniform u, by inversion (AntitheticMC and SobolMC): downwards for u < 1 - p, upwards above. The
 # quantile is continuous at u = 1 - p and in p, so the pathwise derivatives with respect to p are those of the price.

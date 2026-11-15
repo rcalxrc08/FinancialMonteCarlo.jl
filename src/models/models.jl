@@ -36,6 +36,9 @@ include("diff_eq_monte_carlo.jl")
 ### Wrappers of single name models
 include("shifted_process.jl")
 
+### Adjoints of the kernels of the paths, for the rules of the AD extensions
+include("adjoints.jl")
+
 ### MultiDimensional
 include("nvariate.jl")
 include("nvariate_log.jl")

@@ -28,7 +28,10 @@ struct MertonProcess{num <: Number, num1 <: Number, num2 <: Number, num3 <: Numb
 end
 
 export MertonProcess;
-compute_jump_size(mcProcess::MertonProcess, mcBaseData::MonteCarloConfiguration) = mcProcess.μ_jump + mcProcess.σ_jump * draw_normal(mcBaseData);
+# The random number of a jump (a normal) and its size from it
+jump_raw(::MertonProcess, mcBaseData::AbstractMonteCarloConfiguration) = draw_normal(mcBaseData)
+jump_raw_type(::MertonProcess) = Float64
+@muladd jump_size(mcProcess::MertonProcess, z) = mcProcess.μ_jump + mcProcess.σ_jump * z
 compute_drift(mcProcess::MertonProcess) = exp(mcProcess.μ_jump + mcProcess.σ_jump^2 / 2) - 1
 # The jump size at the uniform u, by inversion (AntitheticMC and SobolMC)
 jump_quantile(mcProcess::MertonProcess, u) = mcProcess.μ_jump + mcProcess.σ_jump * norminvcdf(u)

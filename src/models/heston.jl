@@ -57,6 +57,18 @@ function heston_setup(mcProcess::HestonProcess, rfCurve::AbstractZeroRateCurve, 
     return κ_s, θ_s, drifts, dt, isDualZeroVol
 end
 
+# One Euler step of the log price and of the variance v (in place) on all the paths of one side, a = ±√dt, with the
+# normal of the variance correlated on the fly: e1 ρ + e2_rho √(1 - ρ²). A function of its own, so that the automatic
+# differentiation extensions can give it a rule.
+function heston_step!(X_to, X_from, v, e1, e2_rho, drift, dt, a, κ, θ, σ, ρ, ρ_orthogonal, v_floor)
+    @. X_to = heston_log_step(X_from, v, e1, drift, dt, a)
+    @. v = max(heston_variance_step(v, e1, e2_rho, dt, a, κ, θ, σ, ρ, ρ_orthogonal), v_floor)
+    return nothing
+end
+# The two updates on one path, before the floor of the variance (shared with the rules of the AD extensions)
+@inline @muladd heston_log_step(x, v, e1, drift, dt, a) = x + drift - v * (dt / 2) + sqrt(v) * a * e1
+@inline @muladd heston_variance_step(v, e1, e2_rho, dt, a, κ, θ, σ, ρ, ρ_orthogonal) = v + κ * (θ - v) * dt + σ * sqrt(v) * a * (e1 * ρ + e2_rho * ρ_orthogonal)
+
 function simulate!(X, mcProcess::HestonProcess, rfCurve::AbstractZeroRateCurve, mcBaseData::MonteCarloConfiguration, T::Number)
     S0 = mcProcess.underlying.S0
     σ = mcProcess.σ
@@ -71,22 +83,17 @@ function simulate!(X, mcProcess::HestonProcess, rfCurve::AbstractZeroRateCurve, 
     sides_v = map(side -> (side[1], fill!(draw_buffer(mcBaseData, typeof(v_0), N), v_0), side[2]), sides)
     e1 = draw_buffer(mcBaseData, typeof(get_rng_type(isDualZero)), N)
     e2_rho = draw_buffer(mcBaseData, typeof(get_rng_type(isDualZero)), N)
-    e2 = draw_buffer(mcBaseData, typeof(get_rng_type(isDualZero) + zero(ρ)), N)
     ρ_orthogonal = sqrt(1 - ρ * ρ)
     sqrt_dt = sqrt(dt)
     for j = 1:mcBaseData.Nstep
         draw_normals!(e1, mcBaseData)
         draw_normals!(e2_rho, mcBaseData)
-        @. e2 = e1 * ρ + e2_rho * ρ_orthogonal
         drift = drift_of_step(drifts, j)
         foreach(sides_v) do (X_, v_m, sign_)
-            sqrt_dt_step = sign_ * sqrt_dt
-            @views @. X_[:, j+1] = X_[:, j] + (drift - v_m * dt / 2) + sqrt(v_m) * sqrt_dt_step * e1
-            @. v_m += κ_s * (θ_s - v_m) * dt + σ * sqrt(v_m) * sqrt_dt_step * e2
-            @. v_m = max(v_m, v_floor)
+            heston_step!(view(X_, :, j + 1), view(X_, :, j), v_m, e1, e2_rho, drift, dt, sign_ * sqrt_dt, κ_s, θ_s, σ, ρ, ρ_orthogonal, v_floor)
         end
     end
     ## Conclude
-    @. X = S0 * exp(X)
+    exp_paths!(X, S0)
     return
 end

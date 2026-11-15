@@ -100,39 +100,42 @@ The first call compiles the derivative, which takes about a minute.
 
 ## Choosing a backend
 
-Gradient of a European call with respect to `[S0, σ, r, d]`, 2 000 paths × 10 steps, minimum time
-over three runs; the first row is the price alone, for comparison:
+Gradient of a European call with respect to `[S0, σ, r, d]` (for the mixture, the first volatility), 2 000 paths ×
+10 steps, minimum time; the first row is the price alone, for comparison. Mooncake's forward mode gives one directional
+derivative per call, so a gradient of four parameters costs four times its row:
 
-| Backend | Black-Scholes | Kou | allocations (Black-Scholes) | allocations (Kou) |
+| Backend | Black-Scholes | Heston | Kou | LogNormal mixture |
 |:--|--:|--:|--:|--:|
-| price only, `pricer` | 0.27 ms | 0.97 ms | 21 | 21 |
-| ForwardDiff, `gradient!` (configuration prepared) | 0.49 ms | 1.1 ms | 21 | 21 |
-| Enzyme, forward | 0.63 ms | 1.3 ms | 77 | 77 |
-| Enzyme, reverse | 0.90 ms | 7.7 ms | 38 | 5 036 |
-| Mooncake, `value_and_gradient!!` (rule prepared) | 2.3 ms | 4.5 ms | 90 | 90 |
-| ReverseDiff, `gradient!` with a compiled tape | 12 ms | 19 ms | 0 | 0 |
-| ReverseDiff, `gradient` | 65 ms | 104 ms | 596 198 | 928 109 |
-| TaylorSeries, vega of order 2 | 5.0 ms | | 120 041 | |
+| price only, `pricer` | 0.27 ms | 0.47 ms | 0.62 ms | 0.87 ms |
+| ForwardDiff, `gradient!` (configuration prepared) | 0.75 ms | 1.0 ms | 0.90 ms | 2.3 ms |
+| Enzyme, forward (`gradient`, all directions at once) | 0.98 ms | 1.4 ms | 1.3 ms | 2.2 ms |
+| Enzyme, reverse | 0.69 ms | 1.0 ms | 2.1 ms | 2.5 ms |
+| Mooncake, reverse (`value_and_gradient!!`, rule prepared) | 0.66 ms | 1.2 ms | 2.1 ms | 2.3 ms |
+| Mooncake, forward, one direction (`value_and_derivative!!`) | 0.35 ms | 0.65 ms | 1.1 ms | 1.8 ms |
 
-Measured on an Intel Core i7-8550U with Julia 1.13.3, ForwardDiff 1.4.7, Enzyme 0.13.219,
-Mooncake 0.5.69, ReverseDiff 1.18.7 and TaylorSeries 0.23.3. The price allocates the paths, the
-normal draws of a step and the discounted payoffs, plus the eleven small allocations of
-`Random.seed!` for the `MersenneTwister`.
+Measured on an Intel Core i7-8550U with Julia 1.12.7, ForwardDiff 1.4.8, Enzyme 0.13.219 and Mooncake 0.5.70.
+Before the rules of the kernels below, reverse mode cost, for the same cases, 0.91 / 3.7 / 7.4 / 5.1 ms with Enzyme and
+1.5 / 1.5 / 2.4 / 8.9 ms with Mooncake; an Asian payoff made Enzyme allocate once per path.
 
-- ForwardDiff carries all the partials through one simulation, at less than twice the price
-  here: it is the fastest up to a few dozen parameters.
-- Enzyme is the fastest reverse mode: in reverse its cost does not grow with the number of
-  parameters, so it is the choice for many of them, such as the calibration of a large model. For
-  the jump models it caches the jumps of every path (a loop whose length is random), which makes
-  it slower than Mooncake there.
-- Mooncake pays a fixed cost per gradient and works with every model, variance gamma included.
-- ReverseDiff records one tape entry per number of every path, which makes it two orders of
-  magnitude slower than ForwardDiff. A compiled tape (`ReverseDiff.compile(ReverseDiff.GradientTape(f, x0))`)
-  is five times faster and allocates nothing; it replays the operations recorded at `x0`, which
-  is correct here because the seed is reset at every call, but not if the number of paths, the
-  seed or the payoff changes, nor when a parameter changes the control flow (the number of jumps,
-  the exercise decisions of an American option).
-- TaylorSeries allocates a vector of coefficients for every number of every path.
+Both reverse modes run within a few times the price because the loops the models spend their time in are functions of
+their own with hand-written derivatives: a step of the Brownian motion, of Heston and of the mixture, the exponential of
+the log paths, the carry factors of Bachelier and of the shifted models, and the jumps of Kou and Merton, which are drawn
+first as random numbers and grid points, and sized from the parameters after. The rules work on whole arrays of
+`Float64` (or `Float32`); without them Mooncake records every element of every broadcast and Enzyme caches every value
+the paths overwrite. Dual numbers and the GPU use the generic code.
+
+- ForwardDiff carries all the partials through one simulation: it is the simplest choice up to a few dozen
+  parameters.
+- Enzyme and Mooncake in reverse mode cost the same whatever the number of parameters, the choice for many of them
+  (the calibration of a large model). Mooncake also works with the variance gamma model, whose gamma sampler Enzyme
+  cannot analyse.
+- Mooncake's forward mode, one direction at a time, is the cheapest single sensitivity: about the price itself.
+- ReverseDiff records one tape entry per number of every path, two orders of magnitude slower than ForwardDiff (65 ms
+  for the Black-Scholes case, 12 ms with a compiled tape, Julia 1.13.3): a compiled tape
+  (`ReverseDiff.compile(ReverseDiff.GradientTape(f, x0))`) replays the operations recorded at `x0`, which is correct here
+  because the seed is reset at every call, but not if the number of paths, the seed or the payoff changes, nor when a
+  parameter changes the control flow (the number of jumps, the exercise decisions of an American option).
+- TaylorSeries allocates a vector of coefficients for every number of every path (5 ms for a vega of order 2).
 
 With `MultiThreading` and `MultiProcess` only the backends based on number types (ForwardDiff,
 DualNumbers, HyperDualNumbers, TaylorSeries) are supported.

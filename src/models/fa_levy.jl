@@ -1,10 +1,70 @@
 # The jumps of a finite activity Lévy process, added to the log paths in X. The CUDA extension adds a method for a
 # CuMatrix, which collects the jumps on the host in a JumpList and adds them with one kernel: the methods for the
 # samplings are those of add_jumps!, so they do not clash.
-add_jump_matrix!(X, mcProcess::FiniteActivityProcess, mcBaseData::AbstractMonteCarloConfiguration, T::Number) = add_jumps!(X, mcProcess, mcBaseData, T)
+#
+# On the host the jumps are drawn first, as their random numbers only (record_jumps: grid points and draws, which carry
+# no derivative), then their sizes are computed from the parameters in one pass, and added to the paths by one kernel
+# (add_jump_sizes!): the AD backends see two array operations instead of a loop of random length per path.
+function add_jump_matrix!(X, mcProcess::FiniteActivityProcess, mcBaseData::AbstractMonteCarloConfiguration, T::Number)
+    jumps = record_jumps(mcProcess, mcBaseData, T)
+    # a sampling draws one kind of jumps only: an empty map would allocate an array of no activity, which Enzyme rejects
+    isempty(jumps.raw) || add_jump_sizes!(X, jumps.raw_path, jumps.raw_step, map(r -> jump_size(mcProcess, r), jumps.raw))
+    isempty(jumps.quantile) || add_jump_sizes!(X, jumps.quantile_path, jumps.quantile_step, map(u -> jump_quantile(mcProcess, u), jumps.quantile))
+    return
+end
 
-# The jumps go to a sink through add_jump!(sink, i, jump_idx, jump_size): the jump of the path i in the step jump_idx - 1,
-# which moves the grid points from jump_idx on. The sink is the matrix of the log paths, or a JumpList.
+# The jumps go to a sink through add_jump!(sink, i, jump_idx, model, draw): the jump of the path i in the step
+# jump_idx - 1, which moves the grid points from jump_idx on, with the size of the draw: RawJump, the random numbers of
+# compute_jump_size (jump_size of the model), or QuantileJump, a uniform for jump_quantile. The sink is the matrix of the
+# log paths, a JumpList (sizes computed at once) or a JumpRecord (draws kept, sizes computed later).
+struct RawJump{R}
+    raw::R
+end
+struct QuantileJump{U}
+    u::U
+end
+jump_value(mcProcess, d::RawJump) = jump_size(mcProcess, d.raw)
+jump_value(mcProcess, d::QuantileJump) = jump_quantile(mcProcess, d.u)
+add_jump!(sink, i::Integer, jump_idx::Integer, mcProcess, d::Union{RawJump, QuantileJump}) = add_jump!(sink, i, jump_idx, jump_value(mcProcess, d))
+# The size of a jump from the random numbers of jump_raw
+compute_jump_size(mcProcess, mcBaseData::AbstractMonteCarloConfiguration) = jump_size(mcProcess, jump_raw(mcProcess, mcBaseData))
+
+# The jumps as their draws, by kind: the sizes are computed later from the parameters
+struct JumpRecord{R, U}
+    raw_path::Vector{Int32}
+    raw_step::Vector{Int32}
+    raw::Vector{R}
+    quantile_path::Vector{Int32}
+    quantile_step::Vector{Int32}
+    quantile::Vector{U}
+end
+JumpRecord{R, U}() where {R, U} = JumpRecord{R, U}(Int32[], Int32[], R[], Int32[], Int32[], U[])
+function add_jump!(J::JumpRecord, i::Integer, jump_idx::Integer, ::Any, d::RawJump)
+    push!(J.raw_path, i)
+    push!(J.raw_step, jump_idx)
+    push!(J.raw, d.raw)
+    return
+end
+function add_jump!(J::JumpRecord, i::Integer, jump_idx::Integer, ::Any, d::QuantileJump)
+    push!(J.quantile_path, i)
+    push!(J.quantile_step, jump_idx)
+    push!(J.quantile, d.u)
+    return
+end
+# The jumps of all the paths, by the scheme of the sampling (add_jumps!). The random numbers come from the host rng in
+# Float64, and the grid points depend on the parameters only through integers: no derivative (the AD extensions mark it).
+function record_jumps(mcProcess::FiniteActivityProcess, mcBaseData::AbstractMonteCarloConfiguration, T::Number)
+    jumps = JumpRecord{jump_raw_type(mcProcess), Float64}()
+    add_jumps!(jumps, mcProcess, mcBaseData, T)
+    return jumps
+end
+# X[path[k], step[k]:end] += sizes[k] for every k (a function of its own, with a rule in the AD extensions)
+function add_jump_sizes!(X::AbstractMatrix, path::AbstractVector{<:Integer}, step::AbstractVector{<:Integer}, sizes::AbstractVector)
+    @inbounds for k in eachindex(path, step, sizes)
+        add_jump!(X, path[k], step[k], sizes[k])
+    end
+    return
+end
 function add_jump!(X::AbstractMatrix, i::Integer, jump_idx::Integer, jump_size)
     @inbounds for j = jump_idx:size(X, 2)
         X[i, j] += jump_size
@@ -63,7 +123,7 @@ function add_jumps!(X, mcProcess::FiniteActivityProcess, mcBaseData::AbstractMon
     @inbounds for i = 1:Nsim
         t_i = draw_exponential(mcBaseData) / λ
         while t_i < T
-            add_jump!(X, i, ceil(Int, t_i / dt) + 1, compute_jump_size(mcProcess, mcBaseData))
+            add_jump!(X, i, ceil(Int, t_i / dt) + 1, mcProcess, RawJump(jump_raw(mcProcess, mcBaseData)))
             t_i += draw_exponential(mcBaseData) / λ
         end
     end
@@ -154,12 +214,12 @@ function add_jumps_from_uniforms!(X, i::Integer, u, J::JumpUniforms, mcProcess::
     N = jump_count(J, open_unit(u[1]))
     if N > J.M
         for _ = 1:N
-            add_jump!(X, i, jump_index(draw_uniform(mcBaseData), Nstep), compute_jump_size(mcProcess, mcBaseData))
+            add_jump!(X, i, jump_index(draw_uniform(mcBaseData), Nstep), mcProcess, RawJump(jump_raw(mcProcess, mcBaseData)))
         end
         return
     end
     @inbounds for k = 1:N
-        add_jump!(X, i, jump_index(u[2k], Nstep), jump_quantile(mcProcess, open_unit(u[2k+1])))
+        add_jump!(X, i, jump_index(u[2k], Nstep), mcProcess, QuantileJump(open_unit(u[2k+1])))
     end
     return
 end
@@ -178,8 +238,8 @@ function add_jumps!(X, mcProcess::FiniteActivityProcess, mcBaseData::MonteCarloC
         for k = 1:max(N, N_anti)
             t = draw_uniform(mcBaseData)
             v = open_unit(draw_uniform(mcBaseData))
-            k <= N && add_jump!(X, i, jump_index(t, Nstep), jump_quantile(mcProcess, v))
-            k <= N_anti && add_jump!(X, i + half, jump_index(1 - t, Nstep), jump_quantile(mcProcess, 1 - v))
+            k <= N && add_jump!(X, i, jump_index(t, Nstep), mcProcess, QuantileJump(v))
+            k <= N_anti && add_jump!(X, i + half, jump_index(1 - t, Nstep), mcProcess, QuantileJump(1 - v))
         end
     end
     return
@@ -193,7 +253,7 @@ function simulate!(X, mcProcess::finiteActivityProcess, rfCurve::AbstractZeroRat
     simulate!(X, BrownianMotion(mcProcess.σ, fa_drift(mcProcess, rfCurve)), mcBaseData, T)
     add_jump_matrix!(X, mcProcess, mcBaseData, T)
     S0 = mcProcess.underlying.S0
-    @. X = S0 * exp(X)
+    exp_paths!(X, S0)
     nothing
 end
 
@@ -217,6 +277,6 @@ function simulate!(X, mcProcess::FiniteActivityProcess, rfCurve::AbstractZeroRat
         add_jumps_from_uniforms!(X, i, view(point, (Nstep+1):dimension), J, mcProcess, mcBaseData)
     end
     S0 = mcProcess.underlying.S0
-    @. X = S0 * exp(X)
+    exp_paths!(X, S0)
     return
 end

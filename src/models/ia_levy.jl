@@ -16,6 +16,6 @@ function simulate!(X, mcProcess::infiniteActivityProcess, rfCurve::AbstractZeroR
     simulate!(X, SubordinatedBrownianMotion(σ, drift_rn, θ, compute_subordinator_law(mcProcess, dt)), mcBaseData, T)
     ## Conclude
     S0 = mcProcess.underlying.S0
-    @. X = S0 * exp(X)
+    exp_paths!(X, S0)
     nothing
 end

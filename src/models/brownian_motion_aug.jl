@@ -38,8 +38,7 @@ function simulate!(X, mcProcess::Union{BrownianMotion, BrownianMotionVec}, mcBas
         drift = drift_of_step(drifts, j)
         draw_normals!(Z, mcBaseData)
         foreach(sides) do (X_, sign_)
-            stddev_step = sign_ * stddev_bm
-            @views @. X_[:, j+1] = X_[:, j] + drift + stddev_step * Z
+            bm_step!(view(X_, :, j + 1), view(X_, :, j), drift, sign_ * stddev_bm, Z)
         end
     end
     return

@@ -29,19 +29,7 @@ function simulate!(X, mcProcess::AbstractGeometricBrownianMotion, mcBaseData::Ab
     σ = mcProcess.σ
     μ = mcProcess.μ - σ^2 / 2
     simulate!(X, BrownianMotion(σ, μ), mcBaseData, T)
-    S0 = mcProcess.x0
-    @. X = S0 * exp(X)
+    exp_paths!(X, mcProcess.x0)
 
     nothing
 end
-
-# function simulate_path!(X, mcProcess::AbstractGeometricBrownianMotion, mcBaseData::AbstractMonteCarloConfiguration, T::Number)
-# ChainRulesCore.@ignore_derivatives @assert T > 0
-#     σ = mcProcess.σ
-#     μ = mcProcess.μ - σ^2 / 2
-#     simulate_path!(X, BrownianMotion(σ, μ), mcBaseData, T)
-#     S0 = mcProcess.x0
-#     @. X = S0 * exp(X)
-
-#     nothing
-# end

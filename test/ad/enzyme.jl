@@ -26,13 +26,17 @@ using Enzyme, ForwardDiff, Random
         @test Enzyme.gradient(mode, Enzyme.Const(f), x0)[1] ≈ ForwardDiff.gradient(f, x0) rtol = 1e-10
     end
 
-    @testset "Bachelier, ShiftedProcess, LogNormalMixture: gradients match ForwardDiff" begin
-        mc_xo = MonteCarloConfiguration(200, Nstep_small; rng = Xoshiro())
-        x0 = [S0, 20.0, r, d, 0.3]
-        bachelier(x) = pricer(BachelierProcess(x[2], Underlying(x[1], x[4])), ZeroRate(x[3]), mc_xo, EuropeanOption(T, K))
-        shifted(x) = pricer(ShiftedProcess(BlackScholesProcess(x[2] / 100, Underlying(x[1], x[4])), x[5]), ZeroRate(x[3]), mc_xo, AsianFixedStrikeOption(T, K))
-        mixture(x) = pricer(LogNormalMixture((x[2] / 100, x[5]), (0.4,), Underlying(x[1], x[4])), ZeroRate(x[3]), mc_xo, AsianFixedStrikeOption(T, K))
-        for f in (bachelier, shifted, mixture)
+    @testset "the rules of the kernels: reverse and forward mode match ForwardDiff" begin
+        # every kernel with a rule in the extension (bm_step!, exp_paths!, affine_carry!, add_carry!, heston_step!,
+        # lnm_step!, add_jump_sizes!, path_range), antithetic, with a rate curve and three payoffs on the same paths
+        x0 = [S0, sigma, r, d]
+        mc_anti_xo = MonteCarloConfiguration(200, Nstep_small; sampling = FinancialMonteCarlo.AntitheticMC(), rng = Xoshiro())
+        # the three payoffs priced one by one: a position of payoffs of different types holds them in an abstract vector,
+        # which Enzyme does not differentiate (#65)
+        legs = (EuropeanOption(T, K), AsianFixedStrikeOption(T, K), BarrierOptionDownOut(T, K, 85.0))
+        models = (x -> BlackScholesProcess(x[2], Underlying(x[1], x[4])), x -> BachelierProcess(100 * x[2], Underlying(x[1], x[4])), x -> HestonProcess(0.5, x[2], 0.0, 2.0, -0.7, 0.04, Underlying(x[1], x[4])), x -> KouProcess(x[2], 3.0, 0.3, 30.0, 20.0, Underlying(x[1], x[4])), x -> MertonProcess(x[2], 3.0, -0.05, 0.1, Underlying(x[1], x[4])), x -> LogNormalMixture((x[2], 0.3), (0.5,), Underlying(x[1], x[4])), x -> ShiftedProcess(BlackScholesProcess(x[2], Underlying(x[1], x[4])), 0.2))
+        @testset "model $k" for (k, build) in enumerate(models)
+            f(x) = sum(leg -> pricer(build(x), ZeroRate([x[3], 2 * x[3]], T), mc_anti_xo, leg), legs)
             g_ref = ForwardDiff.gradient(f, x0)
             @test Enzyme.gradient(Enzyme.Reverse, Enzyme.Const(f), x0)[1] ≈ g_ref rtol = 1e-10
             @test collect(Enzyme.gradient(Enzyme.Forward, Enzyme.Const(f), x0)[1]) ≈ g_ref rtol = 1e-10

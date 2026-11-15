@@ -7,6 +7,7 @@ using LinearAlgebra # isposdef and I for the correlation of the copulas
 using Accessors # setting fields
 import Adapt # moving the arrays of the inputs to the device of the mode
 using ChainRulesCore
+using MuladdMacro: @muladd # fused multiply-adds in the kernels of the paths
 using OrderedCollections: OrderedDict # the entries of portfolios and market data sets, in insertion order
 include("utils.jl")
 include("models.jl")

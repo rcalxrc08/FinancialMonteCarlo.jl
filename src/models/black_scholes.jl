@@ -36,15 +36,3 @@ function simulate!(S, mcProcess::BlackScholesProcess, rfCurve::AbstractZeroRateC
 
     nothing
 end
-
-# function simulate_path!(S, mcProcess::BlackScholesProcess, rfCurve::AbstractZeroRateCurve, mcBaseData::AbstractMonteCarloConfiguration, T::Number)
-# ChainRulesCore.@ignore_derivatives @assert T > 0
-#     r = rfCurve.r
-#     d = dividend(mcProcess)
-#     σ = mcProcess.σ
-#     μ = r - d
-
-#     simulate_path!(S, GeometricBrownianMotion(σ, μ, mcProcess.underlying.S0), mcBaseData, T)
-
-#     nothing
-# end

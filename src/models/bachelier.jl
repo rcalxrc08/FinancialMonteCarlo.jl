@@ -36,6 +36,6 @@ function simulate!(S, mcProcess::BachelierProcess, rfCurve::AbstractZeroRateCurv
     σ = mcProcess.σ
     simulate!(S, BrownianMotion(σ, zero(σ)), mcBaseData, T)
     S0 = mcProcess.underlying.S0
-    S .= (S0 .+ S) .* carry_factors(rfCurve.r - dividend(mcProcess), mcBaseData, T)
+    affine_carry!(S, S0, carry_factors(rfCurve.r - dividend(mcProcess), mcBaseData, T))
     return nothing
 end

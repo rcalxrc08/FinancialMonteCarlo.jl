@@ -5,7 +5,7 @@ using ChainRulesCore
 using Random
 using Adapt
 using Distributions: Gamma, InverseGaussian
-using FinancialMonteCarlo: AbstractCudaMode, AbstractMonteCarloConfiguration, AbstractSmile, AbstractZeroRateCurve, AmericanPayoff, AsianFixedStrikeOption, AsianFloatingStrikeOption, BarrierPayoff, BermudanPayoff, CudaMode, FiniteActivityProcess, HostAdaptor, JumpList, MonteCarloConfiguration, PathDependentPayoff, add_jumps!, get_rng_type, host_rng, jumps_by_path, maturity, payoff_by_rows, smile_payoffs, to_mode
+using FinancialMonteCarlo: AbstractCudaMode, AbstractMonteCarloConfiguration, AbstractSmile, AbstractZeroRateCurve, AmericanPayoff, AsianPayoff, BarrierPayoff, BermudanPayoff, CudaMode, FiniteActivityProcess, HostAdaptor, JumpList, MonteCarloConfiguration, PathDependentPayoff, add_jumps!, get_rng_type, host_rng, jumps_by_path, maturity, payoff_by_rows, smile_payoffs, to_mode
 import FinancialMonteCarlo: add_jump_matrix!, array_type, draw_normals!, draw_subordinator!, mode_adaptor, payoff, seed_device!
 
 # Everything the GPU changes, by the mode: where the arrays live and the generator to seed.
@@ -114,13 +114,13 @@ function add_jump_matrix!(X::CuMatrix, mcProcess::FiniteActivityProcess, mcConfi
     return
 end
 
-# Barrier and Asian payoffs are reductions of the rows of the paths, which run on the device (a new Asian payoff needs its
-# asian_payout to join them). The other path dependent
+# Barrier and Asian payoffs are reductions of the rows of the paths, which run on the device (payoff_by_rows, as on the
+# host; a new Asian payoff needs its asian_payout). The other path dependent
 # engines index the paths, and the Longstaff-Schwartz regressions need the host.
 for payoff_type in (PathDependentPayoff, Union{AmericanPayoff, BermudanPayoff})
     @eval payoff(S::CuMatrix{num}, payoff_::$payoff_type, rfCurve::AbstractZeroRateCurve, mcBaseData::AbstractMonteCarloConfiguration, T1::num2 = maturity(payoff_)) where {num <: Number, num2 <: Number} = payoff(collect(S), payoff_, rfCurve, mcBaseData, T1)
 end
-payoff(S::CuMatrix{num}, payoff_::Union{BarrierPayoff, AsianFixedStrikeOption, AsianFloatingStrikeOption}, rfCurve::AbstractZeroRateCurve, mcBaseData::AbstractMonteCarloConfiguration, T1::num2 = maturity(payoff_)) where {num <: Number, num2 <: Number} = payoff_by_rows(S, payoff_, rfCurve, mcBaseData, T1)
+payoff(S::CuMatrix{num}, payoff_::Union{BarrierPayoff, AsianPayoff}, rfCurve::AbstractZeroRateCurve, mcBaseData::AbstractMonteCarloConfiguration, T1::num2 = maturity(payoff_)) where {num <: Number, num2 <: Number} = payoff_by_rows(S, payoff_, rfCurve, mcBaseData, T1)
 
 # The smile moves to the device first (to_mode), so that a smile with its strikes on the host is priced on the GPU. The
 # result stays on the GPU.

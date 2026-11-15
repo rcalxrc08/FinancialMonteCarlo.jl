@@ -23,15 +23,38 @@ drift_of_step(drifts::AbstractVector, j::Integer) = drifts[j]
 
 draws_per_side(sides) = size(sides[1][1], 1)
 
-# The carry factors e^{∫₀ᵗ μ} at the Nstep + 1 times of the grid, as a row on the device of the mode: the growth of the
-# forward, used by the models defined around it (Bachelier, the shifted models)
+# The two kernels most models spend their time in, as functions of their own so that the automatic differentiation
+# extensions can give them a rule: Mooncake would otherwise record every element of the broadcasts.
+# One step of a Brownian motion on all the paths (of one side): dest = src + drift + s Z
+function bm_step!(dest, src, drift, s, Z)
+    @muladd @. dest = src + drift + s * Z
+    return nothing
+end
+# The prices from the log returns, in place: X = S0 exp(X)
+function exp_paths!(X, S0)
+    @. X = S0 * exp(X)
+    return nothing
+end
+
+# The carry factors e^{∫₀ᵗ μ} at the Nstep + 1 times of the grid, one per column of the paths, on the device of the mode:
+# the growth of the forward, used by the models defined around it (Bachelier, the shifted models)
 function carry_factors(μ, mcBaseData::AbstractMonteCarloConfiguration, T::Number)
     Nstep = mcBaseData.Nstep
     factors = [exp(integral(μ, j * T / Nstep)) for j = 0:Nstep]
-    return transpose(array_type(execution_mode(mcBaseData)){eltype(factors)}(factors))
+    return array_type(execution_mode(mcBaseData)){eltype(factors)}(factors)
+end
+# The paths of Bachelier from the arithmetic Brownian motion X, in place: X = (a + X) c, c the carry factors by column
+function affine_carry!(X, a, c)
+    @. X = (a + X) * $transpose(c)
+    return nothing
+end
+# Add to the paths X the shift b times the carry factors c, by column
+function add_carry!(X, b, c)
+    @muladd @. X = X + b * $transpose(c)
+    return nothing
 end
 # Add to the paths X the deterministic shift that starts at `shift` and grows like the forward
-add_shift!(X, shift, μ, mcBaseData::AbstractMonteCarloConfiguration, T::Number) = (X .+= shift .* carry_factors(μ, mcBaseData, T); nothing)
+add_shift!(X, shift, μ, mcBaseData::AbstractMonteCarloConfiguration, T::Number) = add_carry!(X, shift, carry_factors(μ, mcBaseData, T))
 # The array type of a mode: the CUDA extension adds CuArray for its modes
 array_type(::AbstractMode) = Array
 draw_buffer(mcBaseData::MonteCarloConfiguration, numtype, N::Integer) = array_type(mcBaseData.mode){numtype}(undef, N)

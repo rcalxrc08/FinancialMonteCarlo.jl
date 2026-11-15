@@ -20,19 +20,3 @@ struct BrownianMotion{num <: Number, num1 <: Number, numtype <: Number} <: Abstr
 end
 
 export BrownianMotion;
-
-# function simulate_path!(X, mcProcess::BrownianMotion, mcBaseData::MonteCarloConfiguration, T::numb) where {numb <: Number}
-#     Nstep = mcBaseData.Nstep
-#     σ = mcProcess.σ
-#     μ = mcProcess.μ
-# ChainRulesCore.@ignore_derivatives @assert T > 0
-#     dt = T / Nstep
-#     mean_bm = μ * dt
-#     stddev_bm = σ * sqrt(dt)
-#     isDualZero = mean_bm * stddev_bm * 0
-#     @views X[1] = isDualZero
-#     @inbounds for j = 1:Nstep
-#         @views X[j+1] = X[j] + mean_bm + stddev_bm * randn(host_rng(mcBaseData))
-#     end
-#     return
-# end

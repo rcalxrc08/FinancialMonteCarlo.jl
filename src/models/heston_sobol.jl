@@ -21,6 +21,6 @@ function simulate!(X, mcProcess::HestonProcess, rfCurve::AbstractZeroRateCurve, 
         end
     end
     ## Conclude
-    @. X = S0 * exp(X)
+    exp_paths!(X, S0)
     return
 end
