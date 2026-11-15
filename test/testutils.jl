@@ -2,6 +2,7 @@
 # Every test file includes this, so each one can also be run on its own, e.g.
 #     julia --project=test test/models/black_scholes.jl
 using Test, FinancialMonteCarlo
+using FinancialToolbox: blsprice, blsbin
 
 # Market data
 const S0 = 100.0
@@ -25,9 +26,11 @@ const Nstep_small = 10
 const mc_small = MonteCarloConfiguration(Nsim_small, Nstep_small)
 const mc_small_anti = MonteCarloConfiguration(Nsim_small, Nstep_small; sampling = FinancialMonteCarlo.AntitheticMC())
 
-# Black-Scholes reference prices for the market data above (also the limit of the mixture models)
-const BS_CALL_REF = (fwd = 99.1078451563562, eu = 8.43005524824866, am = 8.450489415187354, barrier = 7.5008664470880735, asian_float = 4.774451704549382)
-const BS_PUT_REF = (eu = 7.342077422567968, am = 7.467065889603365, barrier = 0.29071929104261723, asian_float = 4.230547012372306, asian_fixed = 4.236220218194027)
+# Black-Scholes reference prices for the market data above (also the limit of the mixture models). The forward, the
+# European and the binary European prices are the closed forms of FinancialToolbox; the others have none there, so
+# they are hard-coded (high-accuracy Monte Carlo estimates).
+const BS_CALL_REF = (fwd = S0 * exp(-d * T), eu = blsprice(S0, K, r, T, sigma, d, true), binary_eu = blsbin(S0, K, r, T, sigma, d, true), am = 8.450489415187354, barrier = 7.5008664470880735, asian_float = 4.774451704549382)
+const BS_PUT_REF = (eu = blsprice(S0, K, r, T, sigma, d, false), binary_eu = blsbin(S0, K, r, T, sigma, d, false), am = 7.467065889603365, barrier = 0.29071929104261723, asian_float = 4.230547012372306, asian_fixed = 4.236220218194027)
 
 "Call payoffs on (T, K, D) priced by most model tests."
 standard_payoffs() = (fwd = Forward(T), eu = EuropeanOption(T, K), am = AmericanOption(T, K), barrier = BarrierOptionDownOut(T, K, D), asian_float = AsianFloatingStrikeOption(T), asian_fixed = AsianFixedStrikeOption(T, K))
