@@ -60,7 +60,7 @@ All single name processes take their parameters followed by the [`Underlying`](@
 | Merton | `MertonProcess(σ, λ, μ_jump, σ_jump, underlying)` | volatility, jump intensity, mean and standard deviation of the normal jump sizes |
 | Variance Gamma | `VarianceGammaProcess(σ, θ, κ, underlying)` | volatility, drift and variance rate of the gamma subordinator |
 | Normal Inverse Gaussian | `NormalInverseGaussianProcess(σ, θ, κ, underlying)` | volatility, drift and variance rate of the inverse gaussian subordinator |
-| LogNormal mixture | `LogNormalMixture(η, λ, underlying)` | vector of volatilities, vector of the first `length(η) - 1` weights |
+| LogNormal mixture | `LogNormalMixture(η, λ, underlying)` | tuple of volatilities, tuple of the first `length(η) - 1` weights |
 | Shifted (any model) | `ShiftedProcess(model, α)` | the parameters of `model`, plus a shift |
 
 Constructors check the parameters (positive volatilities and intensities, valid probabilities

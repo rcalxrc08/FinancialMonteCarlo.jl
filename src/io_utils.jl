@@ -36,7 +36,7 @@ end
 # The parameter fields of a type: all its fields but the underlying of a model and the tuple of the models of a
 # copula. Generated, so that the names are constants and the fields read and set with them are inferred: a loop over
 # `fieldnames` gives a Symbol known only at run time, and makes get_parameters and set_parameters! type unstable.
-parameter_fields(T::DataType) = Tuple(name for (name, type) in zip(fieldnames(T), fieldtypes(T)) if !(type <: Union{AbstractUnderlying, Tuple}))
+parameter_fields(T::DataType) = Tuple(name for (name, type) in zip(fieldnames(T), fieldtypes(T)) if !(type <: Union{AbstractUnderlying, Tuple{Vararg{BaseProcess}}}))
 @generated parameter_names(::Type{T}) where {T} = QuoteNode(parameter_fields(T))
 @generated parameter_values(x) = Expr(:tuple, (:(getfield(x, $(QuoteNode(name)))) for name in parameter_fields(x))...)
 
@@ -45,6 +45,7 @@ parameter_vector(x, ::Tuple{}) = price_type(x)[]
 parameter_vector(x, values_::Tuple) = vcat(map(flat_parameter, values_)...)
 flat_parameter(x::Number) = x
 flat_parameter(x::AbstractArray) = vec(x)
+flat_parameter(x::Tuple) = collect(x)
 
 """
     set_parameters!(model, params)
@@ -62,12 +63,9 @@ function set_parameters!(model::XProcess, param::AbstractVector{num}) where {XPr
     return Accessors.setproperties(model, NamedTuple{names}(values_))
 end
 
-function set_parameters!(model::LogNormalMixture, param::AbstractVector{num}) where {num <: Number}
-    N1 = div(length(param) + 1, 2)
-    ChainRulesCore.@ignore_derivatives @assert !(N1 * 2 != length(param) + 1 || N1 < 2) "Check number of parameters of the model"
-    eta = param[1:N1]
-    lam = param[(N1+1):end]
-    return Accessors.setproperties(model, (η = eta, λ = lam))
+function set_parameters!(model::LogNormalMixture{N, M}, param::AbstractVector{num}) where {N, M, num <: Number}
+    ChainRulesCore.@ignore_derivatives @assert length(param) == N + M "Check number of parameters of the model"
+    return LogNormalMixture(ntuple(i -> param[i], Val(N)), ntuple(i -> param[N+i], Val(M)), model.underlying)
 end
 
 # The parameters of the model, then the shift (a method of its own: through the generic one, get_parameters would call

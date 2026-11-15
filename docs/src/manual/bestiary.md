@@ -47,13 +47,13 @@ antithetic, Sobol), with rate and dividend curves and in the batched modes (`Mul
 | [`KouProcess`](@ref) | jump diffusion | 5 | tested | yes | yes |
 | [`VarianceGammaProcess`](@ref) | infinite activity Lévy | 3 | tested | no | yes |
 | [`NormalInverseGaussianProcess`](@ref) | infinite activity Lévy | 3 | tested | yes | yes |
-| [`LogNormalMixture`](@ref) | mixture | ``2n - 1`` | | yes | |
+| [`LogNormalMixture`](@ref) | local volatility mixture | ``2n - 1`` | tested | yes | |
 | [`ShiftedProcess`](@ref) | any of the above, shifted | model + 1 | tested | yes | |
 | [`GaussianCopulaNVariateProcess`](@ref) | multivariate | ``ρ`` + marginals | | | |
 | [`GaussianCopulaNVariateLogProcess`](@ref) | multivariate | ``ρ`` + marginals | | | |
 
 - **GPU**: covered by the suite in `test/cuda/` (run by hand, it needs a GPU; `ShiftedProcess` around
-  Black-Scholes, Kou and Variance Gamma); the other models may work in `CudaMode` but are not tested there. See [Performance](@ref).
+  Black-Scholes, the lognormal mixture, Kou and Variance Gamma); the other models may work in `CudaMode` but are not tested there. See [Performance](@ref).
 - **Enzyme**: forward and reverse mode agree with ForwardDiff (see [Automatic differentiation](@ref autodiff)).
   ForwardDiff, ReverseDiff, Mooncake, DualNumbers and TaylorSeries work with every model.
 - **Closed form**: [FinancialFFT.jl](https://github.com/rcalxrc08/FinancialFFT.jl) prices European
@@ -239,25 +239,33 @@ On the GPU the subordinator is drawn by a Michael-Schucany-Haas kernel.
 
 ## LogNormal mixture
 
+The local volatility model of Brigo and Mercurio, in ``X_t = \log(S_t / S_0)``:
+
 ```math
-S_t = \sum_{i=1}^n λ_i S^i_t, \qquad dS^i_t = (r_t - d_t) S^i_t\,dt + η_i S^i_t\,dW^i_t, \qquad S^i_0 = S_0
+dX_t = \left(r_t - d_t - \frac{σ^2(t, X_t)}{2}\right) dt + σ(t, X_t)\,dW_t, \qquad
+σ^2(t, x) = \frac{\sum_{i=1}^n λ_i η_i^2\, p_i(t, x)}{\sum_{i=1}^n λ_i\, p_i(t, x)}
 ```
+
+where ``p_i(t, \cdot)`` is the density of ``X_t`` under Black-Scholes with volatility ``η_i``. The law of ``S_t`` is
+the mixture ``\sum_i λ_i \text{Law}(S^i_t)`` at every time, so a European price is ``\sum_i λ_i`` times the
+Black-Scholes price with volatility ``η_i`` (the closed form of FinancialCalibrator's `AnalyticMethod`).
 
 ```julia
 LogNormalMixture(η, λ, underlying)
-LogNormalMixture([0.2, 0.3], [0.4], Underlying(100.0, 0.01))   # weights 0.4 and 0.6
+LogNormalMixture((0.2, 0.3), (0.4,), Underlying(100.0, 0.01))   # weights 0.4 and 0.6
 ```
 
 | Parameter | Meaning | Constraint |
 |:--|:--|:--|
-| `η` | vector of the ``n`` volatilities | all positive |
-| `λ` | vector of the first ``n - 1`` weights; the last is ``1 - \sum λ`` | positive, ``\sum λ ≤ 1`` |
+| `η` | tuple of the ``n`` volatilities | all positive |
+| `λ` | tuple of the first ``n - 1`` weights; the last is ``1 - \sum λ`` | positive, ``\sum λ ≤ 1`` |
 
-!!! warning
-    The paths are a weighted sum of geometric Brownian motions, which is not the lognormal mixture
-    of Brigo and Mercurio (whose density is the mixture of the lognormal densities, and whose
-    European price is the weighted sum of Black-Scholes prices): see
-    [#56](https://github.com/rcalxrc08/FinancialMonteCarlo.jl/issues/56).
+Euler scheme on ``X``, the local volatility at the start of each step; at ``t = 0`` it is its limit
+``\sum_i λ_i η_i / \sum_i λ_i / η_i``. The weights are computed with the largest exponent factored out, so the far
+tails do not underflow. European prices converge to the closed form as the steps grow: with 50 steps the error is
+about a cent for volatilities such as 15% and 30%, but tens of cents when they are far apart (10% and 50%), where
+the local volatility jumps sharply with ``X``. The parameters are tuples, so the number of components is in the type
+and a model can enter a GPU kernel.
 
 ## Shifted models
 
@@ -287,8 +295,7 @@ so every sampling, mode and automatic differentiation backend it supports works 
 Shifted Black-Scholes has a closed form: ``S_T - α F`` is a geometric Brownian motion started from
 ``(1 - α) S_0``, so a call of strike ``K`` is `blsprice((1 - α) * S0, K - α * F, r, T, σ, d)` when
 ``K > α F``. A shifted Bachelier is the Bachelier itself, and
-`ShiftedProcess(LogNormalMixture(η, λ, underlying), α)` the shifted lognormal mixture, which replaces the
-deprecated `ShiftedLogNormalMixture(η, λ, α, underlying)`.
+`ShiftedProcess(LogNormalMixture(η, λ, underlying), α)` the shifted lognormal mixture.
 
 ## Gaussian copulas
 

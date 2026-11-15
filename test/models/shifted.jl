@@ -32,18 +32,6 @@ using FinancialToolbox: blsprice
         @test pricer(ShiftedProcess(BlackScholesProcess(sigma, und), 0.0), rfCurve, mc_small, EuropeanOption(T, K)) ≈ pricer(BlackScholesProcess(sigma, und), rfCurve, mc_small, EuropeanOption(T, K))
     end
 
-    @testset "ShiftedLogNormalMixture is deprecated" begin
-        shifted = ShiftedProcess(LogNormalMixture([0.2, 0.3], [0.4], und), 0.1)
-        @test Base.isdeprecated(FinancialMonteCarlo, :ShiftedLogNormalMixture)
-        legacy = @test_deprecated FinancialMonteCarlo.ShiftedLogNormalMixture([0.2, 0.3], [0.4], 0.1, und)
-        @test typeof(legacy) == typeof(shifted)
-        @test FinancialMonteCarlo.get_parameters(legacy) == FinancialMonteCarlo.get_parameters(shifted)
-        @test pricer(legacy, rfCurve, mc_small, EuropeanOption(T, K)) == pricer(shifted, rfCurve, mc_small, EuropeanOption(T, K))
-        @test shifted isa FinancialMonteCarlo.ShiftedLogNormalMixture
-        @test !(model isa FinancialMonteCarlo.ShiftedLogNormalMixture)
-        @test FinancialMonteCarlo.get_parameters(shifted) == [0.2, 0.3, 0.4, 0.1]
-    end
-
     @testset "a shifted Bachelier is the Bachelier" begin
         # (1 - α) S0 + σ W + α S0 = S0 + σ W, path by path
         bachelier = BachelierProcess(20.0, und)

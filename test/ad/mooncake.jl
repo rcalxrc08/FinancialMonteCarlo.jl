@@ -24,11 +24,12 @@ using Mooncake, ForwardDiff, Random
         @test g ≈ ForwardDiff.gradient(f, x0) rtol = 1e-8
     end
 
-    @testset "Bachelier and ShiftedProcess: gradients match ForwardDiff" begin
+    @testset "Bachelier, ShiftedProcess, LogNormalMixture: gradients match ForwardDiff" begin
         x0 = [S0, 20.0, r, d, 0.3]
         bachelier(x) = pricer(BachelierProcess(x[2], Underlying(x[1], x[4])), ZeroRate(x[3]), mc_xo, EuropeanOption(T, K))
         shifted(x) = pricer(ShiftedProcess(BlackScholesProcess(x[2] / 100, Underlying(x[1], x[4])), x[5]), ZeroRate(x[3]), mc_xo, AsianFixedStrikeOption(T, K))
-        for f in (bachelier, shifted)
+        mixture(x) = pricer(LogNormalMixture((x[2] / 100, x[5]), (0.4,), Underlying(x[1], x[4])), ZeroRate(x[3]), mc_xo, AsianFixedStrikeOption(T, K))
+        for f in (bachelier, shifted, mixture)
             cache = Mooncake.prepare_gradient_cache(f, x0)
             _, (_, g) = Mooncake.value_and_gradient!!(cache, f, x0)
             @test g ≈ ForwardDiff.gradient(f, x0) rtol = 1e-10

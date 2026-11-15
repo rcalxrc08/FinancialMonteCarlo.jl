@@ -55,6 +55,14 @@ using FinancialToolbox: blsprice, normcdf, normpdf
         @test ForwardDiff.gradient(shifted, x_shifted) ≈ ForwardDiff.gradient(shifted_formula, x_shifted) rtol = 1e-4
     end
 
+    @testset "lognormal mixture: gradient against the mixture of Black-Scholes prices" begin
+        # x = [S0, η₁, η₂, λ₁]; the Euler scheme leaves a small bias, in the derivatives too
+        mixture_formula(x) = x[4] * blsprice(x[1], K, r, T, x[2], d) + (1 - x[4]) * blsprice(x[1], K, r, T, x[3], d)
+        mixture(x) = pricer(LogNormalMixture((x[2], x[3]), (x[4],), Underlying(x[1], d)), rfCurve, MonteCarloConfiguration(2^16, 50; sampling = FinancialMonteCarlo.SobolMC()), EuropeanOption(T, K))
+        x_mixture = [S0, 0.15, 0.3, 0.5]
+        @test ForwardDiff.gradient(mixture, x_mixture) ≈ ForwardDiff.gradient(mixture_formula, x_mixture) rtol = 2e-2
+    end
+
     @testset "smiles" begin
         Ks, isCall = [90.0, 100.0, 110.0], [false, true, true]
         model(s) = BlackScholesProcess(s, Underlying(S0, d))
