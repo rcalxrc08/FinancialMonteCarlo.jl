@@ -8,8 +8,8 @@
 function add_jump_matrix!(X, mcProcess::FiniteActivityProcess, mcBaseData::AbstractMonteCarloConfiguration, T::Number)
     jumps = record_jumps(mcProcess, mcBaseData, T)
     # a sampling draws one kind of jumps only: an empty map would allocate an array of no activity, which Enzyme rejects
-    isempty(jumps.raw) || add_jump_sizes!(X, jumps.raw_path, jumps.raw_step, map(r -> jump_size(mcProcess, r), jumps.raw))
-    isempty(jumps.quantile) || add_jump_sizes!(X, jumps.quantile_path, jumps.quantile_step, map(u -> jump_quantile(mcProcess, u), jumps.quantile))
+    isempty(jumps.raw) || add_jump_sizes!(X, jumps.raw_path, jumps.raw_step, jump_sizes(jump_size, mcProcess, jumps.raw))
+    isempty(jumps.quantile) || add_jump_sizes!(X, jumps.quantile_path, jumps.quantile_step, jump_sizes(jump_quantile, mcProcess, jumps.quantile))
     return
 end
 
@@ -57,6 +57,15 @@ function record_jumps(mcProcess::FiniteActivityProcess, mcBaseData::AbstractMont
     jumps = JumpRecord{jump_raw_type(mcProcess), Float64}()
     add_jumps!(jumps, mcProcess, mcBaseData, T)
     return jumps
+end
+# The sizes of the jumps from their draws, size(model, draw), in a plain loop: a map or a comprehension would pack the
+# draws (no derivative) and the model (with derivatives) in one generator, which Enzyme rejects on Julia 1.10 (#66)
+function jump_sizes(size, mcProcess, draws::AbstractVector)
+    sizes = Vector{price_type(mcProcess)}(undef, length(draws))
+    @inbounds for k in eachindex(sizes, draws)
+        sizes[k] = size(mcProcess, draws[k])
+    end
+    return sizes
 end
 # X[path[k], step[k]:end] += sizes[k] for every k (a function of its own, with a rule in the AD extensions)
 function add_jump_sizes!(X::AbstractMatrix, path::AbstractVector{<:Integer}, step::AbstractVector{<:Integer}, sizes::AbstractVector)

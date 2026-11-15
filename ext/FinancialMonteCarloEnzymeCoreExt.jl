@@ -17,6 +17,8 @@ EnzymeRules.inactive(::typeof(FinancialMonteCarlo.draw_normal), args...) = nothi
 EnzymeRules.inactive(::typeof(FinancialMonteCarlo.path_range), args...) = nothing
 # The jumps as random numbers and grid points: their sizes are computed after, from the parameters
 EnzymeRules.inactive(::typeof(FinancialMonteCarlo.record_jumps), args...) = nothing
+# and the record itself never carries derivatives
+EnzymeRules.inactive_type(::Type{<:FinancialMonteCarlo.JumpRecord}) = true
 
 # Reverse rules for the kernels of the paths, on arrays of floats: the adjoints in closed form of adjoints.jl, instead of
 # Enzyme's caching of every value the broadcasts overwrite. Forward mode has no rule: Enzyme differentiates the kernels
@@ -40,8 +42,10 @@ shadow(::Const) = nothing
 # the derivative with respect to an active scalar, nothing for a constant one
 scalar(::Active, v) = v
 scalar(::Const, v) = nothing
-# a copy of the value of an argument if the caller overwrites it after the call
-saved(config, k, x) = overwritten(config)[k] ? copy(x) : x
+# A copy of the value of an argument if the caller overwrites it after the call. On Julia 1.10 the overwritten flags of
+# Enzyme miss some later writes (the column of the log paths read by lnm_step!, which exp_paths! overwrites), with the
+# same Enzyme and EnzymeCore that get them right on 1.11 and later: there everything is copied (to drop with 1.10, #66).
+saved(config, k, x) = (VERSION < v"1.11" || overwritten(config)[k]) ? copy(x) : x
 const ArrayArg{T} = Union{Const{<:T}, Duplicated{<:T}}
 const ScalarArg{P} = Union{Const{P}, Active{P}}
 
