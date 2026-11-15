@@ -1,6 +1,6 @@
 ```@raw html
 <div class="fc-page-head">
-<p class="fc-kicker"><span>Manual 10</span> Any SDE as a model</p>
+<p class="fc-kicker"><span>Manual 11</span> Any SDE as a model</p>
 ```
 
 # DifferentialEquations.jl

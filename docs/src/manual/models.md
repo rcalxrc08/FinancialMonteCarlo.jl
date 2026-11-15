@@ -1,16 +1,19 @@
 ```@raw html
 <div class="fc-page-head">
-<p class="fc-kicker"><span>Manual 04</span> Processes and engines</p>
+<p class="fc-kicker"><span>Manual 04</span> How models are built and simulated</p>
 ```
 
 # Models
 
+How a model is put together and simulated: processes and engines, the constructors, `simulate`, multivariate
+models and parameters. Each model, with its dynamics and what it supports, has its card in the
+[Model bestiary](@ref).
 
 ```@raw html
-<div class="fc-meta"><span>Black–Scholes</span><span>Heston</span><span>Lévy</span><span>copulas</span></div>
+<div class="fc-meta"><span>processes</span><span>engines</span><span>simulate</span><span>parameters</span></div>
 <nav class="fc-toc">
 <a href="#Processes-and-engines"><b>01</b>Processes and engines</a>
-<a href="#Single-name-models"><b>02</b>Single name models</a>
+<a href="#Constructors"><b>02</b>Constructors</a>
 <a href="#Engines"><b>03</b>Engines</a>
 <a href="#Simulation"><b>04</b>Simulation</a>
 <a href="#Multivariate-models"><b>05</b>Multivariate models</a>
@@ -46,41 +49,32 @@ BaseProcess
 </pre>
 ```
 
-## Single name models
+## Constructors
 
-All single name processes take their parameters followed by the [`Underlying`](@ref). The
-[Model bestiary](@ref) has a card for each, with its dynamics and what it supports:
-
-| Model | Constructor | Parameters |
-|:--|:--|:--|
-| Black-Scholes | `BlackScholesProcess(σ, underlying)` | volatility |
-| Bachelier | `BachelierProcess(σ, underlying)` | normal volatility |
-| Heston | `HestonProcess(σ, σ₀, λ, κ, ρ, θ, underlying)` | vol of vol, initial vol, market price of vol risk, mean reversion speed, correlation, long term variance |
-| Kou | `KouProcess(σ, λ, p, λ₊, λ₋, underlying)` | volatility, jump intensity, probability of an up jump, rates of the exponential up and down jump sizes |
-| Merton | `MertonProcess(σ, λ, μ_jump, σ_jump, underlying)` | volatility, jump intensity, mean and standard deviation of the normal jump sizes |
-| Variance Gamma | `VarianceGammaProcess(σ, θ, κ, underlying)` | volatility, drift and variance rate of the gamma subordinator |
-| Normal Inverse Gaussian | `NormalInverseGaussianProcess(σ, θ, κ, underlying)` | volatility, drift and variance rate of the inverse gaussian subordinator |
-| LogNormal mixture | `LogNormalMixture(η, λ, underlying)` | tuple of volatilities, tuple of the first `length(η) - 1` weights |
-| Shifted (any model) | `ShiftedProcess(model, α)` | the parameters of `model`, plus a shift |
+All single name processes take their parameters followed by the [`Underlying`](@ref), e.g.
+`HestonProcess(σ, σ₀, λ, κ, ρ, θ, underlying)`; the [Model bestiary](@ref) lists them all. A wrapper such as
+[`ShiftedProcess`](@ref) takes a model instead, and the copulas take several.
 
 Constructors check the parameters (positive volatilities and intensities, valid probabilities
 and correlations, existence of the risk neutral drift, ...) and throw an `AssertionError` when they
-are not admissible.
-
-The Heston variance follows an Euler scheme floored at a tiny positive value (`sqrt(floatmin)` of
-its number type, about `1e-154` in `Float64` and `1e-19` in `Float32`) instead of zero, where the
-derivative of its square root is infinite. When the Feller condition `2κθ ≥ σ²` does not hold the
-floor is reached often; it is far enough from the subnormal numbers that this costs nothing.
+are not admissible. They are fully parametric in the number type of each parameter, so a model holds dual numbers,
+`Float32` or any other number type, and the paths and prices follow it.
 
 ## Engines
 
-| Engine | Constructor |
-|:--|:--|
-| Brownian motion with drift | `BrownianMotion(σ, μ)` |
-| Geometric Brownian motion | `GeometricBrownianMotion(σ, μ, x0)` |
-| Subordinated Brownian motion | `SubordinatedBrownianMotion(σ, μ, θ, subordinator::Distribution)` |
+The engines are plain stochastic processes, with no rates or dividends: [`simulate`](@ref) takes no
+zero rate curve for them. The models are built on top of them, and so can new ones.
 
-The drift `μ` can also be a curve, see [Market data](@ref).
+| Engine | Dynamics | Used by |
+|:--|:--|:--|
+| [`BrownianMotion`](@ref)`(σ, μ)` | ``X_t = μ t + σ W_t`` | Bachelier; Merton, Kou (plus their jumps) |
+| [`GeometricBrownianMotion`](@ref)`(σ, μ, x0)` | ``dX_t = μ X_t\,dt + σ X_t\,dW_t`` | Black-Scholes |
+| [`SubordinatedBrownianMotion`](@ref)`(σ, drift, θ, subordinator)` | ``X_{t+Δt} = X_t + \text{drift}\,Δt + θ\,Δτ + σ\sqrt{Δτ}\,Z`` | Variance Gamma, Normal Inverse Gaussian |
+
+The drift can also be a curve, see [Market data](@ref). The `subordinator` of a [`SubordinatedBrownianMotion`](@ref)
+is any continuous univariate `Distribution` of the increment over one step, so other time changed Lévy models need
+only their law and their martingale drift. Heston and the lognormal mixture have Euler schemes of their own, on the
+hooks of the package (antithetic sides, draws on the device of the mode), see [Extending the package](@ref).
 
 ## Simulation
 

@@ -6,11 +6,11 @@
 # Model bestiary
 
 Every model the package simulates: its dynamics under the risk neutral measure, its constructor and
-parameters, how it is simulated and what it supports. [Models](@ref) explains how processes and
-engines fit together; this page is the catalogue.
+parameters, how it is simulated and what it supports. How models are built and simulated (processes, engines,
+`simulate`, parameters) is in [Models](@ref); this page is the catalogue.
 
 ```@raw html
-<div class="fc-meta"><span>diffusions</span><span>normal</span><span>stochastic volatility</span><span>jumps</span><span>Lévy</span><span>mixtures</span><span>copulas</span></div>
+<div class="fc-meta"><span>diffusions</span><span>normal</span><span>stochastic volatility</span><span>jumps</span><span>Lévy</span><span>local volatility</span><span>copulas</span></div>
 <nav class="fc-toc">
 <a href="#At-a-glance"><b>01</b>At a glance</a>
 <a href="#Black-Scholes"><b>02</b>Black-Scholes</a>
@@ -23,49 +23,50 @@ engines fit together; this page is the catalogue.
 <a href="#LogNormal-mixture"><b>09</b>LogNormal mixture</a>
 <a href="#Shifted-models"><b>10</b>Shifted models</a>
 <a href="#Gaussian-copulas"><b>11</b>Gaussian copulas</a>
-<a href="#Engines"><b>12</b>Engines</a>
-<a href="#Any-SDE"><b>13</b>Any SDE</a>
-<a href="#Not-yet-here"><b>14</b>Not yet here</a>
+<a href="#Any-SDE"><b>12</b>Any SDE</a>
+<a href="#Not-yet-here"><b>13</b>Not yet here</a>
 </nav>
 </div>
 ```
 
 ## At a glance
 
-In every model ``r_t`` is the zero rate and ``d_t`` the dividend yield of the [`Underlying`](@ref),
-both constants or curves (see [Market data](@ref)), and the drift makes the discounted price, with
-dividends, a martingale. Every single name model works with the three samplings (standard,
-antithetic, Sobol), with rate and dividend curves and in the batched modes (`MultiThreading`,
-`MultiProcess`).
+The models are written for the log return ``X_t = \log(S_t / S_0)``, with ``μ_t = r_t - d_t``: ``r_t`` is the zero
+rate and ``d_t`` the dividend yield of the [`Underlying`](@ref), both constants or curves (see [Market data](@ref)).
+In every model the drift makes the discounted price, with dividends, a martingale. Every single name model works
+with the three samplings (standard, antithetic, Sobol), with rate and dividend curves and in the batched modes
+(`MultiThreading`, `MultiProcess`).
 
-| Model | Family | Parameters | GPU | Enzyme | Closed form in FinancialFFT |
-|:--|:--|:--|:--:|:--:|:--:|
-| [`BlackScholesProcess`](@ref) | diffusion | 1 | tested | yes | yes |
-| [`BachelierProcess`](@ref) | normal diffusion | 1 | tested | yes | |
-| [`HestonProcess`](@ref) | stochastic volatility | 6 | | yes | yes |
-| [`MertonProcess`](@ref) | jump diffusion | 4 | tested | yes | yes |
-| [`KouProcess`](@ref) | jump diffusion | 5 | tested | yes | yes |
-| [`VarianceGammaProcess`](@ref) | infinite activity Lévy | 3 | tested | no | yes |
-| [`NormalInverseGaussianProcess`](@ref) | infinite activity Lévy | 3 | tested | yes | yes |
-| [`LogNormalMixture`](@ref) | local volatility mixture | ``2n - 1`` | tested | yes | |
-| [`ShiftedProcess`](@ref) | any of the above, shifted | model + 1 | tested | yes | |
-| [`GaussianCopulaNVariateProcess`](@ref) | multivariate | ``ρ`` + marginals | | | |
-| [`GaussianCopulaNVariateLogProcess`](@ref) | multivariate | ``ρ`` + marginals | | | |
+| Model | Family | Parameters | Scheme | GPU | Enzyme | Closed form |
+|:--|:--|:--|:--|:--:|:--:|:--|
+| [`BlackScholesProcess`](@ref) | diffusion | 1 | exact | tested | yes | FinancialToolbox, FinancialFFT |
+| [`BachelierProcess`](@ref) | normal diffusion | 1 | exact | tested | yes | Bachelier formula |
+| [`HestonProcess`](@ref) | stochastic volatility | 6 | Euler | | yes | FinancialFFT |
+| [`MertonProcess`](@ref) | jump diffusion | 4 | exact | tested | yes | FinancialFFT |
+| [`KouProcess`](@ref) | jump diffusion | 5 | exact | tested | yes | FinancialFFT |
+| [`VarianceGammaProcess`](@ref) | infinite activity Lévy | 3 | exact | tested | no | FinancialFFT |
+| [`NormalInverseGaussianProcess`](@ref) | infinite activity Lévy | 3 | exact | tested | yes | FinancialFFT |
+| [`LogNormalMixture`](@ref) | local volatility | ``2n - 1`` | Euler | tested | yes | FinancialCalibrator |
+| [`ShiftedProcess`](@ref) | any of the above, shifted | model + 1 | the model's | tested | yes | strike shift |
+| [`GaussianCopulaNVariateProcess`](@ref) | multivariate | ``ρ`` + marginals | the models' | | | |
+| [`GaussianCopulaNVariateLogProcess`](@ref) | multivariate | ``ρ`` + marginals | the models' | | | |
 
+- **Scheme**: *exact* means the law of the paths at the time steps is the one of the model, so a European payoff
+  needs one step; *Euler* converges as the steps grow.
 - **GPU**: covered by the suite in `test/cuda/` (run by hand, it needs a GPU; `ShiftedProcess` around
-  Black-Scholes, the lognormal mixture, Kou and Variance Gamma); the other models may work in `CudaMode` but are not tested there. See [Performance](@ref).
-- **Enzyme**: forward and reverse mode agree with ForwardDiff (see [Automatic differentiation](@ref autodiff)).
-  ForwardDiff, ReverseDiff, Mooncake, DualNumbers and TaylorSeries work with every model.
-- **Closed form**: [FinancialFFT.jl](https://github.com/rcalxrc08/FinancialFFT.jl) prices European
-  options from the characteristic function of the model, which gives a reference price for the
-  Monte Carlo one (and for Black-Scholes, `blsprice` of
-  [FinancialToolbox.jl](https://github.com/rcalxrc08/FinancialToolbox.jl); Bachelier and the shifted Black-Scholes
-  have closed forms too, below).
+  Black-Scholes, the lognormal mixture, Kou and Variance Gamma); the other models may work in `CudaMode` but are not
+  tested there. See [Performance](@ref).
+- **Enzyme**: forward and reverse mode agree with ForwardDiff, see [Automatic differentiation](@ref autodiff).
+- **Closed form**: a reference for the European prices of the Monte Carlo:
+  [FinancialToolbox.jl](https://github.com/rcalxrc08/FinancialToolbox.jl) (`blsprice`),
+  [FinancialFFT.jl](https://github.com/rcalxrc08/FinancialFFT.jl) (from the characteristic function),
+  [FinancialCalibrator.jl](https://github.com/rcalxrc08/FinancialCalibrator.jl) (`AnalyticMethod`), or the formula
+  given in the card.
 
 ## Black-Scholes
 
 ```math
-dS_t = (r_t - d_t) S_t\,dt + σ S_t\,dW_t
+dX_t = \left(μ_t - \frac{σ^2}{2}\right) dt + σ\,dW_t
 ```
 
 ```julia
@@ -77,18 +78,19 @@ BlackScholesProcess(0.2, Underlying(100.0, 0.01))
 |:--|:--|:--|
 | `σ` | volatility | ``σ > 0`` |
 
-Simulated exactly (a [`GeometricBrownianMotion`](@ref) with the risk neutral drift), so a European
-payoff needs one time step. The reference for everything else: its European, binary and implied
-volatility formulas are in FinancialToolbox (`blsprice`, `blsbin`, `blsimpv`).
+Simulated exactly (a [`GeometricBrownianMotion`](@ref) with the risk neutral drift). The reference for everything
+else: its European, binary and implied volatility formulas are in FinancialToolbox (`blsprice`, `blsbin`, `blsimpv`).
 
 ## Bachelier
 
+The normal model. Prices can be negative, so it is written for the price itself:
+
 ```math
-S_t = e^{\int_0^t (r_s - d_s)\,ds} \left(S_0 + σ W_t\right)
+dS_t = μ_t S_t\,dt + σ\, e^{\int_0^t μ_s\,ds}\,dW_t, \qquad\text{that is}\qquad
+S_t = e^{\int_0^t μ_s\,ds} \left(S_0 + σ W_t\right).
 ```
 
-The normal model: the price discounted with the carry, ``S_0 + σ W_t``, is an arithmetic Brownian motion,
-and a martingale.
+The price discounted with the carry, ``S_0 + σ W_t``, is an arithmetic Brownian motion and a martingale.
 
 ```julia
 BachelierProcess(σ, underlying)
@@ -99,17 +101,16 @@ BachelierProcess(20.0, Underlying(100.0, 0.01))
 |:--|:--|:--|
 | `σ` | normal volatility, in units of the price | ``σ > 0`` |
 
-``S_T`` is normal with mean the forward ``F = S_0 e^{\int_0^T (r - d)}`` and standard deviation
-``v = σ \sqrt{T} e^{\int_0^T (r - d)}``, so the European prices are those of the Bachelier formula,
-``e^{-\int_0^T r} \left[(F - K)\,Φ\!\left(\frac{F - K}{v}\right) + v\,φ\!\left(\frac{F - K}{v}\right)\right]`` for a call:
-the normal volatility at maturity ``T`` is ``σ e^{\int_0^T (r - d)}``, ``σ`` itself when ``r = d`` (a future).
-Simulated exactly, as a [`BrownianMotion`](@ref) times the carry, so a European payoff needs one time step.
-Prices can be negative.
+``S_T`` is normal with mean the forward ``F = S_0 e^{\int_0^T μ}`` and standard deviation
+``v = σ \sqrt{T} e^{\int_0^T μ}``, so a call is worth
+``e^{-\int_0^T r} \left[(F - K)\,Φ\!\left(\frac{F - K}{v}\right) + v\,φ\!\left(\frac{F - K}{v}\right)\right]``:
+the normal volatility at maturity ``T`` is ``σ e^{\int_0^T μ}``, ``σ`` itself when ``r = d`` (a future).
+Simulated exactly, as a [`BrownianMotion`](@ref) times the carry.
 
 ## Heston
 
 ```math
-dS_t = (r_t - d_t) S_t\,dt + \sqrt{v_t}\,S_t\,dW_t, \qquad
+dX_t = \left(μ_t - \frac{v_t}{2}\right) dt + \sqrt{v_t}\,dW_t, \qquad
 dv_t = κ^*(θ^* - v_t)\,dt + σ \sqrt{v_t}\,dZ_t, \qquad
 d\langle W, Z\rangle_t = ρ\,dt
 ```
@@ -130,7 +131,7 @@ HestonProcess(0.5, 0.2, 0.0, 2.0, -0.7, 0.04, Underlying(100.0, 0.01))
 | `ρ` | correlation of the two Brownian motions | ``-1 ≤ ρ ≤ 1`` |
 | `θ` | long term variance | |
 
-Euler scheme on the log price and on the variance, which is floored at a tiny positive value
+Euler scheme on ``X`` and on the variance, which is floored at a tiny positive value
 (``\sqrt{\text{floatmin}}`` of its number type) instead of zero. A smile with ``ρ < 0`` slopes down.
 When the Feller condition ``2κθ ≥ σ^2`` is badly violated the Euler scheme is biased: see
 [#55](https://github.com/rcalxrc08/FinancialMonteCarlo.jl/issues/55), and use more time steps.
@@ -138,11 +139,11 @@ When the Feller condition ``2κθ ≥ σ^2`` is badly violated the Euler scheme 
 ## Merton
 
 ```math
-\log \frac{S_t}{S_0} = \int_0^t (r_s - d_s)\,ds + ω t + σ W_t + \sum_{i=1}^{N_t} Y_i, \qquad
-Y_i \sim \mathcal{N}(μ_J, σ_J^2)
+dX_t = \left(μ_t - \frac{σ^2}{2} - λ\left(e^{μ_J + σ_J^2/2} - 1\right)\right) dt + σ\,dW_t + dJ_t, \qquad
+J_t = \sum_{i=1}^{N_t} Y_i, \quad Y_i \sim \mathcal{N}(μ_J, σ_J^2)
 ```
 
-with ``N_t`` a Poisson process of intensity ``λ`` and ``ω = -σ^2/2 - λ\left(e^{μ_J + σ_J^2/2} - 1\right)``.
+with ``N_t`` a Poisson process of intensity ``λ``.
 
 ```julia
 MertonProcess(σ, λ, μ_jump, σ_jump, underlying)
@@ -153,8 +154,8 @@ MertonProcess(0.2, 3.0, -0.05, 0.1, Underlying(100.0, 0.01))
 |:--|:--|:--|
 | `σ` | volatility of the diffusion | ``σ > 0`` |
 | `λ` | jump intensity (jumps per year) | ``λ > 0`` |
-| `μ_jump` | mean of the jumps of the log price | |
-| `σ_jump` | standard deviation of the jumps of the log price | ``σ_J > 0`` |
+| `μ_jump` | mean of the jumps of ``X`` | |
+| `σ_jump` | standard deviation of the jumps of ``X`` | ``σ_J > 0`` |
 
 A finite activity Lévy process: a Brownian motion plus a compound Poisson process
 (`FiniteActivityProcess`, [fa_levy.jl](https://github.com/rcalxrc08/FinancialMonteCarlo.jl/blob/master/src/models/fa_levy.jl)).
@@ -165,12 +166,11 @@ and the Sobol points cover the jumps too.
 ## Kou
 
 ```math
-\log \frac{S_t}{S_0} = \int_0^t (r_s - d_s)\,ds + ω t + σ W_t + \sum_{i=1}^{N_t} Y_i, \qquad
+dX_t = \left(μ_t - \frac{σ^2}{2} - λ\left(\frac{p λ_+}{λ_+ - 1} + \frac{(1 - p) λ_-}{λ_- + 1} - 1\right)\right) dt + σ\,dW_t + dJ_t, \qquad
 Y_i = \begin{cases} +\text{Exp}(λ_+) & \text{with probability } p \\ -\text{Exp}(λ_-) & \text{with probability } 1 - p \end{cases}
 ```
 
-with ``N_t`` a Poisson process of intensity ``λ`` and
-``ω = -σ^2/2 - λ\left(\frac{p λ_+}{λ_+ - 1} + \frac{(1 - p) λ_-}{λ_- + 1} - 1\right)``.
+with ``J_t = \sum_{i=1}^{N_t} Y_i`` and ``N_t`` a Poisson process of intensity ``λ``.
 
 ```julia
 KouProcess(σ, λ, p, λ₊, λ₋, underlying)
@@ -190,12 +190,13 @@ Simulated like Merton, by the same finite activity code: only the law of the jum
 ## Variance Gamma
 
 ```math
-\log \frac{S_t}{S_0} = \int_0^t (r_s - d_s)\,ds + ω t + θ G_t + σ W_{G_t}, \qquad
-G_t \sim \text{Gamma}\left(\frac{t}{κ}, κ\right)
+dX_t = (μ_t + ω)\,dt + θ\,dG_t + σ\,dW_{G_t}, \qquad
+G_{t + h} - G_t \sim \text{Gamma}\left(\frac{h}{κ}, κ\right), \qquad
+ω = \frac{1}{κ} \log\left(1 - \frac{σ^2 κ}{2} - θκ\right)
 ```
 
-with ``ω = \frac{1}{κ} \log\left(1 - \frac{σ^2 κ}{2} - θκ\right)``: a Brownian motion with drift
-evaluated at a gamma subordinator of unit mean rate and variance rate ``κ``.
+a Brownian motion with drift ``θ`` and volatility ``σ`` evaluated at a gamma subordinator ``G`` of unit mean rate
+and variance rate ``κ``.
 
 ```julia
 VarianceGammaProcess(σ, θ, κ, underlying)
@@ -217,12 +218,12 @@ gamma sampler of Distributions.jl draws scalar exponentials.
 ## Normal Inverse Gaussian
 
 ```math
-\log \frac{S_t}{S_0} = \int_0^t (r_s - d_s)\,ds + ω t + θ I_t + σ W_{I_t}, \qquad
-I_t \sim \text{InverseGaussian}\left(t, \frac{t^2}{κ}\right)
+dX_t = (μ_t + ω)\,dt + θ\,dI_t + σ\,dW_{I_t}, \qquad
+I_{t + h} - I_t \sim \text{InverseGaussian}\left(h, \frac{h^2}{κ}\right), \qquad
+ω = \frac{1}{κ}\left(\sqrt{1 - σ^2 κ - 2θκ} - 1\right)
 ```
 
-with ``ω = \frac{1}{κ}\left(\sqrt{1 - σ^2 κ - 2θκ} - 1\right)``: the same construction as Variance
-Gamma with an inverse Gaussian subordinator.
+the same construction as Variance Gamma with an inverse Gaussian subordinator ``I``.
 
 ```julia
 NormalInverseGaussianProcess(σ, θ, κ, underlying)
@@ -239,10 +240,10 @@ On the GPU the subordinator is drawn by a Michael-Schucany-Haas kernel.
 
 ## LogNormal mixture
 
-The local volatility model of Brigo and Mercurio, in ``X_t = \log(S_t / S_0)``:
+The local volatility model of Brigo and Mercurio:
 
 ```math
-dX_t = \left(r_t - d_t - \frac{σ^2(t, X_t)}{2}\right) dt + σ(t, X_t)\,dW_t, \qquad
+dX_t = \left(μ_t - \frac{σ^2(t, X_t)}{2}\right) dt + σ(t, X_t)\,dW_t, \qquad
 σ^2(t, x) = \frac{\sum_{i=1}^n λ_i η_i^2\, p_i(t, x)}{\sum_{i=1}^n λ_i\, p_i(t, x)}
 ```
 
@@ -269,21 +270,25 @@ and a model can enter a GPU kernel.
 
 ## Shifted models
 
+Any single name model of this page, displaced by a deterministic amount that grows like the forward:
+
 ```math
-S_t = X_t + α S_0\, e^{\int_0^t (r_s - d_s)\,ds}, \qquad X_0 = (1 - α) S_0
+\frac{S_t}{S_0} = (1 - α)\, e^{Y_t} + α\, e^{\int_0^t μ_s\,ds}, \qquad\text{that is}\qquad
+X_t = \log\left((1 - α)\, e^{Y_t} + α\, e^{\int_0^t μ_s\,ds}\right)
 ```
 
-with ``X`` following any single name model of this page.
+where ``Y`` is the log return of `model` (for a shifted Bachelier, ``(1 - α) S_0`` plus the arithmetic part).
 
 ```julia
 ShiftedProcess(model, α)
 ShiftedProcess(BlackScholesProcess(0.2, Underlying(100.0, 0.01)), 0.3)   # displaced diffusion
 ShiftedProcess(HestonProcess(0.5, 0.2, 0.0, 2.0, -0.7, 0.04, Underlying(100.0, 0.01)), 0.2)
+ShiftedProcess(LogNormalMixture((0.2, 0.3), (0.4,), Underlying(100.0, 0.01)), 0.1)   # shifted lognormal mixture
 ```
 
 | Parameter | Meaning | Constraint |
 |:--|:--|:--|
-| `model` | the model of ``X``: its parameters, then `α`, are those of [`FinancialMonteCarlo.get_parameters`](@ref) | |
+| `model` | the model of ``Y``: its parameters, then `α`, are those of [`FinancialMonteCarlo.get_parameters`](@ref) | |
 | `α` | shift, as a fraction of the spot | ``α < 1`` |
 
 The forward is the one of `model`. With ``0 ≤ α < 1`` the price stays above ``α`` times the forward and the
@@ -292,10 +297,9 @@ smile flattens (a displaced diffusion has a skew of its own: lower strikes, high
 held by the shifted process, so [`delta`](@ref) bumps the shift too. `model` is simulated by its own code,
 so every sampling, mode and automatic differentiation backend it supports works shifted.
 
-Shifted Black-Scholes has a closed form: ``S_T - α F`` is a geometric Brownian motion started from
-``(1 - α) S_0``, so a call of strike ``K`` is `blsprice((1 - α) * S0, K - α * F, r, T, σ, d)` when
-``K > α F``. A shifted Bachelier is the Bachelier itself, and
-`ShiftedProcess(LogNormalMixture(η, λ, underlying), α)` the shifted lognormal mixture.
+A call of strike ``K`` on ``S_T`` is a call of strike ``K - α F`` on the unshifted model started from
+``(1 - α) S_0``, ``F`` the forward: any closed form of `model` prices the shifted one. For Black-Scholes it is
+`blsprice((1 - α) * S0, K - α * F, r, T, σ, d)` when ``K > α F``. A shifted Bachelier is the Bachelier itself.
 
 ## Gaussian copulas
 
@@ -310,35 +314,20 @@ GaussianCopulaNVariateLogProcess(ρ, model_1, model_2)    # copula on the log re
 | `ρ` | correlation matrix, one row per component | symmetric positive definite |
 | `models` | any single name models above, also different ones | |
 
-Each component is simulated with its own model, so it keeps its marginal law; at every time step
-its values are then replaced by their empirical quantiles at the uniforms of a Gaussian copula with
-correlation ``ρ``. They price baskets
-([`EuropeanOptionND`](@ref)) and the positions of a [Portfolios and multivariate](@ref) set.
+Each component ``X^i`` follows its own model, so it keeps its marginal law; at every time step its values are then
+replaced by their empirical quantiles at the uniforms of a Gaussian copula with correlation ``ρ``. They price
+baskets ([`EuropeanOptionND`](@ref)) and the positions of a [Portfolios and multivariate](@ref) set.
 Known limitations: the ranks are drawn again at each step, so a path does not stay continuous
 ([#23](https://github.com/rcalxrc08/FinancialMonteCarlo.jl/issues/23)), and the reordering sorts
 every column at every step ([#46](https://github.com/rcalxrc08/FinancialMonteCarlo.jl/issues/46)).
-
-## Engines
-
-The engines are plain stochastic processes, with no rates or dividends: [`simulate`](@ref) takes no
-zero rate curve for them. Models are built on top of them, and so can new ones.
-
-| Engine | Dynamics | Used by |
-|:--|:--|:--|
-| [`BrownianMotion`](@ref)`(σ, μ)` | ``X_t = μ t + σ W_t`` | Merton, Kou (plus their jumps) |
-| [`GeometricBrownianMotion`](@ref)`(σ, μ, x0)` | ``dX_t = μ X_t\,dt + σ X_t\,dW_t`` | Black-Scholes, LogNormal mixtures |
-| [`SubordinatedBrownianMotion`](@ref)`(σ, drift, θ, subordinator)` | ``X_{t+Δt} = X_t + \text{drift}\,Δt + θ\,Δτ + σ\sqrt{Δτ}\,Z`` | Variance Gamma, Normal Inverse Gaussian |
-
-A drift can be a curve. The `subordinator` of a [`SubordinatedBrownianMotion`](@ref) is any
-continuous univariate `Distribution` of the increment over one step, so other time changed Lévy
-models need only their law and their martingale drift.
 
 ## Any SDE
 
 With DifferentialEquations.jl loaded, `FinancialMonteCarlo.MonteCarloDiffEqModel` turns an
 `EnsembleProblem` (an SDE, or a jump diffusion) into a model priced like the others: see
 [DifferentialEquations.jl](@ref). It is the quickest way to try a model that is not here, at the
-cost of the speed, of the GPU and of the samplings of the native models.
+cost of the speed, of the GPU and of the samplings of the native models. The engines the models above are built
+on, which new models can reuse, are in [Models](@ref).
 
 ## Not yet here
 

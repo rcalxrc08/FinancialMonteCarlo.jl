@@ -18,15 +18,8 @@ strike `K`, barriers and whether it is a call (`isCall = true`, the default) or 
 </div>
 ```
 
-| Family | Payoffs |
-|:--|:--|
-| Linear | [`Spot`](@ref), [`Forward`](@ref) |
-| European | [`EuropeanOption`](@ref), [`BinaryEuropeanOption`](@ref) |
-| Barrier | [`BarrierOptionDownOut`](@ref), [`BarrierOptionDownIn`](@ref), [`BarrierOptionUpOut`](@ref), [`BarrierOptionUpIn`](@ref), [`DoubleBarrierOption`](@ref) |
-| Asian | [`AsianFixedStrikeOption`](@ref), [`AsianFloatingStrikeOption`](@ref) |
-| Early exercise | [`AmericanOption`](@ref), [`BinaryAmericanOption`](@ref), [`BermudanOption`](@ref) |
-| Basket | [`EuropeanOptionND`](@ref) |
-| Smiles | [`FinancialMonteCarlo.EuropeanOptionSmile`](@ref), [`FinancialMonteCarlo.BinaryEuropeanOptionSmile`](@ref) |
+The [Payoff bestiary](@ref) lists every payoff with what it pays; the families are linear (`Spot`, `Forward`),
+European, barrier, Asian, early exercise (American and Bermudan, by Longstaff-Schwartz) and basket.
 
 ```julia
 EuropeanOption(1.0, 100.0)                # 1y ATM call

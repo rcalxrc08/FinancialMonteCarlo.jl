@@ -1,6 +1,6 @@
 ```@raw html
 <div class="fc-page-head">
-<p class="fc-kicker"><span>Manual 12</span> Your own models and payoffs</p>
+<p class="fc-kicker"><span>Manual 13</span> Your own models and payoffs</p>
 ```
 
 # Extending the package
