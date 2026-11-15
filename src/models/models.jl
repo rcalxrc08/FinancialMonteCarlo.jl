@@ -16,7 +16,6 @@ include("bachelier.jl")
 include("heston.jl")
 include("heston_sobol.jl")
 include("log_normal_mixture.jl")
-include("shifted_log_normal_mixture.jl")
 
 ### Finite Activity Levy Processes
 include("fa_levy.jl")

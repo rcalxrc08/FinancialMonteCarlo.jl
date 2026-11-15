@@ -21,12 +21,11 @@ engines fit together; this page is the catalogue.
 <a href="#Variance-Gamma"><b>07</b>Variance Gamma</a>
 <a href="#Normal-Inverse-Gaussian"><b>08</b>Normal Inverse Gaussian</a>
 <a href="#LogNormal-mixture"><b>09</b>LogNormal mixture</a>
-<a href="#Shifted-LogNormal-mixture"><b>10</b>Shifted LogNormal mixture</a>
-<a href="#Shifted-models"><b>11</b>Shifted models</a>
-<a href="#Gaussian-copulas"><b>12</b>Gaussian copulas</a>
-<a href="#Engines"><b>13</b>Engines</a>
-<a href="#Any-SDE"><b>14</b>Any SDE</a>
-<a href="#Not-yet-here"><b>15</b>Not yet here</a>
+<a href="#Shifted-models"><b>10</b>Shifted models</a>
+<a href="#Gaussian-copulas"><b>11</b>Gaussian copulas</a>
+<a href="#Engines"><b>12</b>Engines</a>
+<a href="#Any-SDE"><b>13</b>Any SDE</a>
+<a href="#Not-yet-here"><b>14</b>Not yet here</a>
 </nav>
 </div>
 ```
@@ -49,7 +48,6 @@ antithetic, Sobol), with rate and dividend curves and in the batched modes (`Mul
 | [`VarianceGammaProcess`](@ref) | infinite activity Lévy | 3 | tested | no | yes |
 | [`NormalInverseGaussianProcess`](@ref) | infinite activity Lévy | 3 | tested | yes | yes |
 | [`LogNormalMixture`](@ref) | mixture | ``2n - 1`` | | yes | |
-| [`ShiftedLogNormalMixture`](@ref) | mixture | ``2n`` | | | |
 | [`ShiftedProcess`](@ref) | any of the above, shifted | model + 1 | tested | yes | |
 | [`GaussianCopulaNVariateProcess`](@ref) | multivariate | ``ρ`` + marginals | | | |
 | [`GaussianCopulaNVariateLogProcess`](@ref) | multivariate | ``ρ`` + marginals | | | |
@@ -86,7 +84,7 @@ volatility formulas are in FinancialToolbox (`blsprice`, `blsbin`, `blsimpv`).
 ## Bachelier
 
 ```math
-S_t = e^{\int_0^t (r_s - d_s)\,ds} \left(S_0 + σ W_tight)
+S_t = e^{\int_0^t (r_s - d_s)\,ds} \left(S_0 + σ W_t\right)
 ```
 
 The normal model: the price discounted with the carry, ``S_0 + σ W_t``, is an arithmetic Brownian motion,
@@ -103,7 +101,7 @@ BachelierProcess(20.0, Underlying(100.0, 0.01))
 
 ``S_T`` is normal with mean the forward ``F = S_0 e^{\int_0^T (r - d)}`` and standard deviation
 ``v = σ \sqrt{T} e^{\int_0^T (r - d)}``, so the European prices are those of the Bachelier formula,
-``e^{-\int_0^T r} \left[(F - K)\,Φ\!\left(rac{F - K}{v}ight) + v\,φ\!\left(rac{F - K}{v}ight)ight]`` for a call:
+``e^{-\int_0^T r} \left[(F - K)\,Φ\!\left(\frac{F - K}{v}\right) + v\,φ\!\left(\frac{F - K}{v}\right)\right]`` for a call:
 the normal volatility at maturity ``T`` is ``σ e^{\int_0^T (r - d)}``, ``σ`` itself when ``r = d`` (a future).
 Simulated exactly, as a [`BrownianMotion`](@ref) times the carry, so a European payoff needs one time step.
 Prices can be negative.
@@ -261,27 +259,6 @@ LogNormalMixture([0.2, 0.3], [0.4], Underlying(100.0, 0.01))   # weights 0.4 and
     European price is the weighted sum of Black-Scholes prices): see
     [#56](https://github.com/rcalxrc08/FinancialMonteCarlo.jl/issues/56).
 
-## Shifted LogNormal mixture
-
-```math
-S_t = \sum_{i=1}^n λ_i S^i_t + α S_0\, e^{\int_0^t (r_s - d_s)\,ds}, \qquad S^i_0 = (1 - α) S_0
-```
-
-with the ``S^i`` of the [LogNormal mixture](@ref).
-
-```julia
-ShiftedLogNormalMixture(η, λ, α, underlying)
-ShiftedLogNormalMixture([0.2, 0.3], [0.4], 0.1, Underlying(100.0, 0.01))
-```
-
-| Parameter | Meaning | Constraint |
-|:--|:--|:--|
-| `η`, `λ` | as in the [LogNormal mixture](@ref) | |
-| `α` | shift, as a fraction of the spot | |
-
-The deterministic shift grows at the risk neutral rate, so the forward is the one of the other
-models. It shares the caveat of the LogNormal mixture.
-
 ## Shifted models
 
 ```math
@@ -310,7 +287,8 @@ so every sampling, mode and automatic differentiation backend it supports works 
 Shifted Black-Scholes has a closed form: ``S_T - α F`` is a geometric Brownian motion started from
 ``(1 - α) S_0``, so a call of strike ``K`` is `blsprice((1 - α) * S0, K - α * F, r, T, σ, d)` when
 ``K > α F``. A shifted Bachelier is the Bachelier itself, and
-`ShiftedProcess(LogNormalMixture(η, λ, underlying), α)` the [Shifted LogNormal mixture](@ref).
+`ShiftedProcess(LogNormalMixture(η, λ, underlying), α)` the shifted lognormal mixture, which replaces the
+deprecated `ShiftedLogNormalMixture(η, λ, α, underlying)`.
 
 ## Gaussian copulas
 

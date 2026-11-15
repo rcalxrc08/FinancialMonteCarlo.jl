@@ -38,7 +38,7 @@ BaseProcess
     ├── ScalarMonteCarloProcess
     │   ├── ShiftedProcess
     │   └── LevyProcess
-    │       ├── ItoProcess             BlackScholesProcess, BachelierProcess, HestonProcess, LogNormalMixture, ShiftedLogNormalMixture
+    │       ├── ItoProcess             BlackScholesProcess, BachelierProcess, HestonProcess, LogNormalMixture
     │       ├── FiniteActivityProcess  KouProcess, MertonProcess
     │       └── InfiniteActivityProcess VarianceGammaProcess, NormalInverseGaussianProcess
     └── VectorialMonteCarloProcess
@@ -61,7 +61,6 @@ All single name processes take their parameters followed by the [`Underlying`](@
 | Variance Gamma | `VarianceGammaProcess(σ, θ, κ, underlying)` | volatility, drift and variance rate of the gamma subordinator |
 | Normal Inverse Gaussian | `NormalInverseGaussianProcess(σ, θ, κ, underlying)` | volatility, drift and variance rate of the inverse gaussian subordinator |
 | LogNormal mixture | `LogNormalMixture(η, λ, underlying)` | vector of volatilities, vector of the first `length(η) - 1` weights |
-| Shifted LogNormal mixture | `ShiftedLogNormalMixture(η, λ, α, underlying)` | as above, plus a shift |
 | Shifted (any model) | `ShiftedProcess(model, α)` | the parameters of `model`, plus a shift |
 
 Constructors check the parameters (positive volatilities and intensities, valid probabilities

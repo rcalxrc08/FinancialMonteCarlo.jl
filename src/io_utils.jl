@@ -70,15 +70,6 @@ function set_parameters!(model::LogNormalMixture, param::AbstractVector{num}) wh
     return Accessors.setproperties(model, (η = eta, λ = lam))
 end
 
-function set_parameters!(model::ShiftedLogNormalMixture, param::AbstractVector{num}) where {num <: Number}
-    N1 = div(length(param), 2)
-    ChainRulesCore.@ignore_derivatives @assert !(N1 * 2 != length(param) || N1 < 2) "Check number of parameters of the model"
-    eta = param[1:N1]
-    lam = param[(N1+1):(2*N1-1)]
-    alfa = param[end]
-    return Accessors.setproperties(model, (η = eta, λ = lam, α = alfa))
-end
-
 # The parameters of the model, then the shift (a method of its own: through the generic one, get_parameters would call
 # itself on the inner model, and inference gives up on the recursion)
 get_parameters(model::ShiftedProcess) = vcat(get_parameters(model.model), model.α)

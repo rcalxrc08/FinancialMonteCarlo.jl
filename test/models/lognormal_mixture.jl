@@ -8,7 +8,7 @@ include("../testutils.jl")
 
     @testset "$name" for (name, model, build) in [
         ("LogNormalMixture", LogNormalMixture(eta, lam, und), (η, λ) -> LogNormalMixture(η, λ, und)),
-        ("ShiftedLogNormalMixture", ShiftedLogNormalMixture(eta, lam, 0.0, und), (η, λ) -> ShiftedLogNormalMixture(η, λ, 0.0, und)),
+        ("ShiftedProcess", ShiftedProcess(LogNormalMixture(eta, lam, und), 0.0), (η, λ) -> ShiftedProcess(LogNormalMixture(η, λ, und), 0.0)),
     ]
         @testset "parameters" begin
             params = FinancialMonteCarlo.get_parameters(model)

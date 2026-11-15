@@ -1,0 +1,58 @@
+using IntelVectorMath,Statistics,Random,BenchmarkTools
+
+
+function normcdf!(x)
+	x.*=2;
+	IVM.erfcinv!(x)
+	x.*=-sqrt(2);
+end
+
+function new_randn!(x)
+	rand!(x);
+	normcdf!(x);
+	return ;
+end
+
+function simulate_!(X_cu,σ,μ,S0,Nsim,Nstep,T)
+	@assert T>0
+	dt=T/Nstep
+	mean_bm=μ*dt
+	stddev_bm=σ*sqrt(dt)
+	isDualZero=mean_bm*stddev_bm*zero(Int8);
+	@views fill!(X_cu[:,1],isDualZero);
+	Z=Array{Float64}(undef,Nsim);
+	for i in 1:Nstep
+		new_randn!(Z);
+		@views @inbounds X_cu[:,i+1].=X_cu[:,i].+(mean_bm.+stddev_bm*Z);
+	end
+	IVM.exp!(X_cu);
+	X_cu .*= S0;
+	return;
+end
+
+
+function payoff_(X,r,T,K)
+	S_end=X[:,end];
+	df_=exp(-r*T);
+	return df_.*max.(S_end.-K,0)	
+end
+
+
+function pricer_cu(σ,r,S0,Nsim,Nstep,T,K)
+	num_zero=σ+r+S0+T;
+	X=Matrix{typeof(num_zero)}(undef,Nsim,Nstep+1);
+	simulate_!(X,σ,r-σ^2/2,S0,Nsim,Nstep,T)
+	Payoff_=payoff_(X,r,T,K)
+	return mean(Payoff_);
+end
+
+function simulate_cu(σ,r,S0,Nsim,Nstep,T,K)
+	num_zero=σ+r+S0+T;
+	X=Matrix{typeof(num_zero)}(undef,Nsim,Nstep+1);
+	simulate_!(X,σ,r-σ^2/2,S0,Nsim,Nstep,T)
+	return X;
+end
+
+
+@btime pricer_cu(0.2f0,0.01f0,100.0f0,1000,30,2.0f0,100.0f0)
+@btime pricer_cu(0.2,0.01,100.0,1000,30,2.0,100.0)

@@ -77,7 +77,6 @@ MertonProcess
 VarianceGammaProcess
 NormalInverseGaussianProcess
 LogNormalMixture
-ShiftedLogNormalMixture
 ShiftedProcess
 GaussianCopulaNVariateProcess
 GaussianCopulaNVariateLogProcess

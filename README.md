@@ -15,7 +15,6 @@ It currently contains the following capabilities:
     - Variance Gamma
     - Heston
     - LogNormal Mixture
-    - Shifted LogNormal Mixture
     - Any of the above shifted (`ShiftedProcess`)
 - Support for Multivariate processes through Gaussian Copula
 - Support for non costant zero rates and dividends
