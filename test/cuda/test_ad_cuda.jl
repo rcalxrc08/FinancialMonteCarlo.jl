@@ -25,9 +25,15 @@ end)
 
 # Backends known not to work on the GPU (CUDA 6.4.1, Enzyme 0.13.219, Mooncake 0.5.70, Julia 1.12.7), for every model
 # (#68; ForwardDiff works):
-# - EnzymeForward: CUDA's Enzyme extension calls `EnzymeRules.batch_width`, missing from this EnzymeCore (fixed in CUDA
-#   6.5, which needs an LLVM that Enzyme does not allow yet); see also EnzymeAD/Enzyme.jl#4048.
-# - EnzymeReverse: no method matching `MixedDuplicated(::Broadcasted{CuArrayStyle...})`, a broadcast on the device.
+# - EnzymeForward: CUDA's Enzyme extension calls `EnzymeRules.batch_width`, missing from every EnzymeCore, in the
+#   batched rules that `Enzyme.gradient(Forward)` reaches (fixed in CUDA 6.4.2, which needs LLVM.jl 10: Enzyme does not
+#   allow it yet, EnzymeAD/Enzyme.jl#3741); see also EnzymeAD/Enzyme.jl#4048. One direction at a time (`autodiff` with
+#   `Duplicated`) runs, but is silently wrong, primal included: a host-to-device `copyto!` (`CuArray(::Array)`) writes
+#   the zero tangent into the primal buffer (`convert(CuPtr, ::Managed)` loses the shadow, fixed in CUDA 6.5,
+#   JuliaGPU/CUDA.jl#3332). Do not use Enzyme forward mode on the GPU before CUDA 6.5.
+# - EnzymeReverse: no method matching `MixedDuplicated(::Broadcasted{CuArrayStyle...})`: any Float64 scalar in a
+#   broadcast over a `Duplicated` CuArray (`y .= s .* x`), EnzymeAD/Enzyme.jl#3451 (fix in progress, #3704), with or
+#   without runtime activity.
 # - MooncakeReverse: a typeassert on the `IdDict` of a CUDA call (`CoDual{IdDict, NoFData}` instead of `IdDict` fdata).
 # - MooncakeForward: building the forward rule crashes the process (illegal instruction in `get_task_tls`), so it is
 #   skipped, not run.
