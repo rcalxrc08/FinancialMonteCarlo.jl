@@ -21,11 +21,11 @@ struct KouProcess{num <: Number, num1 <: Number, num2 <: Number, num3 <: Number,
     λ₋::num4
     underlying::abstrUnderlying
     function KouProcess(σ::num, λ::num1, p::num2, λ₊::num3, λ₋::num4, underlying::abstrUnderlying) where {num <: Number, num1 <: Number, num2 <: Number, num3 <: Number, num4 <: Number, abstrUnderlying <: AbstractUnderlying}
-        ChainRulesCore.@ignore_derivatives @assert σ > 0 "volatility must be positive"
-        ChainRulesCore.@ignore_derivatives @assert λ > 0 "λ, i.e. jump intensity, must be positive"
-        ChainRulesCore.@ignore_derivatives @assert 0 <= p <= 1 "p must be a probability"
-        ChainRulesCore.@ignore_derivatives @assert λ₊ > 1 "λ₊ must be greater than 1 (finite expected jump)"
-        ChainRulesCore.@ignore_derivatives @assert λ₋ > 0 "λ₋ must be positive"
+        ChainRulesCore.@ignore_derivatives check_domain(σ > 0, σ, "volatility must be positive")
+        ChainRulesCore.@ignore_derivatives check_domain(λ > 0, λ, "λ, i.e. jump intensity, must be positive")
+        ChainRulesCore.@ignore_derivatives check_domain(0 <= p <= 1, p, "p must be a probability")
+        ChainRulesCore.@ignore_derivatives check_domain(λ₊ > 1, λ₊, "λ₊ must be greater than 1 (finite expected jump)")
+        ChainRulesCore.@ignore_derivatives check_domain(λ₋ > 0, λ₋, "λ₋ must be positive")
         zero_typed = promote_type(num, num1, num2, num3, num4)
         return new{num, num1, num2, num3, num4, abstrUnderlying, zero_typed}(σ, λ, p, λ₊, λ₋, underlying)
     end

@@ -23,7 +23,7 @@ random_state(::AbstractMode, seed::Integer, rng::Random.AbstractRNG) = SeededRNG
 random_state(::AbstractMode, ::AbstractVector{<:Integer}, ::Random.AbstractRNG) = throw(ArgumentError("one seed per batch needs a mode with batches"))
 random_state(mode::AbstractBatchedMode, seed::Integer, rng::Random.AbstractRNG) = random_state(mode, seed .+ collect(1:nbatches(mode)), rng)
 function random_state(mode::AbstractBatchedMode, seeds::AbstractVector{<:Integer}, rng::Random.AbstractRNG)
-    ChainRulesCore.@ignore_derivatives @assert length(seeds) == nbatches(mode) "There must be one seed per batch"
+    ChainRulesCore.@ignore_derivatives check_dimension(length(seeds) == nbatches(mode), "There must be one seed per batch")
     return [batch_state(rng, seed) for seed in seeds]
 end
 
@@ -76,8 +76,8 @@ end
 # All the checks of a configuration, so that an unsupported combination fails when it is built.
 function check_configuration(Nsim::Integer, Nstep::Integer, sampling::AbstractSampling, mode::AbstractMode, reseed::Bool)
     ChainRulesCore.@ignore_derivatives begin
-        @assert Nsim > 0 "Number of Simulations must be positive"
-        @assert Nstep > 0 "Number of Steps must be positive"
+        check_domain(Nsim > 0, Nsim, "Number of Simulations must be positive")
+        check_domain(Nstep > 0, Nstep, "Number of Steps must be positive")
         check_sampling(sampling, Nsim)
         check_sampling_mode(sampling, mode)
         check_reseed(mode, reseed)
@@ -87,7 +87,7 @@ function check_configuration(Nsim::Integer, Nstep::Integer, sampling::AbstractSa
 end
 
 check_sampling(::AbstractSampling, ::Integer) = nothing
-check_sampling(::AntitheticMC, Nsim::Integer) = @assert iseven(Nsim) "Antithetic support only even number of simulations"
+check_sampling(::AntitheticMC, Nsim::Integer) = check_argument(iseven(Nsim), "Antithetic support only even number of simulations")
 
 check_sampling_mode(::AbstractSampling, ::AbstractMode) = nothing
 # The points of a Sobol sequence depend only on Nsim: the batches would all be the same

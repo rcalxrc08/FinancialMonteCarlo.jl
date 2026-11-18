@@ -62,7 +62,7 @@ abstract type AbstractMultiProcess <: AbstractBatchedMode end
 nbatches(mode::AbstractBatchedMode) = mode.nbatches
 
 function check_nbatches(nbatches::Integer)
-    ChainRulesCore.@ignore_derivatives @assert nbatches > 0 "Number of batches must be positive"
+    ChainRulesCore.@ignore_derivatives check_domain(nbatches > 0, nbatches, "Number of batches must be positive")
 end
 
 # Number of batches of MultiProcess by default: the workers, in the Distributed extension.

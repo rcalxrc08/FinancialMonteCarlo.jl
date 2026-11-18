@@ -27,8 +27,8 @@ const NIG_REF = (fwd = 99.16322764791194, eu = 8.578451710277706, barrier = 7.56
     end
 
     @testset "parameter validation" begin
-        @test_throws AssertionError NormalInverseGaussianProcess(-sigma, theta1, k1, Underlying(S0, d))
-        @test_throws AssertionError NormalInverseGaussianProcess(sigma, theta1, -k1, Underlying(S0, d))
-        @test_throws AssertionError NormalInverseGaussianProcess(sigma, 10000.0, k1, Underlying(S0, d))
+        @test_throws DomainError NormalInverseGaussianProcess(-sigma, theta1, k1, Underlying(S0, d))
+        @test_throws DomainError NormalInverseGaussianProcess(sigma, theta1, -k1, Underlying(S0, d))
+        @test_throws DomainError NormalInverseGaussianProcess(sigma, 10000.0, k1, Underlying(S0, d))
     end
 end

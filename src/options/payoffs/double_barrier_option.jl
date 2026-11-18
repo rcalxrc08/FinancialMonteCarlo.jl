@@ -18,10 +18,10 @@ struct DoubleBarrierOption{num1 <: Number, num2 <: Number, num3 <: Number, num4 
     U::num4
     isCall::Bool
     function DoubleBarrierOption(T::num1, K::num2, D::num3, U::num4, isCall::Bool = true) where {num1 <: Number, num2 <: Number, num3 <: Number, num4 <: Number}
-        ChainRulesCore.@ignore_derivatives @assert T > 0 "Time to Maturity must be positive"
-        ChainRulesCore.@ignore_derivatives @assert K > 0 "Strike Price must be positive"
-        ChainRulesCore.@ignore_derivatives @assert D > 0 "Low Barrier must be positive"
-        ChainRulesCore.@ignore_derivatives @assert U > D "High Barrier must be positive and greater then Low barrier"
+        ChainRulesCore.@ignore_derivatives check_domain(T > 0, T, "Time to Maturity must be positive")
+        ChainRulesCore.@ignore_derivatives check_domain(K > 0, K, "Strike Price must be positive")
+        ChainRulesCore.@ignore_derivatives check_domain(D > 0, D, "Low Barrier must be positive")
+        ChainRulesCore.@ignore_derivatives check_domain(U > D, U, "High Barrier must be positive and greater then Low barrier")
         zero_typed = ChainRulesCore.@ignore_derivatives zero(num1) + zero(num2) + zero(num3) + zero(num4)
         return new{num1, num2, num3, num4, typeof(zero_typed)}(T, K, D, U, isCall)
     end

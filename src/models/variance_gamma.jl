@@ -19,9 +19,9 @@ struct VarianceGammaProcess{num <: Number, num1 <: Number, num2 <: Number, abstr
     κ::num2
     underlying::abstrUnderlying
     function VarianceGammaProcess(σ::num, θ::num1, κ::num2, underlying::abstrUnderlying) where {num <: Number, num1 <: Number, num2 <: Number, abstrUnderlying <: AbstractUnderlying}
-        ChainRulesCore.@ignore_derivatives @assert σ > 0 "volatility must be positive"
-        ChainRulesCore.@ignore_derivatives @assert κ > 0 "κappa must be positive"
-        ChainRulesCore.@ignore_derivatives @assert 1 - σ * σ * κ / 2 - θ * κ >= 0 "Parameters with unfeasible values"
+        ChainRulesCore.@ignore_derivatives check_domain(σ > 0, σ, "volatility must be positive")
+        ChainRulesCore.@ignore_derivatives check_domain(κ > 0, κ, "κappa must be positive")
+        ChainRulesCore.@ignore_derivatives check_domain(1 - σ * σ * κ / 2 - θ * κ >= 0, (σ, θ, κ), "Parameters with unfeasible values")
         zero_typed = ChainRulesCore.@ignore_derivatives zero(num) + zero(num1) + zero(num2)
         return new{num, num1, num2, abstrUnderlying, typeof(zero_typed)}(σ, θ, κ, underlying)
     end

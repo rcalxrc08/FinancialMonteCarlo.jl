@@ -40,8 +40,8 @@ each `T[i]` equals `r[i] * T[i]`: use it to turn zero rates (or dividend yields)
 `T` into a [`FinancialMonteCarlo.Curve`](@ref). With a scalar `T` the maturities are `T/N, 2T/N, ..., T`.
 """
 function ImpliedCurve(r_::AbstractVector{num1}, T::AbstractVector{num2}) where {num1 <: Number, num2 <: Number}
-    ChainRulesCore.@ignore_derivatives @assert length(r_) == length(T)
-    ChainRulesCore.@ignore_derivatives @assert length(r_) >= 1
+    ChainRulesCore.@ignore_derivatives check_dimension(length(r_) == length(T), "One rate per maturity")
+    ChainRulesCore.@ignore_derivatives check_argument(length(r_) >= 1, "At least one rate")
     # the integral of the piecewise linear curve up to T_i is r_i T_i: on each interval the mean of the curve, the mean of
     # its two end values, is the increment of the integral over the length of the interval
     times = vcat(zero(num2), T)
@@ -94,7 +94,7 @@ function integral(curve::Curve, x::Number)
     T = curve.times
     r = curve.values
     iszero(x) && return zero(r[1] * x)
-    ChainRulesCore.@ignore_derivatives @assert x >= 0
+    ChainRulesCore.@ignore_derivatives check_domain(x >= 0, x, "The curve is integrated up to a nonnegative time")
     x <= T[1] && return r[1] * x
     idx_ = searchsortedlast(T, x; lt = <=)    # the last node before x
     out = r[1] * T[1] + sum((r[i] + r[i+1]) / 2 * (T[i+1] - T[i]) for i = 1:(idx_-1); init = zero(r[1] * x))

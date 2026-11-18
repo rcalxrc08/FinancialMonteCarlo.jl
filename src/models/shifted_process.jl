@@ -9,7 +9,7 @@ S_t = X_t + α S_0 e^{\\int_0^t (r_s - d_s)\\,ds}, \\qquad X_0 = (1 - α) S_0,
 where ``X`` follows `model`. The forward is the one of `model`; with ``0 ≤ α < 1`` the price stays
 above ``α`` times the forward, with ``α < 0`` it can go below zero. `ShiftedProcess(BlackScholesProcess(σ, underlying), α)`
 is the displaced diffusion, and `ShiftedProcess(LogNormalMixture(η, λ, underlying), α)` the shifted lognormal
-mixture (the deprecated `ShiftedLogNormalMixture(η, λ, α, underlying)` builds it).
+mixture (it replaces `ShiftedLogNormalMixture`, removed).
 
 The spot and the dividends are those of the underlying of `model`, held by the shifted process (a bump of the spot,
 as in [`delta`](@ref), moves the shift too); the paths of `model` are simulated by its own `simulate!`, so every
@@ -32,7 +32,7 @@ struct ShiftedProcess{M <: ScalarMonteCarloProcess, num <: Number, abstrUnderlyi
     α::num
     underlying::abstrUnderlying
     function ShiftedProcess(model::M, α::num, underlying::abstrUnderlying) where {numM <: Number, M <: ScalarMonteCarloProcess{numM}, num <: Number, abstrUnderlying <: AbstractUnderlying}
-        ChainRulesCore.@ignore_derivatives @assert α < 1 "the shift must be smaller than the spot price"
+        ChainRulesCore.@ignore_derivatives check_domain(α < 1, α, "the shift must be smaller than the spot price")
         zero_typed = ChainRulesCore.@ignore_derivatives zero(numM) + zero(num)
         return new{M, num, abstrUnderlying, typeof(zero_typed)}(model, α, underlying)
     end
@@ -42,7 +42,7 @@ ShiftedProcess(model::ScalarMonteCarloProcess, α::Number) = ShiftedProcess(mode
 export ShiftedProcess;
 
 function simulate!(X, mcProcess::ShiftedProcess, rfCurve::AbstractZeroRateCurve, mcBaseData::AbstractMonteCarloConfiguration, T::Number)
-    ChainRulesCore.@ignore_derivatives @assert T > 0
+    ChainRulesCore.@ignore_derivatives check_domain(T > 0, T, "Time to Maturity must be positive")
     S0 = mcProcess.underlying.S0
     d = dividend(mcProcess)
     α = mcProcess.α

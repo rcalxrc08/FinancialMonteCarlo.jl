@@ -75,8 +75,8 @@ end
         @test_throws ArgumentError pricer(model, rfCurve, process(3), eu)
         @test [state.seed for state in MonteCarloConfiguration(10, 1; mode = FMC.MultiProcess(2), seed = 5).rng] == [6, 7]
         @test FMC.MultiProcess().nbatches == nworkers()
-        @test_throws AssertionError MonteCarloConfiguration(10, 1; mode = FMC.MultiProcess(2), seed = [1])
-        @test_throws AssertionError FMC.MultiProcess(0)
+        @test_throws DimensionMismatch MonteCarloConfiguration(10, 1; mode = FMC.MultiProcess(2), seed = [1])
+        @test_throws DomainError FMC.MultiProcess(0)
     end
 
     @testset "control variates" begin

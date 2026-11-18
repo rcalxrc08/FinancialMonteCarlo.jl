@@ -14,7 +14,7 @@ using ForwardDiff
         dual_params = ForwardDiff.Dual{Nothing}.(params, 1.0)
         dual_model = @inferred FinancialMonteCarlo.set_parameters!(model, dual_params)
         @test (@inferred FinancialMonteCarlo.get_parameters(dual_model)) == dual_params
-        @test_throws AssertionError FinancialMonteCarlo.set_parameters!(model, [params; params])
+        @test_throws DimensionMismatch FinancialMonteCarlo.set_parameters!(model, [params; params])
     end
 end
 

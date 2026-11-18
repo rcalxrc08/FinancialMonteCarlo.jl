@@ -12,7 +12,7 @@ struct AsianFloatingStrikeOption{num <: Number} <: AsianPayoff{num}
     T::num
     isCall::Bool
     function AsianFloatingStrikeOption(T::num, isCall::Bool = true) where {num <: Number}
-        ChainRulesCore.@ignore_derivatives @assert T > 0 "Time to Maturity must be positive"
+        ChainRulesCore.@ignore_derivatives check_domain(T > 0, T, "Time to Maturity must be positive")
         return new{num}(T, isCall)
     end
 end

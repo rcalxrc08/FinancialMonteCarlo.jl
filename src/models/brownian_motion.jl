@@ -13,7 +13,7 @@ struct BrownianMotion{num <: Number, num1 <: Number, numtype <: Number} <: Abstr
     σ::num
     μ::num1
     function BrownianMotion(σ::num, μ::num1) where {num <: Number, num1 <: Number}
-        ChainRulesCore.@ignore_derivatives @assert σ > 0 "Volatility must be positive"
+        ChainRulesCore.@ignore_derivatives check_domain(σ > 0, σ, "Volatility must be positive")
         zero_typed = ChainRulesCore.@ignore_derivatives zero(num) + zero(num1)
         return new{num, num1, typeof(zero_typed)}(σ, μ)
     end

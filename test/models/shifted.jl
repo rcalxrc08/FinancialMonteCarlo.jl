@@ -11,8 +11,8 @@ using FinancialToolbox: blsprice
         @test FinancialMonteCarlo.get_parameters(model) == [sigma, α]
         new_model = FinancialMonteCarlo.set_parameters!(model, [0.3, 0.1])
         @test (new_model.model.σ, new_model.α) == (0.3, 0.1)
-        @test_throws AssertionError FinancialMonteCarlo.set_parameters!(model, [0.3])
-        @test_throws AssertionError ShiftedProcess(BlackScholesProcess(sigma, und), 1.0)
+        @test_throws DimensionMismatch FinancialMonteCarlo.set_parameters!(model, [0.3])
+        @test_throws DomainError ShiftedProcess(BlackScholesProcess(sigma, und), 1.0)
         @test occursin("ShiftedProcess", capture_stdout(() -> display(model)))
     end
 

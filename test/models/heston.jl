@@ -54,9 +54,9 @@ const HESTON_REF = (fwd = 98.8790717426047, eu = 7.9813557592924, barrier = 7.00
     end
 
     @testset "parameter validation" begin
-        @test_throws AssertionError heston(-sigma, sigma_zero)
-        @test_throws AssertionError heston(sigma, -sigma_zero)
-        @test_throws AssertionError HestonProcess(sigma, sigma_zero, lambda, kappa, -5.0, theta, Underlying(S0, d))
-        @test_throws AssertionError HestonProcess(sigma, sigma_zero, 1e-16, 1e-16, rho_, theta, Underlying(S0, d))
+        @test_throws DomainError heston(-sigma, sigma_zero)
+        @test_throws DomainError heston(sigma, -sigma_zero)
+        @test_throws DomainError HestonProcess(sigma, sigma_zero, lambda, kappa, -5.0, theta, Underlying(S0, d))
+        @test_throws DomainError HestonProcess(sigma, sigma_zero, 1e-16, 1e-16, rho_, theta, Underlying(S0, d))
     end
 end

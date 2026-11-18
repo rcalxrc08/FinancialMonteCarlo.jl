@@ -51,7 +51,7 @@ macro option_type(name, family, fields...)
     nums = [Symbol(:num, i) for i in eachindex(fields)]
     typed_fields = [:($field::$num) for (field, num) in zip(fields, nums)]
     bounds = [:($num <: Number) for num in nums]
-    checks = [:(ChainRulesCore.@ignore_derivatives @assert $field > 0 $(POSITIVE_FIELD_MESSAGES[field])) for field in fields]
+    checks = [:(ChainRulesCore.@ignore_derivatives check_domain($field > 0, $field, $(POSITIVE_FIELD_MESSAGES[field]))) for field in fields]
     zeros_ = [:(zero($num)) for num in nums]
     return esc(quote
         Base.@__doc__ struct $name{$(bounds...), numtype <: Number} <: $family{numtype}
@@ -94,6 +94,6 @@ end
 
 function payoff(S::Array{Array{num, 2}, 1}, optionData::Union{SingleNamePayoff, AbstractSmile}, rfCurve::abstractZeroRateCurve, mcBaseData::AbstractMonteCarloConfiguration, T1::num2 = optionData.T) where {abstractZeroRateCurve <: AbstractZeroRateCurve, num <: Number, num2 <: Number}
     #switch to only in julia 1.4
-    ChainRulesCore.@ignore_derivatives @assert length(S) == 1
+    ChainRulesCore.@ignore_derivatives check_dimension(length(S) == 1, "One matrix of paths for a single-name payoff")
     return payoff(S[1], optionData, rfCurve, mcBaseData, T1)
 end

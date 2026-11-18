@@ -49,8 +49,8 @@ const MERTON_REF = (fwd = 99.1188767166039, eu = 9.084327245917533, barrier = 7.
     end
 
     @testset "parameter validation" begin
-        @test_throws AssertionError MertonProcess(-sigma, lam, mu1, sigma1, Underlying(S0, d))
-        @test_throws AssertionError MertonProcess(sigma, lam, mu1, -sigma1, Underlying(S0, d))
-        @test_throws AssertionError MertonProcess(sigma, -lam, mu1, sigma1, Underlying(S0, d))
+        @test_throws DomainError MertonProcess(-sigma, lam, mu1, sigma1, Underlying(S0, d))
+        @test_throws DomainError MertonProcess(sigma, lam, mu1, -sigma1, Underlying(S0, d))
+        @test_throws DomainError MertonProcess(sigma, -lam, mu1, sigma1, Underlying(S0, d))
     end
 end

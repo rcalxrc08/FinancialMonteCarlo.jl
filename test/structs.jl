@@ -1,6 +1,10 @@
 include("testutils.jl")
 
 # A payoff with no `payoff` method, to check the generic fallback errors out.
+# An adaptor that negates the strikes, to check Adapt.adapt_structure of a smile does not validate it again (#73).
+struct NegatedStrikes end
+FinancialMonteCarlo.Adapt.adapt_storage(::NegatedStrikes, x::AbstractVector{Float64}) = -x
+
 struct UnpricedPayoff <: FinancialMonteCarlo.AbstractPayoff{Float64}
     T::Float64
 end
@@ -13,9 +17,9 @@ end
         FMC = FinancialMonteCarlo
         @test MonteCarloConfiguration(Nsim, Nstep; seed = 1).rng.seed == 1
         @test MonteCarloConfiguration(Nsim, Nstep).mode isa FMC.SerialMode
-        @test_throws AssertionError MonteCarloConfiguration(-Nsim, Nstep)
-        @test_throws AssertionError MonteCarloConfiguration(Nsim, -Nstep)
-        @test_throws AssertionError MonteCarloConfiguration(Nsim + 1, Nstep; sampling = FMC.AntitheticMC())
+        @test_throws DomainError MonteCarloConfiguration(-Nsim, Nstep)
+        @test_throws DomainError MonteCarloConfiguration(Nsim, -Nstep)
+        @test_throws ArgumentError MonteCarloConfiguration(Nsim + 1, Nstep; sampling = FMC.AntitheticMC())
         @test_throws ArgumentError MonteCarloConfiguration(Nsim, Nstep; sampling = FMC.SobolMC(), mode = FMC.CudaMode())
         # the mode is part of the method
         mc_mt = MonteCarloConfiguration(Nsim, Nstep; seed = 3, mode = FMC.MultiThreading(2))
@@ -34,8 +38,8 @@ end
     @testset "Underlying and curves" begin
         rf_curve = ZeroRate([0.00, 0.02], T)
         @test FinancialMonteCarlo.Curve([0.0, 0.1], [0.0, 0.1]) isa FinancialMonteCarlo.CurveType
-        @test_throws AssertionError Underlying(-S0)
-        @test_throws AssertionError Underlying(-S0, rf_curve.r)
+        @test_throws DomainError Underlying(-S0)
+        @test_throws DomainError Underlying(-S0, rf_curve.r)
 
         # trapezoidal inside the nodes, flat outside them
         c = ZeroRate([0.01, 0.02, 0.05], 1.0).r # nodes at 0, 0.5, 1
@@ -79,37 +83,37 @@ end
     end
 
     @testset "payoffs: negative maturity" begin
-        @test_throws AssertionError Forward(Tneg)
-        @test_throws AssertionError EuropeanOption(Tneg, K)
-        @test_throws AssertionError EuropeanOptionND(Tneg, K)
-        @test_throws AssertionError AmericanOption(Tneg, K)
-        @test_throws AssertionError BermudanOption([Tneg], K)
-        @test_throws AssertionError BinaryAmericanOption(Tneg, K)
-        @test_throws AssertionError BinaryEuropeanOption(Tneg, K)
-        @test_throws AssertionError BarrierOptionDownOut(Tneg, K, D)
-        @test_throws AssertionError BarrierOptionUpOut(Tneg, K, D)
-        @test_throws AssertionError BarrierOptionUpIn(Tneg, K, D)
-        @test_throws AssertionError BarrierOptionDownIn(Tneg, K, D)
-        @test_throws AssertionError AsianFloatingStrikeOption(Tneg)
-        @test_throws AssertionError AsianFixedStrikeOption(Tneg, K)
-        @test_throws AssertionError DoubleBarrierOption(Tneg, K, K * 10, D)
+        @test_throws DomainError Forward(Tneg)
+        @test_throws DomainError EuropeanOption(Tneg, K)
+        @test_throws DomainError EuropeanOptionND(Tneg, K)
+        @test_throws DomainError AmericanOption(Tneg, K)
+        @test_throws DomainError BermudanOption([Tneg], K)
+        @test_throws DomainError BinaryAmericanOption(Tneg, K)
+        @test_throws DomainError BinaryEuropeanOption(Tneg, K)
+        @test_throws DomainError BarrierOptionDownOut(Tneg, K, D)
+        @test_throws DomainError BarrierOptionUpOut(Tneg, K, D)
+        @test_throws DomainError BarrierOptionUpIn(Tneg, K, D)
+        @test_throws DomainError BarrierOptionDownIn(Tneg, K, D)
+        @test_throws DomainError AsianFloatingStrikeOption(Tneg)
+        @test_throws DomainError AsianFixedStrikeOption(Tneg, K)
+        @test_throws DomainError DoubleBarrierOption(Tneg, K, K * 10, D)
     end
 
     @testset "payoffs: negative strike or barrier" begin
-        @test_throws AssertionError EuropeanOption(T, Kneg)
-        @test_throws AssertionError EuropeanOptionND(T, Kneg)
-        @test_throws AssertionError AmericanOption(T, Kneg)
-        @test_throws AssertionError BermudanOption([T], Kneg)
-        @test_throws AssertionError BinaryEuropeanOption(T, Kneg)
-        @test_throws AssertionError BinaryAmericanOption(T, Kneg)
-        @test_throws AssertionError AsianFixedStrikeOption(T, Kneg)
+        @test_throws DomainError EuropeanOption(T, Kneg)
+        @test_throws DomainError EuropeanOptionND(T, Kneg)
+        @test_throws DomainError AmericanOption(T, Kneg)
+        @test_throws DomainError BermudanOption([T], Kneg)
+        @test_throws DomainError BinaryEuropeanOption(T, Kneg)
+        @test_throws DomainError BinaryAmericanOption(T, Kneg)
+        @test_throws DomainError AsianFixedStrikeOption(T, Kneg)
         for Barrier in (BarrierOptionDownOut, BarrierOptionDownIn, BarrierOptionUpIn, BarrierOptionUpOut)
-            @test_throws AssertionError Barrier(T, Kneg, D)
-            @test_throws AssertionError Barrier(T, K, Kneg)
+            @test_throws DomainError Barrier(T, Kneg, D)
+            @test_throws DomainError Barrier(T, K, Kneg)
         end
-        @test_throws AssertionError DoubleBarrierOption(T, K, K, Kneg)
-        @test_throws AssertionError DoubleBarrierOption(T, Kneg, K, K)
-        @test_throws AssertionError DoubleBarrierOption(T, K, Kneg, K)
+        @test_throws DomainError DoubleBarrierOption(T, K, K, Kneg)
+        @test_throws DomainError DoubleBarrierOption(T, Kneg, K, K)
+        @test_throws DomainError DoubleBarrierOption(T, K, Kneg, K)
     end
 
     @testset "payoffs: misc" begin
@@ -134,6 +138,10 @@ end
             S = simulate(BlackScholesProcess(sigma, Underlying(S0, d)), rfCurve, mc_small, T)
             @test payoff(S, smile_range, rfCurve, mc_small) == payoff(S, Smile(T, K_vec, isCall_vec), rfCurve, mc_small)
             @test_throws MethodError Smile(T, reshape(K_vec, 1, :), reshape(isCall_vec, 1, :))
+            # to_mode moves the arrays without checking the smile again (#73): an adaptor that negates the strikes passes
+            smile = Smile(T, K_vec, isCall_vec)
+            @test FinancialMonteCarlo.to_mode(smile, FinancialMonteCarlo.SerialMode()).K == K_vec
+            @test FinancialMonteCarlo.Adapt.adapt(NegatedStrikes(), smile).K == -K_vec
         end
     end
 

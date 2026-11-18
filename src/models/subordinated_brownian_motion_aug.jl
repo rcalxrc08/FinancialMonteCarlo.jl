@@ -15,7 +15,7 @@ struct SubordinatedBrownianMotionVec{num <: Number, num1 <: Number, num4 <: Numb
     θ::num2
     subordinator_::Distr
     function SubordinatedBrownianMotionVec(sigma::num, drift::CurveType{num1, num4}, θ::num2, dist::Distr) where {num <: Number, num1 <: Number, num2 <: Number, num4 <: Number, Distr <: Distribution{Univariate, Continuous}}
-        ChainRulesCore.@ignore_derivatives @assert sigma > 0 "volatility must be positive"
+        ChainRulesCore.@ignore_derivatives check_domain(sigma > 0, sigma, "volatility must be positive")
         zero_typed = ChainRulesCore.@ignore_derivatives zero(num) + zero(num1) + zero(num4) + zero(num2)
         return new{num, num1, num4, num2, Distr, typeof(zero_typed)}(sigma, drift, θ, dist)
     end
@@ -29,7 +29,7 @@ const AnySubordinatedBrownianMotion = Union{SubordinatedBrownianMotion, Subordin
 
 # The drifts, the type of the subordinator increments and the zero carrying the derivatives of the inputs
 function subordinated_setup(mcProcess::AnySubordinatedBrownianMotion, mcBaseData::MonteCarloConfiguration, T::Number)
-    ChainRulesCore.@ignore_derivatives @assert T > 0
+    ChainRulesCore.@ignore_derivatives check_domain(T > 0, T, "Time to Maturity must be positive")
     drifts = step_drifts(mcProcess.drift, T / mcBaseData.Nstep, mcBaseData.Nstep)
     type_sub = typeof(quantile(mcProcess.subordinator_, 1 // 2))
     return drifts, type_sub, mcProcess.sigma * zero(type_sub) * 0 * drift_of_step(drifts, 1)

@@ -42,8 +42,8 @@ const VG_REF = (fwd = 99.09861035102614, eu = 8.368903690692187, barrier = 7.469
     end
 
     @testset "parameter validation" begin
-        @test_throws AssertionError VarianceGammaProcess(-sigma, theta1, k1, Underlying(S0, d))
-        @test_throws AssertionError VarianceGammaProcess(sigma, theta1, -k1, Underlying(S0, d))
-        @test_throws AssertionError VarianceGammaProcess(sigma, 10000.0, k1, Underlying(S0, d))
+        @test_throws DomainError VarianceGammaProcess(-sigma, theta1, k1, Underlying(S0, d))
+        @test_throws DomainError VarianceGammaProcess(sigma, theta1, -k1, Underlying(S0, d))
+        @test_throws DomainError VarianceGammaProcess(sigma, 10000.0, k1, Underlying(S0, d))
     end
 end

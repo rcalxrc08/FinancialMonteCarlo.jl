@@ -56,8 +56,9 @@ All single name processes take their parameters followed by the [`Underlying`](@
 [`ShiftedProcess`](@ref) takes a model instead, and the copulas take several.
 
 Constructors check the parameters (positive volatilities and intensities, valid probabilities
-and correlations, existence of the risk neutral drift, ...) and throw an `AssertionError` when they
-are not admissible. They are fully parametric in the number type of each parameter, so a model holds dual numbers,
+and correlations, existence of the risk neutral drift, ...) and throw a `DomainError` when they
+are not admissible (a `DimensionMismatch` for a wrong number of parameters or mismatched sizes, an `ArgumentError`
+for the other invalid inputs), so a caller can catch exactly these and let a bug propagate. They are fully parametric in the number type of each parameter, so a model holds dual numbers,
 `Float32` or any other number type, and the paths and prices follow it.
 
 ## Engines

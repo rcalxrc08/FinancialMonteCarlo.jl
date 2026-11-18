@@ -258,7 +258,7 @@ end
 fa_drift(mcProcess::FiniteActivityProcess, rfCurve::AbstractZeroRateCurve) = (rfCurve.r - dividend(mcProcess)) - mcProcess.σ^2 / 2 - mcProcess.λ * compute_drift(mcProcess)
 
 function simulate!(X, mcProcess::finiteActivityProcess, rfCurve::AbstractZeroRateCurve, mcBaseData::AbstractMonteCarloConfiguration, T::numb) where {finiteActivityProcess <: FiniteActivityProcess, numb <: Number}
-    ChainRulesCore.@ignore_derivatives @assert T > 0
+    ChainRulesCore.@ignore_derivatives check_domain(T > 0, T, "Time to Maturity must be positive")
     simulate!(X, BrownianMotion(mcProcess.σ, fa_drift(mcProcess, rfCurve)), mcBaseData, T)
     add_jump_matrix!(X, mcProcess, mcBaseData, T)
     S0 = mcProcess.underlying.S0
@@ -269,7 +269,7 @@ end
 # Quasi Monte Carlo: each path is one point of dimension Nstep + 1 + 2M, the first Nstep coordinates give the normals of
 # the diffusion (as BrownianMotion), the others the uniforms of the jumps (add_jumps_from_uniforms!).
 function simulate!(X, mcProcess::FiniteActivityProcess, rfCurve::AbstractZeroRateCurve, mcBaseData::SobolConfig, T::Number)
-    ChainRulesCore.@ignore_derivatives @assert T > 0
+    ChainRulesCore.@ignore_derivatives check_domain(T > 0, T, "Time to Maturity must be positive")
     Nstep = mcBaseData.Nstep
     dt = T / Nstep
     stddev_bm = mcProcess.σ * sqrt(dt)

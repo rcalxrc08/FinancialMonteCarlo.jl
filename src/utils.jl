@@ -1,3 +1,4 @@
+include("utils/checks.jl")
 include("utils/curves.jl")
 include("utils/rng_number.jl")
 include("utils/zero_rates.jl")

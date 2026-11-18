@@ -6,7 +6,7 @@ function simulate!(X, mcProcess::infiniteActivityProcess, rfCurve::AbstractZeroR
     θ = mcProcess.θ
     Nstep = mcBaseData.Nstep
 
-    ChainRulesCore.@ignore_derivatives @assert T > 0
+    ChainRulesCore.@ignore_derivatives check_domain(T > 0, T, "Time to Maturity must be positive")
 
     dt = T / Nstep
     ####Simulation

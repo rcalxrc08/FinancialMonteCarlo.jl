@@ -9,7 +9,7 @@ Forward contract paying ``S_T`` at maturity `T` (no strike).
 struct Forward{num <: Number} <: EuropeanPayoff{num}
     T::num
     function Forward(T::num) where {num <: Number}
-        ChainRulesCore.@ignore_derivatives @assert T > 0 "Time to Maturity must be positive"
+        ChainRulesCore.@ignore_derivatives check_domain(T > 0, T, "Time to Maturity must be positive")
         return new{num}(T)
     end
 end

@@ -14,10 +14,10 @@ using FinancialToolbox: blsprice
         @test FinancialMonteCarlo.get_parameters(model) == [0.15, 0.3, 0.5]
         @test FinancialMonteCarlo.set_parameters!(model, [0.2, 0.25, 0.3]).η == (0.2, 0.25)
         @test occursin("LogNormalMixture", capture_stdout(() -> display(model)))
-        @test_throws AssertionError LogNormalMixture((-0.2, 0.2, 0.2), (0.1, 0.1), und)
-        @test_throws AssertionError LogNormalMixture((0.2, 0.2, 0.2), (-0.1, 0.1), und)
-        @test_throws AssertionError LogNormalMixture((0.2, 0.2, 0.2), (1.0, 1.0), und)
-        @test_throws AssertionError LogNormalMixture((0.2, 0.2, 0.2), (0.2, 0.2, 0.2), und)
+        @test_throws DomainError LogNormalMixture((-0.2, 0.2, 0.2), (0.1, 0.1), und)
+        @test_throws DomainError LogNormalMixture((0.2, 0.2, 0.2), (-0.1, 0.1), und)
+        @test_throws DomainError LogNormalMixture((0.2, 0.2, 0.2), (1.0, 1.0), und)
+        @test_throws DimensionMismatch LogNormalMixture((0.2, 0.2, 0.2), (0.2, 0.2, 0.2), und)
     end
 
     @testset "European prices against the mixture of Black-Scholes prices" begin

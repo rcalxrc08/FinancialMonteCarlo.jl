@@ -5,11 +5,7 @@ using Distributed, ForwardDiff, Random, Statistics, VectorizedRNG
     model = BlackScholesProcess(sigma, Underlying(S0, d))
     eu = EuropeanOption(T, K)
 
-    @testset "$name" for (name, mc_par) in [
-        ("MultiThreading", MonteCarloConfiguration(Nsim, Nstep; mode = FinancialMonteCarlo.MultiThreading())),
-        ("MultiProcess", MonteCarloConfiguration(Nsim, Nstep; mode = FinancialMonteCarlo.MultiProcess())),
-        ("VectorizedRNG", MonteCarloConfiguration(Nsim, Nstep; seed = 10, rng = local_rng())),
-    ]
+    @testset "$name" for (name, mc_par) in [("MultiThreading", MonteCarloConfiguration(Nsim, Nstep; mode = FinancialMonteCarlo.MultiThreading())), ("MultiProcess", MonteCarloConfiguration(Nsim, Nstep; mode = FinancialMonteCarlo.MultiProcess())), ("VectorizedRNG", MonteCarloConfiguration(Nsim, Nstep; seed = 10, rng = local_rng()))]
         @test abs(pricer(model, rfCurve, mc_par, eu) - BS_CALL_REF.eu) < 1.0
         prices = pricer(model, rfCurve, mc_par, [eu, eu])
         @test prices[1] ≈ prices[2]
@@ -102,9 +98,9 @@ end
     @testset "seeds" begin
         @test [state.seed for state in MonteCarloConfiguration(10, 1; mode = FMC.MultiThreading(2), seed = 5).rng] == [6, 7]
         @test length(MonteCarloConfiguration(10, 1; mode = FMC.MultiThreading()).rng) == Threads.nthreads()
-        @test_throws AssertionError MonteCarloConfiguration(10, 1; mode = FMC.MultiThreading(2), seed = [1])
+        @test_throws DimensionMismatch MonteCarloConfiguration(10, 1; mode = FMC.MultiThreading(2), seed = [1])
         @test_throws ArgumentError MonteCarloConfiguration(10, 1; seed = [1, 2])
-        @test_throws AssertionError FMC.MultiThreading(0)
+        @test_throws DomainError FMC.MultiThreading(0)
     end
 
     @testset "reseed = false continues the streams of the batches" begin

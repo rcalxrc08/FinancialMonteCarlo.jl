@@ -26,8 +26,8 @@ using Random, Statistics
 
     @testset "the sampling of the main run keeps its checks" begin
         antithetic = FinancialMonteCarlo.ControlVariates(Forward(T), variate_conf, FinancialMonteCarlo.AntitheticMC())
-        @test_throws AssertionError MonteCarloConfiguration(1001, Nstep_small; sampling = antithetic)
-        @test_throws AssertionError MonteCarloConfiguration(1001, Nstep_small; sampling = FinancialMonteCarlo.AntitheticMC(), reseed = false)
+        @test_throws ArgumentError MonteCarloConfiguration(1001, Nstep_small; sampling = antithetic)
+        @test_throws ArgumentError MonteCarloConfiguration(1001, Nstep_small; sampling = FinancialMonteCarlo.AntitheticMC(), reseed = false)
         @test_throws ArgumentError MonteCarloConfiguration(1024, Nstep_small; sampling = FinancialMonteCarlo.ControlVariates(Forward(T), variate_conf, FinancialMonteCarlo.SobolMC()), mode = FinancialMonteCarlo.MultiThreading(2))
     end
 

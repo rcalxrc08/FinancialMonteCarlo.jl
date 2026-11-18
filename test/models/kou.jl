@@ -34,11 +34,11 @@ const KOU_REF = (fwd = 99.41332633109904, eu = 10.347332240535199, barrier = 8.8
     end
 
     @testset "parameter validation" begin
-        @test_throws AssertionError KouProcess(-sigma, lam, p, lamp, lamm, Underlying(S0, d))
-        @test_throws AssertionError KouProcess(sigma, -lam, p, lamp, lamm, Underlying(S0, d))
-        @test_throws AssertionError KouProcess(sigma, lam, -p, lamp, lamm, Underlying(S0, d))
-        @test_throws AssertionError KouProcess(sigma, lam, p, -lamp, lamm, Underlying(S0, d))
-        @test_throws AssertionError KouProcess(sigma, lam, p, 0.5, lamm, Underlying(S0, d))
-        @test_throws AssertionError KouProcess(sigma, lam, p, lamp, -lamm, Underlying(S0, d))
+        @test_throws DomainError KouProcess(-sigma, lam, p, lamp, lamm, Underlying(S0, d))
+        @test_throws DomainError KouProcess(sigma, -lam, p, lamp, lamm, Underlying(S0, d))
+        @test_throws DomainError KouProcess(sigma, lam, -p, lamp, lamm, Underlying(S0, d))
+        @test_throws DomainError KouProcess(sigma, lam, p, -lamp, lamm, Underlying(S0, d))
+        @test_throws DomainError KouProcess(sigma, lam, p, 0.5, lamm, Underlying(S0, d))
+        @test_throws DomainError KouProcess(sigma, lam, p, lamp, -lamm, Underlying(S0, d))
     end
 end

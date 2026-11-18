@@ -10,7 +10,7 @@ include("../testutils.jl")
         @test m.σ == sigma
         @test FinancialMonteCarlo.get_parameters(Forward(T))[1] == T
         @test occursin("BlackScholesProcess", capture_stdout(() -> display(m)))
-        @test_throws AssertionError BlackScholesProcess(-sigma, Underlying(S0, d))
+        @test_throws DomainError BlackScholesProcess(-sigma, Underlying(S0, d))
     end
 
     @testset "calls" begin
@@ -27,15 +27,7 @@ include("../testutils.jl")
     end
 
     @testset "exotics" begin
-        payoffs = (
-            barrier_di = BarrierOptionDownIn(T, K, D),
-            barrier_ui = BarrierOptionUpIn(T, K, D),
-            barrier_uo = BarrierOptionUpOut(T, K, D),
-            bermudan = BermudanOption(collect(0.2:0.1:T), K),
-            binary_am = BinaryAmericanOption(T, K),
-            binary_eu = BinaryEuropeanOption(T, K),
-            double_barrier = DoubleBarrierOption(T, K, K / 10.0, 1.2 * K),
-        )
+        payoffs = (barrier_di = BarrierOptionDownIn(T, K, D), barrier_ui = BarrierOptionUpIn(T, K, D), barrier_uo = BarrierOptionUpOut(T, K, D), bermudan = BermudanOption(collect(0.2:0.1:T), K), binary_am = BinaryAmericanOption(T, K), binary_eu = BinaryEuropeanOption(T, K), double_barrier = DoubleBarrierOption(T, K, K / 10.0, 1.2 * K))
         check_prices(model, rfCurve, mc_small, payoffs)
     end
 
@@ -43,7 +35,7 @@ include("../testutils.jl")
         put_eu, put_am = EuropeanOption(T, K, false), AmericanOption(T, K, false)
         @test pricer(model, rfCurve, mc_small, BermudanOption([T], K, false)) ≈ pricer(model, rfCurve, mc_small, put_eu)
         # exercisable at every step of the grid, a Bermudan is the American on the same paths
-        every_step = collect(T / Nstep_small:T / Nstep_small:T)
+        every_step = collect((T/Nstep_small):(T/Nstep_small):T)
         @test pricer(model, rfCurve, mc_small, BermudanOption(every_step, K, false)) ≈ pricer(model, rfCurve, mc_small, put_am)
         @test abs(pricer(model, rfCurve, mc, put_am) - BS_PUT_REF.am) < 0.3
     end

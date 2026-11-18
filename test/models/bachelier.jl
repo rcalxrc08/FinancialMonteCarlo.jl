@@ -19,7 +19,7 @@ end
     @testset "parameters" begin
         @test FinancialMonteCarlo.get_parameters(model) == [σ_N]
         @test occursin("BachelierProcess", capture_stdout(() -> display(model)))
-        @test_throws AssertionError BachelierProcess(-σ_N, Underlying(S0, d))
+        @test_throws DomainError BachelierProcess(-σ_N, Underlying(S0, d))
     end
 
     @testset "European prices, $(nameof(typeof(config.sampling)))" for config in (mc, mc_anti, MonteCarloConfiguration(Nsim, 1; sampling = FinancialMonteCarlo.SobolMC()))

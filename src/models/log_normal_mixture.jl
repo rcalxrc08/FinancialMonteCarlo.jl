@@ -34,10 +34,10 @@ struct LogNormalMixture{N, M, num <: Number, num2 <: Number, abstrUnderlying <: 
     # at least one weight, so two components: the number types are those of the first elements
     function LogNormalMixture(η::Tuple{num, Vararg{num}}, λ::Tuple{num2, Vararg{num2}}, underlying::abstrUnderlying) where {num <: Number, num2 <: Number, abstrUnderlying <: AbstractUnderlying}
         N, M = length(η), length(λ)
-        ChainRulesCore.@ignore_derivatives @assert M == N - 1 "length(λ) must be length(η) - 1"
-        ChainRulesCore.@ignore_derivatives @assert minimum(η) > 0 "Volatilities must be positive"
-        ChainRulesCore.@ignore_derivatives @assert minimum(λ) > 0 "weights must be positive"
-        ChainRulesCore.@ignore_derivatives @assert sum(λ) <= 1 "λs must be weights"
+        ChainRulesCore.@ignore_derivatives check_dimension(M == N - 1, "length(λ) must be length(η) - 1")
+        ChainRulesCore.@ignore_derivatives check_domain(minimum(η) > 0, η, "Volatilities must be positive")
+        ChainRulesCore.@ignore_derivatives check_domain(minimum(λ) > 0, λ, "weights must be positive")
+        ChainRulesCore.@ignore_derivatives check_domain(sum(λ) <= 1, λ, "λs must be weights")
         zero_typed = ChainRulesCore.@ignore_derivatives zero(num) + zero(num2)
         return new{N, M, num, num2, abstrUnderlying, typeof(zero_typed)}(η, λ, underlying)
     end
@@ -70,7 +70,7 @@ end
 lnm_initial_variance(η::NTuple, λ::NTuple) = sum(map(*, λ, η)) / sum(map(/, λ, η))
 
 function lnm_setup(mcProcess::LogNormalMixture, rfCurve::AbstractZeroRateCurve, mcBaseData::MonteCarloConfiguration, T::Number)
-    ChainRulesCore.@ignore_derivatives @assert T > 0
+    ChainRulesCore.@ignore_derivatives check_domain(T > 0, T, "Time to Maturity must be positive")
     η = mcProcess.η
     λ = mixture_weights(mcProcess)
     logw = map((λ_i, η_i) -> log(λ_i) - log(η_i), λ, η)

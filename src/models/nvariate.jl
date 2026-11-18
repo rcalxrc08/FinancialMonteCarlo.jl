@@ -16,16 +16,16 @@ struct GaussianCopulaNVariateProcess{num3 <: Number, numtype <: Number} <: NDime
     models::Tuple{Vararg{BaseProcess}}
     function GaussianCopulaNVariateProcess(rho::Matrix{num3}, models::Tuple) where {num3 <: Number}
         sz = size(rho)
-        ChainRulesCore.@ignore_derivatives @assert sz[1] == sz[2]
-        ChainRulesCore.@ignore_derivatives @assert length(models) == sz[1]
-        ChainRulesCore.@ignore_derivatives @assert isposdef(rho)
+        ChainRulesCore.@ignore_derivatives check_dimension(sz[1] == sz[2], "The correlation matrix must be square")
+        ChainRulesCore.@ignore_derivatives check_dimension(length(models) == sz[1], "One model per row of the correlation matrix")
+        ChainRulesCore.@ignore_derivatives check_domain(isposdef(rho), rho, "The correlation matrix must be positive definite")
         return new{num3, price_type(models..., num3)}(rho, models)
     end
     function GaussianCopulaNVariateProcess(rho::Matrix{num3}, models::BaseProcess...) where {num3 <: Number}
         sz = size(rho)
-        ChainRulesCore.@ignore_derivatives @assert sz[1] == sz[2]
-        ChainRulesCore.@ignore_derivatives @assert length(models) == sz[1]
-        ChainRulesCore.@ignore_derivatives @assert isposdef(rho)
+        ChainRulesCore.@ignore_derivatives check_dimension(sz[1] == sz[2], "The correlation matrix must be square")
+        ChainRulesCore.@ignore_derivatives check_dimension(length(models) == sz[1], "One model per row of the correlation matrix")
+        ChainRulesCore.@ignore_derivatives check_domain(isposdef(rho), rho, "The correlation matrix must be positive definite")
         return new{num3, price_type(models..., num3)}(rho, models)
     end
     function GaussianCopulaNVariateProcess(models::BaseProcess...)
@@ -34,7 +34,7 @@ struct GaussianCopulaNVariateProcess{num3 <: Number, numtype <: Number} <: NDime
     end
     function GaussianCopulaNVariateProcess(model1::BaseProcess, model2::BaseProcess, rho::num3) where {num3 <: Number}
         corr_matrix_ = [1 rho; rho 1]
-        ChainRulesCore.@ignore_derivatives @assert isposdef(corr_matrix_)
+        ChainRulesCore.@ignore_derivatives check_domain(isposdef(corr_matrix_), rho, "The correlation matrix must be positive definite")
         return GaussianCopulaNVariateProcess(corr_matrix_, model1, model2)
     end
 end
@@ -44,7 +44,7 @@ export GaussianCopulaNVariateProcess;
 function simulate!(S_total, mcProcess::GaussianCopulaNVariateProcess, rfCurve::AbstractZeroRateCurve, mcBaseData::AbstractMonteCarloConfiguration, T::Number)
     Nsim = mcBaseData.Nsim
     Nstep = mcBaseData.Nstep
-    ChainRulesCore.@ignore_derivatives @assert T > 0
+    ChainRulesCore.@ignore_derivatives check_domain(T > 0, T, "Time to Maturity must be positive")
 
     ####Simulation
     ## Simulate

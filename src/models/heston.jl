@@ -27,10 +27,10 @@ struct HestonProcess{num <: Number, num1 <: Number, num2 <: Number, num3 <: Numb
     θ::num5
     underlying::abstrUnderlying
     function HestonProcess(σ::num, σ₀::num1, λ::num2, κ::num3, ρ::num4, θ::num5, underlying::abstrUnderlying) where {num <: Number, num1 <: Number, num2 <: Number, num3 <: Number, num4 <: Number, num5 <: Number, abstrUnderlying <: AbstractUnderlying}
-        ChainRulesCore.@ignore_derivatives @assert σ₀ > 0 "initial volatility must be positive"
-        ChainRulesCore.@ignore_derivatives @assert σ > 0 "volatility of volatility must be positive"
-        ChainRulesCore.@ignore_derivatives @assert abs(κ + λ) > 1e-14 "unfeasible parameters"
-        ChainRulesCore.@ignore_derivatives @assert (-1 <= ρ <= 1) "ρ must be a correlation"
+        ChainRulesCore.@ignore_derivatives check_domain(σ₀ > 0, σ₀, "initial volatility must be positive")
+        ChainRulesCore.@ignore_derivatives check_domain(σ > 0, σ, "volatility of volatility must be positive")
+        ChainRulesCore.@ignore_derivatives check_domain(abs(κ + λ) > 1e-14, κ + λ, "unfeasible parameters")
+        ChainRulesCore.@ignore_derivatives check_domain(-1 <= ρ <= 1, ρ, "ρ must be a correlation")
         zero_typed = ChainRulesCore.@ignore_derivatives zero(num) + zero(num1) + zero(num2) + zero(num3) + zero(num4) + zero(num5)
         return new{num, num1, num2, num3, num4, num5, abstrUnderlying, typeof(zero_typed)}(σ, σ₀, λ, κ, ρ, θ, underlying)
     end
@@ -46,7 +46,7 @@ variance_floor(zero_vol) = zero_vol + sqrt(floatmin(eps(zero_vol)))
 
 # The risk neutral parameters, the time step and the zero of the variance, which carries the derivatives of every input
 function heston_setup(mcProcess::HestonProcess, rfCurve::AbstractZeroRateCurve, mcBaseData::MonteCarloConfiguration, T::Number)
-    ChainRulesCore.@ignore_derivatives @assert T > 0
+    ChainRulesCore.@ignore_derivatives check_domain(T > 0, T, "Time to Maturity must be positive")
     λ1 = mcProcess.λ
     κ = mcProcess.κ
     κ_s = κ + λ1

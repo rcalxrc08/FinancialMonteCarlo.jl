@@ -7,24 +7,24 @@ using Distributions, ForwardDiff, Statistics
     drift = 0.0
 
     @testset "BrownianMotion" begin
-        @test_throws AssertionError BrownianMotion(-sigma, drift)
-        @test_throws AssertionError BrownianMotion(-sigma, mu_curve)
+        @test_throws DomainError BrownianMotion(-sigma, drift)
+        @test_throws DomainError BrownianMotion(-sigma, mu_curve)
         S = simulate(BrownianMotion(sigma, 0.01), mc_small_anti, T)
         @test size(S) == (Nsim_small, Nstep_small + 1)
         @test all(iszero, S[:, 1])
     end
 
     @testset "GeometricBrownianMotion" begin
-        @test_throws AssertionError GeometricBrownianMotion(-sigma, drift, 1.0)
-        @test_throws AssertionError GeometricBrownianMotion(-sigma, mu_curve, 1.0)
+        @test_throws DomainError GeometricBrownianMotion(-sigma, drift, 1.0)
+        @test_throws DomainError GeometricBrownianMotion(-sigma, mu_curve, 1.0)
         # the paths are proportional to x0
         terminal(x0) = (FinancialMonteCarlo.set_seed!(mc_small); mean(simulate(GeometricBrownianMotion(sigma, 0.01, x0), mc_small, T)[:, end]))
         @test ForwardDiff.derivative(terminal, S0) ≈ terminal(S0) / S0
     end
 
     @testset "SubordinatedBrownianMotion" begin
-        @test_throws AssertionError SubordinatedBrownianMotion(-sigma, drift, 0.01, InverseGaussian(1.0, 1.0))
-        @test_throws AssertionError SubordinatedBrownianMotion(-sigma, mu_curve, 0.01, InverseGaussian(1.0, 1.0))
+        @test_throws DomainError SubordinatedBrownianMotion(-sigma, drift, 0.01, InverseGaussian(1.0, 1.0))
+        @test_throws DomainError SubordinatedBrownianMotion(-sigma, mu_curve, 0.01, InverseGaussian(1.0, 1.0))
         S = simulate(SubordinatedBrownianMotion(sigma, 0.01, 0.1, Gamma(T / Nstep_small, 1.0)), mc_small, T)
         @test size(S) == (Nsim_small, Nstep_small + 1)
         @test all(iszero, S[:, 1])
