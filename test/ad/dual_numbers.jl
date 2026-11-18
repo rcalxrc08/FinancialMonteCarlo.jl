@@ -33,4 +33,11 @@ using DualNumbers
         check_prices(model, rfCurve, mc_anti, standard_payoffs(), vg_ref; toll = 0.8)
         @test isfinite(pricer(model, rfCurve, MonteCarloConfiguration(Nsim, Nstep; sampling = FinancialMonteCarlo.SobolMC()), Forward(T)))
     end
+    # A dual number is not a Real: max(::Dual, ::Float64) misses Base's promoting method, so the basket payoff took the
+    # zero of the strike and returned a vector of abstract element type (#53)
+    @testset "inferred basket payoff" begin
+        paths = [fill(dual(S0, 1.0), Nsim_small, Nstep_small + 1) for _ = 1:2]
+        out = @inferred payoff(paths, EuropeanOptionND(T, 3 * K), rfCurve, mc_small)
+        @test eltype(out) == Dual{Float64}
+    end
 end

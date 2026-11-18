@@ -71,5 +71,5 @@ same session:
 | `CUDA` | GPU simulation of several models with `CudaMode` |
 | `Distributed` | `MultiProcess` parallel mode |
 | `DifferentialEquations` | `MonteCarloDiffEqModel`, see [DifferentialEquations.jl](@ref) |
-| `DualNumbers`, `TaylorSeries` | compatibility methods for these number types |
+| `DualNumbers` | compatibility methods for this number type |
 | `VectorizedRNG` | fast vectorized random number generation |

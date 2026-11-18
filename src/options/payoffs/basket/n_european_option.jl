@@ -14,8 +14,8 @@ struct EuropeanOptionND{num1 <: Number, num2 <: Number, numtype <: Number} <: Eu
     K::num2
     isCall::Bool
     function EuropeanOptionND(T::num1, K::num2, isCall::Bool = true) where {num1 <: Number, num2 <: Number}
-        ChainRulesCore.@ignore_derivatives @assert T > 0 "Time to Maturity must be positive"
-        ChainRulesCore.@ignore_derivatives @assert K > 0 "Strike Price must be positive"
+        ChainRulesCore.@ignore_derivatives check_domain(T > 0, T, "Time to Maturity must be positive")
+        ChainRulesCore.@ignore_derivatives check_domain(K > 0, K, "Strike Price must be positive")
         zero_typed = ChainRulesCore.@ignore_derivatives zero(num1) + zero(num2)
         return new{num1, num2, typeof(zero_typed)}(T, K, isCall)
     end
@@ -36,7 +36,10 @@ function payoff(S::Array{abstractMatrix}, euPayoff::EuropeanOptionND, rfCurve::a
     #     ST_all += S[i][:, index1]
     # end
     ST_all = sum(view(S[i], :, index1) for i = 1:length(S))
-    payoff2 = max.(iscall .* (ST_all .- K), zero(K))
+    # a zero of the type of the payout: zero(K) alone is a Float64 next to paths of hyper duals, and max(::Hyper, ::Float64)
+    # returns either argument unconverted, so the vector would get an abstract element type (#53)
+    zero_typed = ChainRulesCore.@ignore_derivatives zero(eltype(ST_all)) - zero(K)
+    payoff2 = max.(iscall .* (ST_all .- K), zero_typed)
 
     return payoff2 * exp(-integral(r, T))
 end
