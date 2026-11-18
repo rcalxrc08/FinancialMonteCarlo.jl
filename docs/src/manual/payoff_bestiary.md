@@ -38,10 +38,10 @@ together share the paths, up to the longest maturity; maturities should fall on 
 | [`Forward`](@ref) | ``S_T`` | European | ``S_0 e^{-\int_0^T d}`` |
 | [`EuropeanOption`](@ref) | ``(ω (S_T - K))^+`` | European | `blsprice` |
 | [`BinaryEuropeanOption`](@ref) | ``1_{ω (S_T - K) > 0}`` | European | `blsbin` |
-| [`BarrierOptionDownOut`](@ref) | ``(ω (S_T - K))^+ 1_{\min_k S_{t_k} ≥ D}`` | path dependent | continuous monitoring only |
-| [`BarrierOptionDownIn`](@ref) | ``(ω (S_T - K))^+ 1_{\min_k S_{t_k} < D}`` | path dependent | continuous monitoring only |
-| [`BarrierOptionUpOut`](@ref) | ``(ω (S_T - K))^+ 1_{\max_k S_{t_k} ≤ U}`` | path dependent | continuous monitoring only |
-| [`BarrierOptionUpIn`](@ref) | ``(ω (S_T - K))^+ 1_{\max_k S_{t_k} > U}`` | path dependent | continuous monitoring only |
+| [`BarrierOptionDownOut`](@ref) | ``(ω (S_T - K))^+ 1_{\min_k S_{t_k} ≥ D}`` | path dependent | `blsdownout` (continuous monitoring) |
+| [`BarrierOptionDownIn`](@ref) | ``(ω (S_T - K))^+ 1_{\min_k S_{t_k} < D}`` | path dependent | `blsdownin` (continuous monitoring) |
+| [`BarrierOptionUpOut`](@ref) | ``(ω (S_T - K))^+ 1_{\max_k S_{t_k} ≤ U}`` | path dependent | `blsupout` (continuous monitoring) |
+| [`BarrierOptionUpIn`](@ref) | ``(ω (S_T - K))^+ 1_{\max_k S_{t_k} > U}`` | path dependent | `blsupin` (continuous monitoring) |
 | [`DoubleBarrierOption`](@ref) | ``(ω (S_T - K))^+ 1_{D ≤ \min_k S_{t_k},\ \max_k S_{t_k} ≤ U}`` | path dependent | |
 | [`AsianFixedStrikeOption`](@ref) | ``(ω (A_T - K))^+`` | path dependent | geometric average only |
 | [`AsianFloatingStrikeOption`](@ref) | ``(ω (S_T - A_T))^+`` | path dependent | |
@@ -97,7 +97,11 @@ DoubleBarrierOption(T, K, D, U, isCall = true) # knocked out below D or above U
 A European payout times whether the path is alive, from its minimum and maximum on the grid (spot and maturity
 included). An in and the matching out option add up to the European one, path by path. Discrete monitoring
 overprices a knock-out against the continuous barrier; the usual correction moves the barrier away from the spot
-by a factor ``e^{0.5826\, σ \sqrt{T/n}}`` (Broadie, Glasserman and Kou). On the GPU the minimum and maximum are row reductions,
+by a factor ``e^{0.5826\, σ \sqrt{T/n}}`` (Broadie, Glasserman and Kou): with it, the closed forms of FinancialToolbox
+(`blsdownout`, `blsdownin`, `blsupout`, `blsupin`) match the Monte Carlo prices of the four options under Black-Scholes
+within 2% (`test/models/barrier_closed_form.jl`). Their pathwise Greeks (any AD backend) are biased: the indicator
+does not see the paths that cross the barrier when the spot or the volatility moves (#74); bump and reprice with a
+common seed (`delta`) instead. On the GPU the minimum and maximum are row reductions,
 so no path leaves the device.
 
 ## Asian

@@ -8,7 +8,7 @@ using Test
 
 const TEST_GROUPS = [
     "Structs" => ["structs.jl", "engines.jl", "aqua.jl"],
-    "Models" => ["models/black_scholes.jl", "models/bachelier.jl", "models/heston.jl", "models/kou.jl", "models/merton.jl", "models/variance_gamma.jl", "models/normal_inverse_gaussian.jl", "models/lognormal_mixture.jl", "models/shifted.jl", "models/parameters.jl", "models/diffeq.jl"],
+    "Models" => ["models/black_scholes.jl", "models/barrier_closed_form.jl", "models/bachelier.jl", "models/heston.jl", "models/kou.jl", "models/merton.jl", "models/variance_gamma.jl", "models/normal_inverse_gaussian.jl", "models/lognormal_mixture.jl", "models/shifted.jl", "models/parameters.jl", "models/diffeq.jl"],
     "Methods" => ["methods/sobol.jl", "methods/control_variates.jl", "methods/parallel.jl", "methods/multiprocess.jl"],
     "Metrics" => ["metrics/statistics.jl", "metrics/greeks.jl"],
     "AD" => ["ad/dual_numbers.jl", "ad/forward_diff.jl", "ad/reverse_diff.jl", "ad/mooncake.jl", "ad/enzyme.jl", "ad/taylor_series.jl"],
@@ -17,11 +17,17 @@ const TEST_GROUPS = [
 
 const SELECTED = lowercase.(ARGS)
 
+# The testsets report only at the end, so each file logs when it starts and how long it took: a hung file shows up in
+# the log (a local run or CI) instead of a silent process.
 function run_test_file(file)
     mod = @eval Main module $(Symbol(replace(file, r"[/.]" => "_"))) end
-    @testset "$file" begin
+    @info "Running $file"
+    flush(stderr)
+    elapsed = @elapsed @testset "$file" begin
         Base.include(mod, joinpath(@__DIR__, file))
     end
+    @info "Finished $file in $(round(elapsed, digits = 1)) s"
+    flush(stderr)
 end
 
 @testset "FinancialMonteCarlo" begin
