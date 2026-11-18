@@ -30,12 +30,9 @@ function payoff(S::Array{abstractMatrix}, euPayoff::EuropeanOptionND, rfCurve::a
     NStep = mcBaseData.Nstep
     index1 = maturity_index(T, T1, mcBaseData)
     K = euPayoff.K
-    #ST_all=[ sum(x_i[j,index1] for x_i in S) for j in 1:Nsim]
-    # ST_all = S[1][:, index1]
-    # for i = 2:length(S)
-    #     ST_all += S[i][:, index1]
-    # end
-    ST_all = sum(view(S[i], :, index1) for i = 1:length(S))
+    # columns copied, not viewed: the sum of one view is the view itself, so on Julia 1.10 the sum of views infers as a
+    # Union of SubArray and Vector, and the payoff as Any (#53)
+    ST_all = sum(x -> x[:, index1], S)
     # a zero of the type of the payout: zero(K) alone is a Float64 next to paths of hyper duals, and max(::Hyper, ::Float64)
     # returns either argument unconverted, so the vector would get an abstract element type (#53)
     zero_typed = ChainRulesCore.@ignore_derivatives zero(eltype(ST_all)) - zero(K)
