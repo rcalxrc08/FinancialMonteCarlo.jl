@@ -1,5 +1,5 @@
 include("../testutils.jl")
-using ChainRulesTestUtils, ChainRulesCore
+using ChainRulesTestUtils
 
 # The reverse rules of the package (#80), against finite differences: integral of a curve, set_parameters!
 @testset "ChainRules" begin
