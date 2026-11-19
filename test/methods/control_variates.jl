@@ -42,4 +42,19 @@ using Random, Statistics
         @test std(cv) < std(plain) / 2
         @test abs(mean(cv) - BS_CALL_REF.eu) < 0.1
     end
+
+    @testset "the exact price of the control (#75)" begin
+        # an Asian option controlled by a European call: with the pilot mean as the price of the call the reduction mostly
+        # cancels; with its closed form it is about halved
+        asian, call = AsianFloatingStrikeOption(T), EuropeanOption(T, K)
+        call_price = blsprice(S0, K, r, T, sigma, d)
+        seeds = 1:40
+        run(s; price = nothing) = pricer(model, rfCurve, MonteCarloConfiguration(2_000, 10; sampling = FinancialMonteCarlo.ControlVariates(call, MonteCarloConfiguration(2_000, 10; seed = 1000 + s); price = price), seed = s), asian)
+        plain = [pricer(model, rfCurve, MonteCarloConfiguration(2_000, 10; seed = s), asian) for s in seeds]
+        pilot, exact = run.(seeds), [run(s; price = call_price) for s in seeds]
+        @test std(exact) < 0.75 * std(pilot)
+        @test std(exact) < 0.75 * std(plain)
+        @test abs(mean(exact) - mean(plain)) < 3 * std(plain) / sqrt(length(seeds))
+        @test FinancialMonteCarlo.ControlVariates(call, MonteCarloConfiguration(10, 1); price = 1.0f0).price === 1.0f0
+    end
 end

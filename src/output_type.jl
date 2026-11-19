@@ -33,7 +33,8 @@ number_type(x::Pair) = price_type(x.first, x.second)
 number_type(::AbstractMethod) = Int8
 
 number_type(und::AbstractUnderlying) = price_type(und.S0, und.d)
-number_type(::CurveType{num1, num2}) where {num1 <: Number, num2 <: Number} = promote_number(num1, num2)
+number_type(::Curve{N, num1, num2}) where {N, num1 <: Number, num2 <: Number} = promote_number(num1, num2)
+number_type(x::CurveDifference) = price_type(x.a, x.b)
 number_type(rfCurve::AbstractZeroRateCurve) = number_type(rfCurve.r)
 
 number_type(::AbstractPayoff{num}) where {num <: Number} = num

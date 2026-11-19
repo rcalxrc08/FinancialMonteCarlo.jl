@@ -17,7 +17,7 @@ end
 
 # The drift of each time step: a constant rate is one number, only a curve needs a vector
 step_drifts(μ::Number, dt::Number, ::Integer) = μ * dt
-step_drifts(μ::CurveType, dt::Number, Nstep::Integer) = [incremental_integral(μ, (j - 1) * dt, dt) for j = 1:Nstep]
+step_drifts(μ::AbstractCurve, dt::Number, Nstep::Integer) = [incremental_integral(μ, (j - 1) * dt, dt) for j = 1:Nstep]
 drift_of_step(drifts::Number, ::Integer) = drifts
 drift_of_step(drifts::AbstractVector, j::Integer) = drifts[j]
 

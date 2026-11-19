@@ -16,8 +16,8 @@ them also positions and portfolios.
 | Metric | Returns |
 |:--|:--|
 | [`pricer`](@ref) | Monte Carlo estimate of the price |
-| [`variance`](@ref) | variance of the discounted payoff |
-| [`confinter`](@ref) | confidence interval of the price at a given level (default 99%) |
+| [`variance`](@ref) | variance of the discounted payoff per path: the variance of the price times `Nsim` (with `AntitheticMC`, from the averages of the antithetic pairs) |
+| [`confinter`](@ref) | confidence interval of the price at a given level (default 99%); with `AntitheticMC` from the antithetic pairs, which are the independent samples, and not an error estimate with `SobolMC` |
 | [`delta`](@ref) | sensitivity to the spot price, by bump and reprice |
 | [`rho`](@ref) | sensitivity to the zero rate, by bump and reprice |
 | [`FinancialMonteCarlo.distribution`](@ref) | simulated values of the underlying at a given time |

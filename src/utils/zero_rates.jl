@@ -28,19 +28,14 @@ Time dependent zero rate curve, holding a curve of instantaneous rates (see
 [`FinancialMonteCarlo.Curve`](@ref)). Usually built through [`ZeroRate`](@ref) or
 [`FinancialMonteCarlo.ImpliedZeroRate`](@ref).
 """
-struct ZeroRateCurve{num1 <: Number, num2 <: Number} <: AbstractZeroRateCurve
-    r::CurveType{num1, num2}
-    function ZeroRateCurve(r_::AbstractVector{num1}, T::num2) where {num1 <: Number, num2 <: Number}
-        new{num2, num1}(Curve(r_, T))
-    end
-
-    function ZeroRateCurve(r_::CurveType{num1, num2}) where {num1 <: Number, num2 <: Number}
-        new{num2, num1}(r_)
-    end
+struct ZeroRateCurve{C <: Curve} <: AbstractZeroRateCurve
+    r::C
+    ZeroRateCurve(r_::C) where {C <: Curve} = new{C}(r_)
 end
+ZeroRateCurve(r_::Union{AbstractVector{<:Number}, Tuple{Vararg{Number}}}, T::Number) = ZeroRateCurve(Curve(r_, T))
 
 #Common Constructors
-function ZeroRate(r_::AbstractVector{num1}, T::num2) where {num1 <: Number, num2 <: Number}
+function ZeroRate(r_::Union{AbstractVector{<:Number}, Tuple{Vararg{Number}}}, T::Number)
     return ZeroRateCurve(r_, T)
 end
 """
@@ -51,12 +46,7 @@ end
 grid up to `T`), i.e. whose instantaneous rate integrates to ``r_i T_i`` up to each ``T_i``.
 See [`FinancialMonteCarlo.ImpliedCurve`](@ref).
 """
-function ImpliedZeroRate(r_::AbstractVector{num1}, T::num2) where {num1 <: Number, num2 <: Number}
-    return ZeroRateCurve(ImpliedCurve(r_, T))
-end
-function ImpliedZeroRate(r_::AbstractVector{num1}, T::AbstractVector{num2}) where {num1 <: Number, num2 <: Number}
-    return ZeroRateCurve(ImpliedCurve(r_, T))
-end
+ImpliedZeroRate(r_, T) = ZeroRateCurve(ImpliedCurve(r_, T))
 
 export ZeroRateCurve;
 export ZeroRate;

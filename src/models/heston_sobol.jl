@@ -14,10 +14,9 @@ function simulate!(X, mcProcess::HestonProcess, rfCurve::AbstractZeroRateCurve, 
         v_m = v_0
         @inbounds for j = 1:Nstep
             e1 = normals[j]
-            e2 = e1 * ρ + normals[Nstep+j] * ρ_orthogonal
-            X[i, j+1] = X[i, j] + drift_of_step(drifts, j) - v_m * dt / 2 + sqrt(v_m) * sqrt_dt * e1
-            v_m += κ_s * (θ_s - v_m) * dt + σ * sqrt(v_m) * sqrt_dt * e2
-            v_m = max(v_m, v_floor)
+            # the scalar steps of the Monte Carlo kernel (heston.jl): one formula and one rounding with it and its adjoint
+            X[i, j+1] = heston_log_step(X[i, j], v_m, e1, drift_of_step(drifts, j), dt, sqrt_dt)
+            v_m = max(heston_variance_step(v_m, e1, normals[Nstep+j], dt, sqrt_dt, κ_s, θ_s, σ, ρ, ρ_orthogonal), v_floor)
         end
     end
     ## Conclude

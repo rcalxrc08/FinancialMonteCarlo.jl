@@ -9,19 +9,19 @@
 - `θ`: drift in subordinated time.
 - `subordinator`: univariate continuous `Distribution` of the subordinator increment over one time step.
 """
-struct SubordinatedBrownianMotionVec{num <: Number, num1 <: Number, num4 <: Number, num2 <: Number, Distr <: Distribution{Univariate, Continuous}, numtype <: Number} <: AbstractMonteCarloEngine{numtype}
+struct SubordinatedBrownianMotionVec{num <: Number, C <: AbstractCurve, num2 <: Number, Distr <: Distribution{Univariate, Continuous}, numtype <: Number} <: AbstractMonteCarloEngine{numtype}
     sigma::num
-    drift::CurveType{num1, num4}
+    drift::C
     θ::num2
     subordinator_::Distr
-    function SubordinatedBrownianMotionVec(sigma::num, drift::CurveType{num1, num4}, θ::num2, dist::Distr) where {num <: Number, num1 <: Number, num2 <: Number, num4 <: Number, Distr <: Distribution{Univariate, Continuous}}
+    function SubordinatedBrownianMotionVec(sigma::num, drift::C, θ::num2, dist::Distr) where {num <: Number, num2 <: Number, C <: AbstractCurve, Distr <: Distribution{Univariate, Continuous}}
         ChainRulesCore.@ignore_derivatives check_domain(sigma > 0, sigma, "volatility must be positive")
-        zero_typed = ChainRulesCore.@ignore_derivatives zero(num) + zero(num1) + zero(num4) + zero(num2)
-        return new{num, num1, num4, num2, Distr, typeof(zero_typed)}(sigma, drift, θ, dist)
+        zero_typed = ChainRulesCore.@ignore_derivatives zero(num) + zero(number_type(drift)) + zero(num2)
+        return new{num, C, num2, Distr, typeof(zero_typed)}(sigma, drift, θ, dist)
     end
 end
 
-function SubordinatedBrownianMotion(σ::num, drift::CurveType{num1, num4}, θ::num2, subordinator_::Distr) where {num <: Number, num1 <: Number, num2 <: Number, num4 <: Number, Distr <: Distribution{Univariate, Continuous}}
+function SubordinatedBrownianMotion(σ::num, drift::C, θ::num2, subordinator_::Distr) where {num <: Number, num2 <: Number, C <: AbstractCurve, Distr <: Distribution{Univariate, Continuous}}
     return SubordinatedBrownianMotionVec(σ, drift, θ, subordinator_)
 end
 
@@ -51,7 +51,7 @@ function simulate!(X, mcProcess::AnySubordinatedBrownianMotion, mcBaseData::Mont
         foreach(sides) do (X_, sign_)
             sigma_step = sign_ * sigma
             # SUBORDINATED BROWNIAN MOTION (dt_s=time change)
-            @views @. X_[:, j+1] = X_[:, j] + drift + θ * dt_s + sigma_step * sqrt(dt_s) * Z
+            @views @muladd @. X_[:, j+1] = X_[:, j] + drift + θ * dt_s + sigma_step * sqrt(dt_s) * Z
         end
     end
     return

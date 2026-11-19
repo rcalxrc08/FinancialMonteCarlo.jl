@@ -43,6 +43,7 @@ ZeroRateCurve
 FinancialMonteCarlo.ImpliedZeroRate
 FinancialMonteCarlo.Curve
 FinancialMonteCarlo.ImpliedCurve
+FinancialMonteCarlo.CurveDifference
 ```
 
 ## [Monte Carlo configuration](@id api-configuration)

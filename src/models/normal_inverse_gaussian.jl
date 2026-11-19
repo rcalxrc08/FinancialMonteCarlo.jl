@@ -29,7 +29,7 @@ end
 
 export NormalInverseGaussianProcess;
 
-compute_drift(::NormalInverseGaussianProcess, σ::Number, θ::Number, κ::Number) = (1 - sqrt(1 - (σ^2 + 2 * θ) * κ)) / κ
+@muladd compute_drift(::NormalInverseGaussianProcess, σ::Number, θ::Number, κ::Number) = (1 - sqrt(1 - (σ^2 + 2 * θ) * κ)) / κ
 compute_drift(mcProcess::NormalInverseGaussianProcess) = compute_drift(mcProcess, mcProcess.σ, mcProcess.θ, mcProcess.κ)
 compute_subordinator_law(::NormalInverseGaussianProcess, κ::Number, dt::Number) = InverseGaussian(dt, (dt^2) / κ)
 compute_subordinator_law(mcProcess::NormalInverseGaussianProcess, dt::Number) = compute_subordinator_law(mcProcess, mcProcess.κ, dt)

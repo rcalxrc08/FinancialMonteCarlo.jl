@@ -12,12 +12,12 @@ struct UnderlyingScalar{num <: Number, num2 <: Number} <: AbstractUnderlying
     end
 end
 #Curve dividend
-struct UnderlyingVec{num <: Number, num2 <: Number, num3 <: Number} <: AbstractUnderlying
+struct UnderlyingVec{num <: Number, C <: Curve} <: AbstractUnderlying
     S0::num
-    d::CurveType{num2, num3}
-    function UnderlyingVec(S0::num_, d::CurveType{num2, num3}) where {num_ <: Number, num2 <: Number, num3 <: Number}
+    d::C
+    function UnderlyingVec(S0::num_, d::C) where {num_ <: Number, C <: Curve}
         ChainRulesCore.@ignore_derivatives check_domain(S0 >= zero(num_), S0, "Underlying starting value must be positive")
-        return new{num_, num2, num3}(S0, d)
+        return new{num_, C}(S0, d)
     end
 end
 
@@ -36,7 +36,7 @@ Underlying(100.0, 0.01)
 Underlying(100.0, FinancialMonteCarlo.Curve([0.01, 0.02], 1.0))
 ```
 """
-function Underlying(S0::num_, d::CurveType{num2, num3}) where {num_ <: Number, num2 <: Number, num3 <: Number}
+function Underlying(S0::Number, d::Curve)
     return UnderlyingVec(S0, d)
 end
 function Underlying(S0::num_, d::num_2 = zero(S0)) where {num_ <: Number, num_2 <: Number}

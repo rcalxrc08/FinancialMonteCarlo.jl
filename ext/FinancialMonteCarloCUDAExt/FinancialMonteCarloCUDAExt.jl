@@ -5,7 +5,7 @@ using ChainRulesCore
 using Random
 using Adapt
 using Distributions: Gamma, InverseGaussian
-using FinancialMonteCarlo: AbstractCudaMode, AbstractMonteCarloConfiguration, AbstractSmile, AbstractZeroRateCurve, AmericanPayoff, AsianPayoff, BarrierPayoff, BermudanPayoff, CudaMode, FiniteActivityProcess, HostAdaptor, JumpList, MonteCarloConfiguration, PathDependentPayoff, add_jumps!, get_rng_type, host_rng, jumps_by_path, maturity, payoff_by_rows, smile_payoffs, to_mode
+using FinancialMonteCarlo: @muladd, AbstractCudaMode, AbstractMonteCarloConfiguration, AbstractSmile, AbstractZeroRateCurve, AmericanPayoff, AsianPayoff, BarrierPayoff, BermudanPayoff, CudaMode, FiniteActivityProcess, HostAdaptor, JumpList, MonteCarloConfiguration, PathDependentPayoff, add_jumps!, get_rng_type, host_rng, jumps_by_path, maturity, payoff_by_rows, smile_payoffs, to_mode
 import FinancialMonteCarlo: add_jump_matrix!, array_type, draw_normals!, draw_subordinator!, mode_adaptor, payoff, seed_device!
 
 # Everything the GPU changes, by the mode: where the arrays live and the generator to seed.
@@ -39,7 +39,7 @@ end
 
 # Marsaglia and Tsang (2000): a gamma variate of shape α >= 1 by rejection, with acceptance above 95%; for α < 1 the
 # variate of shape α + 1 times U^(1 / α).
-function device_draw(law::Gamma, ::Type{U}) where {U}
+@muladd function device_draw(law::Gamma, ::Type{U}) where {U}
     α = law.α
     boost = α < 1
     a = boost ? α + 1 : α
@@ -64,7 +64,7 @@ function device_draw(law::Gamma, ::Type{U}) where {U}
     return g * law.θ
 end
 # Michael, Schucany and Haas (1976): an inverse Gaussian variate from one normal and one uniform.
-function device_draw(law::InverseGaussian, ::Type{U}) where {U}
+@muladd function device_draw(law::InverseGaussian, ::Type{U}) where {U}
     μ = law.μ
     λ = law.λ
     ν = randn(U)

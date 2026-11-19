@@ -43,6 +43,26 @@ using Enzyme, ForwardDiff, Random
         end
     end
 
+    @testset "models on a dividend curve, without runtime activity (#79)" begin
+        # the nodes of a Curve are SVectors: an UnderlyingVec is isbits, so a model built from active parameters on it
+        # holds no constant heap memory next to the active numbers (EnzymeRuntimeActivityError with Vector nodes)
+        underlying = Underlying(S0, FinancialMonteCarlo.ImpliedCurve([0.01, 0.012, 0.015], [0.5, 1.0, 2.0]))
+        @noinline escape(m) = m.σ * m.underlying.S0 # the model escapes into a call, as in every pricer
+        f_one(x) = escape(BlackScholesProcess(x[1], underlying))
+        @test Enzyme.gradient(Enzyme.Reverse, Enzyme.Const(f_one), [sigma])[1] ≈ [S0]
+        # nested models rebuilt by set_parameters!, as FinancialCalibrator's vol_errors does
+        shifted = ShiftedProcess(LogNormalMixture((0.2, 0.3), (0.6,), underlying), 0.1)
+        @noinline escape_mixture(m) = m.model.η[1] * m.underlying.S0 + m.model.λ[1] * m.α
+        f_nested(x) = escape_mixture(FinancialMonteCarlo.set_parameters!(shifted, x))
+        x0 = FinancialMonteCarlo.get_parameters(shifted)
+        @test Enzyme.gradient(Enzyme.Reverse, Enzyme.Const(f_nested), x0)[1] ≈ ForwardDiff.gradient(f_nested, x0) rtol = 1e-12
+        # a price on the curve
+        mc_xo = MonteCarloConfiguration(500, Nstep_small; rng = Xoshiro())
+        f_price(x) = pricer(BlackScholesProcess(x[2], Underlying(x[1], underlying.d)), ZeroRate(x[3]), mc_xo, EuropeanOption(T, K))
+        x1 = [S0, sigma, r]
+        @test Enzyme.gradient(Enzyme.Reverse, Enzyme.Const(f_price), x1)[1] ≈ ForwardDiff.gradient(f_price, x1) rtol = 1e-10
+    end
+
     @testset "Black-Scholes, Xoshiro" begin
         x0 = [S0, sigma, r, d]
         mc_xo = MonteCarloConfiguration(2000, Nstep_small; rng = Xoshiro())

@@ -237,7 +237,8 @@ end
 # of the pair comes from one uniform, then each jump from two, drawn only as many as the path with more jumps needs: no
 # fixed dimension here, the table is only used for the counts.
 function add_jumps!(X, mcProcess::FiniteActivityProcess, mcBaseData::MonteCarloConfiguration{<:AntitheticMC}, T::Number)
-    J = JumpUniforms(mcProcess.λ * T, typeof(draw_uniform(mcBaseData)))
+    # the type of the uniforms of draw_uniform, rand(rng): Float64, without drawing one only for its type (#54)
+    J = JumpUniforms(mcProcess.λ * T, Float64)
     half = div(mcBaseData.Nsim, 2)
     Nstep = mcBaseData.Nstep
     for i = 1:half
@@ -281,7 +282,7 @@ function simulate!(X, mcProcess::FiniteActivityProcess, rfCurve::AbstractZeroRat
     dimension = Nstep + jump_uniforms(J)
     on_sobol_paths(dimension, mcBaseData, U; normals = Nstep) do i, point
         @inbounds for j = 1:Nstep
-            X[i, j+1] = X[i, j] + drift_of_step(drifts, j) + stddev_bm * point[j]
+            @muladd X[i, j+1] = X[i, j] + drift_of_step(drifts, j) + stddev_bm * point[j]
         end
         add_jumps_from_uniforms!(X, i, view(point, (Nstep+1):dimension), J, mcProcess, mcBaseData)
     end

@@ -8,6 +8,7 @@ using Accessors # setting fields
 import Adapt # moving the arrays of the inputs to the device of the mode
 using ChainRulesCore
 using MuladdMacro: @muladd # fused multiply-adds in the kernels of the paths
+using StaticArrays: SVector, pushfirst # the nodes of the curves: isbits (#79)
 using OrderedCollections: OrderedDict # the entries of portfolios and market data sets, in insertion order
 include("utils.jl")
 include("models.jl")
@@ -18,7 +19,6 @@ include("metrics.jl")
 include("output_type.jl")
 include("batches.jl")
 include("multi_threading.jl")
-include("deprecated.jl")
 export pricer, variance, confinter, delta, simulate, payoff, →
 
 end#End Module

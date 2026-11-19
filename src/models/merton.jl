@@ -34,4 +34,4 @@ jump_raw_type(::MertonProcess) = Float64
 @muladd jump_size(mcProcess::MertonProcess, z) = mcProcess.μ_jump + mcProcess.σ_jump * z
 compute_drift(mcProcess::MertonProcess) = exp(mcProcess.μ_jump + mcProcess.σ_jump^2 / 2) - 1
 # The jump size at the uniform u, by inversion (AntitheticMC and SobolMC)
-jump_quantile(mcProcess::MertonProcess, u) = mcProcess.μ_jump + mcProcess.σ_jump * norminvcdf(u)
+@muladd jump_quantile(mcProcess::MertonProcess, u) = mcProcess.μ_jump + mcProcess.σ_jump * norminvcdf(u)

@@ -1,5 +1,6 @@
 [deps]
 Aqua = "4c88cf16-eb10-579e-8560-4a9242c79595"
+ChainRulesTestUtils = "cdddcdb0-9152-4a09-a978-84456f9df70a"
 DifferentialEquations = "0c46a032-eb83-5123-abaf-570d42b7fbaa"
 Distributed = "8ba89e20-285c-5b6f-9357-94700520ee1b"
 Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
@@ -21,13 +22,14 @@ VectorizedRNG = "33b4df10-0173-11e9-2a0c-851a7edac40e"
 FinancialMonteCarlo = {path = ".."}
 
 [compat]
+ChainRulesTestUtils = "1"
 Aqua = "0.8"
 DifferentialEquations = "7"
 Distributed = "1"
 Distributions = "0.25"
 DualNumbers = "0.6"
 Enzyme = "0.13"
-FinancialMonteCarlo = "0.8"
+FinancialMonteCarlo = "0.9"
 FinancialToolbox = "0.8.1"
 ForwardDiff = "0.10, 1"
 Mooncake = "0.5"

@@ -28,16 +28,14 @@ end
         @test FMC.execution_mode(mc_serial) === FMC.SerialMode()
         @test (mc_serial.Nsim, mc_serial.Nstep, mc_serial.rng.seed) == (Nsim, Nstep, 3)
         @test [state.seed for state in FMC.with_mode(mc_serial, FMC.MultiThreading(2)).rng] == [4, 5]
-        # the names of version 0.5
-        @test (@test_deprecated MonteCarloConfiguration(Nsim, Nstep, 1)).rng.seed == 1
-        @test (@test_deprecated MonteCarloConfiguration(Nsim, Nstep, FMC.AntitheticMC())).sampling isa FMC.AntitheticMC
-        @test (@test_deprecated MonteCarloConfiguration(Nsim, Nstep, FMC.MultiThreading(2))).mode isa FMC.MultiThreading
-        @test (@test_deprecated MonteCarloConfiguration(Nsim, Nstep, FMC.AntitheticMC(), FMC.SerialMode())).sampling isa FMC.AntitheticMC
+        # the names and positional constructors of version 0.5 are gone (#77)
+        @test !isdefined(FMC, :SobolMode) && !isdefined(FMC, :BaseMode) && !isdefined(FMC, :AbstractMonteCarloMethod)
+        @test_throws MethodError MonteCarloConfiguration(Nsim, Nstep, FMC.AntitheticMC())
     end
 
     @testset "Underlying and curves" begin
         rf_curve = ZeroRate([0.00, 0.02], T)
-        @test FinancialMonteCarlo.Curve([0.0, 0.1], [0.0, 0.1]) isa FinancialMonteCarlo.CurveType
+        @test FinancialMonteCarlo.Curve([0.0, 0.1], [0.0, 0.1]) isa FinancialMonteCarlo.Curve{2, Float64, Float64}
         @test_throws DomainError Underlying(-S0)
         @test_throws DomainError Underlying(-S0, rf_curve.r)
 
@@ -50,21 +48,34 @@ end
         @test FinancialMonteCarlo.integral(c_late, 1.0) ≈ 0.03 * 0.5 + 0.04 * 0.5
         @test FinancialMonteCarlo.integral(FinancialMonteCarlo.Curve([0.03], [1.0]), 2.0) ≈ 0.06
 
-        # arithmetic of curves: on the union of the nodes, each curve flat outside its own (#43, #44)
+        # arithmetic with numbers on the values; between curves only + and -, lazy and exact (#81)
         Curve = FinancialMonteCarlo.Curve
         c1, c2, c3 = Curve([0.01, 0.02], 1.0), Curve([0.03, 0.03, 0.03], 1.0), Curve([0.01, 0.02], [0.5, 1.0])
-        @test (c1 - c2).values ≈ [-0.02, -0.015, -0.01] # not c2 - c1
-        @test (c1 / c2).values ≈ [1, 1.5, 2] ./ 3
-        @test (c3 - c2).times == [0.0, 0.5, 1.0] && (c3 - c2).values ≈ [-0.02, -0.02, -0.01]
-        @test (c1 + 1).values ≈ [1.01, 1.015, 1.02][[1, 3]] && (1 - c1).values ≈ [0.99, 0.98]
-        @test FinancialMonteCarlo.integral(c3 - c2, 1.0) ≈ FinancialMonteCarlo.integral(c3, 1.0) - FinancialMonteCarlo.integral(c2, 1.0)
+        @test (c1 + 1).values ≈ [1.01, 1.02] && (1 - c1).values ≈ [0.99, 0.98] && (2 * c1).values ≈ [0.02, 0.04] && (c1 / 2).values ≈ [0.005, 0.01]
+        @test c3 - c2 isa FinancialMonteCarlo.CurveDifference && c3 + c2 isa FinancialMonteCarlo.CurveDifference
+        for t in (0.0, 0.25, 0.5, 0.7, 1.0, 1.5)
+            @test FinancialMonteCarlo.integral(c3 - c2, t) ≈ FinancialMonteCarlo.integral(c3, t) - FinancialMonteCarlo.integral(c2, t)
+            @test FinancialMonteCarlo.integral(c3 + c2, t) ≈ FinancialMonteCarlo.integral(c3, t) + FinancialMonteCarlo.integral(c2, t)
+            @test FinancialMonteCarlo.integral(c3 - c2 - 0.01, t) ≈ FinancialMonteCarlo.integral(c3, t) - FinancialMonteCarlo.integral(c2, t) - 0.01 * t
+            @test FinancialMonteCarlo.integral(0.01 + (c3 - c2), t) ≈ FinancialMonteCarlo.integral(c3, t) - FinancialMonteCarlo.integral(c2, t) + 0.01 * t
+            @test FinancialMonteCarlo.integral(-(c3 - c2), t) ≈ FinancialMonteCarlo.integral(c2, t) - FinancialMonteCarlo.integral(c3, t)
+            @test FinancialMonteCarlo.value_at(c1 - c3, t) ≈ FinancialMonteCarlo.value_at(c1, t) - FinancialMonteCarlo.value_at(c3, t)
+        end
+        @test_throws MethodError c1 * c2
+        @test_throws MethodError c1 / c2
         # a drift r - d with a dividend curve finer than the rate curve keeps its sign
         model = BlackScholesProcess(sigma, Underlying(S0, Curve([0.0, 0.0, 0.0], T)))
         @test pricer(model, ZeroRate([0.05, 0.05], T), mc_small, Forward(T)) ≈ S0 rtol = 0.02
         @test_throws ArgumentError Curve([0.01, 0.02], [1.0, 0.5])
         # a type of the package, not a Dictionary with arithmetic defined on it (#42)
         @test parentmodule(Curve) === FinancialMonteCarlo
-        @test FinancialMonteCarlo.ImpliedCurve([0.01, 0.02], [1.0, 2.0]) isa Curve{Float64, Float64}
+        @test FinancialMonteCarlo.ImpliedCurve([0.01, 0.02], [1.0, 2.0]) isa Curve{3, Float64, Float64}
+        # isbits (#79), and inferred from tuples
+        @test isbits(BlackScholesProcess(sigma, Underlying(S0, c3))) && isbits(ZeroRate([0.01, 0.02], T))
+        @test (@inferred FinancialMonteCarlo.ImpliedCurve((0.01, 0.02), (1.0, 2.0))) == FinancialMonteCarlo.ImpliedCurve([0.01, 0.02], [1.0, 2.0])
+        @test (@inferred Curve((0.01, 0.02), (0.5, 1.0))) == c3
+        @test (@inferred ZeroRate((0.01, 0.02), 1.0)).r == c1
+        @test FinancialMonteCarlo.integral(Curve((0.01,), 1.0), 2.0) ≈ 0.02
         @test FinancialMonteCarlo.integral(FinancialMonteCarlo.ImpliedCurve([0.01, 0.02], [1.0, 2.0]), 2.0) ≈ 0.04
     end
 

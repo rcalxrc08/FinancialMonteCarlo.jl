@@ -47,6 +47,18 @@ times, which is what is used both for the drift of each simulation step and for 
   *zero* rates, i.e. such that ``\int_0^{T_i} r(t)\,dt = r_i T_i``. This is what you want when you
   have market quoted zero rates or dividend yields.
 
+Both take two vectors or two tuples. The nodes are stored as static vectors (StaticArrays), so a curve,
+an underlying holding one and a model built on it are `isbits` values: Enzyme differentiates them
+without runtime activity and a GPU kernel can capture them. The number of nodes is part of the type,
+so a curve built from vectors has a type known only at run time: build it once, outside the code that
+is differentiated or run in a loop, or from tuples, which give an inferred constructor.
+
+Curves combine with numbers through `+`, `-`, `*` and `/`, applied to the values. Two curves can only
+be added or subtracted: the result is a [`FinancialMonteCarlo.CurveDifference`](@ref), whose integral
+is the difference of the integrals of the two curves, exact and without new nodes. This is how the
+drift ``r - d`` is formed when both the rate and the dividend are curves. Curves are not multiplied or
+divided by each other.
+
 There is no support for multi-currency.
 
 See [Market data](@ref api-market-data) in the API reference for the full signatures.

@@ -8,17 +8,17 @@ Built by [`BrownianMotion`](@ref) when the drift is a curve.
 - `σ`: volatility, must be positive.
 - `μ`: drift curve.
 """
-struct BrownianMotionVec{num <: Number, num1 <: Number, num4 <: Number, numtype <: Number} <: AbstractMonteCarloEngine{numtype}
+struct BrownianMotionVec{num <: Number, C <: AbstractCurve, numtype <: Number} <: AbstractMonteCarloEngine{numtype}
     σ::num
-    μ::CurveType{num1, num4}
-    function BrownianMotionVec(σ::num, μ::CurveType{num1, num4}) where {num <: Number, num1 <: Number, num4 <: Number}
+    μ::C
+    function BrownianMotionVec(σ::num, μ::C) where {num <: Number, C <: AbstractCurve}
         ChainRulesCore.@ignore_derivatives check_domain(σ > 0, σ, "Volatility must be positive")
-        zero_typed = ChainRulesCore.@ignore_derivatives zero(num) + zero(num1) + zero(num4)
-        return new{num, num1, num4, typeof(zero_typed)}(σ, μ)
+        zero_typed = ChainRulesCore.@ignore_derivatives zero(num) + zero(number_type(μ))
+        return new{num, C, typeof(zero_typed)}(σ, μ)
     end
 end
 
-function BrownianMotion(σ::num, μ::CurveType{num1, num4}) where {num <: Number, num1 <: Number, num4 <: Number}
+function BrownianMotion(σ::num, μ::C) where {num <: Number, C <: AbstractCurve}
     return BrownianMotionVec(σ, μ)
 end
 

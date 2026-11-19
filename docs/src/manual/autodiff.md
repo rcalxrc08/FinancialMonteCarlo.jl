@@ -96,6 +96,13 @@ with and without antithetic variates. The variance gamma model does not work: th
 Distributions.jl draws scalar exponentials, which Enzyme cannot analyse either. Positions work too,
 also when they are built inside the differentiated function (their legs are two plain vectors);
 on Julia 1.10 that case needs runtime activity, `Enzyme.set_runtime_activity(Enzyme.Reverse)`.
+Models on a dividend curve need no runtime activity: the nodes of a curve are static vectors, so the
+model holds no constant heap memory next to its active parameters (#79).
+
+Zygote is not meant for the simulations, but the model constructors, `set_parameters!`, the curves and
+their `integral` are differentiable with it (a calibration loss differentiates through them): `integral`
+of a curve and `set_parameters!` have reverse rules (ChainRulesCore), which bring their Zygote gradients
+from about 0.5 ms to 4-20 μs (#80).
 The first call compiles the derivative, which takes about a minute.
 
 ## Choosing a backend

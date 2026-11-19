@@ -44,7 +44,7 @@ With `AntitheticMC` and `SobolMC` the jumps of Kou and Merton are drawn from uni
 one uniform gives the number of jumps (Poisson), then each jump takes one for its time and one for
 its size. The antithetic path uses `1 - u` for all of them. With `SobolMC` a path has room for `M`
 jumps, the Poisson quantile at `1 - sqrt(eps)`: the rare path with more draws them from `rng`.
-| `ControlVariates(variate, conf, sampling = StandardMC())` | control variates: a pilot run with configuration `conf` estimates the optimal coefficient and the price of `variate` (exact for a [`Forward`](@ref)), then the main run uses `sampling`. `variate` must have the same maturity as the priced payoff |
+| `ControlVariates(variate, conf, sampling = StandardMC(); price)` | control variates: a pilot run with configuration `conf` estimates the optimal coefficient, then the main run uses `sampling`. `variate` must have the same maturity as the priced payoff. Pass its exact discounted `price` (e.g. `blsprice` of FinancialToolbox; known without it for a [`Forward`](@ref)): the mean of the pilot, used otherwise, cancels most of the reduction |
 
 ## Execution modes
 

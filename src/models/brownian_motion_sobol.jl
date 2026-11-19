@@ -10,7 +10,7 @@ function simulate!(X, mcProcess::Union{BrownianMotion, BrownianMotionVec}, mcBas
     fill!(view(X, :, 1), isDualZero)
     on_sobol_paths(Nstep, mcBaseData, typeof(get_rng_type(isDualZero))) do i, normals
         @inbounds for j = 1:Nstep
-            X[i, j+1] = X[i, j] + drift_of_step(drifts, j) + stddev_bm * normals[j]
+            @muladd X[i, j+1] = X[i, j] + drift_of_step(drifts, j) + stddev_bm * normals[j]
         end
     end
     return

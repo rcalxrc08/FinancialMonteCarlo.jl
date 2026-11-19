@@ -9,7 +9,7 @@ function simulate!(X, mcProcess::AnySubordinatedBrownianMotion, mcBaseData::Sobo
     on_sobol_paths(Nstep, mcBaseData, typeof(get_rng_type(isDualZero))) do i, normals
         @inbounds for j = 1:Nstep
             dt_s = rand(rng, subordinator_)
-            X[i, j+1] = X[i, j] + drift_of_step(drifts, j) + θ * dt_s + sigma * sqrt(dt_s) * normals[j]
+            @muladd X[i, j+1] = X[i, j] + drift_of_step(drifts, j) + θ * dt_s + sigma * sqrt(dt_s) * normals[j]
         end
     end
     return

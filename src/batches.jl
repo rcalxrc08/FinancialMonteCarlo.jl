@@ -58,6 +58,7 @@ function mean_and_variance(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurv
     configs = batch_configs(mcConfig)
     moments = batch_results(config -> payoff_moments(mcProcess, rfCurve, config, abstractPayoffs), configs, mcConfig.mode)
     means = weighted_average(configs, first.(moments), mcConfig)
-    squares = sum(muladd.(config.Nsim, abs2.(moment[1] .- means), moment[2]) for (config, moment) in zip(configs, moments))
-    return means, squares ./ (mcConfig.Nsim - 1)
+    # each batch holds sample_count(config) independent samples (whole antithetic pairs, see batch_sizes)
+    squares = sum(muladd.(sample_count(config), abs2.(moment[1] .- means), moment[2]) for (config, moment) in zip(configs, moments))
+    return means, per_path_variance(squares, mcConfig)
 end

@@ -1,4 +1,6 @@
 include("../testutils.jl")
+using Statistics: var, std
+using Distributions: TDist, quantile
 
 @testset "Statistics" begin
     model = BlackScholesProcess(sigma, Underlying(S0, d))
@@ -21,6 +23,28 @@ include("../testutils.jl")
         @test width(cis_std[2]) > width(cis_anti[2])
     end
 
+    @testset "antithetic pairs are the independent samples (#76)" begin
+        # the variance per path is twice the sample variance of the averages of the pairs (path i, path i + Nsim / 2)
+        cfg = MonteCarloConfiguration(2000, 1; sampling = FinancialMonteCarlo.AntitheticMC(), seed = 3)
+        straddle = EuropeanOption(T, K) + EuropeanOption(T, K, false)
+        FinancialMonteCarlo.set_seed!(cfg)
+        values = payoff(simulate(model, rfCurve, cfg, T), straddle, rfCurve, cfg, T)
+        pairs = (values[1:1000] .+ values[1001:2000]) ./ 2
+        @test variance(model, rfCurve, cfg, straddle) ≈ 2 * var(pairs)
+        @test variance(model, rfCurve, cfg, [eu_put, EuropeanOption(T, K)]) ≈ [variance(model, rfCurve, cfg, eu_put), variance(model, rfCurve, cfg, EuropeanOption(T, K))]
+        # the interval of the mean of 1000 pairs: 999 degrees of freedom
+        lo, hi = confinter(model, rfCurve, cfg, straddle, 0.95)
+        @test (hi - lo) / 2 ≈ quantile(TDist(999), 0.975) * std(pairs) / sqrt(1000)
+        # an even payoff: the pairs are positively correlated, antithetic sampling increases the variance (it was
+        # reported 30% too small); a monotone one: it decreases it
+        mc_std, mc_pairs = MonteCarloConfiguration(20_000, 1; seed = 1), MonteCarloConfiguration(20_000, 1; sampling = FinancialMonteCarlo.AntitheticMC(), seed = 1)
+        @test variance(model, rfCurve, mc_pairs, straddle) > 1.5 * variance(model, rfCurve, mc_std, straddle)
+        @test variance(model, rfCurve, mc_pairs, EuropeanOption(T, K)) < variance(model, rfCurve, mc_std, EuropeanOption(T, K))
+        # the batches pool the moments of their pairs
+        batched = MonteCarloConfiguration(20_000, 1; sampling = FinancialMonteCarlo.AntitheticMC(), mode = FinancialMonteCarlo.MultiThreading(4), seed = 1)
+        @test variance(model, rfCurve, batched, straddle) ≈ variance(model, rfCurve, mc_pairs, straddle) rtol = 0.1
+    end
+
     # A vector of payoffs of different types has an abstract element type: the result must still be inferred
     @testset "inferred for a vector of payoffs" begin
         payoffs = [eu_put, am_put]
@@ -35,7 +59,7 @@ include("../testutils.jl")
         model_32 = BlackScholesProcess(Float32(sigma), Underlying(Float32(S0), Float32(d)))
         curve_32 = ZeroRate(Float32(r))
         eu_32 = EuropeanOption(Float32(T), Float32(K))
-        smile_32 = FinancialMonteCarlo.EuropeanOptionSmile(Float32(T), Float32[K, K + 10], [true, false])
+        smile_32 = FinancialMonteCarlo.EuropeanOptionSmile(Float32(T), Float32[K, K+10], [true, false])
         threaded = MonteCarloConfiguration(Nsim_small, Nstep_small; mode = FinancialMonteCarlo.MultiThreading(2), seed = [1, 2])
         for config in (mc_small, threaded)
             @test pricer(model_32, curve_32, config, eu_32) isa Float32

@@ -29,7 +29,7 @@ end
 
 export VarianceGammaProcess;
 
-compute_drift(::VarianceGammaProcess, σ::Number, θ::Number, κ::Number) = -1 / κ * log(1 - σ^2 * κ / 2 - θ * κ)
+@muladd compute_drift(::VarianceGammaProcess, σ::Number, θ::Number, κ::Number) = -1 / κ * log(1 - σ^2 * κ / 2 - θ * κ)
 compute_drift(mcProcess::VarianceGammaProcess) = compute_drift(mcProcess, mcProcess.σ, mcProcess.θ, mcProcess.κ)
 compute_subordinator_law(::VarianceGammaProcess, κ::Number, dt::Number) = Gamma(dt / κ, κ)
 compute_subordinator_law(mcProcess::VarianceGammaProcess, dt::Number) = compute_subordinator_law(mcProcess, mcProcess.κ, dt)

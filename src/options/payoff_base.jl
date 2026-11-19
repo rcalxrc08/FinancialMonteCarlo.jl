@@ -4,19 +4,24 @@ abstract type AbstractPayoff{numtype <: Number} end
 abstract type AbstractSmile{T} end
 
 """
-    ControlVariates(variate, conf_variate, sampling = StandardMC())
+    ControlVariates(variate, conf_variate, sampling = StandardMC(); price = nothing)
 
 Control variates sampling for [`MonteCarloConfiguration`](@ref). A pilot simulation with
-configuration `conf_variate` estimates the optimal coefficient and the price of the control
-`variate` (exact when `variate` is a [`Forward`](@ref)); the main simulation then uses `sampling`.
-The control must have the same maturity as the priced payoff.
+configuration `conf_variate` estimates the optimal coefficient of the control `variate`; the main
+simulation then uses `sampling`. The control must have the same maturity as the priced payoff.
+
+The method needs the exact (discounted) price of the control: pass it as `price`, e.g. from the
+closed forms of FinancialToolbox (`blsprice`, `blsbin`, the barriers). It is known without it only
+for a [`Forward`](@ref). Without it the price of the control is the mean of the pilot, which is
+about as noisy as the main estimate and cancels most of the variance reduction (#75).
 """
-struct ControlVariates{abstractPayoff <: AbstractPayoff{<:Number}, abstractMonteCarloConfiguration <: AbstractMonteCarloConfiguration, abstractSampling <: AbstractSampling} <: AbstractSampling
+struct ControlVariates{abstractPayoff <: AbstractPayoff{<:Number}, abstractMonteCarloConfiguration <: AbstractMonteCarloConfiguration, abstractSampling <: AbstractSampling, P <: Union{Nothing, Number}} <: AbstractSampling
     variate::abstractPayoff
     conf_variate::abstractMonteCarloConfiguration
     sampling::abstractSampling
-    function ControlVariates(variate::T1, conf_variate::abstractMonteCarloConfiguration, sampling::abstractSampling = StandardMC()) where {T1 <: AbstractPayoff{<:Number}, abstractMonteCarloConfiguration <: AbstractMonteCarloConfiguration, abstractSampling <: AbstractSampling}
-        return new{T1, abstractMonteCarloConfiguration, abstractSampling}(variate, conf_variate, sampling)
+    price::P
+    function ControlVariates(variate::T1, conf_variate::abstractMonteCarloConfiguration, sampling::abstractSampling = StandardMC(); price::P = nothing) where {T1 <: AbstractPayoff{<:Number}, abstractMonteCarloConfiguration <: AbstractMonteCarloConfiguration, abstractSampling <: AbstractSampling, P <: Union{Nothing, Number}}
+        return new{T1, abstractMonteCarloConfiguration, abstractSampling, P}(variate, conf_variate, sampling, price)
     end
 end
 # The main simulation uses the sampling of the control variates
