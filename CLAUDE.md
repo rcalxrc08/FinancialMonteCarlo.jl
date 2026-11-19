@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-FinancialMonteCarlo.jl: a Julia package for Monte Carlo pricing and risk of equity derivatives (single-name and multivariate via Gaussian copula). The canonical remote is GitLab (`gitlab.com/rcalxrc08/FinancialMonteCarlo.jl`); GitHub Actions run CI (Julia 1.10 and latest 1.x), the benchmarks, the documentation (built by [Documentation.yml](.github/workflows/Documentation.yml) and published with GitHub Pages from Actions, with no `gh-pages` branch: master at the site root, the latest release in `stable/`; GitHub Pages does not serve a deployment made from a tag, so a tag run starts a run on master, which rebuilds `stable/` from the new tag), CompatHelper and TagBot.
+FinancialMonteCarlo.jl: a Julia package for Monte Carlo pricing and risk of equity derivatives (single-name and multivariate via Gaussian copula). The main remote is GitHub (`github.com/rcalxrc08/FinancialMonteCarlo.jl`, the `GitHub` remote); GitLab (`origin`) is a legacy mirror. GitHub Actions run CI (Julia 1.10 and latest 1.x), the benchmarks, the documentation (built by [Documentation.yml](.github/workflows/Documentation.yml) and published with GitHub Pages from Actions, with no `gh-pages` branch: master at the site root, the latest release in `stable/`; GitHub Pages does not serve a deployment made from a tag, so a tag run starts a run on master, which rebuilds `stable/` from the new tag), CompatHelper and TagBot.
 
 ## Commands
 
