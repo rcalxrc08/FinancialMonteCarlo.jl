@@ -16,3 +16,4 @@ Manifest.toml
 docs/src/tutorials/
 
 docs/src/assets/figures/
+Manifest-v*.toml
