@@ -2,7 +2,7 @@
 
 _What each weak dependency adds and the rules for extensions._ (Layer 3 reference.)
 
-- One extension per weak dependency: CUDA (GPU models, `ext/FinancialMonteCarloCUDAExt/`), DifferentialEquations (price
+- One extension per weak dependency: CUDA (GPU models, `ext/FinancialMonteCarloCUDAExt/`), StochasticDiffEq (price
   directly from an SDE), DualNumbers, EnzymeCore, Mooncake, VectorizedRNG, Distributed. TaylorSeries needs no extension.
 - Code there only exists when the user has loaded the corresponding package. An extension can only add methods, so
   types and functions it needs must be defined in `src/` (`CudaMode`, `MultiProcess`, `MonteCarloDiffEqModel`,
@@ -15,4 +15,5 @@ _What each weak dependency adds and the rules for extensions._ (Layer 3 referenc
 - Mooncake: `set_seed!` zero-derivative primitive; `rrule!!`/`frule!!` of the kernels. EnzymeCore: inactive `set_seed!`
   and scalar draws; `augmented_primal`/`reverse` of the kernels (`autodiff.md`).
 - Distributed: `MultiProcess` batches (`run_on_batches` with `pmap`).
-- DifferentialEquations: `MonteCarloDiffEqModel`; #64 asks for DifferentialEquations 8.
+- StochasticDiffEq: `MonteCarloDiffEqModel`. The trigger was DifferentialEquations until 8 (#64), which keeps only the
+  ODE solvers (SciMLBase + OrdinaryDiffEq): SOSRI is in StochasticDiffEq, which DifferentialEquations 7 loads too.

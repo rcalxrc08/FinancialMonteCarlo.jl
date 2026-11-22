@@ -1,8 +1,9 @@
 include("../testutils.jl")
-using DifferentialEquations, Random
+using StochasticDiffEq, JumpProcesses, Random
 
-# Pricing straight from an SDE definition through the DifferentialEquations.jl extension.
-@testset "DifferentialEquations models" begin
+# Pricing straight from an SDE definition through the StochasticDiffEq extension (DifferentialEquations 8 has no SDE
+# solvers, #64): EnsembleProblem and SDEProblem from StochasticDiffEq, the jumps from JumpProcesses.
+@testset "StochasticDiffEq models" begin
     @testset "Black-Scholes SDE" begin
         drift(u, p, t) = (r - d) * u
         diffusion(u, p, t) = sigma * u
@@ -18,11 +19,12 @@ using DifferentialEquations, Random
         diffusion(u, p, t) = sigma
         rate(u, p, t) = lam * T
         affect!(integrator) = (integrator.u += rand(rng) < p1 ? randexp(rng) / lamp : -randexp(rng) / lamm)
-        jump_prob = JumpProblem(SDEProblem(drift, diffusion, 0.0, (0.0, T)), Direct(), ConstantRateJump(rate, affect!), rng = rng)
+        jump_prob = JumpProblem(SDEProblem(drift, diffusion, 0.0, (0.0, T)), Direct(), ConstantRateJump(rate, affect!))
         model = FinancialMonteCarlo.MonteCarloDiffEqModel(EnsembleProblem(jump_prob), x -> S0 * exp(x), Underlying(S0, d))
         payoffs = standard_payoffs()
         check_prices(model, rfCurve, mc, (fwd = payoffs.fwd,), (fwd = 98.8436678850961,); toll = 0.8)
-        # the jumps draw from rng, which set_seed! must reset here too
+        # the jump sizes draw from rng (affect!), which set_seed! must reset here too; the jump times come from the solver's
+        # generator (JumpProcesses 10 takes no rng in JumpProblem)
         mc_small_jumps = MonteCarloConfiguration(Nsim_small, Nstep_small; rng = rng)
         check_prices(model, rfCurve, mc_small_jumps, Base.structdiff(payoffs, NamedTuple{(:fwd,)}))
     end

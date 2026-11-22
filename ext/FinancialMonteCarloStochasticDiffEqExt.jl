@@ -1,7 +1,9 @@
-module FinancialMonteCarloDifferentialEquationsExt
+# Triggered by StochasticDiffEq, which has the SDE solvers since DifferentialEquations 8 is OrdinaryDiffEq only (#64):
+# DifferentialEquations 7 loads it, with 8 the user loads it.
+module FinancialMonteCarloStochasticDiffEqExt
 
 using ChainRulesCore
-using DifferentialEquations: EnsembleThreads, SOSRI, solve
+using StochasticDiffEq: EnsembleThreads, SOSRI, solve
 using FinancialMonteCarlo: MonteCarloConfiguration, MonteCarloDiffEqModel, ZeroRate, check_domain
 import FinancialMonteCarlo: simulate!
 

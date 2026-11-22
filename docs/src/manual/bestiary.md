@@ -323,9 +323,9 @@ every column at every step ([#46](https://github.com/rcalxrc08/FinancialMonteCar
 
 ## Any SDE
 
-With DifferentialEquations.jl loaded, `FinancialMonteCarlo.MonteCarloDiffEqModel` turns an
+With StochasticDiffEq.jl loaded, `FinancialMonteCarlo.MonteCarloDiffEqModel` turns an
 `EnsembleProblem` (an SDE, or a jump diffusion) into a model priced like the others: see
-[DifferentialEquations.jl](@ref). It is the quickest way to try a model that is not here, at the
+[StochasticDiffEq.jl](@ref). It is the quickest way to try a model that is not here, at the
 cost of the speed, of the GPU and of the samplings of the native models. The engines the models above are built
 on, which new models can reuse, are in [Models](@ref).
 

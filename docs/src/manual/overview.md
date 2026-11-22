@@ -70,6 +70,6 @@ same session:
 |:--|:--|
 | `CUDA` | GPU simulation of several models with `CudaMode` |
 | `Distributed` | `MultiProcess` parallel mode |
-| `DifferentialEquations` | `MonteCarloDiffEqModel`, see [DifferentialEquations.jl](@ref) |
+| `StochasticDiffEq` | `MonteCarloDiffEqModel`, see [StochasticDiffEq.jl](@ref) |
 | `DualNumbers` | compatibility methods for this number type |
 | `VectorizedRNG` | fast vectorized random number generation |

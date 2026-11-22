@@ -51,7 +51,7 @@
 <article class="fc-card"><div class="fc-icon"><svg viewBox="0 0 32 32"><path d="M4 26 16 6l12 20z"/><path d="M10 26 16 16l6 10"/></svg></div>
 <h3>Automatic differentiation</h3><p>DualNumbers, HyperDualNumbers, TaylorSeries, ForwardDiff, ReverseDiff, Mooncake, Enzyme.</p><p class="fc-why">Pathwise Greeks of any payoff from the price function.</p></article>
 <article class="fc-card"><div class="fc-icon"><svg viewBox="0 0 32 32"><path d="M3 16c3-9 6-9 9 0s6 9 9 0 6-9 8-4"/><circle cx="12" cy="16" r="2" /></svg></div>
-<h3>Custom SDEs</h3><p>Any model written with DifferentialEquations.jl, priced like the built-in ones.</p><p class="fc-why">Prototype a model before writing its simulation.</p></article>
+<h3>Custom SDEs</h3><p>Any SDE written with StochasticDiffEq.jl, priced like the built-in ones.</p><p class="fc-why">Prototype a model before writing its simulation.</p></article>
 </div>
 ```
 

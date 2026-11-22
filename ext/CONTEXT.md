@@ -10,7 +10,7 @@ One extension per weak dependency; the package loads and works without any of th
 | `FinancialMonteCarloMooncakeExt.jl` | zero-derivative `set_seed!`; `rrule!!`/`frule!!` of the kernels |
 | `FinancialMonteCarloEnzymeCoreExt.jl` | inactive `set_seed!` and scalar draws; `augmented_primal`/`reverse` of the kernels |
 | `FinancialMonteCarloDualNumbersExt.jl` | dual-number methods |
-| `FinancialMonteCarloDifferentialEquationsExt.jl` | simulation of `MonteCarloDiffEqModel` |
+| `FinancialMonteCarloStochasticDiffEqExt.jl` | simulation of `MonteCarloDiffEqModel` (SOSRI, `EnsembleThreads`) |
 | `FinancialMonteCarloDistributedExt.jl` | `MultiProcess`: `run_on_batches` with `pmap` |
 | `FinancialMonteCarloVectorizedRNGExt.jl` | VectorizedRNG generators |
 | `references/extensions.md` | what lives in `src/` for the extensions, the CUDA rules |

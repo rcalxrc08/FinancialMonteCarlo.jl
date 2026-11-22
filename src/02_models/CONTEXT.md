@@ -19,7 +19,7 @@ Engines and financial models, the shared simulation hooks, Sobol bodies, jumps, 
 | `models/fa_levy.jl`, `models/kou.jl`, `models/merton.jl` | finite-activity Lévy: one `simulate!`, `JumpList`, `JumpUniforms`, `record_jumps`, `add_jump_sizes!`; Kou and Merton supply `compute_jump_size`, `compute_drift`, `jump_quantile` |
 | `models/subordinated_brownian_motion.jl`, `models/subordinated_brownian_motion_aug.jl`, `models/subordinated_brownian_motion_sobol.jl` | `SubordinatedBrownianMotion` (plain, curve, Sobol) |
 | `models/ia_levy.jl`, `models/variance_gamma.jl`, `models/normal_inverse_gaussian.jl` | infinite-activity Lévy: one `simulate!`; VG and NIG supply `compute_drift`, `compute_subordinator_law` in two forms |
-| `models/diff_eq_monte_carlo.jl` | `MonteCarloDiffEqModel` (the DifferentialEquations extension simulates it) |
+| `models/diff_eq_monte_carlo.jl` | `MonteCarloDiffEqModel` (the StochasticDiffEq extension simulates it) |
 | `models/shifted_process.jl` | `ShiftedProcess(model, α)`, `add_shift!` |
 | `models/adjoints.jl` | closed-form adjoints `*_adjoint!` of the kernels, used by the Mooncake and Enzyme rules |
 | `models/nvariate.jl`, `models/nvariate_log.jl` | `GaussianCopulaNVariateProcess`, `GaussianCopulaNVariateLogProcess` |

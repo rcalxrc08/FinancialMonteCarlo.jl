@@ -79,3 +79,13 @@ _Architecture decisions, oldest first. Append; a reversed decision gets a new en
   VibratoMonteCarlo.
 - **Consequences:** the top-level source files and their folders moved into stage folders (relative includes unchanged).
 - **Status:** active
+
+## D-012 (2026-11-22, #64) The SDE extension is triggered by StochasticDiffEq
+
+- **Decision:** `MonteCarloDiffEqModel` is simulated by `FinancialMonteCarloStochasticDiffEqExt`, a weak dependency on
+  StochasticDiffEq (6, 7), not on DifferentialEquations.
+- **Why:** DifferentialEquations 8 contains only SciMLBase and OrdinaryDiffEq: no SDE solver (`SOSRI`), no jumps; widening
+  its compat would load an extension that cannot work. StochasticDiffEq has the solver and reexports the problem types.
+- **Consequences:** users of DifferentialEquations 7 get the extension as before (it loads StochasticDiffEq); with
+  DifferentialEquations 8 they load StochasticDiffEq (and JumpProcesses for jumps) themselves. Release note needed.
+- **Status:** active

@@ -10,7 +10,7 @@ Find the task, open the contract it points to, and load only the inputs listed t
 | `get_parameters`/`set_parameters!`, positions, portfolios, market data sets | `src/04_operations/CONTEXT.md` |
 | `pricer`, `variance`, `confinter`, Greeks, control variates, output types | `src/05_metrics/CONTEXT.md` |
 | Multi-threading and batched modes | `src/06_batches/CONTEXT.md` |
-| CUDA, Mooncake, Enzyme, DualNumbers, DifferentialEquations, Distributed, VectorizedRNG | `ext/CONTEXT.md` |
+| CUDA, Mooncake, Enzyme, DualNumbers, StochasticDiffEq, Distributed, VectorizedRNG | `ext/CONTEXT.md` |
 | Adding or running tests, groups, reference prices, the CUDA tests | `test/CONTEXT.md` |
 | Documentation pages, bestiaries, tutorials, figures | `docs/CONTEXT.md` |
 | The benchmark suite | `benchmark/CONTEXT.md` |

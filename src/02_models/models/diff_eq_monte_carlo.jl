@@ -1,4 +1,4 @@
-# simulate! is in the DifferentialEquations extension.
+# simulate! is in the StochasticDiffEq extension.
 struct MonteCarloDiffEqModel{absdiffeqmodel} <: ScalarMonteCarloProcess{Float64}
     model::absdiffeqmodel
     final_trasform::Function

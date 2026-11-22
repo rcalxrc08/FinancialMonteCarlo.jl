@@ -34,7 +34,7 @@ confinter(model, rfCurve, mcConfig, option, 0.95)               # 95% confidence
 
 | | |
 |:--|:--|
-| **Models** | Black–Scholes, Bachelier, Heston, Kou, Merton, Variance Gamma, Normal Inverse Gaussian, lognormal mixture (Brigo–Mercurio), any of them shifted (`ShiftedProcess`); any SDE written with [DifferentialEquations.jl](https://github.com/SciML/DifferentialEquations.jl) |
+| **Models** | Black–Scholes, Bachelier, Heston, Kou, Merton, Variance Gamma, Normal Inverse Gaussian, lognormal mixture (Brigo–Mercurio), any of them shifted (`ShiftedProcess`); any SDE written with [StochasticDiffEq.jl](https://github.com/SciML/StochasticDiffEq.jl) |
 | **Multivariate** | Gaussian copulas over any single-name models (`GaussianCopulaNVariateProcess`), basket payoffs |
 | **Payoffs** | forwards, European and binary European, barriers, Asian, Bermudan and American (Longstaff–Schwartz), baskets; smiles of many strikes on one simulation |
 | **Contracts** | positions (`2 * call - put`) and portfolios on many underlyings, priced against a market data set |

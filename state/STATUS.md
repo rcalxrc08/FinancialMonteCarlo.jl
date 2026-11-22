@@ -5,15 +5,15 @@ the index an agent reads first._ Updated: 2026-11-22
 
 ## Current focus
 
-Layered context (#84) on branch `context-layers`: done when `test/context.jl` and the full suite are green and the
-branch is merged. Last release 0.9.0 (SVector curves, Zygote rules, #76, #77, #79, #81).
+#64 on branch `stochasticdiffeq`, for review: the SDE extension is triggered by StochasticDiffEq (DifferentialEquations 8
+has no SDE solvers; release note: with DifferentialEquations 8 load StochasticDiffEq). Last release 0.9.0 (SVector curves, Zygote rules, #76, #77, #79, #81).
 
 ## Active work
 
 | Item | Branch | Issue | Next step |
 |:--|:--|:--|:--|
-| Layered context | `context-layers` | #84 | review, merge, push |
-| Zygote on the structs | — | #80 (reopened) | `@non_differentiable` validation without closures (2.5-3x cheaper) |
+| SDE extension on StochasticDiffEq | `stochasticdiffeq` | #64 | review, merge, push; release note |
+| Zygote on the structs | — | #80 (reopened), #85 | inner constructor `new` only, outer constructor calls one `@non_differentiable` check (measured in #85) |
 | New models | — | #62 | Bates, SABR, CEV (Bachelier and ShiftedProcess done) |
 
 ## Known issues
@@ -31,7 +31,7 @@ branch is merged. Last release 0.9.0 (SVector curves, Zygote rules, #76, #77, #7
 
 - CI pins Julia 1.13.3 (Enzyme abort on 1.13.4, EnzymeAD/Enzyme.jl#4051, fixed in Enzyme 0.13.220): put '1' back once
   the Enzyme tests pass on 1.13.4.
-- #66 drop the Julia 1.10 Enzyme workarounds; #64 DifferentialEquations 8; #67 Kou derivative in `p` with StandardMC;
+- #66 drop the Julia 1.10 Enzyme workarounds; #67 Kou derivative in `p` with StandardMC;
   #72 split the underlying from the models; #83 term structure of smiles; #28 European payoffs without the whole path
   matrix; #12 Zygote.
 - Untracked local files: `lit.jl`, `lit2.jl`, `path.jl`, `examples/`, `benchmark/bench_black_ql.jl`, `benchmark/wip/`,

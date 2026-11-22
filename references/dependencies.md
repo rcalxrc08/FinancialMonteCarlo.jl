@@ -14,7 +14,7 @@ _Why each dependency exists, hard or weak, and its compat floor._ (Layer 3 refer
 | `StaticArrays` | hard | `SVector` curve nodes (#79, since 0.9) | 1.5 |
 | `LinearAlgebra`, `Random`, `Statistics` | hard | stdlib | 1 |
 | `CUDA` | weak | GPU models, device draws | 5, 6 |
-| `DifferentialEquations` | weak | `MonteCarloDiffEqModel` | 7 (#64: 8) |
+| `StochasticDiffEq` | weak | `MonteCarloDiffEqModel` (DifferentialEquations 8 has no SDE solvers, #64) | 6, 7 |
 | `Distributed` | weak | `MultiProcess` | 1 |
 | `DualNumbers` | weak | dual-number methods | 0.6 |
 | `EnzymeCore` | weak | inactive draws, kernel rules | 0.8 |

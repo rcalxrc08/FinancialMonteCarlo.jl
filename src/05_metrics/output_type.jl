@@ -44,7 +44,7 @@ number_type(smile::AbstractSmile) = price_type(smile.T, smile.K)
 
 number_type(model::ScalarMonteCarloProcess{num}) where {num <: Number} = price_type(num, model.underlying)
 number_type(::Union{AbstractMonteCarloEngine{num}, VectorialMonteCarloProcess{num}}) where {num <: Number} = num
-# The paths come from the solver of DifferentialEquations, in Float64 whatever the underlying
+# The paths come from the solver of StochasticDiffEq, in Float64 whatever the underlying
 number_type(::MonteCarloDiffEqModel) = Float64
 
 ##Vectorization "utils"

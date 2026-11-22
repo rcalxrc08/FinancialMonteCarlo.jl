@@ -1,6 +1,6 @@
 # The following contains just abstract types regarding models and "virtual" method
 
-#The most basic type, needed in order to support DifferentialEquations.jl
+#The most basic type, needed in order to support StochasticDiffEq.jl (MonteCarloDiffEqModel)
 abstract type BaseProcess{T <: Number} end
 
 # There will inherit from this type just processes, i.e. models that know what is a zeroCurve and a divided
