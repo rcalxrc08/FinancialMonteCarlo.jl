@@ -30,4 +30,4 @@ Upstream workarounds (cite issue and version; recheck on every upstream release,
 | CI pinned to Julia 1.13.3 | EnzymeAD/Enzyme.jl#4051 (fixed in Enzyme 0.13.220) | Enzyme < 0.13.220 on Julia 1.13.4 | 2026-11-18 |
 | `set_runtime_activity` for positions on Julia 1.10 | Enzyme on 1.10 (#66) | Julia 1.10 | 2026-11-19 |
 | `@test_broken` Enzyme/Mooncake in `CudaMode` | JuliaGPU/CUDA.jl#3332, EnzymeAD/Enzyme.jl#3741, #4094 (#68) | CUDA 6.5.1, Enzyme 0.13.221 | 2026-11-19 |
-| `promote`/`convert` instead of `oftype`; benchmarks without splats | FluxML/Zygote.jl#1751, #1752, #1753, #1754 | Zygote 0.7.18 | 2026-11-19 |
+| `promote`/`convert` instead of `oftype`; benchmarks without splats | FluxML/Zygote.jl#1751 (open); #1752, #1753, #1754 fixed in Zygote 0.7.19 | Zygote 0.7.19 | 2026-11-22 |

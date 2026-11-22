@@ -70,13 +70,13 @@ default `MersenneTwister` ends in a foreigncall into libdSFMT. Mooncake's first 
   generated `parameter_tangent_values`, `LogNormalMixture` and `ShiftedProcess` methods; the underlying's tangent passed
   through; 0.56-0.67 ms → 11-19 μs). Both tested by ChainRulesTestUtils' `test_rrule` in `test/ad/chain_rules.jl` (not
   on a node, where the integral has a kink).
-- Still open: every `@ignore_derivatives` block in a constructor costs ~11 μs under Zygote (its closure, Zygote#1753); a
-  validation function marked `@non_differentiable` called without a closure is 2.5-3× cheaper (measured on #80, not
-  done yet).
-- Zygote traps (Zygote 0.7.18): `oftype` has a branch and an uninferred pullback (FluxML/Zygote.jl#1751, use
-  `promote`/`convert`); `gradient`/`pullback` are compiled for `f::Function`, microseconds once the pullback is not
-  inlined (#1752); `Core._typeof_captured_variable` of every closure capture is traced in reverse mode (#1753);
-  branch-only code keeps `Vector{Any}` stacks (#1736, #1754). Benchmark Zygote with interpolated non-constant arguments
+- Still open (#85): every `@ignore_derivatives` block in a constructor costs ~11 μs under Zygote 0.7.18 (its closure,
+  Zygote#1753), ~2.5 μs under 0.7.19; a validation function marked `@non_differentiable` called without a closure
+  costs nothing measurable under 0.7.19 (5.3-5.7 μs against 5.1-5.6 μs without checks, measured in #85).
+- Zygote traps: `oftype` has a branch and an uninferred pullback (FluxML/Zygote.jl#1751, still open: use
+  `promote`/`convert`). Fixed in Zygote 0.7.19 (2026-11-22): `gradient`/`pullback` compiled for `f::Function` (#1752),
+  `Core._typeof_captured_variable` of every closure capture traced in reverse mode (#1753), the `Vector{Any}` stacks of
+  branch-only code (#1736, #1754: a ternary on a flag 18-21 → 2.8-2.9 μs). Benchmark Zygote with interpolated non-constant arguments
   and no `$(args)...` splat.
 
 ## TaylorSeries

@@ -14,4 +14,5 @@ _The benchmark suite and how to compare._ (Layer 3 reference.)
   the Zygote rules of #80 (`integral` 483 → 4 μs, `set_parameters!` 0.56-0.67 ms → 11-19 μs), the jump kernel (a thread
   per element, 4x faster than per path), `solve_3x3` against `lu!` (`autodiff.md`, `models.md`, `payoffs.md`).
 - Docs: `docs/src/manual/performance.md` and `autodiff.md` tables say the machine they were taken on.
-- Zygote: interpolated non-constant arguments, no `$(args)...` splat (FluxML/Zygote.jl#1752).
+- Zygote: interpolated non-constant arguments, no `$(args)...` splat (FluxML/Zygote.jl#1752, fixed in Zygote 0.7.19:
+  still the fair way to time it on older versions).
