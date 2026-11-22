@@ -3,7 +3,7 @@
 # Enzyme:
 #     julia --project=<env with CUDA, Enzyme, Mooncake, ForwardDiff, Test and this package> test/cuda/test_ad_cuda.jl
 # The reference is a central finite difference on the same paths (the seed is reset at every call). The rules of the
-# kernels (src/models/adjoints.jl) are for arrays on the host: on the GPU every backend differentiates the generic code,
+# kernels (src/02_models/models/adjoints.jl) are for arrays on the host: on the GPU every backend differentiates the generic code,
 # and the combinations that do not work yet are marked broken (with the error they throw printed) or skipped.
 using Test, FinancialMonteCarlo, CUDA, ForwardDiff, Mooncake, Enzyme
 const FMC = FinancialMonteCarlo

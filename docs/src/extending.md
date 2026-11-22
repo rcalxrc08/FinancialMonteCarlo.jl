@@ -52,7 +52,7 @@ sequences, time dependent rates (`μ` above is a curve when `rfCurve` is one) an
 loaded, the GPU. Nothing else needs to be written.
 
 A model that needs its own time stepping can still support all of them with a single
-`simulate!` body, built on the hooks the built-in models use (see `src/models/paths.jl`):
+`simulate!` body, built on the hooks the built-in models use (see `src/02_models/models/paths.jl`):
 
 - `step_drifts(μ, dt, Nstep)` and `drift_of_step(drifts, j)`: the drift of each step, a single
   number for a constant rate and a vector only for a curve;

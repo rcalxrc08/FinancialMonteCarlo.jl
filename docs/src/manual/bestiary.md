@@ -158,7 +158,7 @@ MertonProcess(0.2, 3.0, -0.05, 0.1, Underlying(100.0, 0.01))
 | `σ_jump` | standard deviation of the jumps of ``X`` | ``σ_J > 0`` |
 
 A finite activity Lévy process: a Brownian motion plus a compound Poisson process
-(`FiniteActivityProcess`, [fa_levy.jl](https://github.com/rcalxrc08/FinancialMonteCarlo.jl/blob/master/src/models/fa_levy.jl)).
+(`FiniteActivityProcess`, [fa_levy.jl](https://github.com/rcalxrc08/FinancialMonteCarlo.jl/blob/master/src/02_models/models/fa_levy.jl)).
 The jumps are simulated exactly, not discretised; with antithetic and Sobol sampling their count,
 times and sizes are drawn from uniforms by inversion, so that the paths of a pair mirror each other
 and the Sobol points cover the jumps too.
@@ -210,7 +210,7 @@ VarianceGammaProcess(0.2, -0.1, 0.2, Underlying(100.0, 0.01))
 | `κ` | variance rate of the subordinator (kurtosis) | ``κ > 0`` |
 
 An infinite activity Lévy process (`InfiniteActivityProcess`,
-[ia_levy.jl](https://github.com/rcalxrc08/FinancialMonteCarlo.jl/blob/master/src/models/ia_levy.jl)),
+[ia_levy.jl](https://github.com/rcalxrc08/FinancialMonteCarlo.jl/blob/master/src/02_models/models/ia_levy.jl)),
 exact at the time steps: a [`SubordinatedBrownianMotion`](@ref) whose subordinator increments are
 gamma draws (on the GPU, by a Marsaglia-Tsang kernel). Enzyme cannot differentiate it, because the
 gamma sampler of Distributions.jl draws scalar exponentials.

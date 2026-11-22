@@ -15,7 +15,7 @@ using MuladdMacro: @muladd
 
 # Rules for the kernels of the paths, on arrays of floats (paths.jl, heston.jl, log_normal_mixture.jl, fa_levy.jl).
 # Without them Mooncake differentiates their broadcasts element by element, pushing the data of every element on its
-# stack; with them each step is one pass over the paths, with the derivatives in closed form (src/models/adjoints.jl).
+# stack; with them each step is one pass over the paths, with the derivatives in closed form (src/02_models/models/adjoints.jl).
 #
 # Anatomy of a rule, for a kernel f!(Y, X, p) that writes Y from the arrays X and the scalars p:
 # - `@is_primitive` tells Mooncake to call the rules below instead of differentiating f! itself. The signature restricts
