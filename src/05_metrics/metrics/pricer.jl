@@ -99,4 +99,5 @@ end
 
 # A Sobol sequence does not depend on the generator: every model would get the same points
 check_independent_streams(::AbstractSampling, ::Integer) = nothing
-check_independent_streams(::SobolMC, n::Integer) = ChainRulesCore.@ignore_derivatives n <= 1 || throw(ArgumentError("SobolMC gives every model of a market data set the same points: price a portfolio on several models with another sampling"))
+check_independent_streams(::SobolMC, n::Integer) = check_argument(n <= 1, "SobolMC gives every model of a market data set the same points: price a portfolio on several models with another sampling")
+ChainRulesCore.@non_differentiable check_independent_streams(::Any, ::Any)

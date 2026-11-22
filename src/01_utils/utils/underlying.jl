@@ -7,7 +7,7 @@ struct UnderlyingScalar{num <: Number, num2 <: Number} <: AbstractUnderlying
     S0::num
     d::num2
     function UnderlyingScalar(S0::num_, d::num_2 = zero(S0)) where {num_ <: Number, num_2 <: Number}
-        ChainRulesCore.@ignore_derivatives check_domain(S0 >= zero(num_), S0, "Underlying starting value must be positive")
+        check_spot(S0)
         return new{num_, num_2}(S0, d)
     end
 end
@@ -16,7 +16,7 @@ struct UnderlyingVec{num <: Number, C <: Curve} <: AbstractUnderlying
     S0::num
     d::C
     function UnderlyingVec(S0::num_, d::C) where {num_ <: Number, C <: Curve}
-        ChainRulesCore.@ignore_derivatives check_domain(S0 >= zero(num_), S0, "Underlying starting value must be positive")
+        check_spot(S0)
         return new{num_, C}(S0, d)
     end
 end

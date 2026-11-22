@@ -10,7 +10,7 @@ function pricer_control_variates(mcProcess::BaseProcess, rfCurve::AbstractZeroRa
     variate_conf = variate_handl.conf_variate
     variate_payoff = variate_handl.variate
     set_seed!(variate_conf)
-    ChainRulesCore.@ignore_derivatives check_argument(maturity(abstractPayoff) == variate_payoff.T, "The control variate must have the maturity of the payoff")
+    check_argument(maturity(abstractPayoff) == variate_payoff.T, "The control variate must have the maturity of the payoff")
     T = maturity(abstractPayoff)
     S_var = simulate(mcProcess, rfCurve, variate_conf, T)
     variate_values = payoff(S_var, variate_payoff, rfCurve, variate_conf)

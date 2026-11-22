@@ -33,7 +33,8 @@ Rules for every change (details in `references/conventions.md` and `references/a
 - One `simulate!` body per model on the hooks of `paths.jl`; inner loops as kernels with closed-form adjoints and
   Mooncake/Enzyme rules.
 - Parametric structs with a promoted `numtype`; output types from `price_type`; no Float64 literals or buffers.
-- Validation by `check_domain`/`check_dimension`/`check_argument`, never `@assert`; `@muladd` for every `a * b + c`.
+- Validation by `check_domain`/`check_dimension`/`check_argument`, never `@assert`, inside one named function per
+  constructor marked `@non_differentiable` (no `@ignore_derivatives` block, D-013); `@muladd` for every `a * b + c`.
 - Reuse the author's packages (closed forms from FinancialToolbox) and established libraries.
 - Format with `.JuliaFormatter.toml`; update the CONTEXT.md, references, docs and `state/STATUS.md` a change touches in
   the same commit (a new rule also gets an entry in `references/decisions.md`); push to the `GitHub` remote.

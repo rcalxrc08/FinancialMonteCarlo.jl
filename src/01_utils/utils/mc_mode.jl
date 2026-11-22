@@ -62,13 +62,14 @@ abstract type AbstractMultiProcess <: AbstractBatchedMode end
 nbatches(mode::AbstractBatchedMode) = mode.nbatches
 
 function check_nbatches(nbatches::Integer)
-    ChainRulesCore.@ignore_derivatives check_domain(nbatches > 0, nbatches, "Number of batches must be positive")
+    check_domain(nbatches > 0, nbatches, "Number of batches must be positive")
 end
 
 # Number of batches of MultiProcess by default: the workers, in the Distributed extension.
 function default_nbatches end
 
-check_extension(name::Symbol, message) = ChainRulesCore.@ignore_derivatives isnothing(Base.get_extension(@__MODULE__, name)) && throw(ArgumentError(message))
+check_extension(name::Symbol, message) = check_argument(!isnothing(Base.get_extension(@__MODULE__, name)), message)
+ChainRulesCore.@non_differentiable check_extension(::Any, ::Any)
 check_distributed() = check_extension(:FinancialMonteCarloDistributedExt, "MultiProcess needs `using Distributed`")
 
 """

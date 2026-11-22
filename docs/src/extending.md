@@ -100,7 +100,8 @@ To keep dual numbers working:
 - keep numeric fields parametric (`CappedCall` uses one shared parameter, the built-in structs one
   per field) so that they can hold dual numbers;
 - allocate with the number type returned by `FinancialMonteCarlo.price_type(inputs...)`, never `Float64`;
-- wrap assertions and other non differentiable code in `ChainRulesCore.@ignore_derivatives`.
+- validate in a named function marked `ChainRulesCore.@non_differentiable` and called directly (not in a
+  `ChainRulesCore.@ignore_derivatives` block, whose closure Zygote traces at every call).
 
 For [Enzyme](@ref enzyme) as well:
 

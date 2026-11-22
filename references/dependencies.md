@@ -6,7 +6,7 @@ _Why each dependency exists, hard or weak, and its compat floor._ (Layer 3 refer
 |:--|:--|:--|:--|
 | `Accessors` | hard | `@set` on immutable models and methods (`with_mode`, delta/rho bumps) | 0.1 |
 | `Adapt` | hard | `to_mode`, `adapt_structure` of smiles | 3, 4 |
-| `ChainRulesCore` | hard | `@ignore_derivatives`, the two rrules (#80) | 1 |
+| `ChainRulesCore` | hard | `@non_differentiable` validations (#85), the two rrules (#80) | 1 |
 | `Distributions`, `StatsFuns` | hard | subordinator laws, quantiles | 0.25; 1, 2 |
 | `MuladdMacro` | hard | `@muladd` in kernels | 0.2.7 |
 | `OrderedCollections` | hard | `MarketDataSet`, `Portfolio` in insertion order | 1.6, 2 |

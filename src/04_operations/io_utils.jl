@@ -71,14 +71,14 @@ returned value. Useful to write calibration loops that do not depend on the mode
 function set_parameters!(model::XProcess, param::AbstractVector{num}) where {XProcess <: BaseProcess, num <: Number}
     names = parameter_names(XProcess)
     N1 = length(names)
-    ChainRulesCore.@ignore_derivatives check_dimension(N1 == length(param), "Check number of parameters of the model")
+    check_dimension(N1 == length(param), "Check number of parameters of the model")
     values_ = ntuple(i -> param[i], Val(N1))
     # One call of the constructor with every field, inferred because `names` is a constant.
     return Accessors.setproperties(model, NamedTuple{names}(values_))
 end
 
 function set_parameters!(model::LogNormalMixture{N, M}, param::AbstractVector{num}) where {N, M, num <: Number}
-    ChainRulesCore.@ignore_derivatives check_dimension(length(param) == N + M, "Check number of parameters of the model")
+    check_dimension(length(param) == N + M, "Check number of parameters of the model")
     return LogNormalMixture(ntuple(i -> param[i], Val(N)), ntuple(i -> param[N+i], Val(M)), model.underlying)
 end
 
@@ -86,7 +86,7 @@ end
 # itself on the inner model, and inference gives up on the recursion)
 get_parameters(model::ShiftedProcess) = vcat(get_parameters(model.model), model.α)
 function set_parameters!(model::ShiftedProcess, param::AbstractVector{num}) where {num <: Number}
-    ChainRulesCore.@ignore_derivatives check_dimension(length(param) == length(get_parameters(model)), "Check number of parameters of the model")
+    check_dimension(length(param) == parameter_count(typeof(model)), "Check number of parameters of the model")
     return ShiftedProcess(set_parameters!(model.model, param[1:(end-1)]), param[end], model.underlying)
 end
 

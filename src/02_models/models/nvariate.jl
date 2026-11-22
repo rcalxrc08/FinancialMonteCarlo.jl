@@ -15,17 +15,11 @@ struct GaussianCopulaNVariateProcess{num3 <: Number, numtype <: Number} <: NDime
     rho::Matrix{num3}
     models::Tuple{Vararg{BaseProcess}}
     function GaussianCopulaNVariateProcess(rho::Matrix{num3}, models::Tuple) where {num3 <: Number}
-        sz = size(rho)
-        ChainRulesCore.@ignore_derivatives check_dimension(sz[1] == sz[2], "The correlation matrix must be square")
-        ChainRulesCore.@ignore_derivatives check_dimension(length(models) == sz[1], "One model per row of the correlation matrix")
-        ChainRulesCore.@ignore_derivatives check_domain(isposdef(rho), rho, "The correlation matrix must be positive definite")
+        check_correlation(rho, models)
         return new{num3, price_type(models..., num3)}(rho, models)
     end
     function GaussianCopulaNVariateProcess(rho::Matrix{num3}, models::BaseProcess...) where {num3 <: Number}
-        sz = size(rho)
-        ChainRulesCore.@ignore_derivatives check_dimension(sz[1] == sz[2], "The correlation matrix must be square")
-        ChainRulesCore.@ignore_derivatives check_dimension(length(models) == sz[1], "One model per row of the correlation matrix")
-        ChainRulesCore.@ignore_derivatives check_domain(isposdef(rho), rho, "The correlation matrix must be positive definite")
+        check_correlation(rho, models)
         return new{num3, price_type(models..., num3)}(rho, models)
     end
     function GaussianCopulaNVariateProcess(models::BaseProcess...)
@@ -34,17 +28,25 @@ struct GaussianCopulaNVariateProcess{num3 <: Number, numtype <: Number} <: NDime
     end
     function GaussianCopulaNVariateProcess(model1::BaseProcess, model2::BaseProcess, rho::num3) where {num3 <: Number}
         corr_matrix_ = [1 rho; rho 1]
-        ChainRulesCore.@ignore_derivatives check_domain(isposdef(corr_matrix_), rho, "The correlation matrix must be positive definite")
         return GaussianCopulaNVariateProcess(corr_matrix_, model1, model2)
     end
 end
 
 export GaussianCopulaNVariateProcess;
 
+# The correlation matrix of a copula and its models (#85: one @non_differentiable function, see checks.jl)
+function check_correlation(rho, models)
+    sz = size(rho)
+    check_dimension(sz[1] == sz[2], "The correlation matrix must be square")
+    check_dimension(length(models) == sz[1], "One model per row of the correlation matrix")
+    check_domain(isposdef(rho), rho, "The correlation matrix must be positive definite")
+end
+ChainRulesCore.@non_differentiable check_correlation(::Any, ::Any)
+
 function simulate!(S_total, mcProcess::GaussianCopulaNVariateProcess, rfCurve::AbstractZeroRateCurve, mcBaseData::AbstractMonteCarloConfiguration, T::Number)
     Nsim = mcBaseData.Nsim
     Nstep = mcBaseData.Nstep
-    ChainRulesCore.@ignore_derivatives check_domain(T > 0, T, "Time to Maturity must be positive")
+    check_maturity(T)
 
     ####Simulation
     ## Simulate

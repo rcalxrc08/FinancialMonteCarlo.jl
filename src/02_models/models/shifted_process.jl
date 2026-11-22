@@ -32,17 +32,19 @@ struct ShiftedProcess{M <: ScalarMonteCarloProcess, num <: Number, abstrUnderlyi
     α::num
     underlying::abstrUnderlying
     function ShiftedProcess(model::M, α::num, underlying::abstrUnderlying) where {numM <: Number, M <: ScalarMonteCarloProcess{numM}, num <: Number, abstrUnderlying <: AbstractUnderlying}
-        ChainRulesCore.@ignore_derivatives check_domain(α < 1, α, "the shift must be smaller than the spot price")
-        zero_typed = ChainRulesCore.@ignore_derivatives zero(numM) + zero(num)
+        check_shift(α)
+        zero_typed = zero_of_types(numM, num)
         return new{M, num, abstrUnderlying, typeof(zero_typed)}(model, α, underlying)
     end
 end
+check_shift(α) = check_domain(α < 1, α, "the shift must be smaller than the spot price")
+ChainRulesCore.@non_differentiable check_shift(::Any)
 ShiftedProcess(model::ScalarMonteCarloProcess, α::Number) = ShiftedProcess(model, α, model.underlying)
 
 export ShiftedProcess;
 
 function simulate!(X, mcProcess::ShiftedProcess, rfCurve::AbstractZeroRateCurve, mcBaseData::AbstractMonteCarloConfiguration, T::Number)
-    ChainRulesCore.@ignore_derivatives check_domain(T > 0, T, "Time to Maturity must be positive")
+    check_maturity(T)
     S0 = mcProcess.underlying.S0
     d = dividend(mcProcess)
     α = mcProcess.α

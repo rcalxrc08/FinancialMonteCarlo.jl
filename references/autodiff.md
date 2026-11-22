@@ -10,7 +10,10 @@ AD (ForwardDiff, ReverseDiff, Mooncake, Enzyme, DualNumbers, TaylorSeries, Hyper
 - Output element types from `price_type` (`metrics.md`). No Float64 literals or types in package code (`0.5 * x`,
   `max.(x, 0.0)`, `d = 0.0` promote Float32 inputs to Float64): use integers, `zero(x)`, `one(x)`, `x / 2`.
   `test/metrics/statistics.jl` checks that Float32 inputs give Float32 prices.
-- Validation and non-differentiable bookkeeping are wrapped in `ChainRulesCore.@ignore_derivatives` (Zygote/ReverseDiff).
+- Validation and non-differentiable bookkeeping are named functions marked `ChainRulesCore.@non_differentiable`, called
+  directly with the raw inputs, one per constructor (`check_heston`, `check_curve`, the `check_<Option>` the
+  `@option_type` macro generates, `zero_of_types` for the `numtype`, `call_put_sign`; `checks.jl`, #85): never an
+  `@ignore_derivatives` block, whose closure Zygote traces (D-013).
 
 ## Kernels with rules (the AD performance of the package)
 
@@ -70,9 +73,13 @@ default `MersenneTwister` ends in a foreigncall into libdSFMT. Mooncake's first 
   generated `parameter_tangent_values`, `LogNormalMixture` and `ShiftedProcess` methods; the underlying's tangent passed
   through; 0.56-0.67 ms → 11-19 μs). Both tested by ChainRulesTestUtils' `test_rrule` in `test/ad/chain_rules.jl` (not
   on a node, where the integral has a kink).
-- Still open (#85): every `@ignore_derivatives` block in a constructor costs ~11 μs under Zygote 0.7.18 (its closure,
-  Zygote#1753), ~2.5 μs under 0.7.19; a validation function marked `@non_differentiable` called without a closure
-  costs nothing measurable under 0.7.19 (5.3-5.7 μs against 5.1-5.6 μs without checks, measured in #85).
+- #85: every `@ignore_derivatives` block costs ~11 μs under Zygote 0.7.18 (its closure, Zygote#1753), ~2.5 μs under
+  0.7.19, against nothing measurable for a `@non_differentiable` function. All 111 blocks replaced (2026-11-23, Zygote
+  0.7.19, i7-8550U, gradient, BenchmarkTools minimum, master against the branch in interleaved processes, two rounds):
+  HestonProcess and EuropeanOption built in the function 79-134 → 25-26 μs, KouProcess 29-30 → 20.5 μs,
+  `set_parameters!` on a LogNormalMixture 23-25 → 8.2-8.6 μs, the payout of a European option 62-69 → 6.8-7.0 μs,
+  broadcast over 1000 values 5.7 ms → 32-37 μs (the `zero_typed` closure ran per element); ForwardDiff unchanged
+  within noise (1.3-2.4 μs). Script: `benchmark/bench_validation_85.jl`.
 - Zygote traps: `oftype` has a branch and an uninferred pullback (FluxML/Zygote.jl#1751, still open: use
   `promote`/`convert`). Fixed in Zygote 0.7.19 (2026-11-22): `gradient`/`pullback` compiled for `f::Function` (#1752),
   `Core._typeof_captured_variable` of every closure capture traced in reverse mode (#1753), the `Vector{Any}` stacks of

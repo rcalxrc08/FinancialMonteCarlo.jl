@@ -19,13 +19,18 @@ struct NormalInverseGaussianProcess{num <: Number, num1 <: Number, num2 <: Numbe
     κ::num2
     underlying::abstrUnderlying
     function NormalInverseGaussianProcess(σ::num, θ::num1, κ::num2, underlying::abstrUnderlying) where {num <: Number, num1 <: Number, num2 <: Number, abstrUnderlying <: AbstractUnderlying}
-        ChainRulesCore.@ignore_derivatives check_domain(σ > 0, σ, "volatility must be positive")
-        ChainRulesCore.@ignore_derivatives check_domain(κ > 0, κ, "κappa must be positive")
-        ChainRulesCore.@ignore_derivatives check_domain(1 - (σ^2 + 2 * θ) * κ > 0, (σ, θ, κ), "Parameters with unfeasible values")
-        zero_typed = ChainRulesCore.@ignore_derivatives zero(num) + zero(num1) + zero(num2)
+        check_nig(σ, θ, κ)
+        zero_typed = zero_of_types(num, num1, num2)
         return new{num, num1, num2, abstrUnderlying, typeof(zero_typed)}(σ, θ, κ, underlying)
     end
 end
+
+function check_nig(σ, θ, κ)
+    check_domain(σ > 0, σ, "volatility must be positive")
+    check_domain(κ > 0, κ, "κappa must be positive")
+    check_domain(1 - (σ^2 + 2 * θ) * κ > 0, (σ, θ, κ), "Parameters with unfeasible values")
+end
+ChainRulesCore.@non_differentiable check_nig(::Any, ::Any, ::Any)
 
 export NormalInverseGaussianProcess;
 

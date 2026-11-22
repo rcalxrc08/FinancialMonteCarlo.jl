@@ -4,12 +4,16 @@
 paths_per_draw(::AbstractSampling) = 1
 paths_per_draw(::AntitheticMC) = 2
 
+# the message is built only when the check fails
+check_batch_size(size_, Nsim, nb) = size_ > 0 || throw_argument_error("$Nsim paths are not enough for $nb batches")
+ChainRulesCore.@non_differentiable check_batch_size(::Any, ::Any, ::Any)
+
 # The batch sizes add up to Nsim: what does not divide evenly goes to the first batches
 function batch_sizes(mcConfig::BatchedConfig)
     numberOfBatch = nbatches(mcConfig.mode)
     draws = paths_per_draw(mcConfig.sampling)
     size_, remainder = divrem(div(mcConfig.Nsim, draws), numberOfBatch)
-    ChainRulesCore.@ignore_derivatives size_ > 0 || throw(ArgumentError("$(mcConfig.Nsim) paths are not enough for $numberOfBatch batches"))
+    check_batch_size(size_, mcConfig.Nsim, numberOfBatch)
     return [draws * (size_ + (i <= remainder)) for i = 1:numberOfBatch]
 end
 

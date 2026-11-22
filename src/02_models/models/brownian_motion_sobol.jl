@@ -2,7 +2,7 @@ function simulate!(X, mcProcess::Union{BrownianMotion, BrownianMotionVec}, mcBas
     Nstep = mcBaseData.Nstep
     σ = mcProcess.σ
     μ = mcProcess.μ
-    ChainRulesCore.@ignore_derivatives check_domain(T > 0, T, "Time to Maturity must be positive")
+    check_maturity(T)
     dt = T / Nstep
     stddev_bm = σ * sqrt(dt)
     drifts = step_drifts(μ, dt, Nstep)

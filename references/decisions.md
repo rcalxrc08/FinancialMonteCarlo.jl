@@ -89,3 +89,15 @@ _Architecture decisions, oldest first. Append; a reversed decision gets a new en
 - **Consequences:** users of DifferentialEquations 7 get the extension as before (it loads StochasticDiffEq); with
   DifferentialEquations 8 they load StochasticDiffEq (and JumpProcesses for jumps) themselves. Release note needed.
 - **Status:** active
+
+## D-013 (2026-11-23, #85) Validations are `@non_differentiable` functions, not `@ignore_derivatives` blocks
+
+- **Decision:** every validation and every non-differentiable bookkeeping (the `numtype` zero, the call/put sign, the
+  legs of a position) is a named function marked `ChainRulesCore.@non_differentiable`, called directly with the raw
+  inputs, one per constructor; the throws are `@noinline` (`throw_domain_error` & co., as FinancialFFT, Enzyme#4053).
+- **Why:** an `@ignore_derivatives` block is a closure that Zygote traces: ~2.5 μs each with Zygote 0.7.19 (~11 μs with
+  0.7.18), per element in a broadcast payout; the function costs nothing measurable. FinancialCalibrator rebuilds the
+  model at every iteration. Enzyme, Mooncake and ForwardDiff are indifferent.
+- **Consequences:** the exception types are unchanged; `check_domain`, `check_dimension`, `check_argument` are
+  non-differentiable too, for the callers of a single check.
+- **Status:** active

@@ -49,7 +49,7 @@ ForwardDiff.gradient(f, [0.2, 100.0, 0.02])   # vega, delta, rho
 ```
 
 `ReverseDiff.gradient` works the same way, but much more slowly (see below). Internally,
-assertions and other non differentiable bookkeeping are wrapped in `ChainRulesCore.@ignore_derivatives`.
+validations and other non differentiable bookkeeping are functions marked `ChainRulesCore.@non_differentiable`.
 
 ## Mooncake.jl
 

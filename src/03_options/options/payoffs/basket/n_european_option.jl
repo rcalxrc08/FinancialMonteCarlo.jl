@@ -14,19 +14,24 @@ struct EuropeanOptionND{num1 <: Number, num2 <: Number, numtype <: Number} <: Eu
     K::num2
     isCall::Bool
     function EuropeanOptionND(T::num1, K::num2, isCall::Bool = true) where {num1 <: Number, num2 <: Number}
-        ChainRulesCore.@ignore_derivatives check_domain(T > 0, T, "Time to Maturity must be positive")
-        ChainRulesCore.@ignore_derivatives check_domain(K > 0, K, "Strike Price must be positive")
-        zero_typed = ChainRulesCore.@ignore_derivatives zero(num1) + zero(num2)
+        check_european_nd(T, K)
+        zero_typed = zero_of_types(num1, num2)
         return new{num1, num2, typeof(zero_typed)}(T, K, isCall)
     end
 end
+
+function check_european_nd(T, K)
+    check_maturity(T)
+    check_domain(K > 0, K, "Strike Price must be positive")
+end
+ChainRulesCore.@non_differentiable check_european_nd(::Any, ::Any)
 
 export EuropeanOptionND;
 
 function payoff(S::Array{abstractMatrix}, euPayoff::EuropeanOptionND, rfCurve::abstractZeroRateCurve, mcBaseData::AbstractMonteCarloConfiguration, T1::num2 = maturity(euPayoff)) where {abstractMatrix <: AbstractMatrix, num2 <: Number, abstractZeroRateCurve <: AbstractZeroRateCurve}
     r = rfCurve.r
     T = euPayoff.T
-    iscall = ChainRulesCore.@ignore_derivatives ifelse(euPayoff.isCall, Int8(1), Int8(-1))
+    iscall = call_put_sign(euPayoff.isCall)
     NStep = mcBaseData.Nstep
     index1 = maturity_index(T, T1, mcBaseData)
     K = euPayoff.K
@@ -35,7 +40,7 @@ function payoff(S::Array{abstractMatrix}, euPayoff::EuropeanOptionND, rfCurve::a
     ST_all = sum(x -> x[:, index1], S)
     # a zero of the type of the payout: zero(K) alone is a Float64 next to paths of hyper duals, and max(::Hyper, ::Float64)
     # returns either argument unconverted, so the vector would get an abstract element type (#53)
-    zero_typed = ChainRulesCore.@ignore_derivatives zero(eltype(ST_all)) - zero(K)
+    zero_typed = zero_of_types(eltype(ST_all), typeof(K))
     payoff2 = max.(iscall .* (ST_all .- K), zero_typed)
 
     return payoff2 * exp(-integral(r, T))

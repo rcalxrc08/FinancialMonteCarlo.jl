@@ -56,27 +56,34 @@ macro option_type(name, family, fields...)
     nums = [Symbol(:num, i) for i in eachindex(fields)]
     typed_fields = [:($field::$num) for (field, num) in zip(fields, nums)]
     bounds = [:($num <: Number) for num in nums]
-    checks = [:(ChainRulesCore.@ignore_derivatives check_domain($field > 0, $field, $(POSITIVE_FIELD_MESSAGES[field]))) for field in fields]
-    zeros_ = [:(zero($num)) for num in nums]
+    checks = [:(check_domain($field > 0, $field, $(POSITIVE_FIELD_MESSAGES[field]))) for field in fields]
+    check_name = Symbol(:check_, name)
+    anys = [:(::Any) for _ in fields]
     return esc(quote
         Base.@__doc__ struct $name{$(bounds...), numtype <: Number} <: $family{numtype}
             $(typed_fields...)
             isCall::Bool
             function $name($(typed_fields...), isCall::Bool = true) where {$(bounds...)}
-                $(checks...)
-                zero_typed = ChainRulesCore.@ignore_derivatives +($(zeros_...))
+                $check_name($(fields...))
+                zero_typed = zero_of_types($(nums...))
                 return new{$(nums...), typeof(zero_typed)}($(fields...), isCall)
             end
         end
+        # the validation of the fields, one @non_differentiable function (#85, checks.jl)
+        function $check_name($(fields...))
+            $(checks...)
+        end
+        ChainRulesCore.@non_differentiable $check_name($(anys...))
         export $name
     end)
 end
 
-call_put_sign(isCall::Bool) = ChainRulesCore.@ignore_derivatives ifelse(isCall, Int8(1), Int8(-1))
+call_put_sign(isCall::Bool) = ifelse(isCall, Int8(1), Int8(-1))
+ChainRulesCore.@non_differentiable call_put_sign(::Any)
 
 # The value of a vanilla option, of the type of all the inputs of the payoff, whichever enter the formula
 function vanilla_payout(x::Number, K::Number, payoff_::AbstractPayoff{numtype}) where {numtype <: Number}
-    zero_typed = ChainRulesCore.@ignore_derivatives zero(x) * zero(numtype)
+    zero_typed = zero_of_types(typeof(x), numtype)
     return max(call_put_sign(payoff_.isCall) * (x - K), zero_typed)
 end
 
@@ -99,6 +106,6 @@ end
 
 function payoff(S::Array{Array{num, 2}, 1}, optionData::Union{SingleNamePayoff, AbstractSmile}, rfCurve::abstractZeroRateCurve, mcBaseData::AbstractMonteCarloConfiguration, T1::num2 = optionData.T) where {abstractZeroRateCurve <: AbstractZeroRateCurve, num <: Number, num2 <: Number}
     #switch to only in julia 1.4
-    ChainRulesCore.@ignore_derivatives check_dimension(length(S) == 1, "One matrix of paths for a single-name payoff")
+    check_dimension(length(S) == 1, "One matrix of paths for a single-name payoff")
     return payoff(S[1], optionData, rfCurve, mcBaseData, T1)
 end

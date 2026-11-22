@@ -14,8 +14,8 @@ struct GeometricBrownianMotionVec{num <: Number, C <: AbstractCurve, num2 <: Num
     μ::C
     x0::num2
     function GeometricBrownianMotionVec(σ::num, μ::C, x0::num2) where {num <: Number, C <: AbstractCurve, num2 <: Number}
-        ChainRulesCore.@ignore_derivatives check_domain(σ > 0, σ, "Volatility must be positive")
-        zero_typed = ChainRulesCore.@ignore_derivatives zero(num) + zero(number_type(μ)) + zero(num2)
+        check_volatility(σ)
+        zero_typed = zero_of_types(num, number_type(μ), num2)
         return new{num, C, num2, typeof(zero_typed)}(σ, μ, x0)
     end
 end

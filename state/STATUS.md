@@ -1,7 +1,7 @@
 # Status
 
 _What is in flight. Layer 4: volatile, rewritten freely; GitHub issues are the source of truth for tasks, this file is
-the index an agent reads first._ Updated: 2026-11-22
+the index an agent reads first._ Updated: 2026-11-23
 
 ## Current focus
 
@@ -13,7 +13,7 @@ has no SDE solvers; release note: with DifferentialEquations 8 load StochasticDi
 | Item | Branch | Issue | Next step |
 |:--|:--|:--|:--|
 | SDE extension on StochasticDiffEq | `master` | #64 | CI green; release note in the next release |
-| Zygote on the structs | — | #80 (reopened), #85 | inner constructor `new` only, outer constructor calls one `@non_differentiable` check (measured in #85) |
+| Zygote on the structs | — | #80 (reopened) | constructors from vectors (#85 done: `@non_differentiable` validations, D-013) |
 | New models | — | #62 | Bates, SABR, CEV (Bachelier and ShiftedProcess done) |
 
 ## Known issues
@@ -33,7 +33,7 @@ has no SDE solvers; release note: with DifferentialEquations 8 load StochasticDi
   the Enzyme tests pass on 1.13.4.
 - #66 drop the Julia 1.10 Enzyme workarounds; #67 Kou derivative in `p` with StandardMC;
   #72 split the underlying from the models; #83 term structure of smiles; #28 European payoffs without the whole path
-  matrix; #12 Zygote.
+  matrix.
 - Untracked local files: `lit.jl`, `lit2.jl`, `path.jl`, `examples/`, `benchmark/bench_black_ql.jl`, `benchmark/wip/`,
   `src/02_models/models/ivm/`, `src/03_options/options/payoffs/basket/n_average_forward.jl`, `test/wip/` additions; an
   uncommitted change in `test/models/diffeq.jl`.

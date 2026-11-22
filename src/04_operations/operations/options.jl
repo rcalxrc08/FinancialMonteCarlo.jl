@@ -28,11 +28,17 @@ struct Position{P <: AbstractPayoff, W <: Number}
     payoffs::Vector{P}
     weights::Vector{W}
     function Position(payoffs::Vector{P}, weights::Vector{W}) where {P <: AbstractPayoff, W <: Number}
-        ChainRulesCore.@ignore_derivatives length(payoffs) == length(weights) || throw(ArgumentError("one weight per payoff"))
-        kept = ChainRulesCore.@ignore_derivatives findall(weight -> !is_null_weight(weight), weights)
+        check_argument(length(payoffs) == length(weights), "one weight per payoff")
+        kept = nonzero_legs(weights)
         return new{P, W}(payoffs[kept], weights[kept])
     end
 end
+
+# The legs of a position that are kept, the ones of nonzero weight, and the leg of a payoff (indices, so not differentiated)
+nonzero_legs(weights) = findall(weight -> !is_null_weight(weight), weights)
+leg_index(payoff_, payoffs) = findfirst(isequal(payoff_), payoffs)
+ChainRulesCore.@non_differentiable nonzero_legs(::Any)
+ChainRulesCore.@non_differentiable leg_index(::Any, ::Any)
 
 # A payoff is a position of weight 1
 payoff_type(x::AbstractPayoff) = typeof(x)
@@ -54,7 +60,7 @@ function combine(terms...)
     # foreach unrolls the tuple of terms, which can mix payoffs and positions: a for loop over it iterates a Union
     foreach(terms) do term
         for (payoff_, weight) in legs_of(term)
-            i = ChainRulesCore.@ignore_derivatives findfirst(isequal(payoff_), payoffs)
+            i = leg_index(payoff_, payoffs)
             if isnothing(i)
                 push!(payoffs, payoff_)
                 push!(weights, weight)

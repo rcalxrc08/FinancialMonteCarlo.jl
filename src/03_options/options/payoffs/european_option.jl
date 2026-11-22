@@ -11,7 +11,7 @@ European vanilla option paying ``\\max(S_T - K, 0)`` (call) or ``\\max(K - S_T, 
 @option_type EuropeanOption EuropeanPayoff T K
 
 function payout_untyped(ST::numtype_, isCall::Bool, ::Type{<:EuropeanOption}) where {numtype_ <: Number}
-    zero_typed = ChainRulesCore.@ignore_derivatives zero(ST)
+    zero_typed = zero_of_types(numtype_)
     return max(call_put_sign(isCall) * (ST - 1), zero_typed)
 end
 

@@ -12,8 +12,8 @@ struct BrownianMotionVec{num <: Number, C <: AbstractCurve, numtype <: Number} <
     σ::num
     μ::C
     function BrownianMotionVec(σ::num, μ::C) where {num <: Number, C <: AbstractCurve}
-        ChainRulesCore.@ignore_derivatives check_domain(σ > 0, σ, "Volatility must be positive")
-        zero_typed = ChainRulesCore.@ignore_derivatives zero(num) + zero(number_type(μ))
+        check_volatility(σ)
+        zero_typed = zero_of_types(num, number_type(μ))
         return new{num, C, typeof(zero_typed)}(σ, μ)
     end
 end
@@ -25,7 +25,7 @@ end
 function simulate!(X, mcProcess::Union{BrownianMotion, BrownianMotionVec}, mcBaseData::MonteCarloConfiguration, T::Number)
     σ = mcProcess.σ
     μ = mcProcess.μ
-    ChainRulesCore.@ignore_derivatives check_domain(T > 0, T, "Time to Maturity must be positive")
+    check_maturity(T)
     Nstep = mcBaseData.Nstep
     dt = T / Nstep
     stddev_bm = σ * sqrt(dt)

@@ -6,6 +6,7 @@
 |:--|:--|
 | `benchmarks.jl` | `SUITE`: groups `models`, `methods`, `payoffs`, `markets`, `greeks` (10 000 paths × 50 steps) |
 | `run.jl` | tunes and runs the groups given as arguments, prints a markdown table (also the job summary) |
+| `bench_validation_85.jl` | Zygote and ForwardDiff through the constructors and payouts (#85, by hand, two environments) |
 | `references/performance.md` | how to compare, CI runner variance |
 
 ## Process

@@ -23,7 +23,7 @@ random_state(::AbstractMode, seed::Integer, rng::Random.AbstractRNG) = SeededRNG
 random_state(::AbstractMode, ::AbstractVector{<:Integer}, ::Random.AbstractRNG) = throw(ArgumentError("one seed per batch needs a mode with batches"))
 random_state(mode::AbstractBatchedMode, seed::Integer, rng::Random.AbstractRNG) = random_state(mode, seed .+ collect(1:nbatches(mode)), rng)
 function random_state(mode::AbstractBatchedMode, seeds::AbstractVector{<:Integer}, rng::Random.AbstractRNG)
-    ChainRulesCore.@ignore_derivatives check_dimension(length(seeds) == nbatches(mode), "There must be one seed per batch")
+    check_dimension(length(seeds) == nbatches(mode), "There must be one seed per batch")
     return [batch_state(rng, seed) for seed in seeds]
 end
 
@@ -75,16 +75,15 @@ end
 
 # All the checks of a configuration, so that an unsupported combination fails when it is built.
 function check_configuration(Nsim::Integer, Nstep::Integer, sampling::AbstractSampling, mode::AbstractMode, reseed::Bool)
-    ChainRulesCore.@ignore_derivatives begin
-        check_domain(Nsim > 0, Nsim, "Number of Simulations must be positive")
-        check_domain(Nstep > 0, Nstep, "Number of Steps must be positive")
-        check_sampling(sampling, Nsim)
-        check_sampling_mode(sampling, mode)
-        check_reseed(mode, reseed)
-        check_mode(mode)
-    end
+    check_domain(Nsim > 0, Nsim, "Number of Simulations must be positive")
+    check_domain(Nstep > 0, Nstep, "Number of Steps must be positive")
+    check_sampling(sampling, Nsim)
+    check_sampling_mode(sampling, mode)
+    check_reseed(mode, reseed)
+    check_mode(mode)
     return nothing
 end
+ChainRulesCore.@non_differentiable check_configuration(::Any, ::Any, ::Any, ::Any, ::Any)
 
 check_sampling(::AbstractSampling, ::Integer) = nothing
 check_sampling(::AntitheticMC, Nsim::Integer) = check_argument(iseven(Nsim), "Antithetic support only even number of simulations")

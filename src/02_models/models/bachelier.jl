@@ -24,7 +24,7 @@ struct BachelierProcess{num <: Number, abstrUnderlying <: AbstractUnderlying} <:
     σ::num
     underlying::abstrUnderlying
     function BachelierProcess(σ::num, underlying::abstrUnderlying) where {num <: Number, abstrUnderlying <: AbstractUnderlying}
-        ChainRulesCore.@ignore_derivatives check_domain(σ > 0, σ, "Volatility must be positive")
+        check_volatility(σ)
         return new{num, abstrUnderlying}(σ, underlying)
     end
 end
@@ -32,7 +32,7 @@ end
 export BachelierProcess;
 
 function simulate!(S, mcProcess::BachelierProcess, rfCurve::AbstractZeroRateCurve, mcBaseData::AbstractMonteCarloConfiguration, T::Number)
-    ChainRulesCore.@ignore_derivatives check_domain(T > 0, T, "Time to Maturity must be positive")
+    check_maturity(T)
     σ = mcProcess.σ
     simulate!(S, BrownianMotion(σ, zero(σ)), mcBaseData, T)
     S0 = mcProcess.underlying.S0
