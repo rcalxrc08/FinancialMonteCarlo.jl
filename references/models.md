@@ -73,7 +73,8 @@ reuses these helpers. Under AD the jumps are recorded first (`autodiff.md`, "Ker
 `parameter_names`/`parameter_values`, generated so the names are constants: never loop over `fieldnames` with
 `PropertyLens{symb}` or `getproperty(x, symb)`, a runtime Symbol makes the result `Any`. A model whose parameters are
 not one field each (LogNormalMixture: two tuples, rebuilt with `ntuple(…, Val(N))` so it is inferred) needs its own
-`set_parameters!`. `parameter_fields` excludes only the tuple of models of a copula (`Tuple{Vararg{BaseProcess}}`), so
+`set_parameters!`. `parameter_count(T)` is the length of `get_parameters` from the type alone (a constant: it sizes the
+ForwardDiff chunk of FinancialCalibrator, FinancialCalibrator#36); an array parameter throws `ArgumentError`. `parameter_fields` excludes only the tuple of models of a copula (`Tuple{Vararg{BaseProcess}}`), so
 tuples of numbers are parameters (`flat_parameter(::Tuple)`). `get_parameters(::ShiftedProcess)` has its own method
 (the parameters of the model, then `α`): through the generic one it would call itself on the inner model and inference
 gives up.

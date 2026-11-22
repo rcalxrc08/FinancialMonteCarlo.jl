@@ -38,6 +38,20 @@ end
 # `fieldnames` gives a Symbol known only at run time, and makes get_parameters and set_parameters! type unstable.
 parameter_fields(T::DataType) = Tuple(name for (name, type) in zip(fieldnames(T), fieldtypes(T)) if !(type <: Union{AbstractUnderlying, Tuple{Vararg{BaseProcess}}}))
 @generated parameter_names(::Type{T}) where {T} = QuoteNode(parameter_fields(T))
+"""
+    FinancialMonteCarlo.parameter_count(T::Type)
+
+The number of parameters of a model or payoff type, `length(get_parameters(x))` for every `x::T`, known from the type
+alone: a parameter is a number (one) or a tuple of numbers (its length), a model inside a model (the inner model of a
+`ShiftedProcess`) counts its own. It folds to a constant, so it can size static arrays and the chunk of a ForwardDiff
+Jacobian (FinancialCalibrator#36). A type with an array parameter (the matrix of a copula, the times of a Bermudan
+option) has a number of parameters known only at run time: `ArgumentError`.
+"""
+parameter_count(::Type{T}) where {T} = sum(name -> field_parameter_count(fieldtype(T, name)), parameter_names(T); init = 0)
+field_parameter_count(::Type{<:Number}) = 1
+field_parameter_count(::Type{<:NTuple{N, Number}}) where {N} = N
+field_parameter_count(::Type{M}) where {M <: BaseProcess} = parameter_count(M)
+field_parameter_count(::Type{F}) where {F} = throw(ArgumentError("the number of parameters in a field of type $F is known only at run time"))
 @generated parameter_values(x) = Expr(:tuple, (:(getfield(x, $(QuoteNode(name)))) for name in parameter_fields(x))...)
 
 # The parameters flattened into one vector of their promoted number type (a Bool `isCall` becomes a number)

@@ -17,7 +17,8 @@
 
 ## Process
 
-- Parameters through the generated `parameter_names`/`parameter_values`; never a runtime Symbol.
+- Parameters through the generated `parameter_names`/`parameter_values`, their number from `parameter_count(T)`; never
+  a runtime Symbol.
 - A model with non-scalar parameters (LogNormalMixture, ShiftedProcess) needs its own methods and a
   `parameter_tangent_values` method.
 - Weights that are exactly zero drop their leg (never for dual numbers).
