@@ -5,14 +5,13 @@ the index an agent reads first._ Updated: 2026-11-23
 
 ## Current focus
 
-#64 merged on `master`: the SDE extension is triggered by StochasticDiffEq (DifferentialEquations 8
-has no SDE solvers; release note: with DifferentialEquations 8 load StochasticDiffEq). Last release 0.9.0 (SVector curves, Zygote rules, #76, #77, #79, #81).
+0.9.1 (2026-11-23): #64 (the SDE extension is triggered by StochasticDiffEq; with DifferentialEquations 8 load
+StochasticDiffEq), #85 (`@non_differentiable` validations, D-013), `parameter_count` (FinancialCalibrator#36).
 
 ## Active work
 
 | Item | Branch | Issue | Next step |
 |:--|:--|:--|:--|
-| SDE extension on StochasticDiffEq | `master` | #64 | CI green; release note in the next release |
 | Zygote on the structs | — | #80 (reopened) | constructors from vectors (#85 done: `@non_differentiable` validations, D-013) |
 | New models | — | #62 | Bates, SABR, CEV (Bachelier and ShiftedProcess done) |
 
