@@ -14,7 +14,7 @@ FinancialMonteCarlo = {path = ".."}
 [compat]
 Documenter = "1"
 DualNumbers = "0.6"
-FinancialMonteCarlo = "0.9"
+FinancialMonteCarlo = "0.9.1"
 FinancialToolbox = "0.8"
 Literate = "2"
 Plots = "1"

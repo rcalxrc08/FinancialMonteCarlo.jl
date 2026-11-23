@@ -10,7 +10,7 @@ FinancialMonteCarlo = {path = ".."}
 
 [compat]
 BenchmarkTools = "1"
-FinancialMonteCarlo = "0.9"
+FinancialMonteCarlo = "0.9.1"
 ForwardDiff = "0.10, 1"
 Printf = "1"
 Statistics = "1"
