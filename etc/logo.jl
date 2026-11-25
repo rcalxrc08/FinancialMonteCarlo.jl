@@ -18,6 +18,7 @@ const PURPLE = ("#9558b2", "#aa79c1")
 # Market data shared by the three symbols.
 const S0, K, r, d, T, σ = 100.0, 100.0, 0.0, 0.0, 1.0, 0.25
 const RATES = ZeroRate(r)
+const UND = Underlying(S0, d)
 
 function draw_disc(centre, colours)
     setcolor(colours[1])
@@ -35,17 +36,17 @@ end
 rescale(values, from, onto) = onto[1] .+ (values .- from[1]) .* (onto[2] - onto[1]) ./ (from[2] - from[1])
 
 # Paths drawn after seeding the generator, as the metrics do, so the logo is the same at every run.
-function seeded_simulate(model, Nsim, Nstep, seed)
-    config = MonteCarloConfiguration(Nsim, Nstep, seed)
+function seeded_simulate(model, und, Nsim, Nstep, seed)
+    config = MonteCarloConfiguration(Nsim, Nstep; seed = seed)
     FinancialMonteCarlo.set_seed!(config)
-    return simulate(model, RATES, config, T)
+    return simulate(model, und, RATES, config, T)
 end
 
 # The simulation: Kou paths leaving the spot, a few bold ones over the crowd, and the histogram of where all the paths end.
 function draw_paths()
     Nsim, Nstep = 2000, 10
-    model = KouProcess(0.2, 1.0, 0.5, 12.0, 12.0, Underlying(S0, d))
-    logS = log.(seeded_simulate(model, Nsim, Nstep, 18) ./ S0)
+    model = KouProcess(0.2, 1.0, 0.5, 12.0, 12.0)
+    logS = log.(seeded_simulate(model, UND, Nsim, Nstep, 18) ./ S0)
     # The drawn paths are the ones ending on evenly spaced quantiles, so the fan is spread over the whole disc.
     order = sortperm(logS[:, end])
     thin, bold = order[round.(Int, range(0.03, 0.97, length = 7) .* Nsim)], order[round.(Int, [0.1, 0.5, 0.9] .* Nsim)]
@@ -57,11 +58,11 @@ function draw_paths()
     setline(0.8 * STROKE)
     foreach(i -> draw_line(Point.(xs, to_y(logS[i, :]))), bold)
     edges = range(range_y..., length = 13)
-    counts = [count(x -> lo <= x < hi, logS[:, end]) for (lo, hi) in zip(edges[1:(end - 1)], edges[2:end])]
+    counts = [count(x -> lo <= x < hi, logS[:, end]) for (lo, hi) in zip(edges[1:(end-1)], edges[2:end])]
     lengths = 44 .* counts ./ maximum(counts)
     bar_y = to_y(edges)
     setcolor(BLACK)
-    for (len, bottom, top) in zip(lengths, bar_y[1:(end - 1)], bar_y[2:end])
+    for (len, bottom, top) in zip(lengths, bar_y[1:(end-1)], bar_y[2:end])
         len > 1 && box(Point(50, top + 1.5), Point(50 + len, bottom - 1.5), :fill)
     end
 end
@@ -70,11 +71,11 @@ end
 # which closes on the Black and Scholes price.
 function draw_convergence()
     sims = round.(Int, 10 .^ range(1.6, 3.6, length = 30))
-    model = BlackScholesProcess(σ, Underlying(S0, d))
+    model = BlackScholesProcess(σ)
     option = EuropeanOption(T, K)
-    config(Nsim) = MonteCarloConfiguration(Nsim, 1, 2)
-    prices = [pricer(model, RATES, config(Nsim), option) for Nsim in sims]
-    intervals = [confinter(model, RATES, config(Nsim), option) for Nsim in sims]
+    config(Nsim) = MonteCarloConfiguration(Nsim, 1; seed = 2)
+    prices = [pricer(model, UND, RATES, config(Nsim), option) for Nsim in sims]
+    intervals = [confinter(model, UND, RATES, config(Nsim), option) for Nsim in sims]
     exact = blsprice(S0, K, r, T, σ, d)
     half_width = maximum(abs.(collect(Iterators.flatten(intervals)) .- exact))
     to_y(price) = rescale(price, (exact - half_width, exact + half_width), (66, -66))
@@ -90,10 +91,10 @@ end
 # The multivariate models: the final log returns, around their mean, of two Black and Scholes underlyings joined by a Gaussian copula.
 function draw_copula()
     Nsim = 200
-    marginal = BlackScholesProcess(σ, Underlying(S0, d))
+    marginal = BlackScholesProcess(σ)
     model = GaussianCopulaNVariateLogProcess(marginal, marginal, 0.7)
-    S = seeded_simulate(model, Nsim, 1, 18)
-    x, y = (log.(S[i][:, end]) .- log(S0 * exp((r - d - σ^2 / 2) * T)) for i in 1:2)
+    S = seeded_simulate(model, (UND, UND), Nsim, 1, 18)
+    x, y = (log.(S[i][:, end]) .- log(S0 * exp((r - d - σ^2 / 2) * T)) for i = 1:2)
     pixels = 84 / (2.2 * σ)
     setcolor(BLACK)
     for (xi, yi) in zip(x, y)

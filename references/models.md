@@ -14,9 +14,8 @@ catalogue is `docs/src/manual/bestiary.md`.)
   `nvariate*.jl`).
 - Wrappers: `BachelierProcess` is a `BrownianMotion` (zero drift) times the carry factors `carry_factors(μ, mcConfig, T)`
   (`e^{∫₀ᵗ (r - d)}` on the grid, a row on the device of the mode, `paths.jl`); `ShiftedProcess(model, α)` wraps any
-  `ScalarMonteCarloProcess`: it holds the underlying, simulates `model` with its underlying replaced by
-  `Underlying((1 - α) S0, d)` (`@set`), then `add_shift!`. `ShiftedLogNormalMixture` was removed: it is
-  `ShiftedProcess(LogNormalMixture(η, λ, underlying), α)`.
+  `ScalarMonteCarloProcess`: it simulates `model` from `Underlying((1 - α) S0, d)`, built from the underlying it is
+  given, then `add_shift!`. `ShiftedLogNormalMixture` was removed: it is `ShiftedProcess(LogNormalMixture(η, λ), α)`.
 - `LogNormalMixture` is the Brigo–Mercurio local volatility model (#56): its `η` and `λ` are tuples (`NTuple{N}`,
   `NTuple{N-1}`), the number of components is in the type, `lnm_local_variance` works on one path with the tuples, so the
   same scalar function runs inside one broadcast on CPU and GPU (the tuples passed as `(η,)`) and in the Sobol loop;
