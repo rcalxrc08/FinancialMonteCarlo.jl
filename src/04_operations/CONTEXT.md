@@ -6,7 +6,7 @@
 
 | Load | Why |
 |:--|:--|
-| `io_utils.jl` | `get_parameters`, `set_parameters!` and its `rrule` (`parameter_tangent`, `underlying_tangent`), `parameter_fields`, `flat_parameter`, `parameter_vector`, `display`/`print` |
+| `io_utils.jl` | `get_parameters`, `set_parameters!` and its `rrule` (`parameter_tangent`), `parameter_fields`, `flat_parameter`, `parameter_vector`, `display`/`print` |
 | `operations.jl` | the aggregator of the files below |
 | `operations/models.jl` | `MarketDataSet`, `UnderlyingKey`, `underlying_key`, `underlying_names`, `number_type` |
 | `operations/options.jl` | `Position`, `PositionTerm`, `combine`, `is_null_weight`, `maturity`, `payoff` of a position |

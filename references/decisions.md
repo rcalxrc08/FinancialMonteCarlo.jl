@@ -101,3 +101,21 @@ _Architecture decisions, oldest first. Append; a reversed decision gets a new en
 - **Consequences:** the exception types are unchanged; `check_domain`, `check_dimension`, `check_argument` are
   non-differentiable too, for the callers of a single check.
 - **Status:** active
+
+## D-014 (2026-11-25, #72; 0.10.0) The underlying is an argument, not a field of the models; one type per market object
+
+- **Decision:** models hold only their parameters; every entry point takes the `Underlying` right after the model,
+  `pricer(model, underlying, zeroCurve, method, payoff)` (`simulate`, `simulate!`, `variance`, `confinter`, `delta`,
+  `rho`, `distribution` alike), a tuple of underlyings for a multivariate model. A `MarketDataSet` holds
+  `name → underlying` and `key → model` (`name → (model, underlying)` builds both). `Underlying{S, D}` and
+  `ZeroRate{R}` are single types whose dividend and rate are a number or a curve (no `UnderlyingScalar`/`UnderlyingVec`,
+  `ZeroRateCurve`, `ImpliedZeroRate`, nor vector-and-maturity constructors: `ZeroRate(Curve(r, T))`). Hard break, no
+  shim: the dependent packages move in lockstep.
+- **Why:** the reasons the underlying went into the models in 2019 (one spot per copula component, names as keys) are
+  gone (tuples, `MarketDataSet`). As an argument it gives AD per-argument activity (delta and vega no longer share an
+  object, a dual spot does not promote the model's `numtype`), one `set_parameters!` per calibration with a scalar
+  dividend per maturity, bumps without `@set model.underlying`, and drops the `underlying_tangent` rules (#80, FC#44).
+  One type per market object: dispatch on the field type instead of constructors returning different types.
+- **Consequences:** breaking for FinancialFFT, VibratoMonteCarlo, FinancialCalibrator (0.10.0). `delta` bumps the
+  underlying; in a market data set it bumps the name's underlying, shared by every model using it.
+- **Status:** active

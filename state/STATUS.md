@@ -1,9 +1,14 @@
 # Status
 
 _What is in flight. Layer 4: volatile, rewritten freely; GitHub issues are the source of truth for tasks, this file is
-the index an agent reads first._ Updated: 2026-11-23
+the index an agent reads first._ Updated: 2026-11-25
 
 ## Current focus
+
+0.10.0 (2026-11-25, breaking, #72, D-014): the underlying is an argument, `pricer(model, underlying, zeroCurve, method,
+payoff)`; `Underlying{S, D}` and `ZeroRate{R}` one type each (number or curve); `MarketDataSet` holds
+`name → underlying` and `key → model`. Registered first in LocalRegistry for the dependent packages; the same commit goes
+to General. FinancialFFT 0.8, VibratoMonteCarlo and FinancialCalibrator follow.
 
 0.9.1 (2026-11-23): #64 (the SDE extension is triggered by StochasticDiffEq; with DifferentialEquations 8 load
 StochasticDiffEq), #85 (`@non_differentiable` validations, D-013), `parameter_count` (FinancialCalibrator#36).
@@ -30,8 +35,7 @@ StochasticDiffEq), #85 (`@non_differentiable` validations, D-013), `parameter_co
 
 - CI pins Julia 1.13.3 (Enzyme abort on 1.13.4, EnzymeAD/Enzyme.jl#4051, fixed in Enzyme 0.13.220): put '1' back once
   the Enzyme tests pass on 1.13.4.
-- #66 drop the Julia 1.10 Enzyme workarounds; #67 Kou derivative in `p` with StandardMC;
-  #72 split the underlying from the models; #83 term structure of smiles; #28 European payoffs without the whole path
+- #66 drop the Julia 1.10 Enzyme workarounds; #67 Kou derivative in `p` with StandardMC; #83 term structure of smiles; #28 European payoffs without the whole path
   matrix.
 - Untracked local files: `lit.jl`, `lit2.jl`, `path.jl`, `examples/`, `benchmark/bench_black_ql.jl`, `benchmark/wip/`,
   `src/02_models/models/ivm/`, `src/03_options/options/payoffs/basket/n_average_forward.jl`, `test/wip/` additions; an

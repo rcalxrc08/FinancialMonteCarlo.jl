@@ -29,7 +29,7 @@ end
 
 export GaussianCopulaNVariateLogProcess;
 
-function simulate!(S_Total, mcProcess::GaussianCopulaNVariateLogProcess, rfCurve::AbstractZeroRateCurve, mcBaseData::AbstractMonteCarloConfiguration, T::Number)
+function simulate!(S_Total, mcProcess::GaussianCopulaNVariateLogProcess, unds::UnderlyingTuple, rfCurve::AbstractZeroRateCurve, mcBaseData::AbstractMonteCarloConfiguration, T::Number)
     Nsim = mcBaseData.Nsim
     Nstep = mcBaseData.Nstep
     check_maturity(T)
@@ -39,7 +39,7 @@ function simulate!(S_Total, mcProcess::GaussianCopulaNVariateLogProcess, rfCurve
     len_ = length(mcProcess.models)
 
     @inbounds for i = 1:len_
-        @views simulate!(S_Total[i], mcProcess.models[i], rfCurve, mcBaseData, T)
+        @views simulate!(S_Total[i], mcProcess.models[i], unds[i], rfCurve, mcBaseData, T)
     end
 
     rho = mcProcess.rho
@@ -47,7 +47,7 @@ function simulate!(S_Total, mcProcess::GaussianCopulaNVariateLogProcess, rfCurve
         return
     end
     @inbounds for i = 1:len_
-        @. S_Total[i] = log(S_Total[i] / mcProcess.models[i].underlying.S0)
+        @. S_Total[i] = log(S_Total[i] / unds[i].S0)
     end
     U_joint = Matrix{eltype(rho)}(undef, len_, Nsim)
     @inbounds for j = 1:Nstep
@@ -55,7 +55,7 @@ function simulate!(S_Total, mcProcess::GaussianCopulaNVariateLogProcess, rfCurve
         for i = 1:len_
             @views tmp_ = S_Total[i][:, j+1]
             sort!(tmp_)
-            @views tmp_ .= (mcProcess.models[i].underlying.S0) .* exp.(Statistics.quantile(tmp_, U_joint[i, :]; sorted = true))
+            @views tmp_ .= (unds[i].S0) .* exp.(Statistics.quantile(tmp_, U_joint[i, :]; sorted = true))
         end
     end
 

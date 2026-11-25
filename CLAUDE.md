@@ -1,7 +1,7 @@
 # CLAUDE.md
 
 **FinancialMonteCarlo.jl** prices equity derivatives and their risk by Monte Carlo, single-name and multivariate
-(Gaussian copula), through `pricer(model, zeroCurve, method, payoff)`, the interface FinancialFFT, VibratoMonteCarlo and
+(Gaussian copula), through `pricer(model, underlying, zeroCurve, method, payoff)`, the interface FinancialFFT, VibratoMonteCarlo and
 FinancialCalibrator extend with their own methods. Every model and payoff is differentiable by every Julia AD back-end
 and runs serially, on threads, on processes and on CUDA. Closed forms in tests and docs come from FinancialToolbox.
 Registered in General. Goals and non-goals: `references/mission.md`; why things are the way they are:
@@ -28,8 +28,9 @@ Documenter + Literate site; `benchmark/` the suite; `etc/` the logo.
 
 Rules for every change (details in `references/conventions.md` and `references/autodiff.md`):
 
-- Every method carries its execution mode; the four-argument `pricer` is shared with three packages (breaking if
-  changed).
+- Every method carries its execution mode; the five-argument `pricer(model, underlying, zeroCurve, method, payoff)` is
+  shared with three packages (breaking if changed). Models hold only their parameters, the `Underlying` is an argument
+  (D-014, #72).
 - One `simulate!` body per model on the hooks of `paths.jl`; inner loops as kernels with closed-form adjoints and
   Mooncake/Enzyme rules.
 - Parametric structs with a promoted `numtype`; output types from `price_type`; no Float64 literals or buffers.

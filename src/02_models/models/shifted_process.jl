@@ -7,12 +7,12 @@ deterministic shift ``α S_0`` growing at the risk neutral rate,
 S_t = X_t + α S_0 e^{\\int_0^t (r_s - d_s)\\,ds}, \\qquad X_0 = (1 - α) S_0,
 ```
 where ``X`` follows `model`. The forward is the one of `model`; with ``0 ≤ α < 1`` the price stays
-above ``α`` times the forward, with ``α < 0`` it can go below zero. `ShiftedProcess(BlackScholesProcess(σ, underlying), α)`
-is the displaced diffusion, and `ShiftedProcess(LogNormalMixture(η, λ, underlying), α)` the shifted lognormal
+above ``α`` times the forward, with ``α < 0`` it can go below zero. `ShiftedProcess(BlackScholesProcess(σ), α)`
+is the displaced diffusion, and `ShiftedProcess(LogNormalMixture(η, λ), α)` the shifted lognormal
 mixture (it replaces `ShiftedLogNormalMixture`, removed).
 
-The spot and the dividends are those of the underlying of `model`, held by the shifted process (a bump of the spot,
-as in [`delta`](@ref), moves the shift too); the paths of `model` are simulated by its own `simulate!`, so every
+The spot and the dividends are those of the underlying passed with the model (a bump of the spot, as in
+[`delta`](@ref), moves the shift too); `model` is simulated from `Underlying((1 - α) S0, d)`; the paths of `model` are simulated by its own `simulate!`, so every
 sampling, mode and number type it supports works shifted too.
 
 # Arguments
@@ -23,33 +23,30 @@ sampling, mode and number type it supports works shifted too.
 
 # Examples
 ```julia
-model = ShiftedProcess(BlackScholesProcess(0.2, Underlying(100.0, 0.01)), 0.3)
-pricer(model, ZeroRate(0.02), MonteCarloConfiguration(10_000, 30), EuropeanOption(1.0, 100.0))
+model = ShiftedProcess(BlackScholesProcess(0.2), 0.3)
+pricer(model, Underlying(100.0, 0.01), ZeroRate(0.02), MonteCarloConfiguration(10_000, 30), EuropeanOption(1.0, 100.0))
 ```
 """
-struct ShiftedProcess{M <: ScalarMonteCarloProcess, num <: Number, abstrUnderlying <: AbstractUnderlying, numtype <: Number} <: ScalarMonteCarloProcess{numtype}
+struct ShiftedProcess{M <: ScalarMonteCarloProcess, num <: Number, numtype <: Number} <: ScalarMonteCarloProcess{numtype}
     model::M
     α::num
-    underlying::abstrUnderlying
-    function ShiftedProcess(model::M, α::num, underlying::abstrUnderlying) where {numM <: Number, M <: ScalarMonteCarloProcess{numM}, num <: Number, abstrUnderlying <: AbstractUnderlying}
+    function ShiftedProcess(model::M, α::num) where {numM <: Number, M <: ScalarMonteCarloProcess{numM}, num <: Number}
         check_shift(α)
         zero_typed = zero_of_types(numM, num)
-        return new{M, num, abstrUnderlying, typeof(zero_typed)}(model, α, underlying)
+        return new{M, num, typeof(zero_typed)}(model, α)
     end
 end
 check_shift(α) = check_domain(α < 1, α, "the shift must be smaller than the spot price")
 ChainRulesCore.@non_differentiable check_shift(::Any)
-ShiftedProcess(model::ScalarMonteCarloProcess, α::Number) = ShiftedProcess(model, α, model.underlying)
 
 export ShiftedProcess;
 
-function simulate!(X, mcProcess::ShiftedProcess, rfCurve::AbstractZeroRateCurve, mcBaseData::AbstractMonteCarloConfiguration, T::Number)
+function simulate!(X, mcProcess::ShiftedProcess, und::AbstractUnderlying, rfCurve::AbstractZeroRateCurve, mcBaseData::AbstractMonteCarloConfiguration, T::Number)
     check_maturity(T)
-    S0 = mcProcess.underlying.S0
-    d = dividend(mcProcess)
+    S0 = und.S0
+    d = dividend(und)
     α = mcProcess.α
-    unshifted = @set mcProcess.model.underlying = Underlying(S0 * (1 - α), d)
-    simulate!(X, unshifted.model, rfCurve, mcBaseData, T)
+    simulate!(X, mcProcess.model, Underlying(S0 * (1 - α), d), rfCurve, mcBaseData, T)
     add_shift!(X, α * S0, rfCurve.r - d, mcBaseData, T)
     return nothing
 end

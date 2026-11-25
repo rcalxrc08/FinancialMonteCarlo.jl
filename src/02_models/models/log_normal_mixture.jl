@@ -1,5 +1,5 @@
 """
-    LogNormalMixture(η, λ, underlying)
+    LogNormalMixture(η, λ)
 
 LogNormal mixture model of Brigo and Mercurio: the local volatility diffusion, in ``X_t = \\log(S_t / S_0)``,
 ```math
@@ -16,27 +16,25 @@ slowly when the volatilities are far apart (the local volatility then changes sh
 
 # Examples
 ```julia
-LogNormalMixture((0.2, 0.3), (0.4,), Underlying(100.0, 0.01))   # weights 0.4 and 0.6
+LogNormalMixture((0.2, 0.3), (0.4,))   # weights 0.4 and 0.6
 ```
 
 # Arguments
 - `η`: tuple of the ``n`` volatilities, all positive.
 - `λ`: tuple of the first ``n - 1`` weights, positive and summing to at most 1 (the last weight is `1 - sum(λ)`).
-- `underlying`: an [`Underlying`](@ref) with spot price and dividends.
 
 `η` and `λ` are tuples, so the number of components is part of the type: a model can be passed to a GPU kernel, and
 the loops over the components are unrolled.
 """
-struct LogNormalMixture{N, M, num <: Number, num2 <: Number, abstrUnderlying <: AbstractUnderlying, numtype <: Number} <: ItoProcess{numtype}
+struct LogNormalMixture{N, M, num <: Number, num2 <: Number, numtype <: Number} <: ItoProcess{numtype}
     η::NTuple{N, num}
     λ::NTuple{M, num2}
-    underlying::abstrUnderlying
     # at least one weight, so two components: the number types are those of the first elements
-    function LogNormalMixture(η::Tuple{num, Vararg{num}}, λ::Tuple{num2, Vararg{num2}}, underlying::abstrUnderlying) where {num <: Number, num2 <: Number, abstrUnderlying <: AbstractUnderlying}
+    function LogNormalMixture(η::Tuple{num, Vararg{num}}, λ::Tuple{num2, Vararg{num2}}) where {num <: Number, num2 <: Number}
         N, M = length(η), length(λ)
         check_lnm(η, λ)
         zero_typed = zero_of_types(num, num2)
-        return new{N, M, num, num2, abstrUnderlying, typeof(zero_typed)}(η, λ, underlying)
+        return new{N, M, num, num2, typeof(zero_typed)}(η, λ)
     end
 end
 
@@ -49,7 +47,7 @@ end
 ChainRulesCore.@non_differentiable check_lnm(::Any, ::Any)
 
 # Volatilities or weights of different number types (a dual volatility next to a float one) are promoted
-LogNormalMixture(η::Tuple{Number, Vararg{Number}}, λ::Tuple{Number, Vararg{Number}}, underlying::AbstractUnderlying) = LogNormalMixture(promote(η...), promote(λ...), underlying)
+LogNormalMixture(η::Tuple{Number, Vararg{Number}}, λ::Tuple{Number, Vararg{Number}}) = LogNormalMixture(promote(η...), promote(λ...))
 
 export LogNormalMixture;
 
@@ -74,12 +72,12 @@ end
 # At t = 0 every path is at the spot, and the weights tend to λ_i / η_i: σ²(0, 0) = Σ λ_i η_i / Σ λ_i / η_i
 lnm_initial_variance(η::NTuple, λ::NTuple) = sum(map(*, λ, η)) / sum(map(/, λ, η))
 
-function lnm_setup(mcProcess::LogNormalMixture, rfCurve::AbstractZeroRateCurve, mcBaseData::MonteCarloConfiguration, T::Number)
+function lnm_setup(mcProcess::LogNormalMixture, und::AbstractUnderlying, rfCurve::AbstractZeroRateCurve, mcBaseData::MonteCarloConfiguration, T::Number)
     check_maturity(T)
     η = mcProcess.η
     λ = mixture_weights(mcProcess)
     logw = map((λ_i, η_i) -> log(λ_i) - log(η_i), λ, η)
-    μ = rfCurve.r - dividend(mcProcess)
+    μ = rfCurve.r - dividend(und)
     return η, logw, lnm_initial_variance(η, λ), μ, T / mcBaseData.Nstep
 end
 
@@ -95,9 +93,9 @@ function lnm_step!(dest, src, Z, sign, t, h, drift, carry, σ2_0, η::NTuple, lo
     return nothing
 end
 
-function simulate!(X, mcProcess::LogNormalMixture, rfCurve::AbstractZeroRateCurve, mcBaseData::MonteCarloConfiguration, T::Number)
-    η, logw, σ2_0, μ, dt = lnm_setup(mcProcess, rfCurve, mcBaseData, T)
-    S0 = mcProcess.underlying.S0
+function simulate!(X, mcProcess::LogNormalMixture, und::AbstractUnderlying, rfCurve::AbstractZeroRateCurve, mcBaseData::MonteCarloConfiguration, T::Number)
+    η, logw, σ2_0, μ, dt = lnm_setup(mcProcess, und, rfCurve, mcBaseData, T)
+    S0 = und.S0
     fill!(view(X, :, 1), zero(eltype(X)))
     sides = path_sides(X, mcBaseData)
     Z = draw_buffer(mcBaseData, typeof(get_rng_type(zero(eltype(X)))), draws_per_side(sides))
@@ -115,9 +113,9 @@ function simulate!(X, mcProcess::LogNormalMixture, rfCurve::AbstractZeroRateCurv
     return nothing
 end
 
-function simulate!(X, mcProcess::LogNormalMixture, rfCurve::AbstractZeroRateCurve, mcBaseData::SobolConfig, T::Number)
-    η, logw, σ2_0, μ, dt = lnm_setup(mcProcess, rfCurve, mcBaseData, T)
-    S0 = mcProcess.underlying.S0
+function simulate!(X, mcProcess::LogNormalMixture, und::AbstractUnderlying, rfCurve::AbstractZeroRateCurve, mcBaseData::SobolConfig, T::Number)
+    η, logw, σ2_0, μ, dt = lnm_setup(mcProcess, und, rfCurve, mcBaseData, T)
+    S0 = und.S0
     Nstep = mcBaseData.Nstep
     fill!(view(X, :, 1), zero(eltype(X)))
     drifts = step_drifts(μ, dt, Nstep)

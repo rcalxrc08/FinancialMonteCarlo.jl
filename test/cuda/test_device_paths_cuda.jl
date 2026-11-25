@@ -29,13 +29,13 @@ cpu(sampling = FMC.StandardMC()) = MonteCarloConfiguration(Nsim, Nstep; sampling
 end
 
 @testset "subordinated models: GPU as CPU" begin
-    for model in (VarianceGammaProcess(sigma, 0.01, 0.03, und), NormalInverseGaussianProcess(sigma, 0.01, 0.03, und)), sampling in (FMC.StandardMC(), FMC.AntitheticMC())
-        @test abs(pricer(model, rfCurve, gpu(sampling), EuropeanOption(T, K)) - pricer(model, rfCurve, cpu(sampling), EuropeanOption(T, K))) < 0.15
+    for model in (VarianceGammaProcess(sigma, 0.01, 0.03), NormalInverseGaussianProcess(sigma, 0.01, 0.03)), sampling in (FMC.StandardMC(), FMC.AntitheticMC())
+        @test abs(pricer(model, und, rfCurve, gpu(sampling), EuropeanOption(T, K)) - pricer(model, und, rfCurve, cpu(sampling), EuropeanOption(T, K))) < 0.15
     end
 end
 
 @testset "jumps with one kernel: GPU as CPU" begin
-    for model in (KouProcess(sigma, 3.0, 0.5, 25.0, 30.0, und), MertonProcess(sigma, 3.0, 0.03, 0.02, und)), sampling in (FMC.StandardMC(), FMC.AntitheticMC())
+    for model in (KouProcess(sigma, 3.0, 0.5, 25.0, 30.0), MertonProcess(sigma, 3.0, 0.03, 0.02)), sampling in (FMC.StandardMC(), FMC.AntitheticMC())
         # the same host draws: the jumps of the two simulations are the same
         X = CUDA.zeros(Float64, 1000, Nstep + 1)
         mc_small = MonteCarloConfiguration(1000, Nstep; sampling = sampling, mode = FMC.CudaMode(), seed = 5)
@@ -45,26 +45,26 @@ end
         FMC.set_seed!(mc_small)
         FMC.add_jumps!(Y, model, mc_small, T)
         @test Array(X) ≈ Y
-        @test abs(pricer(model, rfCurve, gpu(sampling), EuropeanOption(T, K)) - pricer(model, rfCurve, cpu(sampling), EuropeanOption(T, K))) < 0.15
+        @test abs(pricer(model, und, rfCurve, gpu(sampling), EuropeanOption(T, K)) - pricer(model, und, rfCurve, cpu(sampling), EuropeanOption(T, K))) < 0.15
     end
 end
 
 @testset "barrier and Asian payoffs on the device" begin
-    model = BlackScholesProcess(sigma, und)
+    model = BlackScholesProcess(sigma)
     mc = gpu()
-    S = FMC.simulate(model, rfCurve, mc, T)
+    S = FMC.simulate(model, und, rfCurve, mc, T)
     for p in (BarrierOptionDownOut(T, K, D), BarrierOptionDownIn(T, K, D), BarrierOptionUpOut(T, K, 120.0), BarrierOptionUpIn(T, K, 120.0), DoubleBarrierOption(T, K, D, 120.0), AsianFixedStrikeOption(T, K), AsianFloatingStrikeOption(T))
         v = FMC.payoff(S, p, rfCurve, mc)
         @test v isa CuVector{Float64}
         @test Array(v) ≈ FMC.payoff(Array(S), p, rfCurve, mc)
-        @test abs(pricer(model, rfCurve, mc, p) - pricer(model, rfCurve, cpu(), p)) < 0.15
+        @test abs(pricer(model, und, rfCurve, mc, p) - pricer(model, und, rfCurve, cpu(), p)) < 0.15
     end
 end
 
 @testset "other subordinator laws: on the host, copied" begin
     # a law with no device sampler: drawn by Distributions on the host
     model = SubordinatedBrownianMotion(sigma, 0.01, 0.1, Exponential(T / Nstep))
-    S = simulate(model, gpu(), T)
+    S = simulate(model, und, gpu(), T)
     @test S isa CuMatrix{Float64}
-    @test abs(mean(Array(S)[:, end]) - mean(simulate(model, cpu(), T)[:, end])) < 0.01
+    @test abs(mean(Array(S)[:, end]) - mean(simulate(model, und, cpu(), T)[:, end])) < 0.01
 end

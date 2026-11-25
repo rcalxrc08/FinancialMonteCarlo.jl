@@ -42,10 +42,9 @@ number_type(::AbstractPayoff{num}) where {num <: Number} = num
 number_type(::Spot) = Int8
 number_type(smile::AbstractSmile) = price_type(smile.T, smile.K)
 
-number_type(model::ScalarMonteCarloProcess{num}) where {num <: Number} = price_type(num, model.underlying)
-number_type(::Union{AbstractMonteCarloEngine{num}, VectorialMonteCarloProcess{num}}) where {num <: Number} = num
+number_type(::Union{ScalarMonteCarloProcess{num}, AbstractMonteCarloEngine{num}, VectorialMonteCarloProcess{num}}) where {num <: Number} = num
 # The paths come from the solver of StochasticDiffEq, in Float64 whatever the underlying
 number_type(::MonteCarloDiffEqModel) = Float64
 
 ##Vectorization "utils"
-Base.broadcastable(x::Union{BaseProcess, AbstractZeroRateCurve, AbstractPayoff, AbstractSmile, AbstractMonteCarloConfiguration}) = Ref(x)
+Base.broadcastable(x::Union{BaseProcess, AbstractUnderlying, AbstractZeroRateCurve, AbstractPayoff, AbstractSmile, AbstractMonteCarloConfiguration}) = Ref(x)

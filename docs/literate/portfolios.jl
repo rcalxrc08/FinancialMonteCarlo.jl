@@ -17,12 +17,13 @@ straddle = EuropeanOption(T, K) + EuropeanOption(T, K, false)
 #-
 bull_spread = EuropeanOption(T, 95.0) - EuropeanOption(T, 105.0)
 #-
-model = BlackScholesProcess(0.2, Underlying(S0, d))
+model = BlackScholesProcess(0.2)
+und = Underlying(S0, d) # spot and dividends, passed next to the model
 position = 2.0 * straddle - bull_spread
-pricer(model, rfCurve, mcConfig, position)
+pricer(model, und, rfCurve, mcConfig, position)
 
 # A position is priced path by path, so it has a Monte Carlo error of its own:
-confinter(model, rfCurve, mcConfig, position)
+confinter(model, und, rfCurve, mcConfig, position)
 
 # A position is priced like a single payoff, so its value can be drawn against the spot, here with its
 # payoff at maturity (the value it converges to as the maturity approaches):
@@ -30,38 +31,41 @@ using Plots
 default(size = (720, 400), linewidth = 2, framestyle = :axes, grid = :y, gridalpha = 0.25, titlefontsize = 11, guidefontsize = 10, legendfontsize = 9)
 
 spots = collect(70.0:2.0:130.0)
-value_today(position, S) = pricer(BlackScholesProcess(0.2, Underlying(S, d)), rfCurve, mcConfig, position)
+value_today(position, S) = pricer(model, Underlying(S, d), rfCurve, mcConfig, position)
 plot(spots, [value_today(straddle, S) for S in spots]; color = "#2a78d6", label = "straddle, today", legend = :top, xlabel = "spot", ylabel = "value", title = "Value of two positions by spot, today and at maturity")
 plot!(spots, abs.(spots .- K); color = "#2a78d6", linestyle = :dash, linewidth = 1, label = "straddle, at maturity")
 plot!(spots, [value_today(bull_spread, S) for S in spots]; color = "#eb6834", label = "bull spread 95-105, today")
 plot!(spots, clamp.(spots .- 95.0, 0.0, 10.0); color = "#eb6834", linestyle = :dash, linewidth = 1, label = "bull spread, at maturity")
 
 # ## Market data sets and portfolios
-# A `MarketDataSet` links underlying names to models with the `→` operator (typed `\to<TAB>`),
-# a portfolio links underlying names to positions. The models are simulated one after the other from the same
-# stream of random numbers, so the underlyings are independent.
-market = "ENI" → BlackScholesProcess(0.2, Underlying(S0, d))
-market += "AAPL" → KouProcess(0.25, 5.0, 0.3, 30.0, 20.0, Underlying(150.0, 0.0))
+# A `MarketDataSet` links underlying names to their underlyings and models with the `→` operator (typed
+# `\to<TAB>`), a portfolio links underlying names to positions. `name → (model, underlying)` links both at once.
+# The models are simulated one after the other from the same stream of random numbers, so the underlyings are
+# independent.
+market = "ENI" → (BlackScholesProcess(0.2), Underlying(S0, d))
+market += "AAPL" → (KouProcess(0.25, 5.0, 0.3, 30.0, 20.0), Underlying(150.0, 0.0))
 
 portfolio = "ENI" → straddle
 portfolio += "AAPL" → 3.0 * AsianFixedStrikeOption(T, 150.0)
 
 pricer(market, rfCurve, mcConfig, portfolio)
 
-# Delta with respect to a single underlying of the market data set:
+# Delta with respect to a single underlying of the market data set: its spot is bumped, in every model that
+# uses it.
 delta(market, rfCurve, mcConfig, portfolio, "AAPL")
 
 # ## Multivariate models
 # Correlated underlyings are modelled with a Gaussian copula on top of single name models.
-# A multivariate model is linked to the tuple of the names of its components.
+# A multivariate model is linked to the tuple of the names of its components, and simulated from their
+# underlyings, a tuple in the same order.
 ρ = [1.0 0.5; 0.5 1.0]
-basket_model = GaussianCopulaNVariateProcess(ρ, BlackScholesProcess(0.2, Underlying(S0, d)), BlackScholesProcess(0.3, Underlying(S0, d)))
-basket_market = ("ENI", "AAPL") → basket_model
+basket_model = GaussianCopulaNVariateProcess(ρ, BlackScholesProcess(0.2), BlackScholesProcess(0.3))
+basket_market = ("ENI", "AAPL") → (basket_model, (Underlying(S0, d), Underlying(S0, d)))
 
 # `simulate` returns one path matrix per component. The log returns at maturity of the two components are
 # correlated as the copula prescribes, while each keeps the distribution of its own model (the second is wider,
 # since its volatility is 30%):
-S_basket = simulate(basket_model, rfCurve, mcConfig, T)
+S_basket = simulate(basket_model, (Underlying(S0, d), Underlying(S0, d)), rfCurve, mcConfig, T)
 returns_1 = log.(S_basket[1][:, end] ./ S0)
 returns_2 = log.(S_basket[2][:, end] ./ S0)
 scatter(returns_1[1:2_000], returns_2[1:2_000]; color = "#2a78d6", markersize = 3, markerstrokewidth = 0, alpha = 0.4, label = "", xlabel = "log return of ENI", ylabel = "log return of AAPL", title = "Log returns at maturity of a Gaussian copula with ρ = 0.5 (2000 paths)")

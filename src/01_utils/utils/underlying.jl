@@ -2,32 +2,14 @@
 #Abstract
 abstract type AbstractUnderlying end
 
-#Scalar dividend
-struct UnderlyingScalar{num <: Number, num2 <: Number} <: AbstractUnderlying
-    S0::num
-    d::num2
-    function UnderlyingScalar(S0::num_, d::num_2 = zero(S0)) where {num_ <: Number, num_2 <: Number}
-        check_spot(S0)
-        return new{num_, num_2}(S0, d)
-    end
-end
-#Curve dividend
-struct UnderlyingVec{num <: Number, C <: Curve} <: AbstractUnderlying
-    S0::num
-    d::C
-    function UnderlyingVec(S0::num_, d::C) where {num_ <: Number, C <: Curve}
-        check_spot(S0)
-        return new{num_, C}(S0, d)
-    end
-end
-
-#Common Constructors
 """
     Underlying(S0, d = zero(S0))
 
-Spot price `S0` and continuous dividend yield `d` of an asset, held by every single name model.
+Spot price `S0` and continuous dividend yield `d` of an asset, passed next to the model to every entry point
+(`pricer(model, underlying, zeroCurve, method, payoff)`): the models hold only their parameters (#72).
 `d` is either a number or a time dependent curve (see [`FinancialMonteCarlo.Curve`](@ref) and
-[`FinancialMonteCarlo.ImpliedCurve`](@ref)). `S0` must be non negative.
+[`FinancialMonteCarlo.ImpliedCurve`](@ref)): one type, whose methods dispatch on the type of `d` where they differ.
+`S0` must be non negative.
 
 # Examples
 ```julia
@@ -36,11 +18,22 @@ Underlying(100.0, 0.01)
 Underlying(100.0, FinancialMonteCarlo.Curve([0.01, 0.02], 1.0))
 ```
 """
-function Underlying(S0::Number, d::Curve)
-    return UnderlyingVec(S0, d)
+struct Underlying{S <: Number, D <: Union{Number, AbstractCurve}} <: AbstractUnderlying
+    S0::S
+    d::D
+    function Underlying(S0::S, d::D = zero(S0)) where {S <: Number, D <: Union{Number, AbstractCurve}}
+        check_spot(S0)
+        return new{S, D}(S0, d)
+    end
 end
-function Underlying(S0::num_, d::num_2 = zero(S0)) where {num_ <: Number, num_2 <: Number}
-    return UnderlyingScalar(S0, d)
-end
+
+# The continuous dividend yield of an underlying, a number or a curve (#72: read from the underlying passed next to the
+# model, not from the model)
+dividend(und::AbstractUnderlying) = und.d
+
+# The underlyings of a multivariate model: one per component, in the order of its models
+const UnderlyingTuple = Tuple{AbstractUnderlying, Vararg{AbstractUnderlying}}
+# What an entry point takes next to the model
+const UnderlyingArg = Union{AbstractUnderlying, UnderlyingTuple}
 
 export Underlying;

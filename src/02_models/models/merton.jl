@@ -1,5 +1,5 @@
 """
-    MertonProcess(σ, λ, μ_jump, σ_jump, underlying)
+    MertonProcess(σ, λ, μ_jump, σ_jump)
 
 Merton jump diffusion: the log price is a Brownian motion with volatility `σ` plus a compound
 Poisson process with intensity `λ` and normally distributed jumps. The drift is chosen to make the
@@ -10,18 +10,16 @@ discounted price a martingale.
 - `λ`: jump intensity, must be positive.
 - `μ_jump`: mean of the jumps of the log price.
 - `σ_jump`: standard deviation of the jumps of the log price, must be positive.
-- `underlying`: an [`Underlying`](@ref) with spot price and dividends.
 """
-struct MertonProcess{num <: Number, num1 <: Number, num2 <: Number, num3 <: Number, abstrUnderlying <: AbstractUnderlying, numtype <: Number} <: FiniteActivityProcess{numtype}
+struct MertonProcess{num <: Number, num1 <: Number, num2 <: Number, num3 <: Number, numtype <: Number} <: FiniteActivityProcess{numtype}
     σ::num
     λ::num1
     μ_jump::num2
     σ_jump::num3
-    underlying::abstrUnderlying
-    function MertonProcess(σ::num, λ::num1, μ_jump::num2, σ_jump::num3, underlying::abstrUnderlying) where {num <: Number, num1 <: Number, num2 <: Number, num3 <: Number, abstrUnderlying <: AbstractUnderlying}
+    function MertonProcess(σ::num, λ::num1, μ_jump::num2, σ_jump::num3) where {num <: Number, num1 <: Number, num2 <: Number, num3 <: Number}
         check_merton(σ, λ, σ_jump)
         zero_typed = zero_of_types(num, num1, num2, num3)
-        return new{num, num1, num2, num3, abstrUnderlying, typeof(zero_typed)}(σ, λ, μ_jump, σ_jump, underlying)
+        return new{num, num1, num2, num3, typeof(zero_typed)}(σ, λ, μ_jump, σ_jump)
     end
 end
 

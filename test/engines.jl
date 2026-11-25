@@ -3,7 +3,7 @@ using Distributions, ForwardDiff, Statistics
 
 # Engines are the building blocks of the models: they know nothing about rates or dividends.
 @testset "Engines" begin
-    mu_curve = ZeroRate([0.00, 0.02], T).r
+    mu_curve = ZeroRate(FinancialMonteCarlo.Curve([0.00, 0.02], T)).r
     drift = 0.0
 
     @testset "BrownianMotion" begin
@@ -52,8 +52,8 @@ end
     @test ForwardDiff.value.(collect(x)) ≈ A \ ForwardDiff.value.([sum(y), sum(y .* s), sum(y .* s .^ 2)]) rtol = 1e-6
     @test ForwardDiff.partials.(collect(x), 1) ≈ A \ [length(s), sum(s), sum(s .^ 2)] rtol = 1e-6
     # through the pricer: with respect to the strike only the payoffs are dual numbers, not the paths
-    model = BlackScholesProcess(sigma, Underlying(S0, d))
-    dK = ForwardDiff.derivative(k -> pricer(model, ZeroRate(r), mc_small, AmericanOption(T, k, false)), K)
+    model = BlackScholesProcess(sigma)
+    dK = ForwardDiff.derivative(k -> pricer(model, und, ZeroRate(r), mc_small, AmericanOption(T, k, false)), K)
     @test 0 < dK < 1
 end
 
@@ -83,7 +83,7 @@ end
 @testset "Row reductions and jump lists" begin
     # What the CUDA extension uses, on the CPU: the same prices and paths without indexing the paths one by one
     @testset "path dependent payoffs by row reductions" begin
-        S = simulate(BlackScholesProcess(sigma, Underlying(S0, d)), rfCurve, mc_small, T)
+        S = simulate(BlackScholesProcess(sigma), und, rfCurve, mc_small, T)
         payoffs = (BarrierOptionDownOut(T, K, D), BarrierOptionDownIn(T, K, D, false), BarrierOptionUpOut(T, K, 120.0), BarrierOptionUpIn(T, K, 120.0), DoubleBarrierOption(T, K, D, 120.0), AsianFixedStrikeOption(T, K), AsianFloatingStrikeOption(T, false))
         @testset "$(nameof(typeof(p)))" for p in payoffs
             @test FinancialMonteCarlo.payoff_by_rows(S, p, rfCurve, mc_small) ≈ FinancialMonteCarlo.payoff(S, p, rfCurve, mc_small)
@@ -93,7 +93,7 @@ end
     end
 
     @testset "jumps as a list" begin
-        for model in (KouProcess(sigma, 5.0, 0.3, 30.0, 20.0, Underlying(S0, d)), MertonProcess(sigma, 5.0, 0.03, 0.02, Underlying(S0, d))), config in (mc_small, mc_small_anti)
+        for model in (KouProcess(sigma, 5.0, 0.3, 30.0, 20.0), MertonProcess(sigma, 5.0, 0.03, 0.02)), config in (mc_small, mc_small_anti)
             X = zeros(Nsim_small, Nstep_small + 1)
             FinancialMonteCarlo.set_seed!(config)
             FinancialMonteCarlo.add_jumps!(X, model, config, T)

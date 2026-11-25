@@ -34,13 +34,13 @@ end
     end
 
     @testset "Underlying and curves" begin
-        rf_curve = ZeroRate([0.00, 0.02], T)
+        rf_curve = ZeroRate(FinancialMonteCarlo.Curve([0.00, 0.02], T))
         @test FinancialMonteCarlo.Curve([0.0, 0.1], [0.0, 0.1]) isa FinancialMonteCarlo.Curve{2, Float64, Float64}
         @test_throws DomainError Underlying(-S0)
         @test_throws DomainError Underlying(-S0, rf_curve.r)
 
         # trapezoidal inside the nodes, flat outside them
-        c = ZeroRate([0.01, 0.02, 0.05], 1.0).r # nodes at 0, 0.5, 1
+        c = ZeroRate(FinancialMonteCarlo.Curve([0.01, 0.02, 0.05], 1.0)).r # nodes at 0, 0.5, 1
         @test FinancialMonteCarlo.integral(c, 1.0) ≈ 0.025
         @test FinancialMonteCarlo.integral(c, 2.0) ≈ 0.025 + 0.05
         c_late = FinancialMonteCarlo.Curve([0.03, 0.05], [0.5, 1.0])
@@ -64,26 +64,30 @@ end
         @test_throws MethodError c1 * c2
         @test_throws MethodError c1 / c2
         # a drift r - d with a dividend curve finer than the rate curve keeps its sign
-        model = BlackScholesProcess(sigma, Underlying(S0, Curve([0.0, 0.0, 0.0], T)))
-        @test pricer(model, ZeroRate([0.05, 0.05], T), mc_small, Forward(T)) ≈ S0 rtol = 0.02
+        model = BlackScholesProcess(sigma)
+        @test pricer(model, Underlying(S0, Curve([0.0, 0.0, 0.0], T)), ZeroRate(FinancialMonteCarlo.Curve([0.05, 0.05], T)), mc_small, Forward(T)) ≈ S0 rtol = 0.02
         @test_throws ArgumentError Curve([0.01, 0.02], [1.0, 0.5])
         # a type of the package, not a Dictionary with arithmetic defined on it (#42)
         @test parentmodule(Curve) === FinancialMonteCarlo
         @test FinancialMonteCarlo.ImpliedCurve([0.01, 0.02], [1.0, 2.0]) isa Curve{3, Float64, Float64}
         # isbits (#79), and inferred from tuples
-        @test isbits(BlackScholesProcess(sigma, Underlying(S0, c3))) && isbits(ZeroRate([0.01, 0.02], T))
+        @test isbits(BlackScholesProcess(sigma)) && isbits(ZeroRate(FinancialMonteCarlo.Curve([0.01, 0.02], T))) && isbits(Underlying(S0, c3))
+        # one type each, the curve or the number a type parameter (#72)
+        @test Underlying(S0) isa Underlying{Float64, Float64} && Underlying(S0, c3) isa Underlying{Float64, typeof(c3)}
+        @test ZeroRate(r) isa ZeroRate{Float64} && ZeroRate(c3) isa ZeroRate{typeof(c3)}
+        @test !isdefined(FinancialMonteCarlo, :ZeroRateCurve) && !isdefined(FinancialMonteCarlo, :UnderlyingScalar) && !isdefined(FinancialMonteCarlo, :ImpliedZeroRate)
         @test (@inferred FinancialMonteCarlo.ImpliedCurve((0.01, 0.02), (1.0, 2.0))) == FinancialMonteCarlo.ImpliedCurve([0.01, 0.02], [1.0, 2.0])
         @test (@inferred Curve((0.01, 0.02), (0.5, 1.0))) == c3
-        @test (@inferred ZeroRate((0.01, 0.02), 1.0)).r == c1
+        @test (@inferred ZeroRate(FinancialMonteCarlo.Curve((0.01, 0.02), 1.0))).r == c1
         @test FinancialMonteCarlo.integral(Curve((0.01,), 1.0), 2.0) ≈ 0.02
         @test FinancialMonteCarlo.integral(FinancialMonteCarlo.ImpliedCurve([0.01, 0.02], [1.0, 2.0]), 2.0) ≈ 0.04
     end
 
     @testset "market data and portfolios" begin
-        model = GaussianCopulaNVariateProcess(BlackScholesProcess(sigma, Underlying(S0, d)), BlackScholesProcess(sigma, Underlying(S0, d)), 0.0)
+        model = GaussianCopulaNVariateProcess(BlackScholesProcess(sigma), BlackScholesProcess(sigma), 0.0)
         mkt = ("eni", "aap") → model
         @test_throws ArgumentError mkt + mkt
-        @test_throws ArgumentError mkt + ("aap" → BlackScholesProcess(sigma, Underlying(S0, d))) # a name appears once
+        @test_throws ArgumentError mkt + ("aap" → BlackScholesProcess(sigma)) # a name appears once
         @test_throws ArgumentError "ENJ" → model # a multivariate model needs one name per component
         @test_throws ArgumentError ("a", "b", "c") → model
         @test_throws ArgumentError ("a", "b") → Forward(1.0) # a single name payoff needs a single name
@@ -146,7 +150,7 @@ end
             @test_throws "Maturity must be positive" Smile(-1.0, K_vec, isCall_vec)
             # strikes and flags are vectors (#37): a range or a view works, a matrix does not
             smile_range = Smile(T, 90.0:10.0:110.0, view(isCall_vec, :))
-            S = simulate(BlackScholesProcess(sigma, Underlying(S0, d)), rfCurve, mc_small, T)
+            S = simulate(BlackScholesProcess(sigma), und, rfCurve, mc_small, T)
             @test payoff(S, smile_range, rfCurve, mc_small) == payoff(S, Smile(T, K_vec, isCall_vec), rfCurve, mc_small)
             @test_throws MethodError Smile(T, reshape(K_vec, 1, :), reshape(isCall_vec, 1, :))
             # to_mode moves the arrays without checking the smile again (#73): an adaptor that negates the strikes passes
@@ -159,9 +163,9 @@ end
     @testset "one-dimensional inputs are vectors (#37)" begin
         @test BermudanOption(0.5:0.25:1.0, K).T_ex == [0.5, 0.75, 1.0]
         @test_throws MethodError BermudanOption([0.5 1.0], K)
-        @test FinancialMonteCarlo.integral(ZeroRate(0.01:0.01:0.02, T).r, T) ≈ FinancialMonteCarlo.integral(ZeroRate([0.01, 0.02], T).r, T)
-        @test_throws MethodError ZeroRate([0.01 0.02], T)
-        model = BlackScholesProcess(sigma, Underlying(S0, d))
+        @test FinancialMonteCarlo.integral(ZeroRate(FinancialMonteCarlo.Curve(0.01:0.01:0.02, T)).r, T) ≈ FinancialMonteCarlo.integral(ZeroRate(FinancialMonteCarlo.Curve([0.01, 0.02], T)).r, T)
+        @test_throws MethodError ZeroRate(FinancialMonteCarlo.Curve([0.01 0.02], T))
+        model = BlackScholesProcess(sigma)
         @test FinancialMonteCarlo.set_parameters!(model, view([0.3, 1.0], 1:1)).σ == 0.3
     end
 end

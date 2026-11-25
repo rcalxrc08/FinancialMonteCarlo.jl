@@ -6,7 +6,7 @@ in `decisions.md`.)
 ## Purpose
 
 Monte Carlo pricing and risk of equity derivatives, single-name and multivariate (Gaussian copula), with one interface
-(`pricer(model, zeroCurve, method, payoff)`) that FinancialFFT, VibratoMonteCarlo and FinancialCalibrator extend with
+(`pricer(model, underlying, zeroCurve, method, payoff)`) that FinancialFFT, VibratoMonteCarlo and FinancialCalibrator extend with
 their own methods; every model and payoff differentiable by every Julia AD back-end and runnable on CPU threads,
 processes and CUDA.
 
@@ -21,7 +21,7 @@ processes and CUDA.
 
 - Julia ≥ 1.10; registered in General.
 - No Float64 hard-coding; one `simulate!` body per model; extensions only add methods.
-- The four-argument `pricer` and the mode-in-method contract are shared with three packages.
+- The five-argument `pricer` and the mode-in-method contract are shared with three packages.
 
 ## Success criteria
 

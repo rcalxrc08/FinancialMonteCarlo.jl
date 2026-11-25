@@ -27,8 +27,8 @@ propagates through the simulation and the payoff.
 ```julia
 using FinancialMonteCarlo, DualNumbers
 
-model = BlackScholesProcess(0.2, Underlying(dual(100.0, 1.0), 0.01))
-price = pricer(model, ZeroRate(0.02), MonteCarloConfiguration(10_000, 30), EuropeanOption(1.0, 100.0))
+model = BlackScholesProcess(0.2)
+price = pricer(model, Underlying(dual(100.0, 1.0), 0.01), ZeroRate(0.02), MonteCarloConfiguration(10_000, 30), EuropeanOption(1.0, 100.0))
 realpart(price)   # price
 price.epsilon     # delta
 ```
@@ -44,7 +44,7 @@ Write the price as a function of a vector of parameters and take its gradient:
 ```julia
 using ForwardDiff
 mcConfig = MonteCarloConfiguration(10_000, 30)
-f(x) = pricer(BlackScholesProcess(x[1], Underlying(x[2], 0.01)), ZeroRate(x[3]), mcConfig, EuropeanOption(1.0, 100.0))
+f(x) = pricer(BlackScholesProcess(x[1]), Underlying(x[2], 0.01), ZeroRate(x[3]), mcConfig, EuropeanOption(1.0, 100.0))
 ForwardDiff.gradient(f, [0.2, 100.0, 0.02])   # vega, delta, rho
 ```
 
@@ -64,7 +64,7 @@ using FinancialMonteCarlo, Mooncake
 mcConfig = MonteCarloConfiguration(10_000, 30)
 
 # x = [S0, σ, λ, p, λ₊, λ₋, r, d, T]
-f(x) = pricer(KouProcess(x[2], x[3], x[4], x[5], x[6], Underlying(x[1], x[8])), ZeroRate(x[7]), mcConfig, EuropeanOption(x[9], 100.0))
+f(x) = pricer(KouProcess(x[2], x[3], x[4], x[5], x[6]), Underlying(x[1], x[8]), ZeroRate(x[7]), mcConfig, EuropeanOption(x[9], 100.0))
 x0 = [100.0, 0.2, 5.0, 0.3, 30.0, 20.0, 0.02, 0.01, 1.0]
 
 cache = Mooncake.prepare_gradient_cache(f, x0)   # builds the rule, slow the first time

@@ -1,5 +1,5 @@
 """
-    variance(mcProcess, rfCurve, mcConfig, payoff)
+    variance(mcProcess, underlying, rfCurve, mcConfig, payoff)
 
 Variance of the discounted payoff per path (a vector for a vector of payoffs or a smile), such that the variance of the
 price estimate is this value divided by the number of paths `Nsim`. With [`FinancialMonteCarlo.StandardMC`](@ref) it is
@@ -15,8 +15,8 @@ error estimate.
 - `mcConfig`: the [`MonteCarloConfiguration`](@ref).
 - `payoff`: a payoff, a vector of payoffs, a smile or a [`FinancialMonteCarlo.Position`](@ref).
 """
-function variance(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration, abstractPayoffs::Union{AbstractPayoff, Array{<:AbstractPayoff}, AbstractSmile, Position})
-    return mean_and_variance(mcProcess, rfCurve, mcConfig, abstractPayoffs)[2]
+function variance(mcProcess::BaseProcess, und::UnderlyingArg, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration, abstractPayoffs::Union{AbstractPayoff, Array{<:AbstractPayoff}, AbstractSmile, Position})
+    return mean_and_variance(mcProcess, und, rfCurve, mcConfig, abstractPayoffs)[2]
 end
 
 # The independent samples of the price among the discounted payoffs (one row per path): the paths, or with antithetic
@@ -42,37 +42,37 @@ function path_moments(values::AbstractMatrix)
     return vec(means), vec(sum(abs2, values .- means, dims = 1))
 end
 
-function payoff_moments(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration, payoff_::Union{AbstractPayoff, AbstractSmile})
+function payoff_moments(mcProcess::BaseProcess, und::UnderlyingArg, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration, payoff_::Union{AbstractPayoff, AbstractSmile})
     abstractPayoff = to_mode(payoff_, execution_mode(mcConfig))
     set_seed!(mcConfig)
-    S = simulate(mcProcess, rfCurve, mcConfig, maturity(abstractPayoff))
+    S = simulate(mcProcess, und, rfCurve, mcConfig, maturity(abstractPayoff))
     return path_moments(payoff(S, abstractPayoff, rfCurve, mcConfig), mcConfig)
 end
 
 # A position: the moments of its discounted payoff, the legs combined path by path
-function payoff_moments(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration, position::Position)
-    T_price = price_type(mcProcess, rfCurve, position)
+function payoff_moments(mcProcess::BaseProcess, und::UnderlyingArg, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration, position::Position)
+    T_price = price_type(mcProcess, und, rfCurve, position)
     isempty(position) && return (zero(T_price), zero(T_price))
     set_seed!(mcConfig)
     maxT = maturity(position)
-    S = simulate(mcProcess, rfCurve, mcConfig, maxT)
+    S = simulate(mcProcess, und, rfCurve, mcConfig, maxT)
     moments::Tuple{T_price, T_price} = path_moments(payoff(S, position, rfCurve, mcConfig, maxT), mcConfig)
     return moments
 end
 
-function payoff_moments(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration, abstractPayoffs::Array{<:AbstractPayoff, N}) where {N}
+function payoff_moments(mcProcess::BaseProcess, und::UnderlyingArg, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration, abstractPayoffs::Array{<:AbstractPayoff, N}) where {N}
     set_seed!(mcConfig)
     maxT = maturity(abstractPayoffs)
-    S = simulate(mcProcess, rfCurve, mcConfig, maxT)
+    S = simulate(mcProcess, und, rfCurve, mcConfig, maxT)
     # An array of payoffs of different types has an abstract element type: the type of the moments comes from
     # price_type, as in pricer, so that the result is inferred
-    T_price = price_type(mcProcess, rfCurve, abstractPayoffs)
+    T_price = price_type(mcProcess, und, rfCurve, abstractPayoffs)
     moments::Array{Tuple{T_price, T_price}, N} = [path_moments(payoff(S, abstractPayoff, rfCurve, mcConfig, maxT), mcConfig) for abstractPayoff in abstractPayoffs]
     return first.(moments), last.(moments)
 end
 
-function mean_and_variance(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration, abstractPayoffs)
-    means, squares = payoff_moments(mcProcess, rfCurve, mcConfig, abstractPayoffs)
+function mean_and_variance(mcProcess::BaseProcess, und::UnderlyingArg, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration, abstractPayoffs)
+    means, squares = payoff_moments(mcProcess, und, rfCurve, mcConfig, abstractPayoffs)
     return means, per_path_variance(squares, mcConfig)
 end
 

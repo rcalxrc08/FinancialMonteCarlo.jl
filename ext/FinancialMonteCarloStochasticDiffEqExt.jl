@@ -1,12 +1,13 @@
 # Triggered by StochasticDiffEq, which has the SDE solvers since DifferentialEquations 8 is OrdinaryDiffEq only (#64):
-# DifferentialEquations 7 loads it, with 8 the user loads it.
+# DifferentialEquations 7 loads it, with 8 the user loads it. The initial condition is that of the SDE problem: the
+# underlying is not read.
 module FinancialMonteCarloStochasticDiffEqExt
 
 using StochasticDiffEq: EnsembleThreads, SOSRI, solve
-using FinancialMonteCarlo: MonteCarloConfiguration, MonteCarloDiffEqModel, ZeroRate, check_maturity
+using FinancialMonteCarlo: AbstractUnderlying, MonteCarloConfiguration, MonteCarloDiffEqModel, ZeroRate, check_maturity
 import FinancialMonteCarlo: simulate!
 
-function simulate!(X, mcProcess::MonteCarloDiffEqModel, rfCurve::ZeroRate, mcBaseData::MonteCarloConfiguration, T::numb) where {numb <: Number}
+function simulate!(X, mcProcess::MonteCarloDiffEqModel, ::AbstractUnderlying, rfCurve::ZeroRate, mcBaseData::MonteCarloConfiguration, T::numb) where {numb <: Number}
     Nsim = mcBaseData.Nsim
     Nstep = mcBaseData.Nstep
     Dt = T / Nstep

@@ -70,8 +70,8 @@ dX_t = \left(μ_t - \frac{σ^2}{2}\right) dt + σ\,dW_t
 ```
 
 ```julia
-BlackScholesProcess(σ, underlying)
-BlackScholesProcess(0.2, Underlying(100.0, 0.01))
+BlackScholesProcess(σ)
+BlackScholesProcess(0.2)
 ```
 
 | Parameter | Meaning | Constraint |
@@ -93,8 +93,8 @@ S_t = e^{\int_0^t μ_s\,ds} \left(S_0 + σ W_t\right).
 The price discounted with the carry, ``S_0 + σ W_t``, is an arithmetic Brownian motion and a martingale.
 
 ```julia
-BachelierProcess(σ, underlying)
-BachelierProcess(20.0, Underlying(100.0, 0.01))
+BachelierProcess(σ)
+BachelierProcess(20.0)
 ```
 
 | Parameter | Meaning | Constraint |
@@ -118,8 +118,8 @@ d\langle W, Z\rangle_t = ρ\,dt
 with ``v_0 = σ_0^2``, ``κ^* = κ + λ`` and ``θ^* = κθ / (κ + λ)``.
 
 ```julia
-HestonProcess(σ, σ₀, λ, κ, ρ, θ, underlying)
-HestonProcess(0.5, 0.2, 0.0, 2.0, -0.7, 0.04, Underlying(100.0, 0.01))
+HestonProcess(σ, σ₀, λ, κ, ρ, θ)
+HestonProcess(0.5, 0.2, 0.0, 2.0, -0.7, 0.04)
 ```
 
 | Parameter | Meaning | Constraint |
@@ -146,8 +146,8 @@ J_t = \sum_{i=1}^{N_t} Y_i, \quad Y_i \sim \mathcal{N}(μ_J, σ_J^2)
 with ``N_t`` a Poisson process of intensity ``λ``.
 
 ```julia
-MertonProcess(σ, λ, μ_jump, σ_jump, underlying)
-MertonProcess(0.2, 3.0, -0.05, 0.1, Underlying(100.0, 0.01))
+MertonProcess(σ, λ, μ_jump, σ_jump)
+MertonProcess(0.2, 3.0, -0.05, 0.1)
 ```
 
 | Parameter | Meaning | Constraint |
@@ -173,8 +173,8 @@ Y_i = \begin{cases} +\text{Exp}(λ_+) & \text{with probability } p \\ -\text{Exp
 with ``J_t = \sum_{i=1}^{N_t} Y_i`` and ``N_t`` a Poisson process of intensity ``λ``.
 
 ```julia
-KouProcess(σ, λ, p, λ₊, λ₋, underlying)
-KouProcess(0.2, 5.0, 0.3, 30.0, 20.0, Underlying(100.0, 0.01))
+KouProcess(σ, λ, p, λ₊, λ₋)
+KouProcess(0.2, 5.0, 0.3, 30.0, 20.0)
 ```
 
 | Parameter | Meaning | Constraint |
@@ -199,8 +199,8 @@ a Brownian motion with drift ``θ`` and volatility ``σ`` evaluated at a gamma s
 and variance rate ``κ``.
 
 ```julia
-VarianceGammaProcess(σ, θ, κ, underlying)
-VarianceGammaProcess(0.2, -0.1, 0.2, Underlying(100.0, 0.01))
+VarianceGammaProcess(σ, θ, κ)
+VarianceGammaProcess(0.2, -0.1, 0.2)
 ```
 
 | Parameter | Meaning | Constraint |
@@ -226,8 +226,8 @@ I_{t + h} - I_t \sim \text{InverseGaussian}\left(h, \frac{h^2}{κ}\right), \qqua
 the same construction as Variance Gamma with an inverse Gaussian subordinator ``I``.
 
 ```julia
-NormalInverseGaussianProcess(σ, θ, κ, underlying)
-NormalInverseGaussianProcess(0.2, -0.1, 0.2, Underlying(100.0, 0.01))
+NormalInverseGaussianProcess(σ, θ, κ)
+NormalInverseGaussianProcess(0.2, -0.1, 0.2)
 ```
 
 | Parameter | Meaning | Constraint |
@@ -252,8 +252,8 @@ the mixture ``\sum_i λ_i \text{Law}(S^i_t)`` at every time, so a European price
 Black-Scholes price with volatility ``η_i`` (the closed form of FinancialCalibrator's `AnalyticMethod`).
 
 ```julia
-LogNormalMixture(η, λ, underlying)
-LogNormalMixture((0.2, 0.3), (0.4,), Underlying(100.0, 0.01))   # weights 0.4 and 0.6
+LogNormalMixture(η, λ)
+LogNormalMixture((0.2, 0.3), (0.4,))   # weights 0.4 and 0.6
 ```
 
 | Parameter | Meaning | Constraint |
@@ -281,9 +281,9 @@ where ``Y`` is the log return of `model` (for a shifted Bachelier, ``(1 - α) S_
 
 ```julia
 ShiftedProcess(model, α)
-ShiftedProcess(BlackScholesProcess(0.2, Underlying(100.0, 0.01)), 0.3)   # displaced diffusion
-ShiftedProcess(HestonProcess(0.5, 0.2, 0.0, 2.0, -0.7, 0.04, Underlying(100.0, 0.01)), 0.2)
-ShiftedProcess(LogNormalMixture((0.2, 0.3), (0.4,), Underlying(100.0, 0.01)), 0.1)   # shifted lognormal mixture
+ShiftedProcess(BlackScholesProcess(0.2), 0.3)   # displaced diffusion
+ShiftedProcess(HestonProcess(0.5, 0.2, 0.0, 2.0, -0.7, 0.04), 0.2)
+ShiftedProcess(LogNormalMixture((0.2, 0.3), (0.4,)), 0.1)   # shifted lognormal mixture
 ```
 
 | Parameter | Meaning | Constraint |
@@ -293,8 +293,8 @@ ShiftedProcess(LogNormalMixture((0.2, 0.3), (0.4,), Underlying(100.0, 0.01)), 0.
 
 The forward is the one of `model`. With ``0 ≤ α < 1`` the price stays above ``α`` times the forward and the
 smile flattens (a displaced diffusion has a skew of its own: lower strikes, higher implied volatility); with
-``α < 0`` the price can go below zero. The spot and the dividends are those of the underlying of `model`,
-held by the shifted process, so [`delta`](@ref) bumps the shift too. `model` is simulated by its own code,
+``α < 0`` the price can go below zero. The spot and the dividends are those of the underlying passed with the
+shifted process, so [`delta`](@ref) bumps the shift too; `model` is simulated from `Underlying((1 - α) S0, d)`. `model` is simulated by its own code,
 so every sampling, mode and automatic differentiation backend it supports works shifted.
 
 A call of strike ``K`` on ``S_T`` is a call of strike ``K - α F`` on the unshifted model started from

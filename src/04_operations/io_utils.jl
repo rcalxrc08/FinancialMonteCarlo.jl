@@ -27,16 +27,16 @@ end
     get_parameters(x)
 
 Numeric parameters of a model or of a payoff, flattened into a vector in field order (the
-underlying of a model is excluded). The inverse of [`FinancialMonteCarlo.set_parameters!`](@ref).
+models of a copula are excluded). The inverse of [`FinancialMonteCarlo.set_parameters!`](@ref).
 """
 function get_parameters(x::Union{AbstractPayoff, BaseProcess})
     return parameter_vector(x, parameter_values(x))
 end
 
-# The parameter fields of a type: all its fields but the underlying of a model and the tuple of the models of a
-# copula. Generated, so that the names are constants and the fields read and set with them are inferred: a loop over
+# The parameter fields of a type: all its fields but the tuple of the models of a copula (#72: the models hold no
+# underlying). Generated, so that the names are constants and the fields read and set with them are inferred: a loop over
 # `fieldnames` gives a Symbol known only at run time, and makes get_parameters and set_parameters! type unstable.
-parameter_fields(T::DataType) = Tuple(name for (name, type) in zip(fieldnames(T), fieldtypes(T)) if !(type <: Union{AbstractUnderlying, Tuple{Vararg{BaseProcess}}}))
+parameter_fields(T::DataType) = Tuple(name for (name, type) in zip(fieldnames(T), fieldtypes(T)) if !(type <: Tuple{Vararg{BaseProcess}}))
 @generated parameter_names(::Type{T}) where {T} = QuoteNode(parameter_fields(T))
 """
     FinancialMonteCarlo.parameter_count(T::Type)
@@ -79,7 +79,7 @@ end
 
 function set_parameters!(model::LogNormalMixture{N, M}, param::AbstractVector{num}) where {N, M, num <: Number}
     check_dimension(length(param) == N + M, "Check number of parameters of the model")
-    return LogNormalMixture(ntuple(i -> param[i], Val(N)), ntuple(i -> param[N+i], Val(M)), model.underlying)
+    return LogNormalMixture(ntuple(i -> param[i], Val(N)), ntuple(i -> param[N+i], Val(M)))
 end
 
 # The parameters of the model, then the shift (a method of its own: through the generic one, get_parameters would call
@@ -87,12 +87,12 @@ end
 get_parameters(model::ShiftedProcess) = vcat(get_parameters(model.model), model.α)
 function set_parameters!(model::ShiftedProcess, param::AbstractVector{num}) where {num <: Number}
     check_dimension(length(param) == parameter_count(typeof(model)), "Check number of parameters of the model")
-    return ShiftedProcess(set_parameters!(model.model, param[1:(end-1)]), param[end], model.underlying)
+    return ShiftedProcess(set_parameters!(model.model, param[1:(end-1)]), param[end])
 end
 
 # Reverse rule of set_parameters! (#80): Zygote through the constructors and the reads of `param` costs 0.1-0.2 ms. The
-# pullback reads the tangent of the returned model in the order of get_parameters, and gives the tangent of the fields
-# that are not parameters (the underlying, which set_parameters! copies) to the input model.
+# pullback reads the tangent of the returned model in the order of get_parameters. Every field of a single name model is
+# a parameter since the underlying left the models (#72), so the input model gets an empty (zero) tangent.
 tangent_number(x) = x
 tangent_number(::AbstractZero) = false
 tangent_numbers(t, N::Integer) = [tangent_number(t[i]) for i = 1:N]
@@ -104,15 +104,11 @@ tangent_field(Δ::AbstractZero, ::Symbol) = Δ
 parameter_tangent(model::BaseProcess, Δ) = [parameter_tangent_values(Δ, typeof(model))...]
 parameter_tangent(::LogNormalMixture{N, M}, Δ) where {N, M} = vcat(tangent_numbers(tangent_field(Δ, :η), N), tangent_numbers(tangent_field(Δ, :λ), M))
 parameter_tangent(model::ShiftedProcess, Δ) = vcat(parameter_tangent(model.model, tangent_field(Δ, :model)), tangent_number(tangent_field(Δ, :α)))
-underlying_tangent(::BaseProcess, Δ::AbstractZero) = Δ
-underlying_tangent(model::BaseProcess, Δ) = Tangent{typeof(model)}(; underlying = tangent_field(Δ, :underlying))
-underlying_tangent(::ShiftedProcess, Δ::AbstractZero) = Δ
-underlying_tangent(model::ShiftedProcess, Δ) = Tangent{typeof(model)}(; model = underlying_tangent(model.model, tangent_field(Δ, :model)), underlying = tangent_field(Δ, :underlying))
 function ChainRulesCore.rrule(::typeof(set_parameters!), model::BaseProcess, param::AbstractVector{<:Number})
     project = ProjectTo(param)
     function set_parameters_pullback(Δ)
         Δ_ = unthunk(Δ)
-        return NoTangent(), underlying_tangent(model, Δ_), project(parameter_tangent(model, Δ_))
+        return NoTangent(), Tangent{typeof(model)}(), project(parameter_tangent(model, Δ_))
     end
     return set_parameters!(model, param), set_parameters_pullback
 end

@@ -53,7 +53,7 @@ default `MersenneTwister` ends in a foreigncall into libdSFMT. Mooncake's first 
 - Variance Gamma does not work (the Gamma sampler of Distributions draws scalar exponentials).
 - On Julia 1.10 a position built inside the differentiated function needs `Enzyme.set_runtime_activity(Reverse)` (its
   constant integer weights sit next to active payoffs); Julia 1.11 and later do not (#66 drops the 1.10 workarounds).
-- Curve underlyings (#79, fixed in 0.9): with `Vector` nodes a model built from active parameters on an `UnderlyingVec`
+- Curve underlyings (#79, fixed in 0.9): with `Vector` nodes a model built from active parameters on an underlying on a curve
   needed `set_runtime_activity` (Enzyme 0.13.221); with `SVector` nodes it does not (tested in `test/ad/enzyme.jl`, also
   a `ShiftedProcess` of a mixture through `set_parameters!`). `EnzymeRules.inactive_type(::Type{<:Curve})` was rejected:
   it fixed only the one-level case and would zero the curve sensitivities. A closure annotated `Const` that captures

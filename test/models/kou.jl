@@ -5,21 +5,21 @@ const KOU_REF = (fwd = 99.41332633109904, eu = 10.347332240535199, barrier = 8.8
 
 @testset "Kou" begin
     p, lam, lamp, lamm = 0.3, 5.0, 30.0, 20.0
-    model = KouProcess(sigma, lam, p, lamp, lamm, Underlying(S0, d))
+    model = KouProcess(sigma, lam, p, lamp, lamm)
 
     @testset "standard" begin
-        check_prices(model, rfCurve, mc, standard_payoffs(), KOU_REF; toll = 0.8)
+        check_prices(model, und, rfCurve, mc, standard_payoffs(), KOU_REF; toll = 0.8)
     end
 
     @testset "antithetic" begin
-        check_prices(model, rfCurve, mc_anti, standard_payoffs(), KOU_REF; toll = 0.8)
+        check_prices(model, und, rfCurve, mc_anti, standard_payoffs(), KOU_REF; toll = 0.8)
     end
 
     @testset "sobol" begin
         mc_sobol = MonteCarloConfiguration(Nsim, Nstep; sampling = FinancialMonteCarlo.SobolMC())
-        check_prices(model, rfCurve, mc_sobol, standard_payoffs(), KOU_REF; toll = 0.8)
+        check_prices(model, und, rfCurve, mc_sobol, standard_payoffs(), KOU_REF; toll = 0.8)
         # the jumps are quasi random too: the forward is close to its exact value
-        @test abs(pricer(model, rfCurve, mc_sobol, Forward(T)) - S0 * exp(-d * T)) < 0.05
+        @test abs(pricer(model, und, rfCurve, mc_sobol, Forward(T)) - S0 * exp(-d * T)) < 0.05
     end
 
     @testset "jump sizes by inversion" begin
@@ -34,11 +34,11 @@ const KOU_REF = (fwd = 99.41332633109904, eu = 10.347332240535199, barrier = 8.8
     end
 
     @testset "parameter validation" begin
-        @test_throws DomainError KouProcess(-sigma, lam, p, lamp, lamm, Underlying(S0, d))
-        @test_throws DomainError KouProcess(sigma, -lam, p, lamp, lamm, Underlying(S0, d))
-        @test_throws DomainError KouProcess(sigma, lam, -p, lamp, lamm, Underlying(S0, d))
-        @test_throws DomainError KouProcess(sigma, lam, p, -lamp, lamm, Underlying(S0, d))
-        @test_throws DomainError KouProcess(sigma, lam, p, 0.5, lamm, Underlying(S0, d))
-        @test_throws DomainError KouProcess(sigma, lam, p, lamp, -lamm, Underlying(S0, d))
+        @test_throws DomainError KouProcess(-sigma, lam, p, lamp, lamm)
+        @test_throws DomainError KouProcess(sigma, -lam, p, lamp, lamm)
+        @test_throws DomainError KouProcess(sigma, lam, -p, lamp, lamm)
+        @test_throws DomainError KouProcess(sigma, lam, p, -lamp, lamm)
+        @test_throws DomainError KouProcess(sigma, lam, p, 0.5, lamm)
+        @test_throws DomainError KouProcess(sigma, lam, p, lamp, -lamm)
     end
 end

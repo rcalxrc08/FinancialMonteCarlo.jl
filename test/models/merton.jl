@@ -5,31 +5,31 @@ const MERTON_REF = (fwd = 99.1188767166039, eu = 9.084327245917533, barrier = 7.
 
 @testset "Merton" begin
     lam, mu1, sigma1 = 5.0, 0.03, 0.02
-    model = MertonProcess(sigma, lam, mu1, sigma1, Underlying(S0, d))
+    model = MertonProcess(sigma, lam, mu1, sigma1)
 
     @testset "standard" begin
-        check_prices(model, rfCurve, mc, standard_payoffs(), MERTON_REF; toll = 0.8)
+        check_prices(model, und, rfCurve, mc, standard_payoffs(), MERTON_REF; toll = 0.8)
     end
 
     @testset "antithetic" begin
-        check_prices(model, rfCurve, mc_anti, standard_payoffs(), MERTON_REF; toll = 0.6)
+        check_prices(model, und, rfCurve, mc_anti, standard_payoffs(), MERTON_REF; toll = 0.6)
     end
 
     @testset "sobol" begin
         mc_sobol = MonteCarloConfiguration(Nsim, Nstep; sampling = FinancialMonteCarlo.SobolMC())
-        check_prices(model, rfCurve, mc_sobol, standard_payoffs(), MERTON_REF; toll = 0.6)
+        check_prices(model, und, rfCurve, mc_sobol, standard_payoffs(), MERTON_REF; toll = 0.6)
         # the jumps are quasi random too: the forward is close to its exact value
-        @test abs(pricer(model, rfCurve, mc_sobol, Forward(T)) - S0 * exp(-d * T)) < 0.05
+        @test abs(pricer(model, und, rfCurve, mc_sobol, Forward(T)) - S0 * exp(-d * T)) < 0.05
         # a path with more jumps than the Sobol point has room for draws them from the rng
-        big = MertonProcess(sigma, 2000.0, 0.0, 0.001, Underlying(S0, d))
-        @test isfinite(pricer(big, rfCurve, MonteCarloConfiguration(64, 2; sampling = FinancialMonteCarlo.SobolMC()), Forward(T)))
+        big = MertonProcess(sigma, 2000.0, 0.0, 0.001)
+        @test isfinite(pricer(big, und, rfCurve, MonteCarloConfiguration(64, 2; sampling = FinancialMonteCarlo.SobolMC()), Forward(T)))
     end
 
     @testset "antithetic jumps" begin
         # the jumps of the path i + Nsim / 2 mirror those of the path i: with no diffusion to speak of, the log
         # returns of the two halves are the jump sums from u and 1 - u
-        model_jumps = MertonProcess(1e-8, lam, 0.0, sigma1, Underlying(S0, 0.0))
-        S = simulate(model_jumps, ZeroRate(0.0), mc_small_anti, T)
+        model_jumps = MertonProcess(1e-8, lam, 0.0, sigma1)
+        S = simulate(model_jumps, Underlying(S0, 0.0), ZeroRate(0.0), mc_small_anti, T)
         half = div(Nsim_small, 2)
         jumps = log.(S[:, end] ./ S0)
         # symmetric jump law and counts N(u), N(1 - u): the pairs are negatively correlated
@@ -49,8 +49,8 @@ const MERTON_REF = (fwd = 99.1188767166039, eu = 9.084327245917533, barrier = 7.
     end
 
     @testset "parameter validation" begin
-        @test_throws DomainError MertonProcess(-sigma, lam, mu1, sigma1, Underlying(S0, d))
-        @test_throws DomainError MertonProcess(sigma, lam, mu1, -sigma1, Underlying(S0, d))
-        @test_throws DomainError MertonProcess(sigma, -lam, mu1, sigma1, Underlying(S0, d))
+        @test_throws DomainError MertonProcess(-sigma, lam, mu1, sigma1)
+        @test_throws DomainError MertonProcess(sigma, lam, mu1, -sigma1)
+        @test_throws DomainError MertonProcess(sigma, -lam, mu1, sigma1)
     end
 end

@@ -9,12 +9,13 @@ BenchmarkTools.DEFAULT_PARAMETERS.seconds = 2
 Nstep = 50
 paths = [1_000, 10_000, 100_000, 1_000_000]
 function price(U, mode)
-    model = BlackScholesProcess(U(2) / 10, Underlying(U(100), U(1) / 100))
+    model = BlackScholesProcess(U(2) / 10)
+    und = Underlying(U(100), U(1) / 100)
     curve = ZeroRate(U(2) / 100)
     option = EuropeanOption(one(U), U(100))
     times = map(paths) do Nsim
         mc = MonteCarloConfiguration(Nsim, Nstep; mode = mode, seed = 1)
-        minimum(@benchmark CUDA.@sync(pricer($model, $curve, $mc, $option)) evals = 1).time / 1e6
+        minimum(@benchmark CUDA.@sync(pricer($model, $und, $curve, $mc, $option)) evals = 1).time / 1e6
     end
     GC.gc()
     CUDA.reclaim()

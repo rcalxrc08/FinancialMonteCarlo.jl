@@ -27,13 +27,13 @@ const S0, r, d = 100.0, 0.02, 0.01
 const zero_rate = ZeroRate(r)
 underlying() = Underlying(S0, d)
 # Parameters chosen for visibly different paths, not calibrated to a market.
-showcase_models() = ["Heston" => HestonProcess(0.4, 0.2, 0.0, 1.5, -0.7, 0.04, underlying()), "Kou" => KouProcess(0.15, 1.0, 0.3, 20.0, 10.0, underlying()), "Variance Gamma" => VarianceGammaProcess(0.2, -0.15, 0.2, underlying())]
+showcase_models() = ["Heston" => HestonProcess(0.4, 0.2, 0.0, 1.5, -0.7, 0.04), "Kou" => KouProcess(0.15, 1.0, 0.3, 20.0, 10.0), "Variance Gamma" => VarianceGammaProcess(0.2, -0.15, 0.2)]
 
 # A few simulated paths of three models, one panel each.
 function paths_figure(theme)
     T, steps, n = 1.0, 250, 24
     panels = map(enumerate(showcase_models())) do (j, (name, model))
-        S = simulate(model, zero_rate, MonteCarloConfiguration(n, steps; seed = 7), T)
+        S = simulate(model, underlying(), zero_rate, MonteCarloConfiguration(n, steps; seed = 7), T)
         t = range(0, T; length = steps + 1)
         p = base_plot(theme; title = name, xlabel = "time", ylabel = j == 1 ? "spot" : "", legend = false, ylims = (50, 170), left_margin = 2Plots.mm)
         for i = 1:n
@@ -47,13 +47,13 @@ end
 # The price of a Black-Scholes call against the number of paths, with its 95% confidence interval, against the formula.
 function convergence_figure(theme)
     σ, K, T = 0.2, 100.0, 1.0
-    model = BlackScholesProcess(σ, underlying())
+    model = BlackScholesProcess(σ)
     option = EuropeanOption(T, K)
     exact = blsprice(S0, K, r, T, σ, d)
     paths = round.(Int, 10 .^ range(2, 6; length = 17))
     rows = map(paths) do n
         mc = MonteCarloConfiguration(n, 1; seed = 11)
-        (pricer(model, zero_rate, mc, option), confinter(model, zero_rate, mc, option, 0.95))
+        (pricer(model, underlying(), zero_rate, mc, option), confinter(model, underlying(), zero_rate, mc, option, 0.95))
     end
     price, lo, hi = first.(rows), [x[2][1] for x in rows], [x[2][2] for x in rows]
     p = base_plot(theme; title = "Black–Scholes call: Monte Carlo price and 95% confidence interval, against the formula", xlabel = "paths", ylabel = "price", xscale = :log10, size = (960, 430), legend = :topright, xticks = (10 .^ (2:6), ["100", "1 000", "10 000", "100 000", "1 000 000"]))
@@ -74,7 +74,7 @@ function distributions_figure(theme)
     grid = range(-0.9, 0.6; length = 241)
     p = base_plot(theme; title = "Density of log(S_T / S₀) at T = 1, from 20 000 simulated paths", xlabel = "log-return", ylabel = "density", size = (960, 430), legend = :topleft)
     for (j, (name, model)) in enumerate(showcase_models())
-        S = simulate(model, zero_rate, MonteCarloConfiguration(20_000, 100; seed = 3), T)
+        S = simulate(model, underlying(), zero_rate, MonteCarloConfiguration(20_000, 100; seed = 3), T)
         plot!(p, grid, kde(log.(S[:, end] ./ S0), grid); color = theme.series[j], linewidth = 2, label = name)
     end
     return p
@@ -87,8 +87,8 @@ save_themes(distributions_figure, "distributions")
 # The hero of the home page: paths of the Heston model, coloured by where they end.
 function hero_figure(theme)
     T, steps, n = 1.0, 250, 160
-    model = HestonProcess(0.4, 0.2, 0.0, 1.5, -0.7, 0.04, underlying())
-    S = simulate(model, zero_rate, MonteCarloConfiguration(n, steps; seed = 21), T)
+    model = HestonProcess(0.4, 0.2, 0.0, 1.5, -0.7, 0.04)
+    S = simulate(model, underlying(), zero_rate, MonteCarloConfiguration(n, steps; seed = 21), T)
     t = range(0, T; length = steps + 1)
     ramp = cgrad(theme.text == "#f5f7fa" ? ["#22346b", "#4f8cff", "#38cfff", "#00d4aa", "#7ee787", "#ffb84d"] : ["#c7d6f5", "#4f8cff", "#1ea6d4", "#00a585", "#4db55c", "#e8962a"])
     final = S[:, end]

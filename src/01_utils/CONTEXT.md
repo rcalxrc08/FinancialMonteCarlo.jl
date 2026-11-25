@@ -10,10 +10,10 @@ Methods, modes and samplings; the configuration and its random state; rates, cur
 | `utils/checks.jl` | `check_domain`, `check_dimension`, `check_argument` |
 | `utils/curves.jl` | `AbstractCurve`, `Curve{N, T1, T2}` on `SVector`s, `ImpliedCurve`, `CurveDifference`, `value_at`, `integral`, `incremental_integral` and the `rrule` of `integral` (`integral_partials`) |
 | `utils/rng_number.jl` | `get_rng_type`: the number type of the draws |
-| `utils/zero_rates.jl` | `ZeroRate`, `ZeroRateCurve`, `ImpliedZeroRate` |
+| `utils/zero_rates.jl` | `ZeroRate{R}`, the rate a number or a curve (D-014) |
 | `utils/mc_mode.jl` | `AbstractMethod`, `AbstractMode`, `SerialMode`, `MultiProcess`, `CudaMode`, `AbstractCudaMode`, the samplings (`StandardMC`, `AntitheticMC`, `SobolMC`), `execution_mode`, `with_mode`, `mode_adaptor`, `to_mode`, `HostAdaptor`, `default_nbatches` |
 | `utils/mc_config.jl` | `MonteCarloConfiguration`, `check_configuration` (`check_sampling`, `check_sampling_mode`, `check_reseed`, `check_mode`), `random_state`, `SeededRNG`, `host_rng`, `with_mode`, `SobolConfig`, `BatchedConfig` |
-| `utils/underlying.jl` | `AbstractUnderlying`, `Underlying`, `UnderlyingScalar`, `UnderlyingVec` |
+| `utils/underlying.jl` | `AbstractUnderlying`, `Underlying{S, D}` (the dividend a number or a curve), `dividend`, `UnderlyingTuple`, `UnderlyingArg` |
 | `references/configuration.md` | methods, modes, samplings, data placement, curves |
 | `references/conventions.md` | before adding a function |
 | `references/autodiff.md` | isbits curves for Enzyme and the GPU; the Zygote rule of `integral` |

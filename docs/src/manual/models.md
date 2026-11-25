@@ -25,9 +25,10 @@ models and parameters. Each model, with its dynamics and what it supports, has i
 
 Models come in two flavours:
 
-- **processes** (subtypes of `AbstractMonteCarloProcess`) describe a financial asset: they hold an
-  [`Underlying`](@ref) and, combined with a zero rate curve, simulate the asset under the risk
-  neutral measure. They are what you pass to the metrics;
+- **processes** (subtypes of `AbstractMonteCarloProcess`) describe how a financial asset moves: they hold
+  only their parameters and, given an [`Underlying`](@ref) (spot and dividends) and a zero rate curve,
+  simulate the asset under the risk neutral measure. They are what you pass to the metrics, next to the
+  underlying;
 - **engines** (subtypes of `AbstractMonteCarloEngine`) are plain stochastic processes, with no
   notion of rates or dividends. Processes are built on top of them: e.g. a
   [`KouProcess`](@ref) computes its risk neutral drift, simulates a [`BrownianMotion`](@ref),
@@ -51,8 +52,9 @@ BaseProcess
 
 ## Constructors
 
-All single name processes take their parameters followed by the [`Underlying`](@ref), e.g.
-`HestonProcess(σ, σ₀, λ, κ, ρ, θ, underlying)`; the [Model bestiary](@ref) lists them all. A wrapper such as
+All single name processes take only their parameters, e.g. `HestonProcess(σ, σ₀, λ, κ, ρ, θ)`: the spot and
+the dividends are those of the [`Underlying`](@ref) passed to the metrics next to the model, so one model prices
+any underlying; the [Model bestiary](@ref) lists them all. A wrapper such as
 [`ShiftedProcess`](@ref) takes a model instead, and the copulas take several.
 
 Constructors check the parameters (positive volatilities and intensities, valid probabilities
@@ -82,11 +84,11 @@ hooks of the package (antithetic sides, draws on the device of the mode), see [E
 [`simulate`](@ref) returns the simulated paths, one per row:
 
 ```julia
-S = simulate(model, rfCurve, mcConfig, T)        # processes: Nsim × (Nstep + 1) matrix
+S = simulate(model, underlying, rfCurve, mcConfig, T)   # processes: Nsim × (Nstep + 1) matrix
 X = simulate(BrownianMotion(0.2, 0.0), mcConfig, T)  # engines need no zero rate curve
 ```
 
-Multivariate processes return a vector of such matrices, one per component.
+Multivariate processes take a tuple of underlyings, one per component, and return a vector of such matrices.
 
 ## Multivariate models
 
@@ -108,6 +110,6 @@ a vector, and [`FinancialMonteCarlo.set_parameters!`](@ref) builds a new model w
 parameters. Together they make calibration loops independent of the model. Both are type stable:
 their result is inferred from the type of the model, also when the parameters are dual numbers, so
 the code that follows them in a loss function is inferred too. The parameters are the fields of the
-model in their order, without the underlying (and without the models of a copula).
+model in their order (without the models of a copula).
 
 See [Models](@ref api-models) in the API reference.

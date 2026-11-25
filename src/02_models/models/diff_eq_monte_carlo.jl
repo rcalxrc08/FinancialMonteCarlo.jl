@@ -2,13 +2,12 @@
 struct MonteCarloDiffEqModel{absdiffeqmodel} <: ScalarMonteCarloProcess{Float64}
     model::absdiffeqmodel
     final_trasform::Function
-    underlying::AbstractUnderlying
-    function MonteCarloDiffEqModel(model::absdiffeqmodel, final_trasform::Function, underlying::AbstractUnderlying) where {absdiffeqmodel}
-        return new{absdiffeqmodel}(model, final_trasform, underlying)
+    function MonteCarloDiffEqModel(model::absdiffeqmodel, final_trasform::Function) where {absdiffeqmodel}
+        return new{absdiffeqmodel}(model, final_trasform)
     end
-    function MonteCarloDiffEqModel(model::absdiffeqmodel, underlying::AbstractUnderlying) where {absdiffeqmodel}
+    function MonteCarloDiffEqModel(model::absdiffeqmodel) where {absdiffeqmodel}
         func(x) = identity(x)
-        return new{absdiffeqmodel}(model, func, underlying)
+        return new{absdiffeqmodel}(model, func)
     end
 end
 

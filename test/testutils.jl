@@ -19,6 +19,8 @@ const Nstep = 30
 const mc = MonteCarloConfiguration(Nsim, Nstep)
 const mc_anti = MonteCarloConfiguration(Nsim, Nstep; sampling = FinancialMonteCarlo.AntitheticMC())
 const rfCurve = ZeroRate(r)
+# The underlying of most tests, passed next to the model (#72)
+const und = Underlying(S0, d)
 
 # For the tests not depending on the Monte Carlo error: shapes, finite prices, identities on the same seed
 const Nsim_small = 500
@@ -39,15 +41,15 @@ standard_payoffs() = (fwd = Forward(T), eu = EuropeanOption(T, K), am = American
 standard_put_payoffs() = (eu = EuropeanOption(T, K, false), am = AmericanOption(T, K, false), barrier = BarrierOptionDownOut(T, K, D, false), asian_float = AsianFloatingStrikeOption(T, false), asian_fixed = AsianFixedStrikeOption(T, K, false))
 
 """
-    check_prices(model, rfCurve, mc, payoffs, refs = (;); toll = 0.0)
+    check_prices(model, und, rfCurve, mc, payoffs, refs = (;); toll = 0.0)
 
 Price every payoff in the named tuple `payoffs`, one testset each. Payoffs with an entry in
 `refs` must be within `toll` of it; the others must just produce a finite price.
 """
-function check_prices(model, rfCurve, mc, payoffs, refs = (;); toll = 0.0)
+function check_prices(model, und, rfCurve, mc, payoffs, refs = (;); toll = 0.0)
     for (name, payoff_) in pairs(payoffs)
         @testset "$name" begin
-            price = pricer(model, rfCurve, mc, payoff_)
+            price = pricer(model, und, rfCurve, mc, payoff_)
             if haskey(refs, name)
                 @test abs(price - refs[name]) < toll
             else

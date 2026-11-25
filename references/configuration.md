@@ -4,7 +4,7 @@ _Methods, modes, samplings, the configuration, data placement, curves._ (Layer 3
 
 ## Three concepts (`mc_mode.jl`, `mc_config.jl`)
 
-- **Method** (`AbstractMethod`): what `pricer(model, zeroCurve, method, payoff)` dispatches on.
+- **Method** (`AbstractMethod`): what `pricer(model, underlying, zeroCurve, method, payoff)` dispatches on.
   `MonteCarloConfiguration <: AbstractMonteCarloConfiguration <: AbstractMethod`; FinancialFFT, VibratoMonteCarlo and
   FinancialCalibrator subtype it too. **Every method carries its execution mode**: `execution_mode(method)` reads it,
   `with_mode(method, mode)` returns a copy in another mode (generic `@set method.mode`; `MonteCarloConfiguration`
@@ -38,10 +38,12 @@ when a metric starts, with `to_mode(x, mode)` (`Adapt.adapt(mode_adaptor(mode), 
 
 ## Rates and curves (`zero_rates.jl`, `curves.jl`, `underlying.jl`)
 
-- `ZeroRate(r)` scalar or `ZeroRateCurve`/`ImpliedZeroRate` built on `Curve{N, T1, T2}`: two sorted `SVector`s
-  (StaticArrays, a hard dependency since 0.9), `times` and `values`, linear between the nodes and flat outside
-  (`value_at`). The nodes are static so that a curve, an `UnderlyingVec` and every model on it are isbits (#79): Enzyme
-  needs no runtime activity, GPU kernels capture them.
+- One type per concept since 0.10 (D-014): `ZeroRate{R}(r)` and `Underlying{S, D}(S0, d)`, the rate and the dividend a
+  number or an `AbstractCurve`, a type parameter; methods that differ dispatch on it (`ZeroRate{<:Number}`,
+  `ZeroRate{<:Curve}`, e.g. `bump_rate`). A curve is a `Curve{N, T1, T2}` (or an `ImpliedCurve` from quoted zero
+  rates): two sorted `SVector`s (StaticArrays, a hard dependency since 0.9), `times` and `values`, linear between the
+  nodes and flat outside (`value_at`). The nodes are static so that a curve and an underlying or rate holding one are
+  isbits (#79): Enzyme needs no runtime activity, GPU kernels capture them.
 - The algorithms are the generic `AbstractVector` ones (`searchsortedlast`, early returns): a tuple prototype with
   branch-free loops was slower at large N and compiled for tens of seconds (measurements on #79). N is in the type:
   built from vectors (`Curve(r, T)`, `ImpliedCurve`) the type is known only at run time (one dispatch where the curve is
@@ -49,7 +51,7 @@ when a metric starts, with `to_mode(x, mode)` (`Adapt.adapt(mode_adaptor(mode), 
 - Curves combine with `+`, `-`, `*`, `/` with numbers (`map` on the values); between two curves only `+` and `-`, which
   return a lazy `CurveDifference` (`integral` is the difference of the integrals, exact; the drift `r - d` when both
   are curves), no `*` or `/` (#81). `AbstractCurve` is the supertype of both, and what the engines
-  (`BrownianMotionVec`, …) and `step_drifts` take; `UnderlyingVec` and `ZeroRateCurve` hold a `Curve`. No external
+  (`BrownianMotionVec`, …) and `step_drifts` take; `Underlying` and `ZeroRate` hold a number or a `Curve`. No external
   dictionary type: arithmetic on one was type piracy (#42).
 - Code uses `integral(r, T)` / `incremental_integral` so the same path works for scalar and curve rates.
   `integral(::Curve, ::Number)` has a ChainRules `rrule` (`integral_partials`, `autodiff.md`).

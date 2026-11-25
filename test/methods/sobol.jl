@@ -16,27 +16,27 @@ include("../testutils.jl")
     end
 
     @testset "Black-Scholes" begin
-        model = BlackScholesProcess(sigma, Underlying(S0, d))
+        model = BlackScholesProcess(sigma)
         payoffs = merge(standard_payoffs(), (binary_eu = BinaryEuropeanOption(T, K),))
-        check_prices(model, rfCurve, mc_sobol, payoffs, BS_CALL_REF; toll = 0.8)
-        model_curve = BlackScholesProcess(sigma, Underlying(S0, FinancialMonteCarlo.Curve([0.009999, 0.01], T)))
-        @test isfinite(pricer(model_curve, rfCurve, mc_sobol, Forward(T)))
+        check_prices(model, und, rfCurve, mc_sobol, payoffs, BS_CALL_REF; toll = 0.8)
+        model_curve = BlackScholesProcess(sigma)
+        @test isfinite(pricer(model_curve, Underlying(S0, FinancialMonteCarlo.Curve([0.009999, 0.01], T)), rfCurve, mc_sobol, Forward(T)))
     end
 
     @testset "Heston" begin
-        model = HestonProcess(sigma, 0.2, 0.01, 0.01, 0.0, 0.03, Underlying(S0, d))
+        model = HestonProcess(sigma, 0.2, 0.01, 0.01, 0.0, 0.03)
         heston_ref = (fwd = 98.8790717426047, eu = 7.9813557592924, barrier = 7.006564636309922, asian_float = 4.242256952013707)
-        check_prices(model, rfCurve, mc_sobol, standard_payoffs(), heston_ref; toll = 0.8)
-        @test isfinite(pricer(model, FinancialMonteCarlo.ImpliedZeroRate([0.01], [0.5]), mc_sobol, Forward(T)))
+        check_prices(model, und, rfCurve, mc_sobol, standard_payoffs(), heston_ref; toll = 0.8)
+        @test isfinite(pricer(model, und, ZeroRate(FinancialMonteCarlo.ImpliedCurve([0.01], [0.5])), mc_sobol, Forward(T)))
         # a flat rate curve gives the same forward as the scalar rate
-        @test abs(pricer(model, ZeroRate([r, r, r], T), mc_sobol, Forward(T)) - S0 * exp(-d * T)) < 0.2
+        @test abs(pricer(model, und, ZeroRate(FinancialMonteCarlo.Curve([r, r, r], T)), mc_sobol, Forward(T)) - S0 * exp(-d * T)) < 0.2
     end
 
     @testset "Variance Gamma" begin
-        model = VarianceGammaProcess(sigma, 0.01, 0.03, Underlying(S0, d))
+        model = VarianceGammaProcess(sigma, 0.01, 0.03)
         vg_ref = (fwd = 99.09861035102614, eu = 8.368903690692187, barrier = 7.469024475794258, asian_float = 4.779663836736272)
-        check_prices(model, rfCurve, mc_sobol, standard_payoffs(), vg_ref; toll = 0.8)
-        model_curve = VarianceGammaProcess(sigma, 0.01, 0.03, Underlying(S0, FinancialMonteCarlo.Curve([0.009999, 0.01], T)))
-        @test abs(pricer(model_curve, rfCurve, mc_sobol, Forward(T)) - vg_ref.fwd) < 0.8
+        check_prices(model, und, rfCurve, mc_sobol, standard_payoffs(), vg_ref; toll = 0.8)
+        model_curve = VarianceGammaProcess(sigma, 0.01, 0.03)
+        @test abs(pricer(model_curve, Underlying(S0, FinancialMonteCarlo.Curve([0.009999, 0.01], T)), rfCurve, mc_sobol, Forward(T)) - vg_ref.fwd) < 0.8
     end
 end

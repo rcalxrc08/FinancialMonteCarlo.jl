@@ -68,7 +68,7 @@ volatilities need no transfer:
 
 ```julia
 smile = FinancialMonteCarlo.EuropeanOptionSmile(T, CuArray(K), CuArray(isCall))
-prices = pricer(model, rfCurve, MonteCarloConfiguration(Nsim, Nstep; mode = FinancialMonteCarlo.CudaMode()), smile)
+prices = pricer(model, underlying, rfCurve, MonteCarloConfiguration(Nsim, Nstep; mode = FinancialMonteCarlo.CudaMode()), smile)
 volatilities = blsimpv.(S0, smile.K, r, T, prices, d, smile.isCall) # FinancialToolbox
 ```
 

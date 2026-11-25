@@ -1,7 +1,8 @@
 include("utils.jl")
 
 """
-    pricer(mcProcess, rfCurve, mcConfig, payoff)
+    pricer(mcProcess, underlying, rfCurve, mcConfig, payoff)
+    pricer(market, rfCurve, mcConfig, portfolio)
 
 Monte Carlo estimate of the price of `payoff`: the mean of the discounted payoff over the
 simulated paths. The random number generator is reset to the seed of `mcConfig` first, so the
@@ -9,7 +10,8 @@ result is reproducible. Returns a vector of prices for a vector of payoffs or a 
 in `CudaMode` it is a `CuArray`, so the computations on the prices can stay on the GPU.
 
 # Arguments
-- `mcProcess`: the model (a single name or multivariate process, or a [`MarketDataSet`](@ref)).
+- `mcProcess`: the model (a single name or multivariate process), or a [`MarketDataSet`](@ref) without `underlying`.
+- `underlying`: the [`Underlying`](@ref) (spot and dividends), a tuple of them for a multivariate model.
 - `rfCurve`: the zero rate curve, e.g. [`ZeroRate`](@ref).
 - `mcConfig`: the [`MonteCarloConfiguration`](@ref).
 - `payoff`: a payoff, a vector of payoffs priced on the same paths, a smile, a [`FinancialMonteCarlo.Position`](@ref)
@@ -17,36 +19,36 @@ in `CudaMode` it is a `CuArray`, so the computations on the prices can stay on t
 
 # Examples
 ```julia
-model = BlackScholesProcess(0.2, Underlying(100.0, 0.01))
+model, und = BlackScholesProcess(0.2), Underlying(100.0, 0.01)
 mcConfig = MonteCarloConfiguration(10_000, 30)
-pricer(model, ZeroRate(0.02), mcConfig, EuropeanOption(1.0, 100.0))
-pricer(model, ZeroRate(0.02), mcConfig, [Forward(1.0), AmericanOption(1.0, 100.0, false)])
+pricer(model, und, ZeroRate(0.02), mcConfig, EuropeanOption(1.0, 100.0))
+pricer(model, und, ZeroRate(0.02), mcConfig, [Forward(1.0), AmericanOption(1.0, 100.0, false)])
 ```
 """
-function pricer(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig::AbstractMonteCarloConfiguration, abstractPayoff::AbstractPayoff)
+function pricer(mcProcess::BaseProcess, und::UnderlyingArg, rfCurve::AbstractZeroRateCurve, mcConfig::AbstractMonteCarloConfiguration, abstractPayoff::AbstractPayoff)
     set_seed!(mcConfig)
     T = maturity(abstractPayoff)
-    S = simulate(mcProcess, rfCurve, mcConfig, T)
+    S = simulate(mcProcess, und, rfCurve, mcConfig, T)
     return mean(payoff(S, abstractPayoff, rfCurve, mcConfig))
 end
 
-function pricer(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig::AbstractMonteCarloConfiguration, smile::AbstractSmile)
+function pricer(mcProcess::BaseProcess, und::UnderlyingArg, rfCurve::AbstractZeroRateCurve, mcConfig::AbstractMonteCarloConfiguration, smile::AbstractSmile)
     abstractPayoff = to_mode(smile, execution_mode(mcConfig))
     set_seed!(mcConfig)
     T = maturity(abstractPayoff)
-    S = simulate(mcProcess, rfCurve, mcConfig, T)
-    return convert(AbstractArray{price_type(mcProcess, rfCurve, abstractPayoff)}, vec(mean(payoff(S, abstractPayoff, rfCurve, mcConfig, T), dims = 1)))
+    S = simulate(mcProcess, und, rfCurve, mcConfig, T)
+    return convert(AbstractArray{price_type(mcProcess, und, rfCurve, abstractPayoff)}, vec(mean(payoff(S, abstractPayoff, rfCurve, mcConfig, T), dims = 1)))
 end
 
 # The arrays of the paths with numbers of type T (see price_type), on the device of the mode
 get_matrix_type(mcConfig::MonteCarloConfiguration, ::BaseProcess, ::Type{T}) where {T <: Number} = array_type(mcConfig.mode){T}(undef, mcConfig.Nsim, mcConfig.Nstep + 1);
 get_matrix_type(mcConfig::MonteCarloConfiguration, ::VectorialMonteCarloProcess, ::Type{T}) where {T <: Number} = Array{array_type(mcConfig.mode){T, 2}};
 
-function pricer(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration, abstractPayoffs::Array{abstractPayoff_, N}) where {abstractPayoff_ <: AbstractPayoff, N}
+function pricer(mcProcess::BaseProcess, und::UnderlyingArg, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration, abstractPayoffs::Array{abstractPayoff_, N}) where {abstractPayoff_ <: AbstractPayoff, N}
     set_seed!(mcConfig)
     maxT = maturity(abstractPayoffs)
-    S = simulate(mcProcess, rfCurve, mcConfig, maxT)
-    T_price = price_type(mcProcess, rfCurve, abstractPayoffs)
+    S = simulate(mcProcess, und, rfCurve, mcConfig, maxT)
+    T_price = price_type(mcProcess, und, rfCurve, abstractPayoffs)
     prices::Array{T_price, N} = [mean(payoff(S, abstractPayoff, rfCurve, mcConfig, maxT)) for abstractPayoff in abstractPayoffs]
 
     return prices
@@ -54,12 +56,12 @@ end
 
 # A position is priced path by path: the mean of its discounted payoff, the weighted sum of those of its legs on the same
 # paths (so that its variance and confidence interval are those of the position, see payoff_moments)
-function pricer(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration, position::Position)
-    T_price = price_type(mcProcess, rfCurve, position)
+function pricer(mcProcess::BaseProcess, und::UnderlyingArg, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration, position::Position)
+    T_price = price_type(mcProcess, und, rfCurve, position)
     isempty(position) && return zero(T_price)
     set_seed!(mcConfig)
     maxT = maturity(position)
-    S = simulate(mcProcess, rfCurve, mcConfig, maxT)
+    S = simulate(mcProcess, und, rfCurve, mcConfig, maxT)
     price::T_price = mean(payoff(S, position, rfCurve, mcConfig, maxT))
     return price
 end
@@ -67,14 +69,14 @@ end
 #####Pricer for multivariate
 # One position per subset of the components of the model, in the order of compute_indices; undefined or empty where
 # there is none. The paths of a subset are those of its components.
-function pricer(mcProcess::VectorialMonteCarloProcess, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration, positions::Array{<:Position})
+function pricer(mcProcess::VectorialMonteCarloProcess, und::UnderlyingTuple, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration, positions::Array{<:Position})
     subsets = compute_indices(length(mcProcess.models))
     priced = [i for i in eachindex(positions) if isassigned(positions, i) && !isempty(positions[i])]
-    T_price = price_type(mcProcess, rfCurve, positions[priced])
+    T_price = price_type(mcProcess, und, rfCurve, positions[priced])
     isempty(priced) && return zero(T_price)
     set_seed!(mcConfig)
     maxT = maximum(i -> maturity(positions[i]), priced)
-    S = simulate(mcProcess, rfCurve, mcConfig, maxT)
+    S = simulate(mcProcess, und, rfCurve, mcConfig, maxT)
     price::T_price = sum(mean(payoff(S[subsets[i]], positions[i], rfCurve, mcConfig, maxT)) for i in priced)
     return price
 end
@@ -86,13 +88,13 @@ end
 # model would give them all the same numbers, i.e. perfectly correlated paths.
 function pricer(market::MarketDataSet, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration, portfolio::Portfolio)
     T_price = price_type(rfCurve, portfolio, market)
-    priced = [(model, positions) for (model, positions) in ((model, positions_on(portfolio, key)) for (key, model) in market.models) if !isnothing(positions)]
+    priced = [(model, market_underlying(market, key), positions) for (key, model, positions) in ((key, model, positions_on(portfolio, key)) for (key, model) in market.models) if !isnothing(positions)]
     check_independent_streams(mcConfig.sampling, length(priced))
     set_seed!(mcConfig)
     continuing = @set mcConfig.reseed = false
     price::T_price = zero(T_price)
-    for (model, positions) in priced
-        price += pricer(model, rfCurve, continuing, positions)
+    for (model, und, positions) in priced
+        price += pricer(model, und, rfCurve, continuing, positions)
     end
     return price
 end

@@ -1,5 +1,5 @@
 """
-    KouProcess(σ, λ, p, λ₊, λ₋, underlying)
+    KouProcess(σ, λ, p, λ₊, λ₋)
 
 Kou jump diffusion: the log price is a Brownian motion with volatility `σ` plus a compound
 Poisson process with intensity `λ` and double exponential jumps (up with probability `p`, with
@@ -11,19 +11,17 @@ exponential sizes of rate `λ₊` up and `λ₋` down). The drift is chosen to m
 - `p`: probability of an up jump, in ``[0, 1]``.
 - `λ₊`: rate of the exponential up jumps, must be greater than 1 (for a finite forward).
 - `λ₋`: rate of the exponential down jumps, must be positive.
-- `underlying`: an [`Underlying`](@ref) with spot price and dividends.
 """
-struct KouProcess{num <: Number, num1 <: Number, num2 <: Number, num3 <: Number, num4 <: Number, abstrUnderlying <: AbstractUnderlying, numtype <: Number} <: FiniteActivityProcess{numtype}
+struct KouProcess{num <: Number, num1 <: Number, num2 <: Number, num3 <: Number, num4 <: Number, numtype <: Number} <: FiniteActivityProcess{numtype}
     σ::num
     λ::num1
     p::num2
     λ₊::num3
     λ₋::num4
-    underlying::abstrUnderlying
-    function KouProcess(σ::num, λ::num1, p::num2, λ₊::num3, λ₋::num4, underlying::abstrUnderlying) where {num <: Number, num1 <: Number, num2 <: Number, num3 <: Number, num4 <: Number, abstrUnderlying <: AbstractUnderlying}
+    function KouProcess(σ::num, λ::num1, p::num2, λ₊::num3, λ₋::num4) where {num <: Number, num1 <: Number, num2 <: Number, num3 <: Number, num4 <: Number}
         check_kou(σ, λ, p, λ₊, λ₋)
         zero_typed = promote_type(num, num1, num2, num3, num4)
-        return new{num, num1, num2, num3, num4, abstrUnderlying, zero_typed}(σ, λ, p, λ₊, λ₋, underlying)
+        return new{num, num1, num2, num3, num4, zero_typed}(σ, λ, p, λ₊, λ₋)
     end
 end
 

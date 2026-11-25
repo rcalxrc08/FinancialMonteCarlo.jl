@@ -21,14 +21,15 @@ Every computation in FinancialMonteCarlo.jl combines four objects:
 | Object | Role | Examples |
 |:--|:--|:--|
 | model | how the underlying evolves | [`BlackScholesProcess`](@ref), [`HestonProcess`](@ref), [`GaussianCopulaNVariateProcess`](@ref) |
-| zero rate curve | discounting and risk neutral drift | [`ZeroRate`](@ref), [`FinancialMonteCarlo.ImpliedZeroRate`](@ref) |
+| underlying | spot price and dividends | [`Underlying`](@ref) |
+| zero rate curve | discounting and risk neutral drift | [`ZeroRate`](@ref) of a number or of a curve |
 | Monte Carlo configuration | number of paths and steps, method, rng, parallelism | [`MonteCarloConfiguration`](@ref) |
 | payoff | the contract | [`EuropeanOption`](@ref), [`BarrierOptionDownOut`](@ref), positions and portfolios |
 
 and a **metric** applied to them, e.g. [`pricer`](@ref):
 
 ```julia
-price = pricer(model, rfCurve, mcConfig, payoff)
+price = pricer(model, underlying, rfCurve, mcConfig, payoff)
 ```
 
 ## What happens inside `pricer`

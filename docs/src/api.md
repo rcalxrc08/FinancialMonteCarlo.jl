@@ -39,8 +39,6 @@ FinancialMonteCarlo.distribution
 ```@docs
 Underlying
 ZeroRate
-ZeroRateCurve
-FinancialMonteCarlo.ImpliedZeroRate
 FinancialMonteCarlo.Curve
 FinancialMonteCarlo.ImpliedCurve
 FinancialMonteCarlo.CurveDifference

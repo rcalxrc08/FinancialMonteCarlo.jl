@@ -1,5 +1,5 @@
 """
-    HestonProcess(σ, σ₀, λ, κ, ρ, θ, underlying)
+    HestonProcess(σ, σ₀, λ, κ, ρ, θ)
 
 Heston stochastic volatility model:
 ```math
@@ -16,20 +16,18 @@ scheme on the log price, flooring the variance at a tiny positive value.
 - `κ`: speed of mean reversion (``κ + λ`` must not be zero).
 - `ρ`: correlation between the Brownian motions, in ``[-1, 1]``.
 - `θ`: long term variance.
-- `underlying`: an [`Underlying`](@ref) with spot price and dividends.
 """
-struct HestonProcess{num <: Number, num1 <: Number, num2 <: Number, num3 <: Number, num4 <: Number, num5 <: Number, abstrUnderlying <: AbstractUnderlying, numtype <: Number} <: ItoProcess{numtype}
+struct HestonProcess{num <: Number, num1 <: Number, num2 <: Number, num3 <: Number, num4 <: Number, num5 <: Number, numtype <: Number} <: ItoProcess{numtype}
     σ::num
     σ₀::num1
     λ::num2
     κ::num3
     ρ::num4
     θ::num5
-    underlying::abstrUnderlying
-    function HestonProcess(σ::num, σ₀::num1, λ::num2, κ::num3, ρ::num4, θ::num5, underlying::abstrUnderlying) where {num <: Number, num1 <: Number, num2 <: Number, num3 <: Number, num4 <: Number, num5 <: Number, abstrUnderlying <: AbstractUnderlying}
+    function HestonProcess(σ::num, σ₀::num1, λ::num2, κ::num3, ρ::num4, θ::num5) where {num <: Number, num1 <: Number, num2 <: Number, num3 <: Number, num4 <: Number, num5 <: Number}
         check_heston(σ, σ₀, λ, κ, ρ)
         zero_typed = zero_of_types(num, num1, num2, num3, num4, num5)
-        return new{num, num1, num2, num3, num4, num5, abstrUnderlying, typeof(zero_typed)}(σ, σ₀, λ, κ, ρ, θ, underlying)
+        return new{num, num1, num2, num3, num4, num5, typeof(zero_typed)}(σ, σ₀, λ, κ, ρ, θ)
     end
 end
 
@@ -50,14 +48,14 @@ export HestonProcess;
 variance_floor(zero_vol) = zero_vol + sqrt(floatmin(eps(zero_vol)))
 
 # The risk neutral parameters, the time step and the zero of the variance, which carries the derivatives of every input
-function heston_setup(mcProcess::HestonProcess, rfCurve::AbstractZeroRateCurve, mcBaseData::MonteCarloConfiguration, T::Number)
+function heston_setup(mcProcess::HestonProcess, und::AbstractUnderlying, rfCurve::AbstractZeroRateCurve, mcBaseData::MonteCarloConfiguration, T::Number)
     check_maturity(T)
     λ1 = mcProcess.λ
     κ = mcProcess.κ
     κ_s = κ + λ1
     θ_s = κ * mcProcess.θ / κ_s
     dt = T / mcBaseData.Nstep
-    drifts = step_drifts(rfCurve.r - dividend(mcProcess), dt, mcBaseData.Nstep)
+    drifts = step_drifts(rfCurve.r - dividend(und), dt, mcBaseData.Nstep)
     isDualZeroVol = zero(T * mcProcess.σ₀ * κ_s * θ_s * λ1 * mcProcess.σ * mcProcess.ρ * drift_of_step(drifts, 1))
     return κ_s, θ_s, drifts, dt, isDualZeroVol
 end
@@ -74,11 +72,11 @@ end
 @inline @muladd heston_log_step(x, v, e1, drift, dt, a) = x + drift - v * (dt / 2) + sqrt(v) * a * e1
 @inline @muladd heston_variance_step(v, e1, e2_rho, dt, a, κ, θ, σ, ρ, ρ_orthogonal) = v + κ * (θ - v) * dt + σ * sqrt(v) * a * (e1 * ρ + e2_rho * ρ_orthogonal)
 
-function simulate!(X, mcProcess::HestonProcess, rfCurve::AbstractZeroRateCurve, mcBaseData::MonteCarloConfiguration, T::Number)
-    S0 = mcProcess.underlying.S0
+function simulate!(X, mcProcess::HestonProcess, und::AbstractUnderlying, rfCurve::AbstractZeroRateCurve, mcBaseData::MonteCarloConfiguration, T::Number)
+    S0 = und.S0
     σ = mcProcess.σ
     ρ = mcProcess.ρ
-    κ_s, θ_s, drifts, dt, isDualZeroVol = heston_setup(mcProcess, rfCurve, mcBaseData, T)
+    κ_s, θ_s, drifts, dt, isDualZeroVol = heston_setup(mcProcess, und, rfCurve, mcBaseData, T)
     isDualZero = isDualZeroVol * S0
     fill!(view(X, :, 1), isDualZero)
     v_floor = variance_floor(isDualZeroVol)

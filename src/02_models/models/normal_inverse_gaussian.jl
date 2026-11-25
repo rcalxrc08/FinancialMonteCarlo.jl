@@ -1,5 +1,5 @@
 """
-    NormalInverseGaussianProcess(σ, θ, κ, underlying)
+    NormalInverseGaussianProcess(σ, θ, κ)
 
 Normal Inverse Gaussian model: the log price is a Brownian motion with drift `θ` and volatility `σ`,
 evaluated at an inverse gaussian subordinator with unit mean rate and variance rate `κ`. The drift is
@@ -9,19 +9,17 @@ chosen to make the discounted price a martingale.
 - `σ`: volatility of the subordinated Brownian motion, must be positive.
 - `θ`: drift of the subordinated Brownian motion.
 - `κ`: variance rate of the subordinator, must be positive.
-- `underlying`: an [`Underlying`](@ref) with spot price and dividends.
 
 The parameters must satisfy ``1 - σ^2 κ - 2 θ κ > 0`` for the forward to be finite.
 """
-struct NormalInverseGaussianProcess{num <: Number, num1 <: Number, num2 <: Number, abstrUnderlying <: AbstractUnderlying, numtype <: Number} <: InfiniteActivityProcess{numtype}
+struct NormalInverseGaussianProcess{num <: Number, num1 <: Number, num2 <: Number, numtype <: Number} <: InfiniteActivityProcess{numtype}
     σ::num
     θ::num1
     κ::num2
-    underlying::abstrUnderlying
-    function NormalInverseGaussianProcess(σ::num, θ::num1, κ::num2, underlying::abstrUnderlying) where {num <: Number, num1 <: Number, num2 <: Number, abstrUnderlying <: AbstractUnderlying}
+    function NormalInverseGaussianProcess(σ::num, θ::num1, κ::num2) where {num <: Number, num1 <: Number, num2 <: Number}
         check_nig(σ, θ, κ)
         zero_typed = zero_of_types(num, num1, num2)
-        return new{num, num1, num2, abstrUnderlying, typeof(zero_typed)}(σ, θ, κ, underlying)
+        return new{num, num1, num2, typeof(zero_typed)}(σ, θ, κ)
     end
 end
 

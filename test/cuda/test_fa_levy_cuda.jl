@@ -13,7 +13,7 @@ toll = 0.35;
 rfCurve = ZeroRate(r);
 EUData = EuropeanOption(T, K);
 und = Underlying(S0, d);
-models = [KouProcess(0.2, 3.0, 0.5, 25.0, 30.0, und), MertonProcess(0.2, 3.0, 0.03, 0.02, und)];
+models = [KouProcess(0.2, 3.0, 0.5, 25.0, 30.0), MertonProcess(0.2, 3.0, 0.03, 0.02)];
 
 @testset "$(nameof(typeof(model)))" for model in models
     @testset "$(nameof(typeof(method)))" for method in (FMC.StandardMC(), FMC.AntitheticMC())
@@ -22,8 +22,8 @@ models = [KouProcess(0.2, 3.0, 0.5, 25.0, 30.0, und), MertonProcess(0.2, 3.0, 0.
         # The generic method also works on a CuMatrix, launching a kernel for each jump.
         jump_method = which(FMC.add_jump_matrix!, Tuple{CuMatrix{Float64}, typeof(model), typeof(mc), Float64})
         @test jump_method.module === Base.get_extension(FMC, :FinancialMonteCarloCUDAExt)
-        S = FMC.simulate(model, rfCurve, mc, T)
+        S = FMC.simulate(model, und, rfCurve, mc, T)
         @test S isa CuMatrix{Float64}
-        @test abs(pricer(model, rfCurve, mc, EUData) - pricer(model, rfCurve, mc_cpu, EUData)) < toll
+        @test abs(pricer(model, und, rfCurve, mc, EUData) - pricer(model, und, rfCurve, mc_cpu, EUData)) < toll
     end
 end

@@ -1,9 +1,9 @@
-function simulate!(X, mcProcess::HestonProcess, rfCurve::AbstractZeroRateCurve, mcBaseData::SobolConfig, T::Number)
-    S0 = mcProcess.underlying.S0
+function simulate!(X, mcProcess::HestonProcess, und::AbstractUnderlying, rfCurve::AbstractZeroRateCurve, mcBaseData::SobolConfig, T::Number)
+    S0 = und.S0
     Nstep = mcBaseData.Nstep
     σ = mcProcess.σ
     ρ = mcProcess.ρ
-    κ_s, θ_s, drifts, dt, isDualZeroVol = heston_setup(mcProcess, rfCurve, mcBaseData, T)
+    κ_s, θ_s, drifts, dt, isDualZeroVol = heston_setup(mcProcess, und, rfCurve, mcBaseData, T)
     isDualZero = isDualZeroVol * S0
     fill!(view(X, :, 1), isDualZero)
     v_floor = variance_floor(isDualZeroVol)

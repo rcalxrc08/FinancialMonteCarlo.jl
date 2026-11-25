@@ -256,25 +256,25 @@ function add_jumps!(X, mcProcess::FiniteActivityProcess, mcBaseData::MonteCarloC
 end
 
 # The risk neutral drift of the log price: r - d - ψ(-i)
-fa_drift(mcProcess::FiniteActivityProcess, rfCurve::AbstractZeroRateCurve) = (rfCurve.r - dividend(mcProcess)) - mcProcess.σ^2 / 2 - mcProcess.λ * compute_drift(mcProcess)
+fa_drift(mcProcess::FiniteActivityProcess, und::AbstractUnderlying, rfCurve::AbstractZeroRateCurve) = (rfCurve.r - dividend(und)) - mcProcess.σ^2 / 2 - mcProcess.λ * compute_drift(mcProcess)
 
-function simulate!(X, mcProcess::finiteActivityProcess, rfCurve::AbstractZeroRateCurve, mcBaseData::AbstractMonteCarloConfiguration, T::numb) where {finiteActivityProcess <: FiniteActivityProcess, numb <: Number}
+function simulate!(X, mcProcess::finiteActivityProcess, und::AbstractUnderlying, rfCurve::AbstractZeroRateCurve, mcBaseData::AbstractMonteCarloConfiguration, T::numb) where {finiteActivityProcess <: FiniteActivityProcess, numb <: Number}
     check_maturity(T)
-    simulate!(X, BrownianMotion(mcProcess.σ, fa_drift(mcProcess, rfCurve)), mcBaseData, T)
+    simulate!(X, BrownianMotion(mcProcess.σ, fa_drift(mcProcess, und, rfCurve)), mcBaseData, T)
     add_jump_matrix!(X, mcProcess, mcBaseData, T)
-    S0 = mcProcess.underlying.S0
+    S0 = und.S0
     exp_paths!(X, S0)
     nothing
 end
 
 # Quasi Monte Carlo: each path is one point of dimension Nstep + 1 + 2M, the first Nstep coordinates give the normals of
 # the diffusion (as BrownianMotion), the others the uniforms of the jumps (add_jumps_from_uniforms!).
-function simulate!(X, mcProcess::FiniteActivityProcess, rfCurve::AbstractZeroRateCurve, mcBaseData::SobolConfig, T::Number)
+function simulate!(X, mcProcess::FiniteActivityProcess, und::AbstractUnderlying, rfCurve::AbstractZeroRateCurve, mcBaseData::SobolConfig, T::Number)
     check_maturity(T)
     Nstep = mcBaseData.Nstep
     dt = T / Nstep
     stddev_bm = mcProcess.σ * sqrt(dt)
-    drifts = step_drifts(fa_drift(mcProcess, rfCurve), dt, Nstep)
+    drifts = step_drifts(fa_drift(mcProcess, und, rfCurve), dt, Nstep)
     isDualZero = stddev_bm * 0 * drift_of_step(drifts, 1)
     fill!(view(X, :, 1), isDualZero)
     U = typeof(get_rng_type(isDualZero))
@@ -286,7 +286,7 @@ function simulate!(X, mcProcess::FiniteActivityProcess, rfCurve::AbstractZeroRat
         end
         add_jumps_from_uniforms!(X, i, view(point, (Nstep+1):dimension), J, mcProcess, mcBaseData)
     end
-    S0 = mcProcess.underlying.S0
+    S0 = und.S0
     exp_paths!(X, S0)
     return
 end

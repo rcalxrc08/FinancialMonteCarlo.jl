@@ -23,13 +23,13 @@ them also positions and portfolios.
 | [`FinancialMonteCarlo.distribution`](@ref) | simulated values of the underlying at a given time |
 
 ```julia
-pricer(model, rfCurve, mcConfig, payoff)
-pricer(model, rfCurve, mcConfig, [payoff_1, payoff_2])     # vector of prices
-pricer(model, rfCurve, mcConfig, 2.0 * payoff_1 - payoff_2) # price of a position
-variance(model, rfCurve, mcConfig, payoff)
-confinter(model, rfCurve, mcConfig, payoff, 0.95)
-delta(model, rfCurve, mcConfig, payoff, 1e-4)               # spot bump
-rho(model, rfCurve, mcConfig, payoff, 1e-4)                 # rate bump
+pricer(model, underlying, rfCurve, mcConfig, payoff)
+pricer(model, underlying, rfCurve, mcConfig, [payoff_1, payoff_2])     # vector of prices
+pricer(model, underlying, rfCurve, mcConfig, 2.0 * payoff_1 - payoff_2) # price of a position
+variance(model, underlying, rfCurve, mcConfig, payoff)
+confinter(model, underlying, rfCurve, mcConfig, payoff, 0.95)
+delta(model, underlying, rfCurve, mcConfig, payoff, 1e-4)               # spot bump
+rho(model, underlying, rfCurve, mcConfig, payoff, 1e-4)                 # rate bump
 ```
 
 The bump and reprice greeks use the same seed for the base and the bumped prices, so the Monte

@@ -43,7 +43,7 @@ function check_correlation(rho, models)
 end
 ChainRulesCore.@non_differentiable check_correlation(::Any, ::Any)
 
-function simulate!(S_total, mcProcess::GaussianCopulaNVariateProcess, rfCurve::AbstractZeroRateCurve, mcBaseData::AbstractMonteCarloConfiguration, T::Number)
+function simulate!(S_total, mcProcess::GaussianCopulaNVariateProcess, unds::UnderlyingTuple, rfCurve::AbstractZeroRateCurve, mcBaseData::AbstractMonteCarloConfiguration, T::Number)
     Nsim = mcBaseData.Nsim
     Nstep = mcBaseData.Nstep
     check_maturity(T)
@@ -52,7 +52,7 @@ function simulate!(S_total, mcProcess::GaussianCopulaNVariateProcess, rfCurve::A
     ## Simulate
     len_ = length(mcProcess.models)
     for i = 1:len_
-        simulate!(S_total[i], mcProcess.models[i], rfCurve, mcBaseData, T)
+        simulate!(S_total[i], mcProcess.models[i], unds[i], rfCurve, mcBaseData, T)
     end
     rho = mcProcess.rho
     if (isdiag(rho))

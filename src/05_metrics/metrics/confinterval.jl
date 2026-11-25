@@ -1,7 +1,7 @@
 using Distributions
 
 """
-    confinter(mcProcess, rfCurve, mcConfig, payoff, alpha = 99 // 100)
+    confinter(mcProcess, underlying, rfCurve, mcConfig, payoff, alpha = 99 // 100)
 
 Confidence interval at level `alpha` for the price of `payoff`, based on the Student t approximation
 of the Monte Carlo estimator, from the independent samples: the paths, or the antithetic pairs with
@@ -15,8 +15,8 @@ of the Monte Carlo estimator, from the independent samples: the paths, or the an
 - `payoff`: a payoff, a vector of payoffs, a smile or a [`FinancialMonteCarlo.Position`](@ref).
 - `alpha`: confidence level.
 """
-function confinter(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration, abstractPayoffs::Union{AbstractPayoff, Array{<:AbstractPayoff}, AbstractSmile, Position}, alpha::Real = 99 // 100)
-    means, vars = mean_and_variance(mcProcess, rfCurve, mcConfig, abstractPayoffs)
+function confinter(mcProcess::BaseProcess, und::UnderlyingArg, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration, abstractPayoffs::Union{AbstractPayoff, Array{<:AbstractPayoff}, AbstractSmile, Position}, alpha::Real = 99 // 100)
+    means, vars = mean_and_variance(mcProcess, und, rfCurve, mcConfig, abstractPayoffs)
     return student_intervals(means, vars, mcConfig.Nsim, alpha, sample_count(mcConfig))
 end
 

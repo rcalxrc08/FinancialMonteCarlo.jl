@@ -1,38 +1,36 @@
 """
-    BlackScholesProcess(σ, underlying)
+    BlackScholesProcess(σ)
 
 Black-Scholes model: under the risk neutral measure the underlying follows a geometric Brownian
 motion ``dS_t = (r_t - d_t) S_t\\,dt + σ S_t\\,dW_t``.
 
 # Arguments
 - `σ`: volatility, must be positive.
-- `underlying`: an [`Underlying`](@ref) with spot price and dividends.
 
 # Examples
 ```julia
-model = BlackScholesProcess(0.2, Underlying(100.0, 0.01))
-pricer(model, ZeroRate(0.02), MonteCarloConfiguration(10_000, 30), EuropeanOption(1.0, 100.0))
+model = BlackScholesProcess(0.2)
+pricer(model, Underlying(100.0, 0.01), ZeroRate(0.02), MonteCarloConfiguration(10_000, 30), EuropeanOption(1.0, 100.0))
 ```
 """
-struct BlackScholesProcess{num <: Number, abstrUnderlying <: AbstractUnderlying} <: ItoProcess{num}
+struct BlackScholesProcess{num <: Number} <: ItoProcess{num}
     σ::num
-    underlying::abstrUnderlying
-    function BlackScholesProcess(σ::num, underlying::abstrUnderlying) where {num <: Number, abstrUnderlying <: AbstractUnderlying}
+    function BlackScholesProcess(σ::num) where {num <: Number}
         check_volatility(σ)
-        return new{num, abstrUnderlying}(σ, underlying)
+        return new{num}(σ)
     end
 end
 
 export BlackScholesProcess;
 
-function simulate!(S, mcProcess::BlackScholesProcess, rfCurve::AbstractZeroRateCurve, mcBaseData::AbstractMonteCarloConfiguration, T::Number)
+function simulate!(S, mcProcess::BlackScholesProcess, und::AbstractUnderlying, rfCurve::AbstractZeroRateCurve, mcBaseData::AbstractMonteCarloConfiguration, T::Number)
     check_maturity(T)
     r = rfCurve.r
-    d = dividend(mcProcess)
+    d = dividend(und)
     σ = mcProcess.σ
     μ = r - d
 
-    simulate!(S, GeometricBrownianMotion(σ, μ, mcProcess.underlying.S0), mcBaseData, T)
+    simulate!(S, GeometricBrownianMotion(σ, μ, und.S0), mcBaseData, T)
 
     nothing
 end

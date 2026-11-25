@@ -24,7 +24,7 @@ weights, in the order they were added.
 straddle = EuropeanOption(T, K) + EuropeanOption(T, K, false)
 spread = EuropeanOption(T, 95.0) - EuropeanOption(T, 105.0)
 position = 2.0 * straddle - spread / 2
-pricer(model, rfCurve, mcConfig, position)
+pricer(model, underlying, rfCurve, mcConfig, position)
 ```
 
 - The same contract appears once and its weights add up. Two payoffs are the same contract when
@@ -49,14 +49,15 @@ legs, and `delta` and `rho` bump and reprice it like a single payoff.
 To price contracts on several underlyings, give each underlying a name and link it with `→`
 (typed `\to<TAB>`):
 
-- a [`MarketDataSet`](@ref) maps names to models: `"ENI" → model`;
+- a [`MarketDataSet`](@ref) maps names to underlyings and to models: `"ENI" → Underlying(S0, d)` and
+  `"ENI" → model`, or both at once, `"ENI" → (model, Underlying(S0, d))`;
 - a [`FinancialMonteCarlo.Portfolio`](@ref) maps names to positions: `"ENI" → payoff` or
   `"ENI" → position`.
 
 Both can be combined with `+`; adding portfolios adds the positions on the same name.
 
 ```julia
-market = ("ENI" → model_eni) + ("AAPL" → model_aapl)
+market = ("ENI" → (model_eni, und_eni)) + ("AAPL" → (model_aapl, und_aapl))
 portfolio = ("ENI" → straddle) + ("AAPL" → 3.0 * AsianFixedStrikeOption(T, K))
 pricer(market, rfCurve, mcConfig, portfolio)
 delta(market, rfCurve, mcConfig, portfolio, "ENI")
@@ -73,12 +74,14 @@ models is an error). Names in the market data set that have no position are not 
 
 ## Multivariate models
 
-A multivariate model is linked to the tuple of the names of its components:
+A multivariate model is linked to the tuple of the names of its components, whose underlyings it simulates:
 
 ```julia
 ρ = [1.0 0.3; 0.3 1.0]
-market = ("ENI", "AAPL") → GaussianCopulaNVariateProcess(ρ, model_eni, model_aapl)
+market = ("ENI", "AAPL") → (GaussianCopulaNVariateProcess(ρ, model_eni, model_aapl), (und_eni, und_aapl))
 ```
+
+[`delta`](@ref) of a name bumps its underlying, so every model that uses it, alone or in a copula, moves.
 
 A portfolio on such a market can contain
 

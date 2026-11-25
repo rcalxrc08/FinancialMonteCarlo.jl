@@ -11,7 +11,7 @@ const FMC = FinancialMonteCarlo
 const T, K = 1.0, 100.0
 const mc = MonteCarloConfiguration(2_000, 10; mode = FMC.CudaMode(), seed = 1)
 const x0 = [100.0, 0.2, 0.02, 0.01] # S0, σ, r, d
-const models = (BlackScholes = x -> BlackScholesProcess(x[2], Underlying(x[1], x[4])), Bachelier = x -> BachelierProcess(100 * x[2], Underlying(x[1], x[4])), Heston = x -> HestonProcess(0.5, x[2], 0.0, 2.0, -0.7, 0.04, Underlying(x[1], x[4])), Kou = x -> KouProcess(x[2], 3.0, 0.3, 30.0, 20.0, Underlying(x[1], x[4])), LogNormalMixture = x -> LogNormalMixture((x[2], 0.3), (0.5,), Underlying(x[1], x[4])))
+const models = (BlackScholes = x -> BlackScholesProcess(x[2]), Bachelier = x -> BachelierProcess(100 * x[2]), Heston = x -> HestonProcess(0.5, x[2], 0.0, 2.0, -0.7, 0.04), Kou = x -> KouProcess(x[2], 3.0, 0.3, 30.0, 20.0), LogNormalMixture = x -> LogNormalMixture((x[2], 0.3), (0.5,)))
 
 # Central differences on the same paths: the payoff is smooth in the parameters along the paths (European call)
 function finite_differences(f, x; h = 1e-5)
@@ -43,7 +43,7 @@ const SKIPPED = (:MooncakeForward,)
 @testset "AD in CudaMode" begin
     @testset "$model" for model in keys(models)
         build = models[model]
-        f(x) = pricer(build(x), ZeroRate(x[3]), mc, EuropeanOption(T, K))
+        f(x) = pricer(build(x), Underlying(x[1], x[4]), ZeroRate(x[3]), mc, EuropeanOption(T, K))
         g_ref = finite_differences(f, x0)
         @testset "$backend" for backend in keys(backends)
             if backend in SKIPPED

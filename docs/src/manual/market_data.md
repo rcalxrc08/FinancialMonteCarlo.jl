@@ -17,8 +17,9 @@
 ```
 ## Underlying
 
-The spot price and the dividend yield of an asset are stored in an [`Underlying`](@ref), which
-is part of every single name model:
+The spot price and the dividend yield of an asset are stored in an [`Underlying`](@ref), passed to the
+metrics next to the model (the models hold only their parameters). The dividend yield is a number or a curve,
+a type parameter of the one `Underlying` type:
 
 ```julia
 Underlying(100.0)          # no dividends
@@ -28,12 +29,13 @@ Underlying(100.0, FinancialMonteCarlo.Curve([0.01, 0.015, 0.02], 1.0))  # time d
 
 ## Zero rates
 
-Discounting and the risk neutral drift come from a zero rate curve:
+Discounting and the risk neutral drift come from a [`ZeroRate`](@ref), of a constant rate or of a curve (again
+one type, the rate a type parameter):
 
 ```julia
 ZeroRate(0.02)                                      # constant rate
-ZeroRate([0.00, 0.01, 0.02], 1.0)                   # instantaneous rates on a uniform grid up to 1.0
-FinancialMonteCarlo.ImpliedZeroRate([0.01, 0.015], [0.5, 1.0])  # from zero rates quoted at given maturities
+ZeroRate(FinancialMonteCarlo.Curve([0.00, 0.01, 0.02], 1.0))                   # instantaneous rates on a uniform grid up to 1.0
+ZeroRate(FinancialMonteCarlo.ImpliedCurve([0.01, 0.015], [0.5, 1.0]))  # from zero rates quoted at given maturities
 ```
 
 ## Curves
@@ -48,7 +50,7 @@ times, which is what is used both for the drift of each simulation step and for 
   have market quoted zero rates or dividend yields.
 
 Both take two vectors or two tuples. The nodes are stored as static vectors (StaticArrays), so a curve,
-an underlying holding one and a model built on it are `isbits` values: Enzyme differentiates them
+an underlying and a zero rate holding one are `isbits` values: Enzyme differentiates them
 without runtime activity and a GPU kernel can capture them. The number of nodes is part of the type,
 so a curve built from vectors has a type known only at run time: build it once, outside the code that
 is differentiated or run in a loop, or from tuples, which give an inferred constructor.

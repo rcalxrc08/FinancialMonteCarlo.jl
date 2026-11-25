@@ -3,11 +3,13 @@
 using FinancialMonteCarlo, Zygote, ForwardDiff, BenchmarkTools
 const label = ARGS[1]
 und = Underlying(100.0, 0.01)
-heston(x) = HestonProcess(x[1], x[2], x[3], x[4], x[5], x[6], und)
+heston(x) = HestonProcess(x[1], x[2], x[3], x[4], x[5], x[6])
 fh(x) = (m = heston(x); o = EuropeanOption(x[7], 100.0); m.σ * m.σ₀ + m.κ * m.θ + m.ρ * m.λ + o.T)
-fk(x) = (m = KouProcess(x[1], x[2], x[3], x[4], x[5], und); m.σ + m.λ * m.p + m.λ₊ * m.λ₋)
-fs(x) = (m = FinancialMonteCarlo.set_parameters!(LogNormalMixture((0.2, 0.25, 0.3), (0.3, 0.3), und), x); sum(m.η) + sum(m.λ))
-xh = [0.2, 0.2, 0.0, 1.5, -0.7, 0.04, 1.0]; xk = [0.2, 3.0, 0.4, 10.0, 5.0]; xs = [0.2, 0.25, 0.3, 0.3, 0.3]
+fk(x) = (m = KouProcess(x[1], x[2], x[3], x[4], x[5]); m.σ + m.λ * m.p + m.λ₊ * m.λ₋)
+fs(x) = (m = FinancialMonteCarlo.set_parameters!(LogNormalMixture((0.2, 0.25, 0.3), (0.3, 0.3)), x); sum(m.η) + sum(m.λ))
+xh = [0.2, 0.2, 0.0, 1.5, -0.7, 0.04, 1.0];
+xk = [0.2, 3.0, 0.4, 10.0, 5.0];
+xs = [0.2, 0.25, 0.3, 0.3, 0.3]
 for (name, f, x) in (("Heston+option", fh, xh), ("Kou", fk, xk), ("LNM set_parameters!", fs, xs))
     tz = @belapsed Zygote.gradient($f, $x)
     tf = @belapsed ForwardDiff.gradient($f, $x)

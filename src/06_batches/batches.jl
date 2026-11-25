@@ -42,25 +42,28 @@ join_paths(paths::Vector{<:Vector{<:AbstractMatrix}}) = [reduce(vcat, [batch[i] 
 
 joined_on_batches(f, mcConfig::BatchedConfig) = join_paths(batch_results(f, batch_configs(mcConfig), mcConfig.mode))
 
-simulate(mcProcess::AbstractMonteCarloProcess, zeroCurve::AbstractZeroRateCurve, mcConfig::BatchedConfig, T::Number) = joined_on_batches(config -> simulate(mcProcess, zeroCurve, config, T), mcConfig)
-simulate(mcProcess::VectorialMonteCarloProcess, zeroCurve::AbstractZeroRateCurve, mcConfig::BatchedConfig, T::Number) = joined_on_batches(config -> simulate(mcProcess, zeroCurve, config, T), mcConfig)
+simulate(mcProcess::AbstractMonteCarloProcess, und::AbstractUnderlying, zeroCurve::AbstractZeroRateCurve, mcConfig::BatchedConfig, T::Number) = joined_on_batches(config -> simulate(mcProcess, und, zeroCurve, config, T), mcConfig)
+simulate(mcProcess::VectorialMonteCarloProcess, und::UnderlyingTuple, zeroCurve::AbstractZeroRateCurve, mcConfig::BatchedConfig, T::Number) = joined_on_batches(config -> simulate(mcProcess, und, zeroCurve, config, T), mcConfig)
 simulate(mcProcess::AbstractMonteCarloEngine, mcConfig::BatchedConfig, T::Number) = joined_on_batches(config -> simulate(mcProcess, config, T), mcConfig)
 
-for (model_type, payoff_type) in ((BaseProcess, AbstractPayoff), (BaseProcess, Position), (BaseProcess, Array{<:AbstractPayoff}), (BaseProcess, AbstractSmile), (VectorialMonteCarloProcess, Array{<:Position}), (MarketDataSet, Portfolio))
-    @eval function pricer(mcProcess::$model_type, rfCurve::AbstractZeroRateCurve, mcConfig::BatchedConfig, abstractPayoff::$payoff_type)
-        return average_on_batches(config -> pricer(mcProcess, rfCurve, config, abstractPayoff), mcConfig)
+for (model_type, und_type, payoff_type) in ((BaseProcess, UnderlyingArg, AbstractPayoff), (BaseProcess, UnderlyingArg, Position), (BaseProcess, UnderlyingArg, Array{<:AbstractPayoff}), (BaseProcess, UnderlyingArg, AbstractSmile), (VectorialMonteCarloProcess, UnderlyingTuple, Array{<:Position}))
+    @eval function pricer(mcProcess::$model_type, und::$und_type, rfCurve::AbstractZeroRateCurve, mcConfig::BatchedConfig, abstractPayoff::$payoff_type)
+        return average_on_batches(config -> pricer(mcProcess, und, rfCurve, config, abstractPayoff), mcConfig)
     end
+end
+function pricer(market::MarketDataSet, rfCurve::AbstractZeroRateCurve, mcConfig::BatchedConfig, portfolio::Portfolio)
+    return average_on_batches(config -> pricer(market, rfCurve, config, portfolio), mcConfig)
 end
 
 # The main run of the control variates is what goes on the batches
-function pricer(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration{<:ControlVariates, <:AbstractBatchedMode}, abstractPayoff::AbstractPayoff)
-    return pricer_control_variates(mcProcess, rfCurve, mcConfig, abstractPayoff)
+function pricer(mcProcess::BaseProcess, und::UnderlyingArg, rfCurve::AbstractZeroRateCurve, mcConfig::MonteCarloConfiguration{<:ControlVariates, <:AbstractBatchedMode}, abstractPayoff::AbstractPayoff)
+    return pricer_control_variates(mcProcess, und, rfCurve, mcConfig, abstractPayoff)
 end
 
 # The means and the variances of the paths of all the batches, without bringing the paths together
-function mean_and_variance(mcProcess::BaseProcess, rfCurve::AbstractZeroRateCurve, mcConfig::BatchedConfig, abstractPayoffs)
+function mean_and_variance(mcProcess::BaseProcess, und::UnderlyingArg, rfCurve::AbstractZeroRateCurve, mcConfig::BatchedConfig, abstractPayoffs)
     configs = batch_configs(mcConfig)
-    moments = batch_results(config -> payoff_moments(mcProcess, rfCurve, config, abstractPayoffs), configs, mcConfig.mode)
+    moments = batch_results(config -> payoff_moments(mcProcess, und, rfCurve, config, abstractPayoffs), configs, mcConfig.mode)
     means = weighted_average(configs, first.(moments), mcConfig)
     # each batch holds sample_count(config) independent samples (whole antithetic pairs, see batch_sizes)
     squares = sum(muladd.(sample_count(config), abs2.(moment[1] .- means), moment[2]) for (config, moment) in zip(configs, moments))

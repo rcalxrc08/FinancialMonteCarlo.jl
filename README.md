@@ -15,13 +15,14 @@ Every metric is one function of four arguments, **model, zero rate curve, method
 ```julia
 using FinancialMonteCarlo
 
-model    = BlackScholesProcess(0.2, Underlying(100.0, 0.01))   # σ, spot, dividend yield
+model    = BlackScholesProcess(0.2)                             # σ: a model holds only its parameters
+und      = Underlying(100.0, 0.01)                              # spot, dividend yield
 rfCurve  = ZeroRate(0.02)
 mcConfig = MonteCarloConfiguration(10_000, 30)                  # paths, steps
 option   = EuropeanOption(1.0, 100.0)                           # maturity, strike
 
-pricer(model, rfCurve, mcConfig, option)
-confinter(model, rfCurve, mcConfig, option, 0.95)               # 95% confidence interval
+pricer(model, und, rfCurve, mcConfig, option)
+confinter(model, und, rfCurve, mcConfig, option, 0.95)          # 95% confidence interval
 ```
 
 ## Installation
@@ -51,7 +52,7 @@ your choice:
 
 ```julia
 using ForwardDiff
-price(x) = pricer(BlackScholesProcess(x[2], Underlying(x[1], 0.01)), ZeroRate(x[3]), mcConfig, option)
+price(x) = pricer(BlackScholesProcess(x[2]), Underlying(x[1], 0.01), ZeroRate(x[3]), mcConfig, option)
 ForwardDiff.gradient(price, [100.0, 0.2, 0.02])   # delta, vega, rho
 ```
 
@@ -72,12 +73,12 @@ for timings and caveats.
 
 ```julia
 position = EuropeanOption(1.0, 100.0) - 2 * BinaryEuropeanOption(1.0, 110.0)
-pricer(model, rfCurve, mcConfig, position)
+pricer(model, und, rfCurve, mcConfig, position)
 
 smile = FinancialMonteCarlo.EuropeanOptionSmile(1.0, [90.0, 100.0, 110.0], [false, true, true])
-pricer(model, rfCurve, mcConfig, smile)            # one price per strike, from one simulation
+pricer(model, und, rfCurve, mcConfig, smile)       # one price per strike, from one simulation
 
-market    = ("ENI" → model) + ("AAPL" → HestonProcess(0.3, 0.2, 0.0, 1.5, -0.5, 0.04, Underlying(150.0)))
+market    = ("ENI" → (model, und)) + ("AAPL" → (HestonProcess(0.3, 0.2, 0.0, 1.5, -0.5, 0.04), Underlying(150.0)))
 portfolio = ("ENI" → position) + ("AAPL" → 3.0 * AsianFixedStrikeOption(1.0, 150.0))
 pricer(market, rfCurve, mcConfig, portfolio)       # → is typed \to<TAB>
 ```
@@ -85,15 +86,16 @@ pricer(market, rfCurve, mcConfig, portfolio)       # → is typed \to<TAB>
 ## Curves
 
 Rates and dividends can depend on time. A curve holds instantaneous rates, linear between its nodes and flat outside;
-`ImpliedCurve` and `ImpliedZeroRate` build it from zero rates quoted at given maturities:
+`ImpliedCurve` builds it from zero rates quoted at given maturities. `ZeroRate` and `Underlying` take a number or a
+curve:
 
 ```julia
-rfCurve   = FinancialMonteCarlo.ImpliedZeroRate([0.01, 0.015, 0.02], [0.5, 1.0, 2.0])
+rfCurve   = ZeroRate(FinancialMonteCarlo.ImpliedCurve([0.01, 0.015, 0.02], [0.5, 1.0, 2.0]))
 dividends = FinancialMonteCarlo.ImpliedCurve([0.010, 0.012, 0.011], [0.5, 1.0, 2.0])
-pricer(BlackScholesProcess(0.2, Underlying(100.0, dividends)), rfCurve, mcConfig, option)
+pricer(model, Underlying(100.0, dividends), rfCurve, mcConfig, option)
 ```
 
-The nodes are static vectors, so a model on a curve is an `isbits` value: Enzyme differentiates it without runtime
+The nodes are static vectors, so an underlying on a curve is an `isbits` value: Enzyme differentiates it without runtime
 activity, and a GPU kernel can capture it. There is no multi-currency support.
 
 ## On the GPU
@@ -101,7 +103,7 @@ activity, and a GPU kernel can capture it. There is no multi-currency support.
 ```julia
 using CUDA
 gpuConfig = MonteCarloConfiguration(100_000, 50; mode = FinancialMonteCarlo.CudaMode())
-pricer(BlackScholesProcess(0.2f0, Underlying(100.0f0, 0.01f0)), ZeroRate(0.02f0), gpuConfig, EuropeanOption(1.0f0, 100.0f0))
+pricer(BlackScholesProcess(0.2f0), Underlying(100.0f0, 0.01f0), ZeroRate(0.02f0), gpuConfig, EuropeanOption(1.0f0, 100.0f0))
 ```
 
 The paths are simulated and the payoffs evaluated on the device; in `Float32` a laptop GPU runs 100 000 paths × 50
